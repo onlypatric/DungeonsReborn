@@ -21,3 +21,11 @@ src/main/resources/effects/.DS_Store
 !gradle/wrapper/
 !gradle/wrapper/gradle-wrapper.properties
 !gradle/wrapper/gradle-wrapper.jar
+!AGENTS.md
+
+# Keep developer docs (usage docs stay ignored).
+!docs/
+!docs/README.md
+!docs/dev/
+!docs/dev/**
+docs/usage/

@@ -2,7 +2,6 @@ package dev.patric.dungeonsreborn;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import dev.patric.dungeonsreborn.commands.FlySpeedCommand;
 import dev.patric.dungeonsreborn.commands.EffectsCommand;
 import dev.patric.dungeonsreborn.commands.GuiCommand;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
@@ -89,9 +88,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS,commands->{
-            commands.registrar().register(
-                FlySpeedCommand.createCommand().build()
-            );
             commands.registrar().register(
                 GuiCommand.createCommand().build()
             );
