@@ -35,7 +35,7 @@ This file is the **only** place where checklists are referenced.
 
 - Developer guides live in `docs/dev/`.
 - Usage guides live in `docs/usage/`.
-- Usage guides are intentionally ignored by `.gitignore` (dev guides are kept).
+- Developer guides are intentionally ignored by `.gitignore` (usage guides are kept).
 - Checklists (implementation tracking): `docs/checklists/`
 - Reference: `docs/reference/` (Paper API javadocs + particle list)
 - `docs/README.md` only lists guides and references (no checklist links).

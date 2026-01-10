@@ -1,14 +1,5 @@
 # Docs
 
-## Developer Guides
-
-- `docs/dev/SPELLS_EFFECTS_DEV_GUIDE.md` — developer-facing architecture and extension notes
-- `docs/dev/MOBS_DEV_GUIDE.md` — developer-facing architecture and extension notes for custom mobs
-- `docs/dev/SPELLS_EFFECTS_ENGINE_SPEC.md` — base design spec for the spells/effects engine
-- `docs/dev/SPELLS_EFFECTS_ANIMATION_TOOLKIT.md` — design doc for higher-level animation helpers/patterns
-- `docs/dev/SPELLS_EFFECTS_CONFIG_SKELETON.md` — phased plan for the YAML/DSL configuration system
-- `docs/dev/SPELLS_EFFECTS_CATALOG.md` — idea catalog for effect themes and tiers
-
 ## Usage Guides
 
 - `docs/usage/SPELLS_EFFECTS_USAGE_GUIDE.md` — admin-friendly configuration guide
@@ -17,6 +8,8 @@
 - `docs/usage/MOBS_USAGE_GUIDE.md` — admin-friendly configuration guide for custom mobs
 - `docs/usage/MANA_USAGE_GUIDE.md` — admin-facing mana system guide
 - `docs/usage/COMMAND_REFERENCE.md` — command list and permissions
+
+Developer guides live in `docs/dev/` but are intentionally ignored by `.gitignore`.
 
 ## Reference
 
