@@ -1,0 +1,518 @@
+#
+# DungeonsReborn - Effects YAML (Phase 1: abilities/effects only)
+#
+# LAST THING TO DO (Template):
+# - This comment block is meant to be a “full template” reference for authoring abilities.
+# - Copy/paste the parts you need, delete the rest, and iterate.
+#
+# Where this file lives:
+# - `src/main/resources/effects.yml` is the DEFAULT TEMPLATE bundled in the jar.
+# - On first run, the plugin copies it to: `plugins/DungeonsReborn/effects.yml`
+# - After that, the plugin will NOT overwrite your file automatically.
+# - Optional: you can split abilities into multiple files:
+#   - Folder: `plugins/DungeonsReborn/effects/abilities/`
+#   - Any `*.yml` / `*.yaml` file in that folder is loaded on `/effects reload`.
+#   - Duplicated ability ids or macro ids across files cause reload errors.
+#
+# Reload after edits:
+#   /effects reload
+#
+# Testing:
+#   /effects cast <abilityId>
+# Example:
+#   /effects cast yaml_demo_projectile
+#
+# Binding to items:
+# - You can bind YAML abilities directly using `triggers:` inside each ability (recommended).
+# - You can also bind ad-hoc to a single item using:
+#     /effects bind add right <abilityId>
+#     /effects bind add left <abilityId>
+# - For reusable item bindings, create item files:
+#     plugins/DungeonsReborn/effects/items/<itemId>.yml
+#   Each item file defines an `item:` matcher + `bindings:` list (see docs).
+# - Item mana bonuses (from item files):
+#     mana:
+#       maxBonus: 20     # add to player max mana while held/equipped
+#       regenBonus: 1.5  # mana per SECOND (scaled by regen period)
+#
+# Non-player casters:
+# - The engine can cast abilities with non-player LivingEntity casters, but this YAML layer currently targets
+#   player-facing use cases (messages/actionbars/titles + mana costs).
+# - If you later trigger casts from mobs/NPCs, those player-only parts simply won’t apply.
+#
+# Text formatting:
+# - `name` and `description` are MiniMessage strings (recommended).
+# - If MiniMessage parsing fails, the plugin falls back to legacy `§` color codes.
+# - Descriptions can be multiline using YAML `|` blocks.
+#
+# Placeholders (usable in `message`, `action_bar`, `title`, `debug_log`):
+# - {player}, {ability}, {castId}, {tick}
+# - {target}, {target_type}  (uses the current "last entity" context, e.g. from raycast/projectile/for_each_target)
+# - {mana}, {mana_max}       (player casters only)
+# - {var:key}                (looks in cast vars, then player vars)
+# - {var:cast:key} / {var:player:key}
+#
+# Notes:
+# - YAML abilities are compiled into the existing code-first engine at reload time.
+# - If a YAML ability fails to compile, it will be skipped and errors will be shown on reload.
+# - Ability ids (the keys under `abilities:`) are normalized to `[a-z0-9_.:-]`.
+# - Every `type:` is validated; unknown types/invalid values fail fast on reload.
+# - Merge policy: YAML overrides code. If a YAML ability id matches a code ability id, the YAML version replaces it.
+#
+# Reload options (root level):
+# - options:
+#     cancelRunningOnReload: false   # If true, cancels running scheduled work for previously-loaded YAML casts.
+# - Optional per-ability profiling:
+#   - Add `profile: true` to an ability to wrap its root action with timing measurement.
+#   - Then use `/effects timings last` to inspect `yaml:<abilityId>` timings.
+#
+# Triggers (Phase 3):
+# - Abilities can register click bindings directly from YAML:
+#
+#   triggers:
+#     - type: interact
+#       click: RIGHT_CLICK   # RIGHT_CLICK | LEFT_CLICK
+#       # Optional:
+#       # id: "my_binding_id"          # defaults to yaml:<abilityId>:<index>
+#       # requireSneaking: false
+#       # permission: "dungeonsreborn.spells.some_ability"
+#       # cancelEvent: true
+#       # item: (matcher, optional; defaults to any_non_air)
+#       #   type: material
+#       #   material: DIAMOND_SWORD
+#
+# Item matchers (Phase 3):
+# - any_non_air: {}
+# - material: { material: DIAMOND_SWORD }
+# - custom_model_data: { value: 123 }   # or { cmd: 123 }
+# - pdc_tag: { key: "namespace:key" }
+# - lore_contains: { text: "Some substring" }
+# - and/or:
+#     type: and
+#     matchers: [ { ... }, { ... } ]
+#
+# Authoring workflow (recommended):
+# 1) Copy the “FULL TEMPLATE” chunks below into your own ability.
+# 2) Start with a single `sequence` and one simple leaf action (sound/message/particles_ring).
+# 3) Add requirements/costs/cooldown after the action looks correct.
+# 4) Add targeting (raycast/projectile) last.
+# 5) Iterate using:
+#    - `/effects reload` (compile YAML)
+#    - `/effects cast <abilityId>` (test)
+#    - `/effects info <abilityId>` (view name/description)
+#
+# Common gotchas:
+# - YAML indentation matters. If reload errors look “weird”, check indentation first.
+# - If you use `:` inside a plain string, wrap it in quotes.
+# - If you want multiline text, use YAML `|` blocks (see description examples below).
+#
+# DSL scripts (Phase 6, experimental):
+# - You can replace `action:` with a `script:` block:
+#     script:
+#       language: "dsl-v1"
+#       source: |-
+#         on_cast { particles.ring particle=CRIT radius=1.4 points=24 count=1 }
+# - Or reference a file under `plugins/DungeonsReborn/effects/scripts/`:
+#     script:
+#       language: "dsl-v1"
+#       file: "my_spell.es"
+#
+# Troubleshooting:
+# - No particles? Check your particle budget/quality:
+#     /effects particles quality 1
+#     /effects particles budget 25000
+# - No target? Your raycast might be too short, or blocked by blocks (`stopOnBlock: true`).
+# - Projectile misses? Use `blockCollision: PASS_THROUGH` or add an `otherwise:` branch with raycasts.
+#
+# --------------------------------------------------------------------------------------
+# FULL TEMPLATE (copy what you need)
+# --------------------------------------------------------------------------------------
+#
+# schemaVersion: 1
+#
+# Optional (Phase 2): reusable action macros
+# macros:
+#   # A macro can be ANY action node, including delay/repeat/projectile/etc.
+#   # Tip: keep macros “pure visuals” so they’re reusable across abilities.
+#   #
+#   my_macro_id:
+#     type: sequence
+#     actions:
+#       - type: sound
+#         sound: ENTITY_EXPERIENCE_ORB_PICKUP
+#         volume: 0.6
+#         pitch: 1.8
+#       - type: particles_ring
+#         particle: END_ROD
+#         radius: 1.6
+#         points: 32
+#         count: 1
+#
+#   macro_delay_example:
+#     type: delay
+#     ticks: 10
+#     then:
+#       type: particles_ring
+#       particle: END_ROD
+#       radius: 1.1
+#       points: 22
+#       count: 1
+#
+# abilities:
+#   some_ability_id:
+#     # MiniMessage supported:
+#     name: "<gold>My Ability"
+#     # Multiline description supported:
+#     description: |-
+#       <gray>Line 1</gray>
+#       <dark_gray>Line 2</dark_gray>
+#
+#     # Requirements (optional)
+#     requirements:
+#       - type: sneaking
+#         message: "<red>Sneak to cast.</red>"
+#       - type: permission
+#         permission: "dungeonsreborn.spells.myability"
+#         message: "<red>No permission.</red>"
+#       - type: has_item_tag
+#         key: "dungeonsreborn:debug_marker"
+#         message: "<red>You need the tagged item.</red>"
+#
+#     # Costs (optional)
+#     costs:
+#       - type: mana
+#         amount: 10
+#       - type: consume_item
+#         amount: 1
+#       - type: durability
+#         damage: 8
+#         allowBreak: false
+#
+#     # Cooldown (optional)
+#     cooldown:
+#       ticks: 40
+#       key: "my_cooldown_group" # optional
+#
+#     # Root action graph
+#     action:
+#       type: sequence
+#       actions:
+#         # Include a macro (Phase 2):
+#         - type: include
+#           macro: my_macro_id
+#
+#         # Or include the delay example:
+#         # - type: include
+#         #   macro: macro_delay_example
+#
+#         - type: sound
+#           sound: ENTITY_BLAZE_SHOOT
+#           volume: 0.7
+#           pitch: 1.6
+#
+#         - type: message
+#           text: "<green>Casted!</green>"
+#
+#         - type: action_bar
+#           text: "<aqua>Charging...</aqua>"
+#
+#         - type: title
+#           title: "<gold>Spell!</gold>"
+#           subtitle: "<gray>subtitle</gray>"
+#           fadeInTicks: 10
+#           stayTicks: 40
+#           fadeOutTicks: 10
+#
+#         # Delay / repeat
+#         - type: delay
+#           ticks: 10
+#           then:
+#             type: particles_ring
+#             particle: END_ROD
+#             radius: 2.0
+#             points: 32
+#             count: 1
+#
+#         - type: repeat_ticks
+#           delayTicks: 0
+#           periodTicks: 2
+#           times: 10
+#           action:
+#             type: particles_line
+#             particle: ELECTRIC_SPARK
+#             length: 8.0
+#             step: 0.35
+#             count: 1
+#
+#         # Branching
+#         - type: chance
+#           probability: 0.25
+#           then: { type: message, text: "<green>Lucky!</green>" }
+#           otherwise: { type: message, text: "<gray>Nope.</gray>" }
+#
+#         # Targeting (raycast) -> sets "last entity" for the nested actions
+#         - type: raycast_hit_entity
+#           maxDistance: 20.0
+#           raySize: 0.35
+#           stopOnBlock: true
+#           ignoreCaster: true
+#           then:
+#             type: sequence
+#             actions:
+#               - type: particles_ring
+#                 particle: CRIT
+#                 radius: 1.2
+#                 points: 24
+#                 count: 1
+#                 at: last_entity
+#               - type: damage
+#                 amount: 6
+#                 policy: hostile_default
+#               - type: potion
+#                 effect: "minecraft:poison"
+#                 durationTicks: 60
+#                 amplifier: 0
+#               - type: knockback
+#                 horizontal: 1.2
+#                 vertical: 0.35
+#           otherwise:
+#             type: message
+#             text: "<gray>No target.</gray>"
+#
+#         # Projectile -> sets "last entity" for onHit actions
+#         - type: projectile
+#           speedPerTick: 1.35
+#           maxDistance: 30
+#           hitRadius: 0.35
+#           ignoreCaster: true
+#           # STOP (default) / PASS_THROUGH / BOUNCE
+#           blockCollision: STOP
+#           # If blockCollision == BOUNCE:
+#           # bounces: { max: 6, restitution: 0.88 }
+#           trail:
+#             particle: END_ROD
+#             count: 1
+#             offset: 0.0
+#             extra: 0.0
+#           onHit:
+#             type: sequence
+#             actions:
+#               - type: particles_ring
+#                 particle: CRIT
+#                 radius: 1.0
+#                 points: 22
+#                 count: 1
+#                 at: last_hit
+#               - type: damage
+#                 amount: 4
+#                 policy: hostile_default
+#
+# Particles (available):
+# - particles_ring: { particle, radius, points, count, offset, extra, at: origin|last_hit|last_entity }
+# - particles_line: { particle, length, step, count, offset, extra }
+# - particles_arc: { particle, radius, angleDegrees, points, count, offset, extra }
+# - particles_disk: { particle, radius, rings, pointsPerRing, count, offset, extra }
+# - particles_sphere_shell: { particle, radius, points, count, offset, extra }
+# - particles_helix: { particle, radius, length, turns, points, count, offset, extra }
+# - particles_cone: { particle, length, angleDegrees, rings, pointsPerRing, count, offset, extra }
+# - particles_cylinder: { particle, radius, height, rings, pointsPerRing, count, offset, extra }
+# - particles_box: { particle, xRadius, yRadius, zRadius, step, count, offset, extra }
+# - particles_polygon: { particle, radius, sides, pointsPerEdge, count, offset, extra }
+# - particles_bezier: { particle, pointsPerMeter, maxPoints, count, offset, extra, p0/p1/p2/p3 }
+# - particles_spline: { particle, pointsPerMeter, maxPoints, count, offset, extra, points: [ ... ] }
+#
+# Bezier/spline points:
+# - Each point supports two styles (they stack):
+#   - local offsets: { forward, right, up }  (relative to caster look direction)
+#   - absolute offsets: { x, y, z }          (world-space deltas)
+#
+# Presets:
+# - preset_shockwave: { particle, startRadius, endRadius, durationTicks, periodTicks, easing, points, count, offset, extra }
+# - preset_orbit: { particle, radius, durationTicks, periodTicks, easing, copies, count, offset, extra }
+# - preset_swirl: { particle, radius, height, durationTicks, periodTicks, easing, points, count, offset, extra }
+# - preset_beam_chargeup: { particle, startLength, endLength|length, durationTicks, periodTicks, easing, step, count, offset, extra }
+#
+# Easing values (where supported):
+# - LINEAR
+# - IN_OUT_CUBIC
+# - OUT_QUAD
+#
+# Debug:
+# - debug_log: { message: "..." }   (requires /effects debug on to show in server log)
+#
+# Full worked example (kitchen sink):
+# - Copy/paste this whole ability and then delete what you don’t need.
+#
+# abilities:
+#   yaml_template_kitchen_sink:
+#     name: "<gradient:gold:yellow><bold>Kitchen Sink</bold></gradient>"
+#     description: |-
+#       <gray>This is a full “template” ability showing most supported nodes.</gray>
+#       <dark_gray>Copy chunks, then delete the rest.</dark_gray>
+#     requirements:
+#       - type: sneaking
+#         message: "<red>You must sneak.</red>"
+#     costs:
+#       - type: mana
+#         amount: 10
+#     cooldown:
+#       ticks: 60
+#     action:
+#       type: sequence
+#       actions:
+#         - type: debug_log
+#           message: "casting kitchen sink"
+#         - type: sound
+#           sound: minecraft:entity.blaze.shoot
+#           volume: 0.7
+#           pitch: 1.4
+#         - type: preset_shockwave
+#           particle: END_ROD
+#           startRadius: 0.8
+#           endRadius: 4.0
+#           durationTicks: 20
+#           periodTicks: 1
+#           easing: OUT_QUAD
+#           points: 42
+#           count: 1
+#
+#         # “Charge up” beam (grows out from the player’s eyes along look direction)
+#         - type: preset_beam_chargeup
+#           particle: ELECTRIC_SPARK
+#           startLength: 0.0
+#           endLength: 10.0
+#           durationTicks: 20
+#           periodTicks: 1
+#           easing: IN_OUT_CUBIC
+#           step: 0.35
+#           count: 1
+#           offset: 0.0
+#           extra: 0.0
+#         - type: raycast_hit_entity
+#           maxDistance: 20.0
+#           raySize: 0.35
+#           stopOnBlock: true
+#           ignoreCaster: true
+#           then:
+#             type: sequence
+#             actions:
+#               - type: particles_ring
+#                 particle: CRIT
+#                 radius: 1.1
+#                 points: 26
+#                 count: 1
+#                 at: last_entity
+#               - type: damage
+#                 amount: 6
+#                 policy: hostile_default
+#           otherwise:
+#             type: message
+#             text: "<gray>No target in sight.</gray>"
+#         - type: projectile
+#           speedPerTick: 1.5
+#           maxDistance: 28
+#           hitRadius: 0.35
+#           ignoreCaster: true
+#           blockCollision: BOUNCE
+#           bounces: { max: 4, restitution: 0.88 }
+#           trail:
+#             particle: END_ROD
+#             count: 1
+#             offset: 0.0
+#             extra: 0.0
+#           onHit:
+#             type: sequence
+#             actions:
+#               - type: particles_ring
+#                 particle: CRIT
+#                 radius: 1.0
+#                 points: 22
+#                 count: 1
+#                 at: last_hit
+#               - type: potion
+#                 effect: "minecraft:slowness"
+#                 durationTicks: 40
+#                 amplifier: 0
+#               - type: knockback
+#                 horizontal: 1.2
+#                 vertical: 0.35
+#
+# --------------------------------------------------------------------------------------
+# END TEMPLATE
+# --------------------------------------------------------------------------------------
+#
+# Currently supported nodes (Phase 1, expanding over time):
+#
+# Actions:
+# - sequence: { actions: [ ... ] }
+# - delay: { ticks: <long>, then: <action> }
+# - repeat_ticks: { delayTicks, periodTicks, times, action }
+# - for_each_target: { targeter, originAt?, mode?, maxTargets?, then, otherwise? }
+# - animate: { durationTicks, periodTicks, easing, followCaster?, action }
+# - animate_realtime: { durationMillis, periodMillis, easing, followCaster?, action }
+# - set_var: { key, value?, scope?: cast|player }
+# - inc_var: { key, amount?, default?, scope?: cast|player }
+# - with_var: { key, value?, scope?: cast|player, then }
+# - debug_var: { key, label?, scope?: cast|player }   (requires /effects debug on)
+# - when: { condition, then, otherwise? }
+# - random_choice_weighted: { choices: [ { weight, action }, ... ] }
+# - invoke_ability: { ability, mode?: subgraph|cast, maxDepth?: 8 }
+# - message/action_bar: { text: "<minimessage>" }
+# - title: { title: "<minimessage>", subtitle: "<minimessage>", fadeInTicks, stayTicks, fadeOutTicks }
+# - sound: { sound: ENTITY_SNOWBALL_THROW, volume, pitch }
+# - projectile: { speedPerTick, maxDistance, hitRadius, blockCollision, bounces, trail, onHit }
+# - raycast_hit_entity: { maxDistance, raySize, stopOnBlock, ignoreCaster, then, otherwise? }
+# - damage/heal/potion/knockback/pull: operate on the last hit entity (from projectile or raycast)
+#
+# Conditions (for when.condition):
+# - always
+# - sneaking
+# - permission { permission }
+# - has_item_tag { key }
+# - has_target
+# - chance { probability }
+# - var_present { key, scope? }
+# - var_equals { key, value, scope?, ignoreCase? }
+# - var_gte/var_lte/var_gt/var_lt { key, value, scope? }
+# - not { condition }
+# - and/or { conditions: [ ... ] }
+#
+# Targeters (for for_each_target.targeter.type):
+# - self
+# - look_ray
+# - sphere
+# - nearest
+# - cone
+# - box
+# - cylinder
+# - capsule_ray
+# - projectile_hit
+#
+# Targeter options:
+# - ignoreCaster: true|false
+# - filter: any|players|mobs
+# - look_ray: { maxDistance, raySize, stopOnBlock }
+# - sphere/nearest/cone/cylinder: { radius, ... }
+# - cone: { angleDegrees }
+# - box: { xRadius, yRadius, zRadius }
+# - cylinder: { halfHeight } or { height } (height is converted to halfHeight)
+# - capsule_ray: { maxDistance, radius, stopOnBlock }
+#
+# for_each_target options:
+# - originAt: origin|last_hit|last_entity (where the targeter is evaluated from)
+# - mode: each|first
+# - maxTargets: 0 for unlimited
+#
+# Particles:
+# - particles_point: { particle, count, offset, extra, at: origin|last_hit|last_entity }
+# - particles_ring: { particle, radius, points, count, offset, extra, at: origin|last_hit|last_entity }
+# - particles_line, particles_arc, particles_disk, particles_sphere_shell, particles_helix
+# - particles_cone, particles_cylinder, particles_box, particles_polygon
+# - preset_shockwave, preset_orbit, preset_swirl
+# - preset_beam_chargeup
+#
+schemaVersion: 1
+options:
+  cancelRunningOnReload: false
+
+macros: {}

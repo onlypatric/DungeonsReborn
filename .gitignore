@@ -1,0 +1,23 @@
+# Ignore everything by default.
+*
+.DS_Store
+src/main/java/dev/patric/.DS_Store
+src/main/resources/effects/.DS_Store
+
+# Keep this ignore file.
+!.gitignore
+
+# Keep source code and resources.
+!src/
+!src/**
+
+# Keep Gradle build config and wrapper.
+!build.gradle.kts
+!settings.gradle.kts
+!gradle.properties
+!gradlew
+!gradlew.bat
+!gradle/
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar

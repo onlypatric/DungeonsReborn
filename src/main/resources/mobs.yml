@@ -1,0 +1,28 @@
+# DungeonsReborn mobs.yml
+#
+# Quick guide:
+# - Each mob lives under `mobs.<id>`.
+# - Use `attacks` and `passives` for the default behavior.
+# - Use `phases` to swap attacks/passives at health thresholds.
+# - Use `manaDrops` to give mana to killer/nearby players on death.
+# - `eggs` defines spawn egg items for testing/admin use.
+#
+# Phases:
+# - healthBelow is a ratio in (0, 1]; lower value = later phase.
+# - If a phase defines `attacks` or `passives`, it overrides the base ones.
+#
+# Mana drops:
+# - killer: mana given to the killer (min/max or fixed number).
+# - nearby: mana given to players within `radius`.
+# - Example:
+#     manaDrops:
+#       killer: { min: 8, max: 16 }
+#       nearby: { radius: 6, min: 2, max: 5 }
+#
+schemaVersion: 1
+options:
+  despawnOnReload: true
+
+mobs: {}
+
+eggs: {}

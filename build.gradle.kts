@@ -1,0 +1,47 @@
+plugins {
+    java
+}
+
+group = "dev.patric.dungeonsreborn"
+version = "0.1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(21)
+}
+
+tasks.processResources {
+    filteringCharset = "UTF-8"
+    filesMatching("plugin.yml") {
+        expand("version" to project.version)
+    }
+}
+
+tasks.register<JavaExec>("dslLint") {
+    group = "verification"
+    description = "Lint a DSL script file (self-contained parser)."
+    classpath = sourceSets.main.get().compileClasspath + sourceSets.main.get().runtimeClasspath
+    mainClass.set("dev.patric.dungeonsreborn.tools.DslLint")
+}
+
+tasks.register<JavaExec>("dslSnapshot") {
+    group = "verification"
+    description = "Create a normalized DSL snapshot for diffs."
+    classpath = sourceSets.main.get().compileClasspath + sourceSets.main.get().runtimeClasspath
+    mainClass.set("dev.patric.dungeonsreborn.tools.DslSnapshot")
+}

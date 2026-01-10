@@ -1,0 +1,22 @@
+name: DungeonsReborn
+version: ${version}
+main: dev.patric.dungeonsreborn.DungeonsRebornPlugin
+api-version: "1.21"
+author: patric
+description: DungeonsReborn Paper plugin.
+permissions:
+  dungeonsreborn.editor.view:
+    description: View the in-game spell editor.
+    default: op
+  dungeonsreborn.editor.edit:
+    description: Edit ability drafts in the in-game spell editor.
+    default: op
+  dungeonsreborn.editor.publish:
+    description: Publish abilities from the in-game spell editor.
+    default: op
+  dungeonsreborn.editor.delete:
+    description: Delete abilities from the in-game spell editor.
+    default: op
+  dungeonsreborn.editor.code:
+    description: Allow editing of code-defined abilities in the editor.
+    default: op
