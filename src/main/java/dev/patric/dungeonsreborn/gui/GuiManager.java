@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,6 +36,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.view.AnvilView;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -152,12 +153,13 @@ public final class GuiManager implements Listener {
 
   private static GuiManager instance;
 
-  public static GuiManager init(JavaPlugin plugin) {
+  public static GuiManager init(JavaPlugin plugin, ServiceLogger logger) {
     Objects.requireNonNull(plugin, "plugin");
+    Objects.requireNonNull(logger, "logger");
     if (instance != null) {
       return instance;
     }
-    instance = new GuiManager(plugin);
+    instance = new GuiManager(plugin, logger);
     Bukkit.getPluginManager().registerEvents(instance, plugin);
     instance.startWindowTicker();
     instance.debug("Initialized");
@@ -172,6 +174,7 @@ public final class GuiManager implements Listener {
   }
 
   private final JavaPlugin plugin;
+  private final ServiceLogger logger;
   private BukkitTask windowTickTask;
   private final Map<UUID, TextRequest> pendingText = new ConcurrentHashMap<>();
   private final Map<UUID, AnvilSession> pendingAnvil = new ConcurrentHashMap<>();
@@ -186,8 +189,9 @@ public final class GuiManager implements Listener {
   private volatile boolean debugEnabled = true;
   private volatile boolean cancelTopInventoryDragsByDefault = true;
 
-  private GuiManager(JavaPlugin plugin) {
+  private GuiManager(JavaPlugin plugin, ServiceLogger logger) {
     this.plugin = plugin;
+    this.logger = logger;
   }
 
   private void startWindowTicker() {
@@ -246,14 +250,14 @@ public final class GuiManager implements Listener {
     if (!debugEnabled) {
       return;
     }
-    plugin.getLogger().info("[GUI] " + message);
+    logger.debug("[GUI] " + message);
   }
 
   public void debug(String message, Throwable throwable) {
     if (!debugEnabled) {
       return;
     }
-    plugin.getLogger().log(Level.WARNING, "[GUI] " + message, throwable);
+    logger.debug("[GUI] " + message, throwable);
   }
 
   /**

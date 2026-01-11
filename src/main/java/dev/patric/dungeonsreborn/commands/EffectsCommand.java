@@ -14,6 +14,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
@@ -83,6 +84,8 @@ public final class EffectsCommand {
     LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("effects")
         .executes(ctx -> help(ctx, engine, yaml))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml)))
+        .then(Commands.literal("logging")
+            .then(Commands.literal("reload").executes(ctx -> loggingReload(ctx, engine))))
         .then(Commands.literal("stats").executes(ctx -> stats(ctx, engine)))
         .then(Commands.literal("debug")
             .then(Commands.literal("on").executes(ctx -> debug(ctx, engine, true)))
@@ -219,35 +222,36 @@ public final class EffectsCommand {
 
   private static int help(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, EffectsYamlAbilities yaml) {
     CommandSender sender = ctx.getSource().getSender();
-    sender.sendMessage(Component.text("§7/effects list"));
-    sender.sendMessage(Component.text("§7/effects debug <on|off> §8(current: " + (engine.isDebugEnabled() ? "on" : "off") + ")"));
+    sender.sendMessage(Component.text("§7/dr effects list"));
+    sender.sendMessage(Component.text("§7/dr effects debug <on|off> §8(current: " + (engine.isDebugEnabled() ? "on" : "off") + ")"));
     String scriptStatus = yaml == null ? "unavailable" : (yaml.isScriptDebugEnabled() ? "on" : "off");
-    sender.sendMessage(Component.text("§7/effects debug script <on|off> §8(current: " + scriptStatus + ")"));
+    sender.sendMessage(Component.text("§7/dr effects debug script <on|off> §8(current: " + scriptStatus + ")"));
     String traceStatus = yaml == null ? "unavailable" : (yaml.isScriptTraceEnabled() ? "on" : "off");
-    sender.sendMessage(Component.text("§7/effects debug script trace <on|off> §8(current: " + traceStatus + ")"));
-    sender.sendMessage(Component.text("§7/effects tag <on|off> §8(tags held item with " + ItemMarkers.DEBUG_MARKER.asString() + ")"));
-    sender.sendMessage(Component.text("§7/effects bind add <right|left> <ability>"));
-    sender.sendMessage(Component.text("§7/effects bind remove <right|left> <ability>"));
-    sender.sendMessage(Component.text("§7/effects bind list"));
-    sender.sendMessage(Component.text("§7/effects bind clear <right|left|all>"));
-    sender.sendMessage(Component.text("§7/effects explain <right|left>"));
-    sender.sendMessage(Component.text("§7/effects mana <show|set|add|max>"));
-    sender.sendMessage(Component.text("§7/effects reload §8(reload YAML abilities)"));
-    sender.sendMessage(Component.text("§7/effects stats"));
-    sender.sendMessage(Component.text("§7/effects particles range <blocks> §8(current: " + engine.particles().defaultRange() + ")"));
-    sender.sendMessage(Component.text("§7/effects particles queue <maxRequestsPerTick> §8(current: " + engine.particles().maxQueuedRequestsPerTick() + ")"));
-    sender.sendMessage(Component.text("§7/effects particles budget <maxPerPlayerTick> §8(current: " + engine.particles().maxParticlesPerPlayerPerTick() + ")"));
-    sender.sendMessage(Component.text("§7/effects particles quality <multiplier> §8(current: " + engine.particles().quality() + ")"));
-    sender.sendMessage(Component.text("§7/effects particles stats"));
-    sender.sendMessage(Component.text("§7/effects cast <ability> [player]"));
-    sender.sendMessage(Component.text("§7/effects info <ability>"));
-    sender.sendMessage(Component.text("§7/effects timings <last [player]|cast <uuid>>"));
-    sender.sendMessage(Component.text("§7/effects types <actions|targeters|conditions>"));
-    sender.sendMessage(Component.text("§7/effects minions <recall|dismiss|mode|list|stats|test>"));
-    sender.sendMessage(Component.text("§7/effects script run <file>"));
-    sender.sendMessage(Component.text("§7/effects script stats"));
-    sender.sendMessage(Component.text("§7/effects lint [script]"));
-    sender.sendMessage(Component.text("§7/effects editor"));
+    sender.sendMessage(Component.text("§7/dr effects debug script trace <on|off> §8(current: " + traceStatus + ")"));
+    sender.sendMessage(Component.text("§7/dr effects tag <on|off> §8(tags held item with " + ItemMarkers.DEBUG_MARKER.asString() + ")"));
+    sender.sendMessage(Component.text("§7/dr effects bind add <right|left> <ability>"));
+    sender.sendMessage(Component.text("§7/dr effects bind remove <right|left> <ability>"));
+    sender.sendMessage(Component.text("§7/dr effects bind list"));
+    sender.sendMessage(Component.text("§7/dr effects bind clear <right|left|all>"));
+    sender.sendMessage(Component.text("§7/dr effects explain <right|left>"));
+    sender.sendMessage(Component.text("§7/dr effects mana <show|set|add|max>"));
+    sender.sendMessage(Component.text("§7/dr effects reload §8(reload YAML abilities)"));
+    sender.sendMessage(Component.text("§7/dr effects logging reload §8(reload logging levels)"));
+    sender.sendMessage(Component.text("§7/dr effects stats"));
+    sender.sendMessage(Component.text("§7/dr effects particles range <blocks> §8(current: " + engine.particles().defaultRange() + ")"));
+    sender.sendMessage(Component.text("§7/dr effects particles queue <maxRequestsPerTick> §8(current: " + engine.particles().maxQueuedRequestsPerTick() + ")"));
+    sender.sendMessage(Component.text("§7/dr effects particles budget <maxPerPlayerTick> §8(current: " + engine.particles().maxParticlesPerPlayerPerTick() + ")"));
+    sender.sendMessage(Component.text("§7/dr effects particles quality <multiplier> §8(current: " + engine.particles().quality() + ")"));
+    sender.sendMessage(Component.text("§7/dr effects particles stats"));
+    sender.sendMessage(Component.text("§7/dr effects cast <ability> [player]"));
+    sender.sendMessage(Component.text("§7/dr effects info <ability>"));
+    sender.sendMessage(Component.text("§7/dr effects timings <last [player]|cast <uuid>>"));
+    sender.sendMessage(Component.text("§7/dr effects types <actions|targeters|conditions>"));
+    sender.sendMessage(Component.text("§7/dr effects minions <recall|dismiss|mode|list|stats|test>"));
+    sender.sendMessage(Component.text("§7/dr effects script run <file>"));
+    sender.sendMessage(Component.text("§7/dr effects script stats"));
+    sender.sendMessage(Component.text("§7/dr effects lint [script]"));
+    sender.sendMessage(Component.text("§7/dr effects editor"));
     sender.sendMessage(Component.text("§7Registered abilities: §f" + engine.abilityIds().size()));
     return Command.SINGLE_SUCCESS;
   }
@@ -390,6 +394,23 @@ public final class EffectsCommand {
       if (result.errors().size() > shown) {
         sender.sendMessage(Component.text("§7... +" + (result.errors().size() - shown) + " more"));
       }
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int loggingReload(CommandContext<CommandSourceStack> ctx, EffectsEngine engine) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.effects.reload")) {
+      sender.sendMessage(Component.text("§cMissing permission: dungeonsreborn.effects.reload"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var plugin = engine.plugin();
+    plugin.reloadConfig();
+    if (plugin instanceof DungeonsRebornPlugin dungeonsReborn && dungeonsReborn.serviceLog() != null) {
+      dungeonsReborn.serviceLog().reloadFromConfig(plugin.getConfig().getConfigurationSection("logging"));
+      sender.sendMessage(Component.text("§aReloaded logging levels from config.yml"));
+    } else {
+      sender.sendMessage(Component.text("§cLogging configuration not available."));
     }
     return Command.SINGLE_SUCCESS;
   }

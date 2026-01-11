@@ -2,8 +2,7 @@ package dev.patric.dungeonsreborn;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import dev.patric.dungeonsreborn.commands.EffectsCommand;
-import dev.patric.dungeonsreborn.commands.GuiCommand;
+import dev.patric.dungeonsreborn.commands.DungeonsRebornCommand;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
 import dev.patric.dungeonsreborn.effects.integration.ItemSyncListener;
@@ -20,11 +19,11 @@ import dev.patric.dungeonsreborn.effects.editor.EditorLockListener;
 import dev.patric.dungeonsreborn.effects.editor.EditorLockManager;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.registry.BuiltinTypes;
+import dev.patric.dungeonsreborn.logging.ServiceLogManager;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
-import dev.patric.dungeonsreborn.commands.MobsCommand;
 import dev.patric.dungeonsreborn.mobs.MobEggListener;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.style.GuiStyles;
@@ -44,14 +43,18 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private MobSpawnManager mobSpawnManager;
     private MobYamlRegistry mobYamlRegistry;
     private MinionManager minionManager;
+    private ServiceLogManager serviceLog;
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+        reloadConfig();
+        serviceLog = ServiceLogManager.fromConfig(this);
         getLogger().info("DungeonsReborn enabled");
-        GuiManager.init(this);
+        GuiManager.init(this, serviceLog.gui());
         GuiStyles.installButtonDefaults();
 
-        effectsEngine = EffectsEngine.init(this);
+        effectsEngine = EffectsEngine.init(this, serviceLog.effects());
         SessionManaProvider manaProvider = new SessionManaProvider(100.0);
         effectsEngine.setManaProvider(manaProvider);
         effectsEngine.enableManaRegen(20L, 5.0);
@@ -71,31 +74,58 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         effectsBindings = new EffectsBindings(effectsEngine);
         Bukkit.getPluginManager().registerEvents(effectsBindings, this);
 
-        yamlAbilities = new EffectsYamlAbilities(this, effectsEngine, effectsBindings);
+        yamlAbilities = new EffectsYamlAbilities(this, effectsEngine, effectsBindings, serviceLog.effects(), serviceLog.bindings());
         yamlAbilities.reload();
         Bukkit.getPluginManager().registerEvents(new YamlVarsSessionListener(yamlAbilities), this);
         Bukkit.getPluginManager().registerEvents(new ItemSyncListener(yamlAbilities), this);
         yamlAbilities.syncOnlineItems();
-        editorDraftStore = new EditorDraftStore(this);
-        editorAuditLogger = new EditorAuditLogger(getLogger());
+        editorDraftStore = new EditorDraftStore(this, serviceLog.effects());
+        editorAuditLogger = new EditorAuditLogger(serviceLog.effects());
         editorLockManager = new EditorLockManager();
         editorAccessController = new EditorAccessController();
         editorServices = new EditorServices(effectsEngine, yamlAbilities, editorDraftStore, editorAccessController, editorLockManager, editorAuditLogger);
         Bukkit.getPluginManager().registerEvents(new EditorLockListener(editorLockManager), this);
 
-        mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, mobRegistry, mobSpawnManager);
+        mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, mobRegistry, mobSpawnManager, serviceLog.mobs());
         mobYamlRegistry.reload();
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
 
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS,commands->{
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(
-                GuiCommand.createCommand().build()
+                DungeonsRebornCommand.createCommand(
+                    "dr",
+                    effectsEngine,
+                    yamlAbilities,
+                    effectsBindings,
+                    editorServices,
+                    minionManager,
+                    mobYamlRegistry,
+                    mobRegistry
+                ).build()
             );
             commands.registrar().register(
-                EffectsCommand.createCommand(effectsEngine, yamlAbilities, effectsBindings, editorServices, minionManager).build()
+                DungeonsRebornCommand.createCommand(
+                    "droam",
+                    effectsEngine,
+                    yamlAbilities,
+                    effectsBindings,
+                    editorServices,
+                    minionManager,
+                    mobYamlRegistry,
+                    mobRegistry
+                ).build()
             );
             commands.registrar().register(
-                MobsCommand.createCommand(mobYamlRegistry, mobRegistry).build()
+                DungeonsRebornCommand.createCommand(
+                    "dungeonroam",
+                    effectsEngine,
+                    yamlAbilities,
+                    effectsBindings,
+                    editorServices,
+                    minionManager,
+                    mobYamlRegistry,
+                    mobRegistry
+                ).build()
             );
         });
     }
@@ -118,6 +148,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobSpawnManager = null;
         mobYamlRegistry = null;
         minionManager = null;
+        serviceLog = null;
     }
 
     public MobRegistry mobRegistry() {
@@ -130,5 +161,9 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public MinionManager minionManager() {
         return minionManager;
+    }
+
+    public ServiceLogManager serviceLog() {
+        return serviceLog;
     }
 }

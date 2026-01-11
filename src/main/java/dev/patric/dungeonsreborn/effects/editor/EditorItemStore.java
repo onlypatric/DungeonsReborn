@@ -15,15 +15,17 @@ import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
 
 public final class EditorItemStore {
   private static final int SCHEMA_VERSION = 1;
 
-  private final JavaPlugin plugin;
+  private final ServiceLogger logger;
   private final File itemsDir;
 
-  public EditorItemStore(JavaPlugin plugin) {
-    this.plugin = Objects.requireNonNull(plugin, "plugin");
+  public EditorItemStore(JavaPlugin plugin, ServiceLogger logger) {
+    Objects.requireNonNull(plugin, "plugin");
+    this.logger = Objects.requireNonNull(logger, "logger");
     this.itemsDir = new File(plugin.getDataFolder(), "effects/items");
     ensureDir();
   }
@@ -67,7 +69,7 @@ public final class EditorItemStore {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         out.add(parseDraft(file, yaml, fileId));
       } catch (IllegalArgumentException ex) {
-        plugin.getLogger().warning("[Effects][Editor] Skipping item: " + file.getPath() + " (" + ex.getMessage() + ")");
+        logger.warn("[Effects][Editor] Skipping item: " + file.getPath() + " (" + ex.getMessage() + ")");
       }
     }
     return out;
@@ -116,7 +118,7 @@ public final class EditorItemStore {
     try {
       return Ids.normalize(raw);
     } catch (Exception ex) {
-      plugin.getLogger().warning("[Effects][Editor] Invalid item id: " + raw + " (" + ex.getMessage() + ")");
+      logger.warn("[Effects][Editor] Invalid item id: " + raw + " (" + ex.getMessage() + ")");
       return null;
     }
   }

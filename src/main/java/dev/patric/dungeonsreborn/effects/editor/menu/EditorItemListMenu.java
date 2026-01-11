@@ -50,7 +50,7 @@ public final class EditorItemListMenu extends Window {
   public EditorItemListMenu(EditorServices services) {
     super(SIZE, GuiMini.mm("<white><bold>Items</bold></white>"), true);
     this.services = Objects.requireNonNull(services, "services");
-    this.store = new EditorItemStore(services.engine().plugin());
+    this.store = new EditorItemStore(services.engine().plugin(), services.engine().logger());
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 

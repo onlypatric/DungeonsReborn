@@ -1,0 +1,10 @@
+# DungeonsReborn configuration
+#
+# Logging levels per service:
+# - DEBUG, INFO, WARNING, ERROR
+# - DEBUG shows the most detail; ERROR shows only critical errors.
+logging:
+  gui: INFO
+  effects: INFO
+  mobs: INFO
+  bindings: INFO

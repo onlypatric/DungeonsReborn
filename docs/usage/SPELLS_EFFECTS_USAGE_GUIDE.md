@@ -25,19 +25,39 @@ Tip: you can keep one ability per file in `effects/abilities/` to keep things or
 After edits:
 
 ```
-/effects reload
+/dr effects reload
 ```
 
 Test an ability directly:
 
 ```
-/effects cast <ability_id>
+/dr effects cast <ability_id>
 ```
 
 Enable debug logs (useful while building):
 
 ```
-/effects debug on
+/dr effects debug on
+```
+
+### 1.3 Logging levels (config.yml)
+
+You can control service logs (GUI, effects, mobs, item bindings) in `plugins/DungeonsReborn/config.yml`:
+
+```yaml
+logging:
+  gui: INFO
+  effects: INFO
+  mobs: INFO
+  bindings: INFO
+```
+
+Supported levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`.
+
+After editing, reload logging without restarting:
+
+```
+/dr effects logging reload
 ```
 
 --------------------------------------------------------------------------------
@@ -474,8 +494,8 @@ Use it when you want to script abilities instead of writing YAML action graphs.
 ## Chapter 13 - Troubleshooting
 
 - No particles? Check settings:
-  - `/effects particles quality 1`
-  - `/effects particles budget 25000`
+  - `/dr effects particles quality 1`
+  - `/dr effects particles budget 25000`
 - Ability not found? Check console reload errors.
 - Item not triggering? Verify the matcher and click type.
 - YAML errors? Check indentation and use quotes around strings with `:`.
@@ -485,8 +505,8 @@ Use it when you want to script abilities instead of writing YAML action graphs.
 
 1. Create an ability under `abilities:`.
 2. Add a trigger or create an item file.
-3. Run `/effects reload`.
-4. Test with `/effects cast <abilityId>`.
+3. Run `/dr effects reload`.
+4. Test with `/dr effects cast <abilityId>`.
 
 --------------------------------------------------------------------------------
 ## Chapter 15 - Full YAML Showcase (Everything in One Place)

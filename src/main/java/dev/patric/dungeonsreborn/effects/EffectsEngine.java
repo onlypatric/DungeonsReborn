@@ -37,6 +37,7 @@ import dev.patric.dungeonsreborn.effects.relations.RelationProviders;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.effects.mana.SessionManaProvider;
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
 
 /**
  * Minimal core runtime for spell/effect casting.
@@ -121,12 +122,13 @@ public final class EffectsEngine {
 
   private static EffectsEngine instance;
 
-  public static EffectsEngine init(JavaPlugin plugin) {
+  public static EffectsEngine init(JavaPlugin plugin, ServiceLogger logger) {
     Objects.requireNonNull(plugin, "plugin");
+    Objects.requireNonNull(logger, "logger");
     if (instance != null) {
       return instance;
     }
-    instance = new EffectsEngine(plugin);
+    instance = new EffectsEngine(plugin, logger);
     instance.start();
     return instance;
   }
@@ -139,6 +141,7 @@ public final class EffectsEngine {
   }
 
   private final JavaPlugin plugin;
+  private final ServiceLogger logger;
   private final Map<String, Ability> abilities = new LinkedHashMap<>();
   private final Map<String, AbilitySpec> abilitySpecs = new LinkedHashMap<>();
   private final Map<UUID, CastRecord> castRecords = new ConcurrentHashMap<>();
@@ -191,8 +194,9 @@ public final class EffectsEngine {
     }
   }
 
-  private EffectsEngine(JavaPlugin plugin) {
+  private EffectsEngine(JavaPlugin plugin, ServiceLogger logger) {
     this.plugin = plugin;
+    this.logger = logger;
   }
 
   public void start() {
@@ -200,7 +204,7 @@ public final class EffectsEngine {
       return;
     }
     ticker = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 1L, 1L);
-    plugin.getLogger().info("[Effects] Initialized");
+    logger.info("[Effects] Initialized");
   }
 
   public EngineStats stats() {
@@ -292,7 +296,7 @@ public final class EffectsEngine {
 
   public void setDebug(boolean enabled) {
     debugEnabled = enabled;
-    plugin.getLogger().info("[Effects] Debug " + (enabled ? "enabled" : "disabled"));
+    logger.info("[Effects] Debug " + (enabled ? "enabled" : "disabled"));
   }
 
   public boolean isDebugEnabled() {
@@ -303,7 +307,19 @@ public final class EffectsEngine {
     if (!debugEnabled) {
       return;
     }
-    plugin.getLogger().info("[Effects] " + message);
+    logger.debug("[Effects] " + message);
+  }
+
+  public void warn(String message) {
+    logger.warn("[Effects] " + message);
+  }
+
+  public void warn(String message, Throwable throwable) {
+    logger.warn("[Effects] " + message, throwable);
+  }
+
+  public ServiceLogger logger() {
+    return logger;
   }
 
   public long tickNow() {
@@ -336,8 +352,7 @@ public final class EffectsEngine {
     try {
       return rp.relation(caster, target);
     } catch (Exception ex) {
-      plugin.getLogger().warning("[Effects] relationProvider threw: " + ex.getMessage());
-      ex.printStackTrace();
+      warn("relationProvider threw: " + ex.getMessage(), ex);
       return caster.getUniqueId().equals(target.getUniqueId()) ? Relation.SELF : Relation.NEUTRAL;
     }
   }
@@ -915,7 +930,7 @@ public final class EffectsEngine {
       try {
         task.runnable.run();
       } catch (Exception ex) {
-        plugin.getLogger().warning("[Effects] scheduled task threw: " + ex.getMessage());
+        warn("scheduled task threw: " + ex.getMessage(), ex);
         ex.printStackTrace();
       }
       if (task.cancelled) {
@@ -948,7 +963,7 @@ public final class EffectsEngine {
           try {
             task.runnable.run();
           } catch (Exception ex) {
-            plugin.getLogger().warning("[Effects] real-time scheduled task threw: " + ex.getMessage());
+            warn("real-time scheduled task threw: " + ex.getMessage(), ex);
             ex.printStackTrace();
           }
           if (task.periodNanos > 0L) {

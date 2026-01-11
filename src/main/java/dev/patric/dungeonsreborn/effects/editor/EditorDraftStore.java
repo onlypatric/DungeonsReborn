@@ -18,6 +18,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
+
 import dev.patric.dungeonsreborn.effects.Ids;
 
 public final class EditorDraftStore {
@@ -25,14 +27,15 @@ public final class EditorDraftStore {
   public static final int ENGINE_SCHEMA_VERSION = 1;
   private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_INSTANT;
 
-  private final JavaPlugin plugin;
+  private final ServiceLogger logger;
   private final File draftsDir;
   private final File abilitiesDir;
   private final File scriptsRoot;
   private final File draftScriptsDir;
 
-  public EditorDraftStore(JavaPlugin plugin) {
-    this.plugin = Objects.requireNonNull(plugin, "plugin");
+  public EditorDraftStore(JavaPlugin plugin, ServiceLogger logger) {
+    Objects.requireNonNull(plugin, "plugin");
+    this.logger = Objects.requireNonNull(logger, "logger");
     this.draftsDir = new File(plugin.getDataFolder(), "effects/drafts");
     this.abilitiesDir = new File(draftsDir, "abilities");
     this.scriptsRoot = new File(plugin.getDataFolder(), "effects/scripts");
@@ -92,7 +95,7 @@ public final class EditorDraftStore {
       try {
         out.add(parseDraft(file, yaml, fileId));
       } catch (IllegalArgumentException ex) {
-        plugin.getLogger().warning("[Effects][Editor] Skipping draft: " + file.getPath() + " (" + ex.getMessage() + ")");
+        logger.warn("[Effects][Editor] Skipping draft: " + file.getPath() + " (" + ex.getMessage() + ")");
       }
     }
     return out;

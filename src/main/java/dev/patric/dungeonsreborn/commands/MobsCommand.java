@@ -39,12 +39,12 @@ public final class MobsCommand {
   private static int help(CommandContext<CommandSourceStack> ctx) {
     CommandSender sender = ctx.getSource().getSender();
     sender.sendMessage(Component.text("§6[Mobs] §fCommands"));
-    sender.sendMessage(Component.text("§7/mobs reload §8(reload mob YAML)"));
-    sender.sendMessage(Component.text("§7/mobs editor §8(open mob editor)"));
-    sender.sendMessage(Component.text("§7/mobs list §8(list active mobs)"));
-    sender.sendMessage(Component.text("§7/mobs dump <uuid> §8(show mob state snapshot)"));
-    sender.sendMessage(Component.text("§7/mobs spawn <id> §8(spawn a mob at your location)"));
-    sender.sendMessage(Component.text("§7/mobs egg <id> §8(give yourself a mob egg)"));
+    sender.sendMessage(Component.text("§7/dr mobs reload §8(reload mob YAML)"));
+    sender.sendMessage(Component.text("§7/dr mobs editor §8(open mob editor)"));
+    sender.sendMessage(Component.text("§7/dr mobs list §8(list active mobs)"));
+    sender.sendMessage(Component.text("§7/dr mobs dump <uuid> §8(show mob state snapshot)"));
+    sender.sendMessage(Component.text("§7/dr mobs spawn <id> §8(spawn a mob at your location)"));
+    sender.sendMessage(Component.text("§7/dr mobs egg <id> §8(give yourself a mob egg)"));
     return Command.SINGLE_SUCCESS;
   }
 

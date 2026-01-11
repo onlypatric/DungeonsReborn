@@ -29,6 +29,7 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.actions.Action;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
 
 import net.kyori.adventure.bossbar.BossBar;
 
@@ -41,17 +42,20 @@ public final class MobYamlRegistry {
   private final EffectsYamlAbilities yamlAbilities;
   private final MobRegistry registry;
   private final MobSpawnManager spawns;
+  private final ServiceLogger logger;
   private final Set<String> loadedIds = new HashSet<>();
   private final Set<String> loadedScriptAbilityIds = new HashSet<>();
   private final Map<String, MobEggSpec> eggSpecs = new HashMap<>();
   private List<String> lastErrors = List.of();
 
-  public MobYamlRegistry(JavaPlugin plugin, EffectsEngine engine, EffectsYamlAbilities yamlAbilities, MobRegistry registry, MobSpawnManager spawns) {
+  public MobYamlRegistry(JavaPlugin plugin, EffectsEngine engine, EffectsYamlAbilities yamlAbilities, MobRegistry registry,
+      MobSpawnManager spawns, ServiceLogger logger) {
     this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.engine = Objects.requireNonNull(engine, "engine");
     this.yamlAbilities = Objects.requireNonNull(yamlAbilities, "yamlAbilities");
     this.registry = Objects.requireNonNull(registry, "registry");
     this.spawns = Objects.requireNonNull(spawns, "spawns");
+    this.logger = Objects.requireNonNull(logger, "logger");
   }
 
   public File file() {
@@ -64,6 +68,10 @@ public final class MobYamlRegistry {
 
   public JavaPlugin plugin() {
     return plugin;
+  }
+
+  public ServiceLogger logger() {
+    return logger;
   }
 
   public MobEggSpec eggSpec(String id) {
@@ -170,12 +178,12 @@ public final class MobYamlRegistry {
     spawns.reload(spawnSpecs, enabledWorlds, despawnOnReload);
 
     if (!errors.isEmpty()) {
-      plugin.getLogger().warning("[Mobs] YAML reload had " + errors.size() + " errors (some mobs/spawns may be missing)");
+      logger.warn("[Mobs] YAML reload had " + errors.size() + " errors (some mobs/spawns may be missing)");
       for (String error : errors) {
-        plugin.getLogger().warning("[Mobs] YAML: " + error);
+        logger.warn("[Mobs] YAML: " + error);
       }
     } else {
-      plugin.getLogger().info("[Mobs] YAML loaded " + loaded + " mobs, " + loadedEggs + " eggs, and " + spawns.activeSpawns() + " spawns");
+      logger.info("[Mobs] YAML loaded " + loaded + " mobs, " + loadedEggs + " eggs, and " + spawns.activeSpawns() + " spawns");
     }
     lastErrors = List.copyOf(errors);
 

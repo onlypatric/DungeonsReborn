@@ -252,7 +252,7 @@ public final class MobEditorDetailMenu extends Window {
 
   private void reloadYaml(Player player, String detail) {
     yaml.reload();
-    yaml.plugin().getLogger().info("[Mobs][Editor] EDIT actor=" + player.getName() + " mob=" + mobId + " detail=" + detail);
+    yaml.logger().info("[Mobs][Editor] EDIT actor=" + player.getName() + " mob=" + mobId + " detail=" + detail);
   }
 
   private File file() {

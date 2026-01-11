@@ -48,7 +48,7 @@ public final class ProjectileAction extends ActionWithHandle {
     try {
       spec.onStart().accept(instance);
     } catch (Exception ex) {
-      ctx.plugin().getLogger().warning("[Effects] projectile onStart threw: " + ex.getMessage());
+      ctx.engine().warn("projectile onStart threw: " + ex.getMessage(), ex);
       ex.printStackTrace();
     }
 
@@ -141,7 +141,7 @@ public final class ProjectileAction extends ActionWithHandle {
         try {
           spec.onHit().accept(hit);
         } catch (Exception ex) {
-          ctx.plugin().getLogger().warning("[Effects] projectile onHit threw: " + ex.getMessage());
+          ctx.engine().warn("projectile onHit threw: " + ex.getMessage(), ex);
           ex.printStackTrace();
         }
 

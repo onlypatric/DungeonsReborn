@@ -18,11 +18,11 @@ It covers the YAML format, the DSL scripting hook, and the runtime commands used
 
 ## Commands
 
-- `/effects reload`
+- `/dr effects reload`
   - Reloads YAML abilities, scripts, and item bindings.
-- `/effects cast <ability_id>`
+- `/dr effects cast <ability_id>`
   - Manually cast an ability to test it.
-- `/effects debug on`
+- `/dr effects debug on`
   - Enables verbose logging for casts and interactions.
 
 ## Ability Definition (YAML)
@@ -274,8 +274,8 @@ Scripts are loaded from `plugins/DungeonsReborn/effects/scripts`.
 ## Quick Test Loop
 
 1) Edit `plugins/DungeonsReborn/effects.yml`.
-2) `/effects reload`
-3) `/effects cast <ability_id>`
+2) `/dr effects reload`
+3) `/dr effects cast <ability_id>`
 
 --------------------------------------------------------------------------------
 ## Full YAML Showcase (Library Authoring)

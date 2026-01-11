@@ -69,6 +69,8 @@ import dev.patric.dungeonsreborn.effects.minions.MinionMode;
 import dev.patric.dungeonsreborn.effects.minions.MinionPassiveSpec;
 import dev.patric.dungeonsreborn.effects.minions.MinionSpecialAttackSpec;
 import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.logging.ServiceLogManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -104,6 +106,8 @@ public final class EffectsYamlAbilities {
   private final JavaPlugin plugin;
   private final EffectsEngine engine;
   private final EffectsBindings bindings;
+  private final ServiceLogger effectsLog;
+  private final ServiceLogger bindingsLog;
   private final Set<String> loadedAbilityIds = new HashSet<>();
   private final Set<String> loadedBindingIds = new HashSet<>();
   private final java.util.Map<String, AbilitySpec> overriddenCodeAbilities = new java.util.HashMap<>();
@@ -144,13 +148,17 @@ public final class EffectsYamlAbilities {
   }
 
   public EffectsYamlAbilities(JavaPlugin plugin, EffectsEngine engine) {
-    this(plugin, engine, null);
+    this(plugin, engine, null,
+        ServiceLogManager.fromConfig(plugin).effects(),
+        ServiceLogManager.fromConfig(plugin).bindings());
   }
 
-  public EffectsYamlAbilities(JavaPlugin plugin, EffectsEngine engine, EffectsBindings bindings) {
+  public EffectsYamlAbilities(JavaPlugin plugin, EffectsEngine engine, EffectsBindings bindings, ServiceLogger effectsLog, ServiceLogger bindingsLog) {
     this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.engine = Objects.requireNonNull(engine, "engine");
     this.bindings = bindings;
+    this.effectsLog = Objects.requireNonNull(effectsLog, "effectsLog");
+    this.bindingsLog = Objects.requireNonNull(bindingsLog, "bindingsLog");
   }
 
   public File file() {
@@ -211,7 +219,7 @@ public final class EffectsYamlAbilities {
       Set<String> previous = new HashSet<>(loadedAbilityIds);
       int cancelled = engine.cancelCasts(r -> previous.contains(r.abilityId()), true);
       if (cancelled > 0) {
-        plugin.getLogger().info("[Effects] YAML cancelled " + cancelled + " running casts on reload");
+        effectsLog.info("[Effects] YAML cancelled " + cancelled + " running casts on reload");
       }
     }
 
@@ -283,7 +291,7 @@ public final class EffectsYamlAbilities {
           if (macroTmp.containsKey(key)) {
             String message = sourcePath + ": macros." + key + ": duplicate macro id";
             errors.add(message);
-            plugin.getLogger().warning("[Effects] " + message);
+            effectsLog.warn("[Effects] " + message);
             continue;
           }
           ConfigurationSection m = macrosSec.getConfigurationSection(key);
@@ -311,7 +319,7 @@ public final class EffectsYamlAbilities {
         if (all.containsKey(normalizedId)) {
           String message = sourcePath + ": abilities." + id + ": duplicate ability id (normalized=" + normalizedId + ")";
           errors.add(message);
-          plugin.getLogger().warning("[Effects] " + message);
+          effectsLog.warn("[Effects] " + message);
           continue;
         }
 
@@ -392,12 +400,17 @@ public final class EffectsYamlAbilities {
     }
 
     if (!errors.isEmpty()) {
-      plugin.getLogger().warning("[Effects] YAML reload had " + errors.size() + " errors (some abilities/bindings may be missing)");
+      effectsLog.warn("[Effects] YAML reload had " + errors.size() + " errors (some abilities/bindings may be missing)");
       for (String e : errors) {
-        plugin.getLogger().warning("[Effects] YAML: " + e);
+        if (isBindingError(e)) {
+          bindingsLog.warn("[Bindings] YAML: " + e);
+        } else {
+          effectsLog.warn("[Effects] YAML: " + e);
+        }
       }
     } else {
-      plugin.getLogger().info("[Effects] YAML loaded " + loaded + " abilities and " + loadedItemBindings + " item bindings");
+      effectsLog.info("[Effects] YAML loaded " + loaded + " abilities");
+      bindingsLog.info("[Bindings] YAML loaded " + loadedItemBindings + " item bindings");
     }
     return new ReloadResult(loaded, loadedItemBindings, errors);
   }
@@ -2775,7 +2788,7 @@ public final class EffectsYamlAbilities {
     if (!scriptDebug && !scriptTrace) {
       return;
     }
-    plugin.getLogger().info("[Effects][Script] " + message);
+    effectsLog.info("[Effects][Script] " + message);
   }
 
   private record ScriptHandlers(
@@ -7998,5 +8011,16 @@ public final class EffectsYamlAbilities {
       throw new IllegalArgumentException(path + ": unknown sound: " + raw);
     }
     return sound;
+  }
+
+  private static boolean isBindingError(String message) {
+    if (message == null) {
+      return false;
+    }
+    String lower = message.toLowerCase(Locale.ROOT);
+    return lower.contains("bindings")
+        || lower.contains("effects/items")
+        || lower.contains("/items/")
+        || lower.contains("\\items\\");
   }
 }

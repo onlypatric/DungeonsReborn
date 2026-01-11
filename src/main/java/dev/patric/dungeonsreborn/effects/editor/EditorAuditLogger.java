@@ -1,12 +1,12 @@
 package dev.patric.dungeonsreborn.effects.editor;
 
 import java.util.Objects;
-import java.util.logging.Logger;
+import dev.patric.dungeonsreborn.logging.ServiceLogger;
 
 public final class EditorAuditLogger {
-  private final Logger logger;
+  private final ServiceLogger logger;
 
-  public EditorAuditLogger(Logger logger) {
+  public EditorAuditLogger(ServiceLogger logger) {
     this.logger = Objects.requireNonNull(logger, "logger");
   }
 

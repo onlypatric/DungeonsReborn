@@ -13,15 +13,15 @@ It includes full examples and explains every important section.
 ### 1.2 Reloading
 
 ```
-/mobs reload
+/dr mobs reload
 ```
 
 ### 1.3 Useful commands
 
-- `/mobs editor` (open editor GUI)
-- `/mobs list` (list active mobs)
-- `/mobs spawn <id>` (spawn a mob at your location)
-- `/mobs egg <id>` (give yourself a mob egg)
+- `/dr mobs editor` (open editor GUI)
+- `/dr mobs list` (list active mobs)
+- `/dr mobs spawn <id>` (spawn a mob at your location)
+- `/dr mobs egg <id>` (give yourself a mob egg)
 
 Permissions:
 - `dungeonsreborn.mobs.reload`
@@ -482,7 +482,7 @@ eggs:
     cooldownTicks: 40
 ```
 
-Use `/mobs egg thunder_knight` to give yourself the egg.
+Use `/dr mobs egg thunder_knight` to give yourself the egg.
 
 --------------------------------------------------------------------------------
 ## Chapter 18 - World Spawns
@@ -743,4 +743,4 @@ spawns:
 Comment after the YAML block: this file demonstrates a fully featured boss mob with
 bossbar, spawn/death effects, equipment, stats, AI, phased attacks, passives, loot,
 and mana drops. It also includes a spawn egg and a world spawn entry so you can test
-immediately after `/mobs reload`.
+immediately after `/dr mobs reload`.
