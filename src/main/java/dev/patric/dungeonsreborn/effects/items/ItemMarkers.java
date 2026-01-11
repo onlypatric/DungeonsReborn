@@ -24,6 +24,8 @@ public final class ItemMarkers {
   public static final NamespacedKey ITEM_ID = new NamespacedKey("dungeonsreborn", "effects_item_id");
   public static final NamespacedKey MANA_MAX_BONUS = new NamespacedKey("dungeonsreborn", "effects_mana_max_bonus");
   public static final NamespacedKey MANA_REGEN_BONUS = new NamespacedKey("dungeonsreborn", "effects_mana_regen_bonus");
+  public static final NamespacedKey CONSUME_MODE = new NamespacedKey("dungeonsreborn", "effects_item_consume_mode");
+  public static final NamespacedKey CONSUME_AMOUNT = new NamespacedKey("dungeonsreborn", "effects_item_consume_amount");
 
   private ItemMarkers() {
   }
@@ -233,5 +235,71 @@ public final class ItemMarkers {
 
   public static ItemStack setManaRegenBonus(ItemStack item, double bonus) {
     return setDouble(item, MANA_REGEN_BONUS, bonus);
+  }
+
+  public static ItemConsumeMode getConsumeMode(ItemStack item) {
+    if (item == null) {
+      return ItemConsumeMode.NONE;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return ItemConsumeMode.NONE;
+    }
+    String raw = meta.getPersistentDataContainer().get(CONSUME_MODE, PersistentDataType.STRING);
+    if (raw == null || raw.isBlank()) {
+      return ItemConsumeMode.NONE;
+    }
+    return ItemConsumeMode.parse(raw);
+  }
+
+  public static ItemStack setConsumeMode(ItemStack item, ItemConsumeMode mode) {
+    Objects.requireNonNull(item, "item");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setConsumeMode must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    if (mode == null || mode == ItemConsumeMode.NONE) {
+      meta.getPersistentDataContainer().remove(CONSUME_MODE);
+    } else {
+      meta.getPersistentDataContainer().set(CONSUME_MODE, PersistentDataType.STRING, mode.name().toLowerCase(java.util.Locale.ROOT));
+    }
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  public static int getConsumeAmount(ItemStack item) {
+    if (item == null) {
+      return 0;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return 0;
+    }
+    Integer value = meta.getPersistentDataContainer().get(CONSUME_AMOUNT, PersistentDataType.INTEGER);
+    if (value == null || value <= 0) {
+      return 0;
+    }
+    return value;
+  }
+
+  public static ItemStack setConsumeAmount(ItemStack item, int amount) {
+    Objects.requireNonNull(item, "item");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setConsumeAmount must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    if (amount <= 0) {
+      meta.getPersistentDataContainer().remove(CONSUME_AMOUNT);
+    } else {
+      meta.getPersistentDataContainer().set(CONSUME_AMOUNT, PersistentDataType.INTEGER, amount);
+    }
+    item.setItemMeta(meta);
+    return item;
   }
 }

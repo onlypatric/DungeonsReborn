@@ -81,3 +81,10 @@ Editor:
 ## /dr gui
 
 - `/dr gui` — open the GUI showcase menu (player only).
+
+--------------------------------------------------------------------------------
+## /dr crafting
+
+- `/dr crafting` — open the crafting GUI test (player only).
+- `/dr crafting editor` — open the crafting recipe editor. Permission: `dungeonsreborn.crafting.editor`.
+- `/dr crafting reload` — reload crafting recipes. Permission: `dungeonsreborn.effects.reload`.

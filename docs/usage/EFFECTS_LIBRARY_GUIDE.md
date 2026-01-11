@@ -155,10 +155,33 @@ bindings:
 ```
 
 Notes:
-- `bindings` (or `triggers`) is required and must not be empty.
+- `bindings` (or `triggers`) is optional; omit it to create a pure custom item (e.g., shops).
 - `passive` bindings support `periodTicks` and `slots`.
 - `slots` supports: `hand`, `off_hand`, `head`, `chest`, `legs`, `feet`, `armor`, `hands`, `all`.
 - `ability` must exist at reload time.
+
+Optional mana bonuses (while held/equipped):
+
+```yaml
+mana:
+  maxBonus: 10
+  regenBonus: 0.5
+  boost: 5 # alias for maxBonus (temporary while held)
+```
+
+Optional consumable behavior (applies when a bound effect is cast):
+
+```yaml
+consumable: stack # or durability
+```
+
+Advanced form:
+
+```yaml
+consumable:
+  mode: durability # stack | durability
+  amount: 1 # item count or durability damage per cast
+```
 
 ## Actions
 

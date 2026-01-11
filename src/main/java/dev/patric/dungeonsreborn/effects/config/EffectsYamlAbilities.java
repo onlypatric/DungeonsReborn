@@ -58,6 +58,7 @@ import dev.patric.dungeonsreborn.effects.integration.InteractBinding;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatcher;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatchers;
+import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.integration.PassiveBinding;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
@@ -171,6 +172,17 @@ public final class EffectsYamlAbilities {
 
   public File itemsDir() {
     return new File(plugin.getDataFolder(), "effects/items");
+  }
+
+  public ItemStack itemTemplate(String id) {
+    if (id == null) {
+      return null;
+    }
+    ItemTemplate template = itemTemplates.get(dev.patric.dungeonsreborn.effects.Ids.normalize(id));
+    if (template == null) {
+      return null;
+    }
+    return template.item().clone();
   }
 
   public Set<String> loadedAbilityIds() {
@@ -597,8 +609,63 @@ public final class EffectsYamlAbilities {
       if (mana != null) {
         double maxBonus = mana.contains("maxBonus") ? mana.getDouble("maxBonus") : mana.getDouble("max", 0.0);
         double regenBonus = mana.contains("regenBonus") ? mana.getDouble("regenBonus") : mana.getDouble("regen", 0.0);
+        double boost = 0.0;
+        if (mana.contains("boost")) {
+          boost = mana.getDouble("boost");
+        } else if (mana.contains("tempBoost")) {
+          boost = mana.getDouble("tempBoost");
+        } else if (mana.contains("temporaryBoost")) {
+          boost = mana.getDouble("temporaryBoost");
+        }
+        if (Double.isFinite(boost)) {
+          maxBonus += boost;
+        }
         ItemMarkers.setManaMaxBonus(template, maxBonus);
         ItemMarkers.setManaRegenBonus(template, regenBonus);
+      }
+      Object consumableRaw = cfg.get("consumable");
+      if (consumableRaw == null) {
+        consumableRaw = cfg.get("consume");
+      }
+      if (consumableRaw != null) {
+        try {
+          ItemConsumeMode consumeMode = ItemConsumeMode.NONE;
+          int consumeAmount = 1;
+          if (consumableRaw instanceof Boolean bool) {
+            consumeMode = bool ? ItemConsumeMode.STACK : ItemConsumeMode.NONE;
+          } else if (consumableRaw instanceof String rawString) {
+            consumeMode = parseConsumeMode(rawString, base + ".consumable");
+          } else if (consumableRaw instanceof ConfigurationSection section) {
+            String modeRaw = section.getString("mode", section.getString("type", null));
+            consumeMode = parseConsumeMode(modeRaw, base + ".consumable.mode");
+            consumeAmount = section.getInt("amount", section.getInt("damage", 1));
+          } else if (consumableRaw instanceof Map<?, ?> map) {
+            Object modeRaw = map.get("mode");
+            if (modeRaw == null) {
+              modeRaw = map.get("type");
+            }
+            consumeMode = parseConsumeMode(modeRaw == null ? null : String.valueOf(modeRaw), base + ".consumable.mode");
+            Object amountRaw = map.containsKey("amount") ? map.get("amount") : map.get("damage");
+            if (amountRaw != null) {
+              consumeAmount = Integer.parseInt(String.valueOf(amountRaw));
+            }
+          } else {
+            throw new IllegalArgumentException(base + ".consumable: expected boolean, string, or object");
+          }
+          if (consumeMode != ItemConsumeMode.NONE) {
+            if (consumeAmount <= 0) {
+              throw new IllegalArgumentException(base + ".consumable.amount: must be > 0");
+            }
+            boolean damageable = template.getItemMeta() instanceof Damageable && template.getType().getMaxDurability() > 0;
+            if (consumeMode == ItemConsumeMode.DURABILITY && !damageable) {
+              throw new IllegalArgumentException(base + ".consumable.mode: durability requires a damageable item");
+            }
+            ItemMarkers.setConsumeMode(template, consumeMode);
+            ItemMarkers.setConsumeAmount(template, consumeAmount);
+          }
+        } catch (Exception ex) {
+          errors.add(base + ": " + ex.getMessage());
+        }
       }
       List<Map<String, Object>> bindings = EditorItemYaml.bindings(cfg);
       EditorItemLore.applyAbilityLore(template, bindings, engine);
@@ -883,7 +950,6 @@ public final class EffectsYamlAbilities {
       bindingKey = "triggers";
     }
     if (bindingList.isEmpty()) {
-      errors.add(base + ": bindings must be a non-empty list");
       return 0;
     }
 
@@ -975,6 +1041,19 @@ public final class EffectsYamlAbilities {
       case "player" -> VarScope.PLAYER;
       case "entity", "target" -> VarScope.ENTITY;
       default -> throw new IllegalArgumentException(path + ": invalid scope=" + raw + " (use cast|player|entity)");
+    };
+  }
+
+  private static ItemConsumeMode parseConsumeMode(String raw, String path) {
+    if (raw == null || raw.isBlank()) {
+      return ItemConsumeMode.NONE;
+    }
+    String normalized = raw.trim().toLowerCase(Locale.ROOT).replace('-', '_');
+    return switch (normalized) {
+      case "none", "off", "false" -> ItemConsumeMode.NONE;
+      case "stack", "item", "item_stack", "itemstack" -> ItemConsumeMode.STACK;
+      case "durability", "damage", "durable" -> ItemConsumeMode.DURABILITY;
+      default -> throw new IllegalArgumentException(path + ": invalid consumable mode=" + raw + " (use stack|durability)");
     };
   }
 

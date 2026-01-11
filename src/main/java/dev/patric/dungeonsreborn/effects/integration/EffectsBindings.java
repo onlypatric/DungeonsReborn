@@ -11,11 +11,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
+import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 
 public final class EffectsBindings implements Listener {
@@ -203,17 +206,24 @@ public final class EffectsBindings implements Listener {
       }
     }
 
+    var action = event.getAction();
+    boolean rightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
+    boolean leftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+
+    boolean castAny = false;
+    boolean shouldCancel = false;
+    boolean boundRightClick = false;
+
     // Item-bound ability list (ability set) - pragmatic ExecutableItems-style binding.
     // This runs before explicit InteractBindings so items can be configured without registering Java bindings.
     if (item != null && !item.getType().isAir()) {
-      var action = event.getAction();
-      boolean rightClick = action == org.bukkit.event.block.Action.RIGHT_CLICK_AIR || action == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
-      boolean leftClick = action == org.bukkit.event.block.Action.LEFT_CLICK_AIR || action == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK;
-
       if (rightClick || leftClick) {
         var key = rightClick ? ItemMarkers.RIGHT_CLICK_ABILITIES : ItemMarkers.LEFT_CLICK_ABILITIES;
         var ids = ItemMarkers.getStringList(item, key);
         if (!ids.isEmpty()) {
+          if (rightClick) {
+            boundRightClick = true;
+          }
           event.setCancelled(true);
           for (String abilityId : ids) {
             try {
@@ -224,6 +234,7 @@ public final class EffectsBindings implements Listener {
                 continue;
               }
               engine.cast(abilityId, player);
+              castAny = true;
             } catch (IllegalArgumentException ex) {
               if (engine.isDebugEnabled()) {
                 engine.debug("item ability invalid: " + abilityId + " (" + ex.getMessage() + ")");
@@ -234,9 +245,10 @@ public final class EffectsBindings implements Listener {
       }
     }
 
-    boolean shouldCancel = false;
-    boolean castAny = false;
     for (InteractBinding binding : interactBindings) {
+      if (binding.trigger() == InteractTrigger.RIGHT_CLICK && item != null && binding.itemMatcher().matches(player, item)) {
+        boundRightClick = true;
+      }
       if (!binding.trigger().matches(event)) {
         continue;
       }
@@ -258,6 +270,74 @@ public final class EffectsBindings implements Listener {
     }
     if (castAny && shouldCancel) {
       event.setCancelled(true);
+    }
+    if (item != null && action == Action.RIGHT_CLICK_BLOCK && item.getType().isBlock() && boundRightClick) {
+      event.setCancelled(true);
+      event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+      event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+    }
+    if (castAny && item != null) {
+      consumeItem(player, event.getHand(), item);
+    }
+  }
+
+  private static void consumeItem(Player player, EquipmentSlot hand, ItemStack item) {
+    ItemConsumeMode mode = ItemMarkers.getConsumeMode(item);
+    if (mode == ItemConsumeMode.NONE) {
+      return;
+    }
+    int amount = ItemMarkers.getConsumeAmount(item);
+    if (amount <= 0) {
+      amount = 1;
+    }
+    EquipmentSlot slot = hand == null ? EquipmentSlot.HAND : hand;
+    switch (mode) {
+      case STACK -> consumeStack(player, slot, item, amount);
+      case DURABILITY -> consumeDurability(player, slot, item, amount);
+      default -> {
+      }
+    }
+  }
+
+  private static void consumeStack(Player player, EquipmentSlot hand, ItemStack item, int amount) {
+    int remaining = item.getAmount() - amount;
+    if (remaining <= 0) {
+      setHandItem(player, hand, null);
+      return;
+    }
+    ItemStack updated = item.clone();
+    updated.setAmount(remaining);
+    setHandItem(player, hand, updated);
+  }
+
+  private static void consumeDurability(Player player, EquipmentSlot hand, ItemStack item, int amount) {
+    ItemMeta meta = item.getItemMeta();
+    if (!(meta instanceof org.bukkit.inventory.meta.Damageable damageable)) {
+      return;
+    }
+    int max = item.getType().getMaxDurability();
+    if (max <= 0) {
+      return;
+    }
+    int next = damageable.getDamage() + amount;
+    if (next >= max) {
+      setHandItem(player, hand, null);
+      return;
+    }
+    ItemStack updated = item.clone();
+    ItemMeta updatedMeta = updated.getItemMeta();
+    if (updatedMeta instanceof org.bukkit.inventory.meta.Damageable updatedDamageable) {
+      updatedDamageable.setDamage(next);
+      updated.setItemMeta(updatedMeta);
+    }
+    setHandItem(player, hand, updated);
+  }
+
+  private static void setHandItem(Player player, EquipmentSlot hand, ItemStack item) {
+    if (hand == EquipmentSlot.OFF_HAND) {
+      player.getInventory().setItemInOffHand(item);
+    } else {
+      player.getInventory().setItemInMainHand(item);
     }
   }
 }

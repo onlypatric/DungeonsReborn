@@ -7,6 +7,7 @@ This project is a Paper (Minecraft) plugin named **DungeonsReborn**. It provides
 - A mob library (custom mob specs, AI hooks, spawn eggs).
 - A minion system built on top of the mob library.
 - A mana system (costs, regen, drops).
+- A custom item crafting library (recipe YAML + in-game recipe editor + discovery).
 
 This file is the **only** place where checklists are referenced.
 
@@ -29,6 +30,10 @@ This file is the **only** place where checklists are referenced.
   - In-game effects + item editor (menus under `effects/editor/menu/`).
 - `src/main/java/dev/patric/dungeonsreborn/mobs/`
   - Mob registry, YAML loader, spawn manager, targeting/AI hooks, spawn eggs.
+- `src/main/java/dev/patric/dungeonsreborn/crafting/`
+  - Crafting recipe YAML loader, matchers, inventory planner.
+- `src/main/java/dev/patric/dungeonsreborn/menus/`
+  - Crafting GUI, recipe editor, and recipe discovery menus.
 
 --------------------------------------------------------------------------------
 ## Docs Structure (No checklist references outside this file)
@@ -66,6 +71,13 @@ YAML merge policy: **YAML overrides code** (if ids collide, YAML wins).
 - Mob specs:
   - `plugins/DungeonsReborn/mobs.yml`
 - Supports stats, AI, attacks/passives, phases, bossbars, spawn eggs, and mana drops.
+
+### Crafting Recipes
+- Recipe files:
+  - `plugins/DungeonsReborn/recipes/<recipeId>.yml`
+- Recipes support:
+  - multiple outputs, permissions, cooldowns, and variants
+  - matching by custom item id, material, tag, or category
 
 --------------------------------------------------------------------------------
 ## Bundled Defaults (Resources)
@@ -157,22 +169,28 @@ This keeps the jar clean; admins author their own data in the plugin folder.
   - Action graph editor
   - Item editor + bindings
   - Mob editor
+  - Crafting recipe editor + discovery list
 
 --------------------------------------------------------------------------------
 ## Commands (Key)
 
 Effects:
-- `/effects reload` (reload abilities + item bindings)
-- `/effects cast <id>` (manual cast)
-- `/effects debug on|off` (verbose logging)
-- `/effects particles ...` (particle quality/budget controls)
+- `/dr effects reload` (reload abilities + item bindings)
+- `/dr effects cast <id>` (manual cast)
+- `/dr effects debug on|off` (verbose logging)
+- `/dr effects particles ...` (particle quality/budget controls)
 
 Mobs:
-- `/mobs reload` (reload mob specs)
-- `/mobs editor` (open mob editor)
+- `/dr mobs reload` (reload mob specs)
+- `/dr mobs editor` (open mob editor)
 
 GUI:
-- `/gui` (showcase menu)
+- `/dr gui` (showcase menu)
+
+Crafting:
+- `/dr crafting` (crafting test GUI)
+- `/dr crafting editor` (recipe editor)
+- `/dr crafting reload` (reload recipes)
 
 --------------------------------------------------------------------------------
 ## Local Testing Layout
@@ -191,6 +209,7 @@ GUI:
 - `docs/checklists/PLUGIN_TEST_CHECKLIST.md`
 - `docs/checklists/PARTICLE_CUSTOMIZATION_CHECKLIST.md`
 - `docs/checklists/MINIONS_TEST_CHECKLIST.md`
+- `docs/checklists/CUSTOM_ITEM_CRAFTING_GUI_CHECKLIST.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies
@@ -199,3 +218,8 @@ GUI:
 - Avoid adding hard-coded debug abilities; prefer YAML/DSL.
 - Use ASCII unless a file already uses Unicode.
 - Server folder changes are for local testing only.
+
+--------------------------------------------------------------------------------
+## Upcoming Item Work
+
+- Effect upgrades: add a way to attach upgrade tiers to item-bound abilities (design TBD).

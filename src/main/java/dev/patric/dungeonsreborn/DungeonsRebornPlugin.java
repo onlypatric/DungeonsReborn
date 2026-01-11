@@ -4,6 +4,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.commands.DungeonsRebornCommand;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
+import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
+import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
 import dev.patric.dungeonsreborn.effects.integration.ItemSyncListener;
 import dev.patric.dungeonsreborn.effects.mana.ManaSessionListener;
@@ -44,6 +46,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private MobYamlRegistry mobYamlRegistry;
     private MinionManager minionManager;
     private ServiceLogManager serviceLog;
+    private CraftingYamlRegistry craftingRecipes;
+    private CraftingGuiSessionManager craftingSessions;
 
     @Override
     public void onEnable() {
@@ -90,6 +94,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobYamlRegistry.reload();
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
 
+        craftingRecipes = new CraftingYamlRegistry(this, serviceLog.effects(), yamlAbilities::itemTemplate);
+        craftingRecipes.reload();
+        craftingSessions = new CraftingGuiSessionManager();
+        Bukkit.getPluginManager().registerEvents(craftingSessions, this);
+
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(
                 DungeonsRebornCommand.createCommand(
@@ -100,7 +109,9 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     editorServices,
                     minionManager,
                     mobYamlRegistry,
-                    mobRegistry
+                    mobRegistry,
+                    craftingRecipes,
+                    craftingSessions
                 ).build()
             );
             commands.registrar().register(
@@ -112,7 +123,9 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     editorServices,
                     minionManager,
                     mobYamlRegistry,
-                    mobRegistry
+                    mobRegistry,
+                    craftingRecipes,
+                    craftingSessions
                 ).build()
             );
             commands.registrar().register(
@@ -124,7 +137,9 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     editorServices,
                     minionManager,
                     mobYamlRegistry,
-                    mobRegistry
+                    mobRegistry,
+                    craftingRecipes,
+                    craftingSessions
                 ).build()
             );
         });
@@ -148,6 +163,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobSpawnManager = null;
         mobYamlRegistry = null;
         minionManager = null;
+        craftingRecipes = null;
+        craftingSessions = null;
         serviceLog = null;
     }
 

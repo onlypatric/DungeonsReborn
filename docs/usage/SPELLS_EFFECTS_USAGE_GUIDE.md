@@ -459,12 +459,30 @@ bindings:
     slots: [HAND, OFF_HAND]
 ```
 
+Bindings are optional. If you omit `bindings`, the file defines only the custom item
+and can be used for shops or future systems.
+
 Optional mana bonuses from items:
 
 ```yaml
 mana:
   maxBonus: 20
   regenBonus: 1.5
+  boost: 10 # optional alias for maxBonus (temporary while held)
+```
+
+Optional consumable behavior (applies when a bound effect is cast):
+
+```yaml
+consumable: stack # or durability
+```
+
+Advanced form:
+
+```yaml
+consumable:
+  mode: durability # stack | durability
+  amount: 1 # item count or durability damage per cast
 ```
 
 --------------------------------------------------------------------------------
