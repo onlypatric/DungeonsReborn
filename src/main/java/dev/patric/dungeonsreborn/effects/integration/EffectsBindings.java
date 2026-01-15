@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,11 +17,16 @@ import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
-import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
+import dev.patric.dungeonsreborn.effects.CastContext;
+import dev.patric.dungeonsreborn.effects.EffectsEngine;
+import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
 
 public final class EffectsBindings implements Listener {
   private final EffectsEngine engine;
@@ -27,6 +34,7 @@ public final class EffectsBindings implements Listener {
   private final List<PassiveBinding> passiveBindings = new ArrayList<>();
   private final java.util.Map<java.util.UUID, Long> lastHandledInteractTickByPlayer = new java.util.HashMap<>();
   private static final long PASSIVE_TICK_PERIOD = 1L;
+  private static final long ITEM_PASSIVE_PERIOD = 20L;
 
   public EffectsBindings(EffectsEngine engine) {
     this.engine = Objects.requireNonNull(engine, "engine");
@@ -124,6 +132,7 @@ public final class EffectsBindings implements Listener {
 
   private void tickPassives() {
     if (passiveBindings.isEmpty()) {
+      tickItemPassives();
       return;
     }
     long now = engine.tickNow();
@@ -150,6 +159,79 @@ public final class EffectsBindings implements Listener {
           }
         }
       }
+    }
+    tickItemPassives();
+  }
+
+  private void tickItemPassives() {
+    long now = engine.tickNow();
+    if ((now % ITEM_PASSIVE_PERIOD) != 0L) {
+      return;
+    }
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      ItemStack[] items = {
+          player.getInventory().getItemInMainHand(),
+          player.getInventory().getItemInOffHand(),
+          player.getInventory().getHelmet(),
+          player.getInventory().getChestplate(),
+          player.getInventory().getLeggings(),
+          player.getInventory().getBoots()
+      };
+      for (ItemStack item : items) {
+        if (item == null || item.getType().isAir()) {
+          continue;
+        }
+        for (String abilityId : ItemMarkers.getStringList(item, ItemMarkers.PASSIVE_ABILITIES)) {
+          try {
+            if (!engine.hasAbility(abilityId)) {
+              if (engine.isDebugEnabled()) {
+                engine.debug("item passive ability not registered: " + abilityId);
+              }
+              continue;
+            }
+            castWithItem(player, abilityId, item, true);
+          } catch (IllegalArgumentException ex) {
+            if (engine.isDebugEnabled()) {
+              engine.debug("item passive ability invalid: " + abilityId + " (" + ex.getMessage() + ")");
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void castWithItem(Player player, String abilityId, ItemStack item, boolean allowSecondary) {
+    if (!engine.hasAbility(abilityId)) {
+      if (engine.isDebugEnabled()) {
+        engine.debug("item ability not registered: " + abilityId);
+      }
+      return;
+    }
+    Location origin = player.getEyeLocation();
+    Vector direction = origin.getDirection();
+    List<String> secondary = ItemMarkers.getStringList(item, ItemMarkers.UPGRADE_SECONDARY_ABILITIES);
+    List<UpgradeStatusEffectSpec> effects = UpgradeStatusEffectSpec.parseRecords(
+        ItemMarkers.getUpgradeStatusEffects(item));
+    engine.castWithContext(abilityId, player, origin, direction, item,
+        ctx -> applyUpgradeState(ctx, item, effects));
+    if (allowSecondary && !secondary.isEmpty()) {
+      for (String secondaryId : secondary) {
+        if (secondaryId.equals(abilityId)) {
+          continue;
+        }
+        castWithItem(player, secondaryId, item, false);
+      }
+    }
+  }
+
+  private void applyUpgradeState(CastContext ctx, ItemStack item, List<UpgradeStatusEffectSpec> effects) {
+    java.util.Map<String, Double> modifiers = ItemMarkers.getUpgradeModifiers(item);
+    for (UpgradeModifierType type : UpgradeModifierType.values()) {
+      double value = modifiers.getOrDefault(type.key(), type.defaultValue());
+      ctx.variables().put("upgrade_" + type.key(), value);
+    }
+    if (effects != null && !effects.isEmpty()) {
+      ctx.variables().put(Vars.UPGRADE_STATUS_EFFECTS, effects);
     }
   }
 
@@ -218,8 +300,22 @@ public final class EffectsBindings implements Listener {
     // This runs before explicit InteractBindings so items can be configured without registering Java bindings.
     if (item != null && !item.getType().isAir()) {
       if (rightClick || leftClick) {
-        var key = rightClick ? ItemMarkers.RIGHT_CLICK_ABILITIES : ItemMarkers.LEFT_CLICK_ABILITIES;
-        var ids = ItemMarkers.getStringList(item, key);
+        boolean sneaking = player.isSneaking();
+        NamespacedKey key;
+        List<String> ids;
+        if (rightClick) {
+          key = sneaking ? ItemMarkers.SHIFT_RIGHT_CLICK_ABILITIES : ItemMarkers.RIGHT_CLICK_ABILITIES;
+          ids = ItemMarkers.getStringList(item, key);
+          if (ids.isEmpty() && sneaking) {
+            ids = ItemMarkers.getStringList(item, ItemMarkers.RIGHT_CLICK_ABILITIES);
+          }
+        } else {
+          key = sneaking ? ItemMarkers.SHIFT_LEFT_CLICK_ABILITIES : ItemMarkers.LEFT_CLICK_ABILITIES;
+          ids = ItemMarkers.getStringList(item, key);
+          if (ids.isEmpty() && sneaking) {
+            ids = ItemMarkers.getStringList(item, ItemMarkers.LEFT_CLICK_ABILITIES);
+          }
+        }
         if (!ids.isEmpty()) {
           if (rightClick) {
             boundRightClick = true;
@@ -233,7 +329,7 @@ public final class EffectsBindings implements Listener {
                 }
                 continue;
               }
-              engine.cast(abilityId, player);
+              castWithItem(player, abilityId, item, true);
               castAny = true;
             } catch (IllegalArgumentException ex) {
               if (engine.isDebugEnabled()) {
@@ -265,7 +361,7 @@ public final class EffectsBindings implements Listener {
       if (binding.cancelEvent()) {
         shouldCancel = true;
       }
-      engine.cast(binding.abilityId(), player);
+      castWithItem(player, binding.abilityId(), item, true);
       castAny = true;
     }
     if (castAny && shouldCancel) {

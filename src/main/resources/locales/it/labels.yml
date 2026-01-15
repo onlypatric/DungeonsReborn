@@ -1,0 +1,20 @@
+labels:
+  system:
+    effectsEditor: Editor effetti
+    itemsEditor: Editor oggetti
+    questEditor: Editor missioni
+    shops: Registro negozi
+    upgrades: Sistema potenziamenti
+    crafting: Registro crafting
+    kits: Sistema kit
+    classes: Sistema classi
+    classesRegistry: Registro classi
+    classSkills: Abilita classi
+    quests: Sistema missioni
+    questGivers: Quest giver
+    party: Sistema party
+    dungeons: Sistema dungeon
+    mobsRegistry: Registro mob
+    mobsYaml: Loader YAML mob
+    mobsEditor: Editor mob
+    mobSpawners: Sistema spawner

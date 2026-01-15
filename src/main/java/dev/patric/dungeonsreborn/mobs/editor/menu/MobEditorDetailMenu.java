@@ -2,6 +2,10 @@ package dev.patric.dungeonsreborn.mobs.editor.menu;
 
 import java.io.File;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.effects.Ids;
+import dev.patric.dungeonsreborn.admin.AdminAuditStore;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.editor.MobEditorYaml;
@@ -19,14 +24,17 @@ import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
 import net.kyori.adventure.text.Component;
 
 public final class MobEditorDetailMenu extends Window {
   private static final int SIZE = 54;
+  private static final DateTimeFormatter AUDIT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
   private final MobYamlRegistry yaml;
   private final MobRegistry registry;
   private final String mobId;
+  private boolean dirty;
 
   public MobEditorDetailMenu(MobYamlRegistry yaml, MobRegistry registry, String mobId) {
     super(SIZE, GuiMini.mm("<white><bold>Mob:</bold></white> <gray>" + mobId + "</gray>"), true);
@@ -35,6 +43,10 @@ public final class MobEditorDetailMenu extends Window {
     this.mobId = Objects.requireNonNull(mobId, "mobId");
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
+
+    setFixedAt(0, 4, new Label(p -> overviewItem()));
+    setFixedAt(0, 6, new Label(p -> auditItem()));
+    setFixedAt(0, 7, new Label(p -> dirtyIndicatorItem()));
 
     setFixedAt(1, 1, nameButton());
     setFixedAt(1, 3, showNameButton());
@@ -49,6 +61,9 @@ public final class MobEditorDetailMenu extends Window {
     setFixedAt(4, 3, statButton("attackDamage", "Attack Damage"));
     setFixedAt(4, 5, statButton("movementSpeed", "Move Speed"));
     setFixedAt(4, 7, statButton("followRange", "Follow Range"));
+
+    setFixedAt(2, 1, lootDropsButton());
+    setFixedAt(2, 3, lootGuaranteedButton());
 
     navLeft(new BackButton(p -> GuiItems.named(Material.BARRIER, GuiMini.mm("<red><bold>Back</bold></red>"), List.of())));
     nav(5, reloadButton());
@@ -99,7 +114,8 @@ public final class MobEditorDetailMenu extends Window {
     return new TextButton(
         p -> GuiItems.named(Material.BLAZE_POWDER, GuiMini.mm("<aqua><bold>Main Ability</bold></aqua>"), List.of(
             GuiMini.mm("<gray>Current:</gray> <white>" + nullToNone(MobEditorYaml.mainAbility(file(), mobId)) + "</white>"),
-            GuiMini.mm("<gray>Blank clears the ability.</gray>"))),
+            GuiMini.mm("<gray>Blank clears the ability.</gray>"),
+            GuiMini.mm("<dark_gray>Passives:</dark_gray> <gray>" + passiveCount() + "</gray>"))),
         GuiMini.mm("<gray>Enter main ability id</gray>"),
         "cancel",
         Duration.ofSeconds(30),
@@ -108,6 +124,7 @@ public final class MobEditorDetailMenu extends Window {
           if (player == null) {
             return;
           }
+          markDirty(player);
           String normalized = normalizeId(text);
           MobEditorYaml.setMainAbility(file(), mobId, normalized);
           reloadYaml(player, "main ability");
@@ -120,7 +137,8 @@ public final class MobEditorDetailMenu extends Window {
     return new TextButton(
         p -> GuiItems.named(Material.BLAZE_ROD, GuiMini.mm("<aqua><bold>Secondary Ability</bold></aqua>"), List.of(
             GuiMini.mm("<gray>Current:</gray> <white>" + nullToNone(MobEditorYaml.secondaryAbility(file(), mobId)) + "</white>"),
-            GuiMini.mm("<gray>Blank clears the ability.</gray>"))),
+            GuiMini.mm("<gray>Blank clears the ability.</gray>"),
+            GuiMini.mm("<dark_gray>Passives:</dark_gray> <gray>" + passiveCount() + "</gray>"))),
         GuiMini.mm("<gray>Enter secondary ability id</gray>"),
         "cancel",
         Duration.ofSeconds(30),
@@ -129,6 +147,7 @@ public final class MobEditorDetailMenu extends Window {
           if (player == null) {
             return;
           }
+          markDirty(player);
           String normalized = normalizeId(text);
           MobEditorYaml.setSecondaryAbility(file(), mobId, normalized);
           reloadYaml(player, "secondary ability");
@@ -227,9 +246,22 @@ public final class MobEditorDetailMenu extends Window {
     }).autoDescribeInLore(false);
   }
 
+  private Button lootDropsButton() {
+    return new Button(p -> GuiItems.named(Material.CHEST, GuiMini.mm("<gold><bold>Loot Drops</bold></gold>"), lootSummaryLore(false)), ctx -> {
+      openSubWindow(ctx.player(), new MobEditorLootMenu(yaml, mobId, MobEditorLootMenu.ListType.DROPS));
+    }).autoDescribeInLore(false);
+  }
+
+  private Button lootGuaranteedButton() {
+    return new Button(p -> GuiItems.named(Material.BARREL, GuiMini.mm("<gold><bold>Guaranteed Loot</bold></gold>"), lootSummaryLore(true)), ctx -> {
+      openSubWindow(ctx.player(), new MobEditorLootMenu(yaml, mobId, MobEditorLootMenu.ListType.GUARANTEED));
+    }).autoDescribeInLore(false);
+  }
+
   private Button reloadButton() {
-    return new Button(p -> GuiItems.named(Material.CLOCK, GuiMini.mm("<yellow><bold>Reload</bold></yellow>"), List.of(
+    return new Button(p -> GuiItems.named(Material.LIME_DYE, GuiMini.mm("<green><bold>Apply</bold></green>"), List.of(
         GuiMini.mm("<gray>Reload mob YAML.</gray>"))), ctx -> {
+      markDirty(ctx.player());
       reloadYaml(ctx.player(), "manual reload");
     }).autoDescribeInLore(false);
   }
@@ -253,6 +285,22 @@ public final class MobEditorDetailMenu extends Window {
   private void reloadYaml(Player player, String detail) {
     yaml.reload();
     yaml.logger().info("[Mobs][Editor] EDIT actor=" + player.getName() + " mob=" + mobId + " detail=" + detail);
+    AdminAuditStore.get().record("mob:" + mobId, player.getName());
+    dirty = false;
+    redrawSlot(player, slotAt(0, 7));
+  }
+
+  private ItemStack auditItem() {
+    AdminAuditStore.Entry entry = AdminAuditStore.get().entry("mob:" + mobId);
+    List<Component> lore = new ArrayList<>();
+    if (entry == null || entry.timestamp() <= 0L) {
+      lore.add(GuiMini.mm("<gray>Last edit:</gray> <white>never</white>"));
+    } else {
+      String when = AUDIT_FORMAT.format(Instant.ofEpochMilli(entry.timestamp()).atZone(ZoneId.systemDefault()));
+      lore.add(GuiMini.mm("<gray>Last edit:</gray> <white>" + when + "</white>"));
+      lore.add(GuiMini.mm("<gray>By:</gray> <white>" + entry.editor() + "</white>"));
+    }
+    return GuiItems.named(Material.CLOCK, GuiMini.mm("<yellow><bold>Audit</bold></yellow>"), lore);
   }
 
   private File file() {
@@ -261,6 +309,51 @@ public final class MobEditorDetailMenu extends Window {
 
   private static Player getViewer(Window window) {
     return window.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(window.viewer());
+  }
+
+  private ItemStack overviewItem() {
+    List<Component> lore = new ArrayList<>();
+    lore.add(GuiMini.mm("<gray>Main:</gray> <white>" + nullToNone(MobEditorYaml.mainAbility(file(), mobId)) + "</white>"));
+    lore.add(GuiMini.mm("<gray>Secondary:</gray> <white>" + nullToNone(MobEditorYaml.secondaryAbility(file(), mobId)) + "</white>"));
+    lore.add(GuiMini.mm("<gray>Passives:</gray> <white>" + passiveCount() + "</white>"));
+    return GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>" + mobId + "</bold></gold>"), lore);
+  }
+
+  private ItemStack dirtyIndicatorItem() {
+    if (dirty) {
+      return GuiItems.named(Material.ORANGE_DYE, GuiMini.mm("<yellow><bold>Unsaved</bold></yellow>"), List.of(
+          GuiMini.mm("<gray>Reload to apply changes.</gray>")));
+    }
+    return GuiItems.named(Material.LIME_DYE, GuiMini.mm("<green><bold>Applied</bold></green>"), List.of(
+        GuiMini.mm("<gray>Mob data is synced.</gray>")));
+  }
+
+  private void markDirty(Player player) {
+    dirty = true;
+    redrawSlot(player, slotAt(0, 7));
+  }
+
+  private int passiveCount() {
+    org.bukkit.configuration.file.YamlConfiguration cfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file());
+    org.bukkit.configuration.ConfigurationSection mob = cfg.getConfigurationSection("mobs." + mobId);
+    if (mob == null) {
+      return 0;
+    }
+    List<?> list = mob.getMapList("passives");
+    return list == null ? 0 : list.size();
+  }
+
+  private List<Component> lootSummaryLore(boolean guaranteed) {
+    List<Component> lore = new ArrayList<>();
+    String key = guaranteed ? "guaranteed" : "drops";
+    int entries = MobEditorYaml.lootEntries(file(), mobId, key).size();
+    lore.add(GuiMini.mm("<gray>Entries:</gray> <white>" + entries + "</white>"));
+    if (!guaranteed) {
+      lore.add(GuiMini.mm("<gray>Rolls:</gray> <white>" + MobEditorYaml.lootRolls(file(), mobId) + "</white>"));
+      lore.add(GuiMini.mm("<gray>Bonus rolls:</gray> <white>" + MobEditorYaml.lootBonusRolls(file(), mobId) + "</white>"));
+    }
+    lore.add(GuiMini.mm("<gray>Click to edit.</gray>"));
+    return lore;
   }
 
   private static String nullToNone(String value) {

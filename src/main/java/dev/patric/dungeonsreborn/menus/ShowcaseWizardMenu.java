@@ -6,8 +6,8 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Label;
@@ -17,7 +17,9 @@ import dev.patric.dungeonsreborn.gui.components.input.NumericInput;
 import dev.patric.dungeonsreborn.gui.flow.WizardStep;
 import dev.patric.dungeonsreborn.gui.flow.WizardWindow;
 import dev.patric.dungeonsreborn.gui.style.GuiTheme;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 /**
  * Wizard showcase: a tiny multi-step flow.
@@ -33,23 +35,26 @@ public final class ShowcaseWizardMenu {
   }
 
   public static Window create() {
-    WizardWindow<DemoState> wizard = new WizardWindow<>(54, GuiMini.mm("<white><bold>Wizard Demo</bold></white>"), DemoState::new);
+    WizardWindow<DemoState> wizard = new WizardWindow<>(54, GuiI18n.tr("gui.showcase.wizard.title"), DemoState::new);
 
     wizard.steps(List.of(
-        WizardStep.of(GuiMini.mm("<white><bold>Step 1: Text</bold></white>"), ctx -> {
+        WizardStep.of(GuiI18n.tr("gui.showcase.wizard.step1.title"), ctx -> {
           DemoState state = ctx.state();
           ctx.window().setDynamic(13, new Label(p -> GuiItem.of(Material.PAPER)
-              .displayName(GuiMini.mm("<yellow><bold>Current Name</bold></yellow>"))
-              .lore(List.of(GuiMini.mm("<gray>" + (state.name.isBlank() ? "(none)" : state.name) + "</gray>")))
+              .displayName(GuiI18n.tr(p, "gui.showcase.wizard.step1.current.title"))
+              .lore(List.of(GuiI18n.tr(p, "gui.showcase.wizard.step1.current.value",
+                  Placeholder.unparsed("value", state.name.isBlank()
+                      ? Locales.text(p, "gui.showcase.wizard.none")
+                      : state.name))))
               .build()));
 
           ctx.window().setDynamic(31, new TextButton(
               p -> GuiItem.of(Material.NAME_TAG)
-                  .displayName(GuiMini.mm("<aqua><bold>Set Name</bold></aqua>"))
-                  .lore(List.of(GuiMini.mm("<gray>Opens an anvil input.</gray>")))
+                  .displayName(GuiI18n.tr(p, "gui.showcase.wizard.step1.set.title"))
+                  .lore(List.of(GuiI18n.tr(p, "gui.showcase.wizard.step1.set.hint")))
                   .build(),
-              GuiMini.mm("<gray>Type a name (or 'cancel')</gray>"),
-              "cancel",
+              GuiI18n.tr("gui.showcase.wizard.step1.prompt"),
+              GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
               Duration.ofSeconds(30),
               (w, text) -> {
                 Player viewer = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -62,10 +67,10 @@ public final class ShowcaseWizardMenu {
               },
               true)
                   .inputMode(TextButton.InputMode.ANVIL)
-                  .anvilTitle(GuiMini.mm("<white><bold>Name</bold></white>"))
+                  .anvilTitle(GuiI18n.tr("gui.showcase.wizard.step1.anvilTitle"))
                   .initialText(p -> state.name));
         }),
-        WizardStep.of(GuiMini.mm("<white><bold>Step 2: Inputs</bold></white>"), ctx -> {
+        WizardStep.of(GuiI18n.tr("gui.showcase.wizard.step2.title"), ctx -> {
           DemoState state = ctx.state();
 
           new NumericInput(2, 3,
@@ -75,40 +80,44 @@ public final class ShowcaseWizardMenu {
                 GuiSounds.click(p);
               })
                   .range(1, 64)
-                  .label(GuiMini.mm("<white><bold>Amount</bold></white>"))
+                  .label(GuiI18n.tr("gui.showcase.wizard.step2.amount"))
                   .allowTyping(true)
                   .applyDynamic(ctx.window());
 
           Dropdown<GuiTheme> dropdown = new Dropdown<>(
-              GuiMini.mm("<white><bold>Theme</bold></white>"),
+              GuiI18n.tr("gui.showcase.wizard.step2.theme"),
               List.of(GuiTheme.values()),
               t -> Component.text(t.name()));
           dropdown.onSelect((player, theme) -> state.theme = theme);
           ctx.window().setDynamic(15, dropdown);
         }),
-        WizardStep.of(GuiMini.mm("<white><bold>Step 3: Summary</bold></white>"), ctx -> {
+        WizardStep.of(GuiI18n.tr("gui.showcase.wizard.step3.title"), ctx -> {
           DemoState state = ctx.state();
           ctx.window().setDynamic(22, new Label(p -> GuiItem.of(Material.BOOK)
-              .displayName(GuiMini.mm("<green><bold>Summary</bold></green>"))
+              .displayName(GuiI18n.tr(p, "gui.showcase.wizard.step3.summary.title"))
               .lore(List.of(
-                  Component.text("Name: " + (state.name.isBlank() ? "(none)" : state.name)),
-                  Component.text("Amount: " + state.amount),
-                  Component.text("Theme: " + state.theme.name()),
+                  GuiI18n.tr(p, "gui.showcase.wizard.step3.summary.name",
+                      Placeholder.unparsed("value", state.name.isBlank()
+                          ? Locales.text(p, "gui.showcase.wizard.none")
+                          : state.name)),
+                  GuiI18n.tr(p, "gui.showcase.wizard.step3.summary.amount",
+                      Placeholder.unparsed("value", String.valueOf(state.amount))),
+                  GuiI18n.tr(p, "gui.showcase.wizard.step3.summary.theme",
+                      Placeholder.unparsed("value", state.theme.name())),
                   Component.empty(),
-                  GuiMini.mm("<dark_gray>Use Next -> Finish to complete.</dark_gray>")))
+                  GuiI18n.tr(p, "gui.showcase.wizard.step3.summary.hint")))
               .build()));
         })));
 
     wizard.onFinish((player, state) -> {
       GuiSounds.success(player);
-      player.sendMessage(GuiMini.mm("<green>Wizard finished.</green>"));
+      player.sendMessage(GuiI18n.tr(player, "gui.showcase.wizard.finished"));
     });
     wizard.onCancel((player, state) -> {
       GuiSounds.error(player);
-      player.sendMessage(GuiMini.mm("<red>Wizard cancelled.</red>"));
+      player.sendMessage(GuiI18n.tr(player, "gui.showcase.wizard.cancelled"));
     });
 
     return wizard;
   }
 }
-

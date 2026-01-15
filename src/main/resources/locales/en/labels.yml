@@ -1,0 +1,20 @@
+labels:
+  system:
+    effectsEditor: Effects editor
+    itemsEditor: Item editor
+    questEditor: Quest editor
+    shops: Shop registry
+    upgrades: Upgrade system
+    crafting: Crafting registry
+    kits: Kit system
+    classes: Class system
+    classesRegistry: Class registry
+    classSkills: Class skills
+    quests: Quest system
+    questGivers: Quest givers
+    party: Party system
+    dungeons: Dungeon system
+    mobsRegistry: Mob registry
+    mobsYaml: Mob YAML loader
+    mobsEditor: Mob editor
+    mobSpawners: Spawner system

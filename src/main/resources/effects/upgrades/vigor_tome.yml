@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: vigor_tome
+name: "<green>Vigor Tome</green>"
+description: "<gray>Bolsters the bearer.</gray>\n<dark_gray>+2 hearts while in inventory.</dark_gray>"
+requirements:
+  minTotalXp: 30
+  consumeTotalXp: 10
+behaviors:
+  inventoryActive: true
+attributes:
+  - attribute: minecraft:generic.max_health
+    operation: ADD_NUMBER
+    amount: 4.0
+    slot: MAINHAND

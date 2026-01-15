@@ -1,0 +1,3 @@
+# Classes configuration.
+# Add your class definitions under the `classes:` section.
+classes: {}

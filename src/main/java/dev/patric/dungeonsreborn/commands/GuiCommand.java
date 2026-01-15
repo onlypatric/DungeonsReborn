@@ -7,7 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.patric.dungeonsreborn.menus.ShowcaseMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import net.kyori.adventure.text.Component;
 
 public final class GuiCommand {
   private GuiCommand() {
@@ -23,7 +22,7 @@ public final class GuiCommand {
     var executor = ctx.getSource().getExecutor();
 
     if (!(executor instanceof org.bukkit.entity.Player player)) {
-      sender.sendMessage(Component.text("§cOnly players can use this command"));
+      CommandMessages.send(sender, "messages.common.playersOnly");
       return Command.SINGLE_SUCCESS;
     }
 
@@ -31,4 +30,3 @@ public final class GuiCommand {
     return Command.SINGLE_SUCCESS;
   }
 }
-

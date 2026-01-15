@@ -1,13 +1,12 @@
 package dev.patric.dungeonsreborn.gui;
 
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Player;
 
+import dev.patric.dungeonsreborn.locale.LocaleService;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
@@ -23,8 +22,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
  * </ul>
  */
 public final class GuiI18n {
-  private static final String BASE_NAME = "dev.patric.dungeonsreborn.gui.lang.gui";
-  private static final ConcurrentHashMap<String, ResourceBundle> bundleCache = new ConcurrentHashMap<>();
   private static volatile Locale defaultLocale = Locale.US;
 
   private GuiI18n() {
@@ -51,6 +48,10 @@ public final class GuiI18n {
     return tr(locale(player), key, resolvers);
   }
 
+  public static String str(Player player, String key) {
+    return str(locale(player), key);
+  }
+
   public static Component tr(String key, TagResolver... resolvers) {
     return tr(defaultLocale, key, resolvers);
   }
@@ -58,6 +59,12 @@ public final class GuiI18n {
   public static Component tr(Locale locale, String key, TagResolver... resolvers) {
     Objects.requireNonNull(locale, "locale");
     Objects.requireNonNull(key, "key");
+    LocaleService service = Locales.service();
+    if (service != null) {
+      String localeTag = locale.toLanguageTag().toLowerCase(Locale.ROOT);
+      String template = service.text(localeTag, key, java.util.Map.of());
+      return GuiMini.mm(template, resolvers);
+    }
     String template = str(locale, key);
     return GuiMini.mm(template, resolvers);
   }
@@ -65,30 +72,11 @@ public final class GuiI18n {
   public static String str(Locale locale, String key) {
     Objects.requireNonNull(locale, "locale");
     Objects.requireNonNull(key, "key");
-
-    ResourceBundle bundle = bundle(locale);
-    if (bundle != null && bundle.containsKey(key)) {
-      return bundle.getString(key);
+    LocaleService service = Locales.service();
+    if (service != null) {
+      String localeTag = locale.toLanguageTag().toLowerCase(Locale.ROOT);
+      return service.text(localeTag, key, java.util.Map.of());
     }
-
-    // Fallback to default locale bundle.
-    ResourceBundle fallback = bundle(defaultLocale);
-    if (fallback != null && fallback.containsKey(key)) {
-      return fallback.getString(key);
-    }
-
-    // Last-resort: show the key.
     return "<gray>" + key + "</gray>";
-  }
-
-  private static ResourceBundle bundle(Locale locale) {
-    String cacheKey = locale.toLanguageTag();
-    return bundleCache.computeIfAbsent(cacheKey, k -> {
-      try {
-        return ResourceBundle.getBundle(BASE_NAME, locale, GuiI18n.class.getClassLoader());
-      } catch (MissingResourceException ex) {
-        return null;
-      }
-    });
   }
 }

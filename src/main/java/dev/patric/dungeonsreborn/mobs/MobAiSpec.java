@@ -114,8 +114,8 @@ public final class MobAiSpec {
     private double fleeSpeed = 0.35;
     private double idleWanderRadius = 6.0;
     private long idleWanderIntervalTicks = 80L;
-    private double kiteMinRange = 4.0;
-    private double kiteSpeed = 0.25;
+    private double kiteMinRange;
+    private double kiteSpeed;
     private MobAiController controller;
 
     private Builder() {

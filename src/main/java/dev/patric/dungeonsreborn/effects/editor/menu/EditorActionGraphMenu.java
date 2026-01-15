@@ -14,9 +14,9 @@ import dev.patric.dungeonsreborn.effects.editor.EditorActionType;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditAction;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditEvent;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -27,8 +27,10 @@ import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.flow.OptionPickerWindow;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class EditorActionGraphMenu extends Window {
@@ -49,7 +51,8 @@ public final class EditorActionGraphMenu extends Window {
 
   public EditorActionGraphMenu(EditorServices services, EditorAbilityDraft draft, Map<String, Object> root,
       List<Map<String, Object>> actions, String title, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>" + title + "</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.actions.title",
+        Placeholder.unparsed("title", title == null ? "" : title)), true);
     this.services = Objects.requireNonNull(services, "services");
     this.draft = Objects.requireNonNull(draft, "draft");
     this.root = Objects.requireNonNull(root, "root");
@@ -63,20 +66,22 @@ public final class EditorActionGraphMenu extends Window {
     this.list = new VirtualList<>(
         1, 1, 4, 7,
         this::entries,
-        (player, entry) -> entryItem(entry),
+        (player, entry) -> entryItem(player, entry),
         (ctx, entry) -> openDetail(ctx.player(), entry.index()));
     list.searchKey(entry -> entry.type + " " + entry.summary);
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
     nav(4, addActionButton());
     nav(5, clearActionsButton());
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.REPEATER, GuiMini.mm("<gold><bold>" + this.title + "</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Sequence editor</gray>")))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.REPEATER,
+        GuiI18n.tr("gui.effects.editor.actions.header.title",
+            Placeholder.unparsed("title", this.title)),
+        List.of(GuiI18n.tr("gui.effects.editor.actions.header.hint")))));
     setFixedAt(0, 7, scriptEditButton());
     setFixedAt(0, 8, scriptClearButton());
 
@@ -97,25 +102,27 @@ public final class EditorActionGraphMenu extends Window {
     return out;
   }
 
-  private org.bukkit.inventory.ItemStack entryItem(ActionEntry entry) {
+  private org.bukkit.inventory.ItemStack entryItem(Player player, ActionEntry entry) {
     EditorActionType type = EditorActionType.fromType(entry.type);
     Material mat = type == null ? Material.GRAY_DYE : type.icon();
     String label = type == null ? entry.type : type.label();
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>Type:</gray> <white>" + label + "</white>"));
+    lore.add(GuiI18n.tr(player, "gui.effects.editor.actions.entry.type",
+        Placeholder.unparsed("value", label)));
     if (!entry.summary.isBlank()) {
       lore.add(renderSummary(entry.summary));
     }
     return GuiItem.of(mat)
-        .displayName(GuiMini.mm("<yellow><bold>#" + (entry.index + 1) + "</bold></yellow>"))
+        .displayName(GuiI18n.tr(player, "gui.effects.editor.actions.entry.title",
+            Placeholder.unparsed("index", String.valueOf(entry.index + 1))))
         .lore(lore)
         .build();
   }
 
   private Button addActionButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.PRIMARY, Component.text("Add Action")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.PRIMARY, GuiI18n.tr(p, "gui.effects.editor.actions.add")), ctx -> {
       OptionPickerWindow<EditorActionType> picker = new OptionPickerWindow<>(
-          GuiMini.mm("<white><bold>Add Action</bold></white>"),
+          GuiI18n.tr("gui.effects.editor.actions.addTitle"),
           List.of(EditorActionType.values()),
           type -> GuiItems.named(type.icon(), Component.text(type.label()), List.of(Component.text(type.hint()))),
           (player, type) -> {
@@ -130,7 +137,7 @@ public final class EditorActionGraphMenu extends Window {
   }
 
   private Button clearActionsButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Clear")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.effects.editor.actions.clear")), ctx -> {
       actions.clear();
       saveDraft(ctx.player(), "action.clear");
       list.invalidate(ctx.player());
@@ -143,13 +150,16 @@ public final class EditorActionGraphMenu extends Window {
         p -> {
           boolean active = draft.scriptMode() != EditorAbilityDraft.ScriptMode.NONE;
           Material mat = active ? Material.LIME_DYE : Material.GRAY_DYE;
-          String status = active ? "active" : "off";
-          return GuiItems.named(mat, GuiMini.mm("<aqua><bold>DSL Script</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Status:</gray> <white>" + status + "</white>"),
-              GuiMini.mm("<gray>Click to edit.</gray>")));
+          Component status = GuiI18n.tr(p, active
+              ? "gui.effects.editor.actions.script.status.active"
+              : "gui.effects.editor.actions.script.status.off");
+          return GuiItems.named(mat, GuiI18n.tr(p, "gui.effects.editor.actions.script.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.actions.script.status",
+                  Placeholder.component("value", status)),
+              GuiI18n.tr(p, "gui.effects.editor.actions.script.hint")));
         },
-        GuiMini.mm("<gray>Paste DSL script (blank to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.actions.script.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         java.time.Duration.ofSeconds(45),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -170,9 +180,9 @@ public final class EditorActionGraphMenu extends Window {
   }
 
   private Button scriptClearButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.CANCEL, Component.text("Clear Script")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.CANCEL, GuiI18n.tr(p, "gui.effects.editor.actions.script.clear")), ctx -> {
       if (draft.scriptMode() == EditorAbilityDraft.ScriptMode.NONE) {
-        ctx.player().sendMessage(Component.text("§7No script to clear."));
+        ctx.player().sendMessage(Locales.component(ctx.player(), "messages.effects.editor.dsl.none"));
         return;
       }
       draft.clearScript();
@@ -219,7 +229,7 @@ public final class EditorActionGraphMenu extends Window {
   private static String summarizeCondition(Object raw) {
     Map<String, Object> map = EditorActionTree.mapFrom(raw);
     if (map == null) {
-      return "(none)";
+      return GuiI18n.str(GuiI18n.defaultLocale(), "gui.common.none");
     }
     String type = String.valueOf(map.get("type"));
     if ("chance".equalsIgnoreCase(type)) {
@@ -234,7 +244,7 @@ public final class EditorActionGraphMenu extends Window {
   private static String summarizeTargeter(Object raw) {
     Map<String, Object> map = EditorActionTree.mapFrom(raw);
     if (map == null) {
-      return "(none)";
+      return GuiI18n.str(GuiI18n.defaultLocale(), "gui.common.none");
     }
     String type = String.valueOf(map.get("type"));
     if ("sphere".equalsIgnoreCase(type) || "nearest".equalsIgnoreCase(type)) {

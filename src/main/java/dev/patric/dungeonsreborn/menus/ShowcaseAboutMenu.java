@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiManager;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -17,6 +17,7 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.flow.ConfirmDialogWindow;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class ShowcaseAboutMenu extends Window {
   private static final int SIZE = 54;
@@ -26,28 +27,28 @@ public final class ShowcaseAboutMenu extends Window {
   private final AtomicReference<OpenContext> lastOpen = new AtomicReference<>();
 
   public ShowcaseAboutMenu() {
-    super(SIZE, GuiMini.mm("<white><bold>About / Debug</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.showcase.about.title"), true);
 
     background(dev.patric.dungeonsreborn.gui.GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))).autoDescribeInLore(false));
-    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, Component.text("Close"))).autoDescribeInLore(false));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))).autoDescribeInLore(false));
+    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, GuiI18n.tr(p, "gui.button.close"))).autoDescribeInLore(false));
 
-    setFixed(10, new Label(p -> dev.patric.dungeonsreborn.gui.GuiItems.named(Material.BOOK, Component.text("What this shows"), List.of(
-        GuiMini.mm("<gray>- Window stack + nav bar</gray>"),
-        GuiMini.mm("<gray>- Click-outside hook</gray>"),
-        GuiMini.mm("<gray>- Open/close reasons</gray>"),
-        GuiMini.mm("<gray>- Window tick hook (this screen updates)</gray>"),
-        GuiMini.mm("<gray>- Sound helpers</gray>")))));
+    setFixed(10, new Label(p -> dev.patric.dungeonsreborn.gui.GuiItems.named(Material.BOOK, GuiI18n.tr(p, "gui.showcase.about.what.title"), List.of(
+        GuiI18n.tr(p, "gui.showcase.about.what.stack"),
+        GuiI18n.tr(p, "gui.showcase.about.what.clickOutside"),
+        GuiI18n.tr(p, "gui.showcase.about.what.reasons"),
+        GuiI18n.tr(p, "gui.showcase.about.what.tick"),
+        GuiI18n.tr(p, "gui.showcase.about.what.sound")))));
 
-    setFixed(16, new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, Component.text("Toggle Debug Logs")), ctx -> {
+    setFixed(16, new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, GuiI18n.tr(p, "gui.showcase.about.toggleDebug")), ctx -> {
       GuiManager mgr = GuiManager.get();
       mgr.setDebug(!mgr.isDebugEnabled());
       GuiSounds.click(ctx.player());
       ctx.redraw();
     }).autoDescribeInLore(false));
 
-    setFixed(28, new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, Component.text("Confirm Dialog")), ctx -> {
+    setFixed(28, new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, GuiI18n.tr(p, "gui.showcase.about.confirmDialog")), ctx -> {
       openSubWindow(ctx.player(), confirmExample());
       GuiSounds.click(ctx.player());
     }).autoDescribeInLore(false));
@@ -57,7 +58,7 @@ public final class ShowcaseAboutMenu extends Window {
 
     onClickOutside(ctx -> {
       GuiSounds.error(ctx.player());
-      ctx.player().sendMessage(GuiMini.mm("<gray>You clicked outside the window.</gray>"));
+      ctx.player().sendMessage(GuiI18n.tr(ctx.player(), "gui.showcase.about.clickOutside"));
     });
 
     onOpenWithReason(ctx -> {
@@ -77,36 +78,37 @@ public final class ShowcaseAboutMenu extends Window {
   private org.bukkit.inventory.ItemStack snapshotItem(Player player) {
     GuiManager.ActiveWindowSnapshot snap = GuiManager.get().activeWindow(player);
     List<Component> lore = List.of(
-        Component.text("expectedWindow=" + snap.expectedWindow()),
-        Component.text("actualTopHolder=" + snap.actualTopHolder()),
-        Component.text("pendingResumeWindow=" + snap.pendingResumeWindow()),
-        Component.text("lastExternalTopHolder=" + snap.lastExternalTopHolder()),
-        Component.text("lastEvent=" + snap.lastEvent()));
-    return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, Component.text("Active Window Snapshot"), lore);
+        GuiI18n.tr(player, "gui.showcase.about.snapshot.expected", Placeholder.unparsed("value", String.valueOf(snap.expectedWindow()))),
+        GuiI18n.tr(player, "gui.showcase.about.snapshot.actual", Placeholder.unparsed("value", String.valueOf(snap.actualTopHolder()))),
+        GuiI18n.tr(player, "gui.showcase.about.snapshot.pending", Placeholder.unparsed("value", String.valueOf(snap.pendingResumeWindow()))),
+        GuiI18n.tr(player, "gui.showcase.about.snapshot.external", Placeholder.unparsed("value", String.valueOf(snap.lastExternalTopHolder()))),
+        GuiI18n.tr(player, "gui.showcase.about.snapshot.event", Placeholder.unparsed("value", String.valueOf(snap.lastEvent()))));
+    return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, GuiI18n.tr(player, "gui.showcase.about.snapshot.title"), lore);
   }
 
   private org.bukkit.inventory.ItemStack openReasonItem(Player player) {
     OpenContext ctx = lastOpen.get();
     if (ctx == null) {
-      return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, Component.text("Open Reason"), List.of(Component.text("N/A")));
+      return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, GuiI18n.tr(player, "gui.showcase.about.reason.title"),
+          List.of(GuiI18n.tr(player, "gui.showcase.about.reason.none")));
     }
-    return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, Component.text("Open Reason"), List.of(
-        Component.text("reason=" + ctx.reason()),
-        Component.text("detail=" + ctx.detail())));
+    return dev.patric.dungeonsreborn.gui.GuiItems.named(Material.PAPER, GuiI18n.tr(player, "gui.showcase.about.reason.title"), List.of(
+        GuiI18n.tr(player, "gui.showcase.about.reason.reason", Placeholder.unparsed("value", String.valueOf(ctx.reason()))),
+        GuiI18n.tr(player, "gui.showcase.about.reason.detail", Placeholder.unparsed("value", String.valueOf(ctx.detail())))));
   }
 
   public static Window confirmExample() {
     return new ConfirmDialogWindow(
-        GuiMini.mm("<white><bold>Confirm</bold></white>"),
-        GuiMini.mm("<yellow><bold>Do the thing?</bold></yellow>"),
-        List.of(GuiMini.mm("<gray>This is a modal subwindow example.</gray>")),
+        GuiI18n.tr("gui.showcase.about.confirm.title"),
+        GuiI18n.tr("gui.showcase.about.confirm.header"),
+        List.of(GuiI18n.tr("gui.showcase.about.confirm.detail")),
         (player, result) -> {
           if (result == ConfirmDialogWindow.ConfirmResult.CONFIRM) {
             GuiSounds.success(player);
-            player.sendMessage(GuiMini.mm("<green>Confirmed.</green>"));
+            player.sendMessage(GuiI18n.tr(player, "gui.showcase.about.confirm.confirmed"));
           } else {
             GuiSounds.error(player);
-            player.sendMessage(GuiMini.mm("<red>Cancelled.</red>"));
+            player.sendMessage(GuiI18n.tr(player, "gui.showcase.about.confirm.cancelled"));
           }
         });
   }

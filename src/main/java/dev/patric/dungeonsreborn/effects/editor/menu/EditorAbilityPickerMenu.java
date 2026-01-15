@@ -14,8 +14,8 @@ import dev.patric.dungeonsreborn.effects.AbilitySpec;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.gui.GuiItem;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -25,6 +25,7 @@ import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class EditorAbilityPickerMenu extends Window {
@@ -40,7 +41,7 @@ public final class EditorAbilityPickerMenu extends Window {
   private final VirtualList<AbilityEntry> list;
 
   public EditorAbilityPickerMenu(EditorServices services, BiConsumer<Player, String> onPick) {
-    super(SIZE, GuiMini.mm("<white><bold>Select Ability</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.abilityPicker.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.onPick = Objects.requireNonNull(onPick, "onPick");
 
@@ -56,13 +57,13 @@ public final class EditorAbilityPickerMenu extends Window {
         });
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Abilities</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Select an ability to bind.</gray>")))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiI18n.tr("gui.effects.editor.abilityPicker.header.title"), List.of(
+        GuiI18n.tr("gui.effects.editor.abilityPicker.header.hint")))));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> GuiSounds.close(ctx.player()));
@@ -82,13 +83,13 @@ public final class EditorAbilityPickerMenu extends Window {
 
   private org.bukkit.inventory.ItemStack entryItem(AbilityEntry entry) {
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + entry.id() + "</white>"));
+    lore.add(GuiI18n.tr("gui.common.line.id", Placeholder.unparsed("value", entry.id())));
     if (entry.description() != null && !entry.description().isBlank()) {
       for (Component line : renderDescription(entry.description())) {
         lore.add(line);
       }
     }
-    lore.add(GuiMini.mm("<green>Click to select.</green>"));
+    lore.add(GuiI18n.tr("gui.effects.editor.abilityPicker.entry.select"));
     return GuiItem.of(Material.PAPER)
         .displayName(render(entry.name()))
         .lore(lore)
@@ -107,14 +108,14 @@ public final class EditorAbilityPickerMenu extends Window {
       out.add(render(line));
     }
     if (lines.length > limit) {
-      out.add(GuiMini.mm("<gray>...</gray>"));
+      out.add(GuiI18n.tr("gui.effects.editor.abilityPicker.entry.more"));
     }
     return out;
   }
 
   private static Component render(String raw) {
     if (raw == null) {
-      return Component.text("(unnamed)");
+      return GuiI18n.tr("gui.effects.editor.abilityPicker.entry.unnamed");
     }
     if (raw.indexOf('§') >= 0) {
       return LEGACY.deserialize(raw);

@@ -21,8 +21,8 @@ import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatcher;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatchers;
 import dev.patric.dungeonsreborn.gui.GuiComponent;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -33,6 +33,7 @@ import dev.patric.dungeonsreborn.gui.components.input.CycleSelector;
 import dev.patric.dungeonsreborn.gui.components.item.ItemPreview;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class EditorBindingDetailMenu extends Window {
   private static final int SIZE = 54;
@@ -78,7 +79,7 @@ public final class EditorBindingDetailMenu extends Window {
   private final CycleSelector<MatcherType> matcherTypeSelector;
 
   public EditorBindingDetailMenu(EditorServices services, EditorAbilityDraft draft, int index, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>Binding</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.binding.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.draft = Objects.requireNonNull(draft, "draft");
     this.index = index;
@@ -87,11 +88,12 @@ public final class EditorBindingDetailMenu extends Window {
     this.triggers = EditorAbilityYaml.triggers(draft);
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
 
     clickSelector = new CycleSelector<>(List.of(InteractTrigger.RIGHT_CLICK, InteractTrigger.LEFT_CLICK),
-        (player, value) -> GuiItems.named(Material.ENDER_PEARL, GuiMini.mm("<aqua><bold>Click</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value.name() + "</white>"))))
+        (player, value) -> GuiItems.named(Material.ENDER_PEARL, GuiI18n.tr(player, "gui.effects.editor.binding.click.title"), List.of(
+            GuiI18n.tr(player, "gui.effects.editor.binding.click.current",
+                Placeholder.unparsed("value", value.name())))))
         .onChange((player, value) -> {
           Map<String, Object> trigger = binding();
           trigger.put("type", "interact");
@@ -100,9 +102,10 @@ public final class EditorBindingDetailMenu extends Window {
         });
 
     matcherTypeSelector = new CycleSelector<>(List.of(MatcherType.values()),
-        (player, value) -> GuiItems.named(Material.COMPARATOR, GuiMini.mm("<aqua><bold>Matcher Type</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Type:</gray> <white>" + value.label + "</white>"),
-            GuiMini.mm("<gray>" + value.hint + "</gray>"))))
+        (player, value) -> GuiItems.named(Material.COMPARATOR, GuiI18n.tr(player, "gui.effects.editor.binding.matcherType.title"), List.of(
+            GuiI18n.tr(player, "gui.effects.editor.binding.matcherType.current",
+                Placeholder.component("value", matcherLabel(player, value))),
+            matcherHint(player, value))))
         .onChange((player, value) -> {
           Map<String, Object> trigger = binding();
           trigger.put("item", defaultMatcher(value));
@@ -110,7 +113,9 @@ public final class EditorBindingDetailMenu extends Window {
           redraw(player);
         });
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.TRIPWIRE_HOOK, GuiMini.mm("<gold><bold>Binding #" + (index + 1) + "</bold></gold>"))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.TRIPWIRE_HOOK,
+        GuiI18n.tr("gui.effects.editor.binding.header.title",
+            Placeholder.unparsed("index", String.valueOf(index + 1))))));
     setFixedAt(1, 1, clickSelector);
     setFixedAt(1, 3, requireSneakingToggle());
     setFixedAt(1, 5, cancelEventToggle());
@@ -118,7 +123,7 @@ public final class EditorBindingDetailMenu extends Window {
     setFixedAt(2, 3, bindingIdInput());
     setFixedAt(3, 1, matcherTypeSelector);
     setFixedAt(4, 1, new ItemPreview(p -> p.getInventory().getItemInMainHand())
-        .placeholder(GuiItems.named(Material.GRAY_STAINED_GLASS_PANE, Component.text("Hold an item"))));
+        .placeholder(GuiItems.named(Material.GRAY_STAINED_GLASS_PANE, GuiI18n.tr("gui.effects.editor.binding.preview.none"))));
     setFixedAt(4, 5, deleteButton());
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
@@ -197,12 +202,23 @@ public final class EditorBindingDetailMenu extends Window {
     return matcher;
   }
 
+  private static Component matcherLabel(Player player, MatcherType type) {
+    return GuiI18n.tr(player, "gui.effects.editor.binding.matcher." + type.id + ".label");
+  }
+
+  private static Component matcherHint(Player player, MatcherType type) {
+    return GuiI18n.tr(player, "gui.effects.editor.binding.matcher." + type.id + ".hint");
+  }
+
   private Button requireSneakingToggle() {
     return new Button(p -> {
       boolean enabled = Boolean.TRUE.equals(binding().get("requireSneaking"));
       Material mat = enabled ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Sneaking</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Status:</gray> <white>" + (enabled ? "on" : "off") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.effects.editor.binding.sneaking.title"), List.of(
+          GuiI18n.tr(p, "gui.effects.editor.binding.sneaking.status",
+              Placeholder.component("value", GuiI18n.tr(p, enabled
+                  ? "gui.common.status.enabled"
+                  : "gui.common.status.disabled")))));
     }, ctx -> {
       Map<String, Object> trigger = binding();
       boolean enabled = Boolean.TRUE.equals(trigger.get("requireSneaking"));
@@ -217,8 +233,11 @@ public final class EditorBindingDetailMenu extends Window {
     return new Button(p -> {
       boolean enabled = !Boolean.FALSE.equals(binding().get("cancelEvent"));
       Material mat = enabled ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Cancel Event</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Status:</gray> <white>" + (enabled ? "on" : "off") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.effects.editor.binding.cancelEvent.title"), List.of(
+          GuiI18n.tr(p, "gui.effects.editor.binding.cancelEvent.status",
+              Placeholder.component("value", GuiI18n.tr(p, enabled
+                  ? "gui.common.status.enabled"
+                  : "gui.common.status.disabled")))));
     }, ctx -> {
       Map<String, Object> trigger = binding();
       boolean enabled = !Boolean.FALSE.equals(trigger.get("cancelEvent"));
@@ -234,11 +253,14 @@ public final class EditorBindingDetailMenu extends Window {
         p -> {
           Object raw = binding().get("permission");
           String value = raw == null ? "" : raw.toString();
-          return GuiItems.named(Material.NAME_TAG, GuiMini.mm("<aqua><bold>Permission</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value.isBlank() ? "(none)" : value) + "</white>")));
+          return GuiItems.named(Material.NAME_TAG, GuiI18n.tr(p, "gui.effects.editor.binding.permission.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.binding.permission.current",
+                  Placeholder.unparsed("value", value.isBlank()
+                      ? GuiI18n.str(p, "gui.common.none")
+                      : value))));
         },
-        GuiMini.mm("<gray>Enter permission (blank to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.binding.permission.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -263,11 +285,14 @@ public final class EditorBindingDetailMenu extends Window {
         p -> {
           Object raw = binding().get("id");
           String value = raw == null ? "" : raw.toString();
-          return GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>Binding Id</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value.isBlank() ? "(auto)" : value) + "</white>")));
+          return GuiItems.named(Material.PAPER, GuiI18n.tr(p, "gui.effects.editor.binding.id.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.binding.id.current",
+                  Placeholder.unparsed("value", value.isBlank()
+                      ? GuiI18n.str(p, "gui.effects.editor.binding.id.auto")
+                      : value))));
         },
-        GuiMini.mm("<gray>Enter binding id (blank for auto)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.binding.id.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -295,19 +320,20 @@ public final class EditorBindingDetailMenu extends Window {
       case CUSTOM_MODEL_DATA -> String.valueOf(matcher.getOrDefault("value", matcher.get("cmd")));
       case PDC_TAG -> String.valueOf(matcher.get("key"));
       case LORE_CONTAINS -> String.valueOf(matcher.get("text"));
-      default -> "(none)";
+      default -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.common.none");
     };
 
     if (type == MatcherType.ANY_NON_AIR) {
-      return new Label(GuiItems.named(Material.GRAY_DYE, GuiMini.mm("<aqua><bold>Matcher Value</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>No value required.</gray>"))));
+      return new Label(GuiItems.named(Material.GRAY_DYE, GuiI18n.tr("gui.effects.editor.binding.matcherValue.title"), List.of(
+          GuiI18n.tr("gui.effects.editor.binding.matcherValue.none"))));
     }
 
     return new TextButton(
-        p -> GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>Matcher Value</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + valueLabel + "</white>"))),
-        GuiMini.mm("<gray>Enter matcher value</gray>"),
-        "cancel",
+        p -> GuiItems.named(Material.PAPER, GuiI18n.tr(p, "gui.effects.editor.binding.matcherValue.title"), List.of(
+            GuiI18n.tr(p, "gui.effects.editor.binding.matcherValue.current",
+                Placeholder.unparsed("value", valueLabel)))),
+        GuiI18n.tr("gui.effects.editor.binding.matcherValue.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -341,11 +367,13 @@ public final class EditorBindingDetailMenu extends Window {
         case CUSTOM_MODEL_DATA -> String.valueOf(matcher.getOrDefault("value", matcher.get("cmd")));
         case PDC_TAG -> String.valueOf(matcher.get("key"));
         case LORE_CONTAINS -> String.valueOf(matcher.get("text"));
-        default -> "any";
+        default -> GuiI18n.str(p, "gui.effects.editor.binding.matcherSummary.any");
       };
-      return GuiItems.named(Material.COMPARATOR, GuiMini.mm("<yellow><bold>Matcher</bold></yellow>"), List.of(
-          GuiMini.mm("<gray>Type:</gray> <white>" + type.label + "</white>"),
-          GuiMini.mm("<gray>Value:</gray> <white>" + value + "</white>")));
+      return GuiItems.named(Material.COMPARATOR, GuiI18n.tr(p, "gui.effects.editor.binding.matcherSummary.title"), List.of(
+          GuiI18n.tr(p, "gui.effects.editor.binding.matcherSummary.type",
+              Placeholder.component("value", matcherLabel(p, type))),
+          GuiI18n.tr(p, "gui.effects.editor.binding.matcherSummary.value",
+              Placeholder.unparsed("value", value))));
     });
   }
 
@@ -353,13 +381,16 @@ public final class EditorBindingDetailMenu extends Window {
     return new Label(p -> {
       boolean match = matchesCurrentItem(p);
       Material mat = match ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Match Test</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Current item:</gray> <white>" + (match ? "matches" : "does not match") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.effects.editor.binding.match.title"), List.of(
+          GuiI18n.tr(p, "gui.effects.editor.binding.match.status",
+              Placeholder.component("value", GuiI18n.tr(p, match
+                  ? "gui.effects.editor.binding.match.matches"
+                  : "gui.effects.editor.binding.match.noMatch")))));
     });
   }
 
   private Button deleteButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Delete")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.effects.editor.binding.delete")), ctx -> {
       if (index < 0 || index >= triggers.size()) {
         return;
       }
@@ -420,22 +451,22 @@ public final class EditorBindingDetailMenu extends Window {
 
   private static Component validateMatcherValue(MatcherType type, String input) {
     if (input == null || input.isBlank()) {
-      return Component.text("Value required.");
+      return GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.binding.validation.required");
     }
     return switch (type) {
       case MATERIAL -> Material.matchMaterial(input.trim().toUpperCase(Locale.ROOT)) == null
-          ? Component.text("Unknown material.")
+          ? GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.binding.validation.material")
           : null;
       case CUSTOM_MODEL_DATA -> {
         try {
           Integer.parseInt(input.trim());
           yield null;
         } catch (NumberFormatException ex) {
-          yield Component.text("Enter a whole number.");
+          yield GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.binding.validation.integer");
         }
       }
       case PDC_TAG -> NamespacedKey.fromString(input.trim()) == null
-          ? Component.text("Invalid NamespacedKey.")
+          ? GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.binding.validation.namespacedKey")
           : null;
       case LORE_CONTAINS -> null;
       default -> null;

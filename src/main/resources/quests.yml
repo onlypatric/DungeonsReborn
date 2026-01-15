@@ -1,0 +1,40 @@
+# Quest definitions for DungeonsReborn.
+#
+# Format:
+# quests:
+#   quest_id:
+#     name: "Quest Name"
+#     description:
+#       - "Line one"
+#       - "Line two"
+#     requirements:
+#       level: 0
+#       quests: []
+#     rewards:
+#       xp: 0
+#       tokens: 0
+#       compressed: 0
+#       pallet: 0
+#       items:
+#         - type: itemId
+#           itemId: example_item_id
+#           amount: 1
+#     objectives:
+#       - type: kill_mob
+#         mob: mob_id
+#         count: 5
+#       - type: use_item
+#         itemId: item_id
+#         count: 1
+#       - type: visit_region
+#         world: minecraft:world
+#         x: 0
+#         y: 64
+#         z: 0
+#         radius: 4
+#       - type: craft_item
+#         recipeId: recipe_id
+#         count: 1
+#     cooldownSeconds: 0
+#     rotation: none | daily | weekly
+quests: {}

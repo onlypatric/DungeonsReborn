@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import dev.patric.dungeonsreborn.gui.GuiComponent;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
-import net.kyori.adventure.text.Component;
+import dev.patric.dungeonsreborn.locale.Locales;
 
 /**
  * A single-slot input that cycles through a list of options (left = next, right = previous).
@@ -35,11 +35,11 @@ public final class CycleSelector<T> implements GuiComponent {
     this.itemFactory = Objects.requireNonNull(itemFactory, "itemFactory");
 
     this.button = new Button(p -> this.itemFactory.apply(p, selected(p)))
-        .left(Component.text("Next"), ctx -> {
+        .left(Locales.component(null, "gui.cycle.next"), ctx -> {
           next(ctx.player());
           ctx.redrawSlot();
         })
-        .right(Component.text("Previous"), ctx -> {
+        .right(Locales.component(null, "gui.cycle.previous"), ctx -> {
           previous(ctx.player());
           ctx.redrawSlot();
         });
@@ -104,4 +104,3 @@ public final class CycleSelector<T> implements GuiComponent {
     onChange.accept(player, options.get(idx));
   }
 }
-

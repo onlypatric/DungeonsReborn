@@ -3,6 +3,7 @@ package dev.patric.dungeonsreborn.effects.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -72,6 +73,7 @@ import dev.patric.dungeonsreborn.effects.minions.MinionSpecialAttackSpec;
 import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.logging.ServiceLogManager;
+import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -234,6 +236,22 @@ public final class EffectsYamlAbilities {
         effectsLog.info("[Effects] YAML cancelled " + cancelled + " running casts on reload");
       }
     }
+
+    Set<String> previousLoadedAbilityIds = new HashSet<>(loadedAbilityIds);
+    Set<String> previousLoadedBindingIds = new HashSet<>(loadedBindingIds);
+    Map<String, AbilitySpec> previousYamlAbilities = new HashMap<>();
+    for (String id : previousLoadedAbilityIds) {
+      AbilitySpec spec = engine.abilitySpec(id);
+      if (spec != null) {
+        previousYamlAbilities.put(id, spec);
+      }
+    }
+    Map<String, AbilitySpec> previousOverridden = new HashMap<>(overriddenCodeAbilities);
+    Map<String, ItemTemplate> previousTemplates = new HashMap<>(itemTemplates);
+    Map<String, dev.patric.dungeonsreborn.effects.actions.Action> previousYamlGraphs = new HashMap<>(yamlActionGraphs);
+    Map<String, java.util.Map<String, Object>> previousMacros = macros;
+    List<InteractBinding> previousInteractBindings = bindings == null ? java.util.List.of() : new ArrayList<>(bindings.interactBindings());
+    List<PassiveBinding> previousPassiveBindings = bindings == null ? java.util.List.of() : new ArrayList<>(bindings.passiveBindings());
 
     // Unregister previously-loaded abilities (YAML owned).
     for (String id : loadedAbilityIds) {
@@ -412,6 +430,38 @@ public final class EffectsYamlAbilities {
     }
 
     if (!errors.isEmpty()) {
+      // Roll back to previous YAML state on error.
+      for (String id : loadedAbilityIds) {
+        engine.unregisterAbility(id);
+      }
+      if (bindings != null) {
+        for (String id : loadedBindingIds) {
+          bindings.unregister(id);
+          bindings.unregisterPassive(id);
+        }
+        for (InteractBinding binding : previousInteractBindings) {
+          bindings.register(binding);
+        }
+        for (PassiveBinding binding : previousPassiveBindings) {
+          bindings.registerPassive(binding);
+        }
+      }
+      loadedBindingIds.clear();
+      loadedBindingIds.addAll(previousLoadedBindingIds);
+      for (Map.Entry<String, AbilitySpec> entry : previousYamlAbilities.entrySet()) {
+        engine.unregisterAbility(entry.getKey());
+        engine.registerAbility(entry.getValue());
+      }
+      loadedAbilityIds.clear();
+      loadedAbilityIds.addAll(previousLoadedAbilityIds);
+      overriddenCodeAbilities.clear();
+      overriddenCodeAbilities.putAll(previousOverridden);
+      itemTemplates.clear();
+      itemTemplates.putAll(previousTemplates);
+      yamlActionGraphs.clear();
+      yamlActionGraphs.putAll(previousYamlGraphs);
+      macros = previousMacros;
+
       effectsLog.warn("[Effects] YAML reload had " + errors.size() + " errors (some abilities/bindings may be missing)");
       for (String e : errors) {
         if (isBindingError(e)) {
@@ -420,11 +470,27 @@ public final class EffectsYamlAbilities {
           effectsLog.warn("[Effects] YAML: " + e);
         }
       }
+      effectsLog.warn("[Effects] YAML reload failed; previous configuration kept");
     } else {
       effectsLog.info("[Effects] YAML loaded " + loaded + " abilities");
       bindingsLog.info("[Bindings] YAML loaded " + loadedItemBindings + " item bindings");
     }
-    return new ReloadResult(loaded, loadedItemBindings, errors);
+    SystemStatusStore.get().record(
+        "effects",
+        "Effects",
+        file().getPath(),
+        "abilities=" + (errors.isEmpty() ? loaded : previousLoadedAbilityIds.size()),
+        errors);
+    SystemStatusStore.get().record(
+        "bindings",
+        "Bindings",
+        itemsDir.getPath(),
+        "itemBindings=" + (errors.isEmpty() ? loadedItemBindings : previousLoadedBindingIds.size()),
+        errors);
+    return new ReloadResult(
+        errors.isEmpty() ? loaded : previousLoadedAbilityIds.size(),
+        errors.isEmpty() ? loadedItemBindings : previousLoadedBindingIds.size(),
+        errors);
   }
 
   public int syncOnlineItems() {
@@ -475,6 +541,9 @@ public final class EffectsYamlAbilities {
 
   private ItemStack syncItem(Player player, ItemStack item) {
     if (item == null || item.getType().isAir()) {
+      return item;
+    }
+    if (!ItemMarkers.getUpgradeRecords(item).isEmpty()) {
       return item;
     }
     ItemTemplate template = findTemplate(player, item);
@@ -851,6 +920,15 @@ public final class EffectsYamlAbilities {
       if (ticks > 0) {
         builder.cooldownTicks(ticks, cooldown.getString("key"));
       }
+    }
+
+    // Progression XP awards (vanilla XP system).
+    ConfigurationSection progression = a.getConfigurationSection("progression");
+    if (progression != null) {
+      int fixedXp = progression.getInt("xp", -1);
+      int minXp = progression.getInt("minXp", fixedXp >= 0 ? fixedXp : 0);
+      int maxXp = progression.getInt("maxXp", fixedXp >= 0 ? fixedXp : minXp);
+      builder.xpAward(minXp, maxXp);
     }
 
     // Action or Script

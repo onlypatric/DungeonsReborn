@@ -21,6 +21,7 @@ import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -52,16 +53,22 @@ public final class VirtualList<T> {
 
   private Predicate<T> globalFilter = cast(ALWAYS_TRUE);
   private Function<T, String> searchKey;
+  private int maxEntries = 2000;
 
   private final Map<UUID, State<T>> stateByPlayer = new ConcurrentHashMap<>();
 
   private ItemStack emptyCellItem = GuiItem.of(Material.GRAY_STAINED_GLASS_PANE).displayName(Component.text(" ")).build();
+  private Function<Player, ItemStack> emptyStateItem;
 
   // Mounted slots for targeted redraw.
   private final int[] cellSlots;
   private int prevSlot = -1;
   private int nextSlot = -1;
   private int pageIndicatorSlot = -1;
+
+  private Component tr(Player player, String key, Object... pairs) {
+    return Locales.component(player, key, Locales.placeholders(pairs));
+  }
 
   public VirtualList(int topRow, int leftCol, int rows, int cols,
       Function<Player, List<T>> entries,
@@ -90,6 +97,16 @@ public final class VirtualList<T> {
     return this;
   }
 
+  public VirtualList<T> emptyStateItem(Function<Player, ItemStack> item) {
+    this.emptyStateItem = Objects.requireNonNull(item, "item");
+    return this;
+  }
+
+  public VirtualList<T> emptyStateItem(ItemStack item) {
+    Objects.requireNonNull(item, "item");
+    return emptyStateItem(p -> item);
+  }
+
   public VirtualList<T> filter(Predicate<T> predicate) {
     this.globalFilter = Objects.requireNonNull(predicate, "predicate");
     return this;
@@ -100,6 +117,11 @@ public final class VirtualList<T> {
    */
   public VirtualList<T> searchKey(Function<T, String> extractor) {
     this.searchKey = Objects.requireNonNull(extractor, "extractor");
+    return this;
+  }
+
+  public VirtualList<T> maxEntries(int maxEntries) {
+    this.maxEntries = Math.max(0, maxEntries);
     return this;
   }
 
@@ -191,11 +213,11 @@ public final class VirtualList<T> {
       resolve(p, state);
       boolean enabled = state.page > 0;
       Material mat = enabled ? Material.ARROW : Material.GRAY_DYE;
-      Component name = Component.text("Prev page");
-      Component lore = Component.text("Page " + (state.page + 1) + "/" + Math.max(1, state.lastTotalPages));
+      Component name = tr(p, "gui.list.prev.title");
+      Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
       return GuiItems.named(mat, name, List.of(lore));
       });
-      left(Component.text("Previous page"), ctx -> {
+      left(tr(null, "gui.list.prev.action"), ctx -> {
         State<T> state = state(ctx.player());
         if (state.page <= 0) {
           return;
@@ -226,11 +248,11 @@ public final class VirtualList<T> {
       resolve(p, state);
       boolean enabled = state.page + 1 < Math.max(1, state.lastTotalPages);
       Material mat = enabled ? Material.ARROW : Material.GRAY_DYE;
-      Component name = Component.text("Next page");
-      Component lore = Component.text("Page " + (state.page + 1) + "/" + Math.max(1, state.lastTotalPages));
+      Component name = tr(p, "gui.list.next.title");
+      Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
       return GuiItems.named(mat, name, List.of(lore));
       });
-      left(Component.text("Next page"), ctx -> {
+      left(tr(null, "gui.list.next.action"), ctx -> {
         State<T> state = state(ctx.player());
         resolve(ctx.player(), state);
         if (state.page + 1 >= Math.max(1, state.lastTotalPages)) {
@@ -321,6 +343,7 @@ public final class VirtualList<T> {
     String q = hasQuery ? query.toLowerCase(java.util.Locale.ROOT) : "";
 
     List<T> filtered = new ArrayList<>(raw.size());
+    boolean truncated = false;
     for (T entry : raw) {
       if (!predicate.test(entry)) {
         continue;
@@ -332,6 +355,10 @@ public final class VirtualList<T> {
         }
       }
       filtered.add(entry);
+      if (maxEntries > 0 && filtered.size() >= maxEntries) {
+        truncated = true;
+        break;
+      }
     }
 
     int pageSize = pageSize();
@@ -343,6 +370,7 @@ public final class VirtualList<T> {
 
     state.lastTotalItems = filtered.size();
     state.lastTotalPages = totalPages;
+    state.truncated = truncated;
     state.cache = new Resolved<>(filtered, page, totalPages);
     state.cacheTick = currentTick;
   }
@@ -378,6 +406,7 @@ public final class VirtualList<T> {
 
     private int lastTotalItems;
     private int lastTotalPages = 1;
+    private boolean truncated;
 
     private void invalidate() {
       cacheTick = Integer.MIN_VALUE;
@@ -407,6 +436,10 @@ public final class VirtualList<T> {
       Resolved<T> resolved = state.cache;
       if (resolved == null) {
         return emptyCellItem.clone();
+      }
+      if (resolved.filtered().isEmpty() && emptyStateItem != null) {
+        ItemStack item = emptyStateItem.apply(player);
+        return item == null ? emptyCellItem.clone() : item.clone();
       }
       int start = resolved.page() * pageSize();
       int absoluteIndex = start + index;
@@ -453,11 +486,15 @@ public final class VirtualList<T> {
       int page = state.page + 1;
       int totalPages = Math.max(1, state.lastTotalPages);
       int totalItems = Math.max(0, state.lastTotalItems);
-      Component name = Component.text("Page " + page + "/" + totalPages);
+      Component name = tr(player, "gui.list.page", "current", page, "total", totalPages);
       List<Component> lore = new ArrayList<>();
-      lore.add(Component.text("Items: " + totalItems));
+      String countLabel = Integer.toString(totalItems) + (state.truncated ? "+" : "");
+      lore.add(tr(player, "gui.list.items", "count", countLabel));
+      if (state.truncated) {
+        lore.add(tr(player, "gui.list.truncated"));
+      }
       if (state.query != null && !state.query.isBlank()) {
-        lore.add(Component.text("Filter: " + state.query));
+        lore.add(tr(player, "gui.list.filter", "query", state.query));
       }
       return GuiItems.named(Material.PAPER, name, lore);
     }

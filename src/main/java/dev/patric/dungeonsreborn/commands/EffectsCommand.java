@@ -408,6 +408,7 @@ public final class EffectsCommand {
     plugin.reloadConfig();
     if (plugin instanceof DungeonsRebornPlugin dungeonsReborn && dungeonsReborn.serviceLog() != null) {
       dungeonsReborn.serviceLog().reloadFromConfig(plugin.getConfig().getConfigurationSection("logging"));
+      dungeonsReborn.reloadRuntimeConfig();
       sender.sendMessage(Component.text("§aReloaded logging levels from config.yml"));
     } else {
       sender.sendMessage(Component.text("§cLogging configuration not available."));

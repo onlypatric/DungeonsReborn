@@ -8,10 +8,13 @@ version = "0.1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://nexus.frengor.com/repository/public/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    compileOnly(files("lib/UltimateAdvancementAPI-Plugin-2.7.2.jar"))
+    implementation("org.xerial:sqlite-jdbc:3.46.0.0")
 }
 
 java {
@@ -44,4 +47,9 @@ tasks.register<JavaExec>("dslSnapshot") {
     description = "Create a normalized DSL snapshot for diffs."
     classpath = sourceSets.main.get().compileClasspath + sourceSets.main.get().runtimeClasspath
     mainClass.set("dev.patric.dungeonsreborn.tools.DslSnapshot")
+}
+
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }

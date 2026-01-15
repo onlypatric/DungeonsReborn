@@ -41,6 +41,22 @@ public final class ServiceLogManager {
     return new ServiceLogger(this, ServiceLogCategory.BINDINGS);
   }
 
+  public ServiceLogger upgrades() {
+    return new ServiceLogger(this, ServiceLogCategory.UPGRADES);
+  }
+
+  public ServiceLogger shops() {
+    return new ServiceLogger(this, ServiceLogCategory.SHOPS);
+  }
+
+  public ServiceLogger dungeons() {
+    return new ServiceLogger(this, ServiceLogCategory.DUNGEONS);
+  }
+
+  public ServiceLogger locales() {
+    return new ServiceLogger(this, ServiceLogCategory.LOCALES);
+  }
+
   public void reloadFromConfig(ConfigurationSection section) {
     populateLevels(this.levels, section);
   }

@@ -30,6 +30,7 @@ import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileHit;
 import dev.patric.dungeonsreborn.effects.relations.Relation;
 import dev.patric.dungeonsreborn.effects.targeting.TargetAction;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
 
 public final class EntityActions {
   private EntityActions() {
@@ -68,6 +69,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(amount, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -88,6 +90,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(dmg, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -111,6 +114,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(amount, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -153,6 +157,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(dmg, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -199,6 +204,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(dmg, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -216,6 +222,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(amount, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
       double heal = amount * ratio;
       if (heal > 0.0) {
         LivingEntity caster = ctx.caster();
@@ -262,6 +269,7 @@ public final class EntityActions {
         }
         ctx.engine().recordDamageAttribution(captured.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
         captured.damage(amount, ctx.caster());
+        applyUpgradeStatusEffects(ctx, captured);
       });
       ctx.state().track(handle[0]);
     };
@@ -310,6 +318,7 @@ public final class EntityActions {
         if (dmg > 0.0) {
           ctx.engine().recordDamageAttribution(now.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
           now.damage(dmg, ctx.caster());
+          applyUpgradeStatusEffects(ctx, now);
         }
         if (onHit != null) {
           onHit.execute(ctx, now);
@@ -369,6 +378,7 @@ public final class EntityActions {
       }
       ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
       target.damage(amount, ctx.caster());
+      applyUpgradeStatusEffects(ctx, target);
     };
   }
 
@@ -944,5 +954,29 @@ public final class EntityActions {
       return 20.0;
     }
     return attribute.getValue();
+  }
+
+  private static void applyUpgradeStatusEffects(CastContext ctx, LivingEntity target) {
+    if (target == null || target.isDead()) {
+      return;
+    }
+    Object raw = ctx.variables().get(Vars.UPGRADE_STATUS_EFFECTS);
+    if (!(raw instanceof List<?> list) || list.isEmpty()) {
+      return;
+    }
+    for (Object entry : list) {
+      if (!(entry instanceof UpgradeStatusEffectSpec spec)) {
+        continue;
+      }
+      double chance = spec.chance() > 1.0 ? spec.chance() / 100.0 : spec.chance();
+      if (chance <= 0.0) {
+        continue;
+      }
+      if (chance < 1.0 && ctx.rng().nextDouble() > chance) {
+        continue;
+      }
+      target.addPotionEffect(new PotionEffect(spec.type(), spec.durationTicks(), spec.amplifier(),
+          spec.ambient(), spec.particles(), spec.icon()));
+    }
   }
 }

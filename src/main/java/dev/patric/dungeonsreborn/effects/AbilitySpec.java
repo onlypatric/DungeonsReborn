@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.entity.Player;
 
+import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.effects.actions.Action;
 import dev.patric.dungeonsreborn.effects.conditions.Condition;
 import dev.patric.dungeonsreborn.effects.costs.Cost;
 import dev.patric.dungeonsreborn.effects.integration.InteractBinding;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatcher;
+import dev.patric.dungeonsreborn.progression.ProgressionService;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -36,6 +39,8 @@ public final class AbilitySpec {
   private final Action onCostFail;
   private final Action onCooldownFail;
   private final List<InteractBinding> interactBindings;
+  private final int xpMin;
+  private final int xpMax;
 
   private AbilitySpec(String id, String name, String description,
       List<Requirement> requirements,
@@ -45,7 +50,9 @@ public final class AbilitySpec {
       Action action,
       Action onCostFail,
       Action onCooldownFail,
-      List<InteractBinding> interactBindings) {
+      List<InteractBinding> interactBindings,
+      int xpMin,
+      int xpMax) {
     this.id = Ids.normalize(id);
     this.name = name == null ? null : name.trim();
     this.description = description == null ? null : description.trim();
@@ -57,6 +64,8 @@ public final class AbilitySpec {
     this.onCostFail = onCostFail;
     this.onCooldownFail = onCooldownFail;
     this.interactBindings = interactBindings;
+    this.xpMin = Math.max(0, xpMin);
+    this.xpMax = Math.max(this.xpMin, xpMax);
   }
 
   public static Builder builder(String id) {
@@ -100,6 +109,14 @@ public final class AbilitySpec {
     return interactBindings;
   }
 
+  public int xpMin() {
+    return xpMin;
+  }
+
+  public int xpMax() {
+    return xpMax;
+  }
+
   public Ability compile() {
     return ctx -> {
       for (Requirement req : requirements) {
@@ -126,8 +143,13 @@ public final class AbilitySpec {
       }
 
       if (cooldownTicks != null && cooldownTicks > 0 && ctx.caster() instanceof Player player) {
+        long effectiveCooldown = adjustCooldown(ctx, cooldownTicks);
+        if (effectiveCooldown <= 0) {
+          action.executeWithHandle(ctx);
+          return;
+        }
         String key = cooldownKey == null ? id : cooldownKey;
-        if (!ctx.engine().tryStartCooldown(player.getUniqueId(), key, cooldownTicks)) {
+        if (!ctx.engine().tryStartCooldown(player.getUniqueId(), key, effectiveCooldown)) {
           long remaining = ctx.engine().cooldownRemainingTicks(player.getUniqueId(), key);
           if (onCooldownFail != null) {
             onCooldownFail.executeWithHandle(ctx);
@@ -139,7 +161,57 @@ public final class AbilitySpec {
       }
 
       action.executeWithHandle(ctx);
+      awardProgressionXp(ctx);
     };
+  }
+
+  private void awardProgressionXp(CastContext ctx) {
+    if (xpMax <= 0) {
+      return;
+    }
+    if (!(ctx.caster() instanceof Player player)) {
+      return;
+    }
+    if (!(ctx.plugin() instanceof DungeonsRebornPlugin plugin)) {
+      return;
+    }
+    ProgressionService progression = plugin.progressionService();
+    if (progression == null) {
+      return;
+    }
+    int award = xpMin == xpMax ? xpMax : ThreadLocalRandom.current().nextInt(xpMin, xpMax + 1);
+    if (award <= 0) {
+      return;
+    }
+    progression.awardForEffect(player, award, id);
+  }
+
+  private static long adjustCooldown(CastContext ctx, long baseTicks) {
+    double mult = readNumber(ctx, "upgrade_cooldown_mult", 1.0);
+    double add = readNumber(ctx, "upgrade_cooldown_add", 0.0);
+    double value = baseTicks * mult + add;
+    if (!Double.isFinite(value)) {
+      return baseTicks;
+    }
+    if (value <= 0.0) {
+      return 0L;
+    }
+    return Math.max(1L, Math.round(value));
+  }
+
+  private static double readNumber(CastContext ctx, String key, double fallback) {
+    Object value = ctx.variables().get(key);
+    if (value instanceof Number number) {
+      return number.doubleValue();
+    }
+    if (value instanceof String raw) {
+      try {
+        return Double.parseDouble(raw.trim());
+      } catch (Exception ignored) {
+        return fallback;
+      }
+    }
+    return fallback;
   }
 
   public static final class Builder {
@@ -154,6 +226,8 @@ public final class AbilitySpec {
     private Action onCostFail;
     private Action onCooldownFail;
     private final ArrayList<InteractBinding> interactBindings = new ArrayList<>();
+    private int xpMin;
+    private int xpMax;
 
     private Builder(String id) {
       this.id = Objects.requireNonNull(id, "id");
@@ -231,6 +305,12 @@ public final class AbilitySpec {
       return this;
     }
 
+    public Builder xpAward(int min, int max) {
+      this.xpMin = Math.max(0, min);
+      this.xpMax = Math.max(this.xpMin, max);
+      return this;
+    }
+
     public AbilitySpec build() {
       if (action == null) {
         throw new IllegalStateException("action not set");
@@ -247,7 +327,9 @@ public final class AbilitySpec {
           action,
           onCostFail,
           onCooldownFail,
-          Collections.unmodifiableList(new ArrayList<>(interactBindings)));
+          Collections.unmodifiableList(new ArrayList<>(interactBindings)),
+          xpMin,
+          xpMax);
     }
   }
 }

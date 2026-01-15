@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -21,21 +23,38 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.Vehicle;
 
+import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.minions.MinionMode;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
+import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public final class MobRegistry implements Listener {
   private record MobInstance(String specId, UUID ownerId) {
@@ -52,6 +71,10 @@ public final class MobRegistry implements Listener {
   private final Random rng = new Random();
   private final EffectsEngine engine;
   private MinionManager minionManager;
+  private MobSpawnManager spawnManager;
+  private ShopYamlRegistry shopRegistry;
+  private AdvancementService advancementService;
+  private int maxActivePerTick;
 
   private static final class MobState {
     private UUID lastAttacker;
@@ -75,6 +98,22 @@ public final class MobRegistry implements Listener {
 
   public void setMinionManager(MinionManager minionManager) {
     this.minionManager = minionManager;
+  }
+
+  public void setSpawnManager(MobSpawnManager spawnManager) {
+    this.spawnManager = spawnManager;
+  }
+
+  public void setMaxActivePerTick(int maxActivePerTick) {
+    this.maxActivePerTick = Math.max(0, maxActivePerTick);
+  }
+
+  public void setShopRegistry(ShopYamlRegistry shopRegistry) {
+    this.shopRegistry = shopRegistry;
+  }
+
+  public void setAdvancementService(AdvancementService advancementService) {
+    this.advancementService = advancementService;
   }
 
   public void register(MobSpec spec) {
@@ -203,6 +242,7 @@ public final class MobRegistry implements Listener {
     playDeathFx(spec, entity);
     applyLoot(spec, entity, event);
     applyManaDrops(spec, entity);
+    broadcastBossKill(spec, entity);
     spec.onDeath().accept(ctx);
     spec.onRemove().accept(ctx, MobRemovalReason.DEATH);
   }
@@ -230,6 +270,43 @@ public final class MobRegistry implements Listener {
     spec.onRemove().accept(ctx, MobRemovalReason.REMOVED);
   }
 
+  private void broadcastBossKill(MobSpec spec, LivingEntity entity) {
+    if (spec == null || entity == null) {
+      return;
+    }
+    MobBroadcastSpec broadcast = spec.bossBroadcast();
+    if (broadcast == null || !broadcast.enabled()) {
+      return;
+    }
+    Player killer = entity.getKiller();
+    if (killer == null) {
+      return;
+    }
+    String template = broadcast.message();
+    if (template == null || template.isBlank()) {
+      return;
+    }
+    String mobName = resolveMobName(spec, entity);
+    String rendered = template
+        .replace("{player}", killer.getName())
+        .replace("{mob}", mobName)
+        .replace("{mob_id}", spec.id());
+    var message = MobText.parse(rendered);
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      player.sendMessage(message);
+    }
+  }
+
+  private String resolveMobName(MobSpec spec, LivingEntity entity) {
+    if (entity.customName() != null) {
+      return PlainTextComponentSerializer.plainText().serialize(entity.customName());
+    }
+    if (spec != null && spec.displayName() != null) {
+      return PlainTextComponentSerializer.plainText().serialize(spec.displayName());
+    }
+    return entity.getType().name().toLowerCase(Locale.ROOT);
+  }
+
   @EventHandler
   public void onDamage(EntityDamageByEntityEvent event) {
     Entity entity = event.getEntity();
@@ -250,6 +327,61 @@ public final class MobRegistry implements Listener {
     }
   }
 
+  @EventHandler(ignoreCancelled = true)
+  public void onExplode(EntityExplodeEvent event) {
+    Entity entity = event.getEntity();
+    if (shouldPreventBlockDamage(entity)) {
+      event.blockList().clear();
+      event.setYield(0.0f);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onChangeBlock(EntityChangeBlockEvent event) {
+    if (shouldPreventBlockDamage(event.getEntity())) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+  public void onHangingBreak(HangingBreakByEntityEvent event) {
+    if (shouldPreventBlockDamage(event.getRemover())) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+  public void onEntityDamageNonBlock(EntityDamageByEntityEvent event) {
+    if (!isNonBlockGriefTarget(event.getEntity())) {
+      return;
+    }
+    if (shouldPreventBlockDamage(event.getDamager())) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onBlockIgnite(BlockIgniteEvent event) {
+    Entity igniter = event.getIgnitingEntity();
+    if (shouldPreventBlockDamage(igniter)) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onBlockForm(EntityBlockFormEvent event) {
+    if (shouldPreventBlockDamage(event.getEntity())) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onBreakDoor(EntityBreakDoorEvent event) {
+    if (shouldPreventBlockDamage(event.getEntity())) {
+      event.setCancelled(true);
+    }
+  }
+
   private LivingEntity resolveDamager(Entity damager) {
     if (damager instanceof LivingEntity living) {
       return living;
@@ -263,21 +395,92 @@ public final class MobRegistry implements Listener {
     return null;
   }
 
+  private MobSpec resolveSpecFromEntity(Entity entity) {
+    if (entity == null) {
+      return null;
+    }
+    String id = MobMarkers.getMobId(entity);
+    if (id != null) {
+      return specs.get(id);
+    }
+    if (entity instanceof Projectile projectile) {
+      Object shooter = projectile.getShooter();
+      if (shooter instanceof Entity shooterEntity) {
+        id = MobMarkers.getMobId(shooterEntity);
+        if (id != null) {
+          return specs.get(id);
+        }
+      }
+    }
+    return null;
+  }
+
+  private MobSpawnSpec resolveSpawnSpecFromEntity(Entity entity) {
+    if (entity == null || spawnManager == null) {
+      return null;
+    }
+    MobSpawnSpec spec = spawnManager.spawnSpecForEntity(entity);
+    if (spec != null) {
+      return spec;
+    }
+    if (entity instanceof Projectile projectile) {
+      Object shooter = projectile.getShooter();
+      if (shooter instanceof Entity shooterEntity) {
+        return spawnManager.spawnSpecForEntity(shooterEntity);
+      }
+    }
+    return null;
+  }
+
+  private boolean shouldPreventBlockDamage(Entity entity) {
+    MobSpec spec = resolveSpecFromEntity(entity);
+    if (spec != null && !spec.allowBlockDamage()) {
+      return true;
+    }
+    MobSpawnSpec spawnSpec = resolveSpawnSpecFromEntity(entity);
+    return spawnSpec != null && !spawnSpec.allowBlockDamage();
+  }
+
+  private boolean isNonBlockGriefTarget(Entity entity) {
+    if (entity == null) {
+      return false;
+    }
+    if (entity instanceof Hanging) {
+      return true;
+    }
+    if (entity instanceof ArmorStand) {
+      return true;
+    }
+    if (entity instanceof Vehicle) {
+      return true;
+    }
+    return entity instanceof EnderCrystal;
+  }
+
   private void tick() {
     if (active.isEmpty()) {
       return;
     }
     long now = engine.tickNow();
-    var iterator = active.entrySet().iterator();
-    while (iterator.hasNext()) {
-      var entry = iterator.next();
-      UUID entityId = entry.getKey();
-      MobInstance inst = entry.getValue();
+    List<UUID> ids = new ArrayList<>(active.keySet());
+    int limit = maxActivePerTick > 0 ? Math.min(maxActivePerTick, ids.size()) : ids.size();
+    List<UUID> toRemove = null;
+    int processed = 0;
+    for (UUID entityId : ids) {
+      if (processed++ >= limit) {
+        break;
+      }
+      MobInstance inst = active.get(entityId);
+      if (inst == null) {
+        continue;
+      }
       MobSpec spec = specs.get(inst.specId());
       Entity entity = org.bukkit.Bukkit.getEntity(entityId);
       if (!(entity instanceof LivingEntity living) || !entity.isValid() || living.isDead()) {
-        iterator.remove();
-        states.remove(entityId);
+        if (toRemove == null) {
+          toRemove = new ArrayList<>();
+        }
+        toRemove.add(entityId);
         continue;
       }
       if (spec == null) {
@@ -300,6 +503,12 @@ public final class MobRegistry implements Listener {
       MobAttackSpec secondaryAttack = phase != null && phase.secondaryAttack() != null ? phase.secondaryAttack() : spec.secondaryAttack();
       tickAttack(spec, inst, mainAttack, living, state, now, true);
       tickAttack(spec, inst, secondaryAttack, living, state, now, false);
+    }
+    if (toRemove != null) {
+      for (UUID id : toRemove) {
+        active.remove(id);
+        states.remove(id);
+      }
     }
   }
 
@@ -502,11 +711,17 @@ public final class MobRegistry implements Listener {
       case NEAREST_PLAYER -> MobTargeting.nearestPlayer(entity, range);
       case LAST_ATTACKER -> null;
     };
-    return isFriendlyTarget(entity, candidate) ? null : candidate;
+    if (isFriendlyTarget(entity, candidate)) {
+      return null;
+    }
+    return isAllowedSpawnTarget(entity, candidate) ? candidate : null;
   }
 
   private boolean canTrigger(MobAttackSpec attack, LivingEntity entity, LivingEntity target) {
     double range = attack.range();
+    if (!isAllowedSpawnTarget(entity, target)) {
+      return false;
+    }
     if (range > 0 && target.getLocation().distanceSquared(entity.getLocation()) > range * range) {
       return false;
     }
@@ -669,13 +884,227 @@ public final class MobRegistry implements Listener {
     if (loot.clearVanilla()) {
       event.getDrops().clear();
     }
-    for (MobDropSpec drop : loot.drops()) {
-      ItemStack item = drop.roll(rng);
-      if (item == null || item.getType().isAir()) {
-        continue;
-      }
-      entity.getWorld().dropItemNaturally(entity.getLocation(), item);
+    Location loc = entity.getLocation();
+    Player killer = entity.getKiller();
+    LootModifiers modifiers = buildLootModifiers(loot, killer);
+    for (MobDropSpec drop : loot.guaranteed()) {
+      dropLootItem(spec, loot, drop, loc, killer, modifiers, false);
     }
+    int totalRolls = loot.rolls() + loot.bonusRolls();
+    for (int i = 0; i < totalRolls; i++) {
+      for (MobDropSpec drop : loot.drops()) {
+        dropLootItem(spec, loot, drop, loc, killer, modifiers, true);
+      }
+    }
+  }
+
+  private void dropLootItem(MobSpec spec, MobLootSpec loot, MobDropSpec drop, Location loc, Player killer,
+      LootModifiers modifiers, boolean applyModifiers) {
+    int amount = rollAmount(drop, modifiers, applyModifiers);
+    if (amount <= 0) {
+      return;
+    }
+    if (drop.tokenDrop()) {
+      if (shopRegistry == null) {
+        dropStackedItem(loc, drop.item(), amount);
+        maybeAnnounceDrop(loot, spec, killer, drop, amount, drop.item());
+        return;
+      }
+      if (advancementService != null && killer != null) {
+        advancementService.recordTokensEarned(killer, amount);
+      }
+      dropTokenBundle(loc, amount);
+      maybeAnnounceDrop(loot, spec, killer, drop, amount, defaultTokenItem());
+      return;
+    }
+    ItemStack item = drop.item().clone();
+    if (item.getType().isAir()) {
+      return;
+    }
+    item.setAmount(amount);
+    loc.getWorld().dropItemNaturally(loc, item);
+    maybeAnnounceDrop(loot, spec, killer, drop, amount, item);
+  }
+
+  private void dropTokenBundle(Location loc, int amount) {
+    if (amount <= 0 || shopRegistry == null) {
+      return;
+    }
+    ItemStack palletItem = shopRegistry.resolveTokenItem("pallet");
+    ItemStack compressedItem = shopRegistry.resolveTokenItem("compressed");
+    ItemStack normalItem = shopRegistry.resolveTokenItem("token");
+    int remaining = amount;
+    if (palletItem != null && !palletItem.getType().isAir()) {
+      int pallets = remaining / 4096;
+      remaining %= 4096;
+      dropTokenTier(loc, palletItem, pallets);
+    }
+    if (compressedItem != null && !compressedItem.getType().isAir()) {
+      int compressed = remaining / 64;
+      remaining %= 64;
+      dropTokenTier(loc, compressedItem, compressed);
+    }
+    if (normalItem != null && !normalItem.getType().isAir()) {
+      dropTokenTier(loc, normalItem, remaining);
+    }
+  }
+
+  private static void dropTokenTier(Location loc, ItemStack item, int amount) {
+    if (amount <= 0 || item == null || item.getType().isAir()) {
+      return;
+    }
+    int maxStack = item.getMaxStackSize();
+    int remaining = amount;
+    while (remaining > 0) {
+      int stackAmount = Math.min(remaining, maxStack);
+      ItemStack stack = item.clone();
+      stack.setAmount(stackAmount);
+      loc.getWorld().dropItemNaturally(loc, stack);
+      remaining -= stackAmount;
+    }
+  }
+
+  private static void dropStackedItem(Location loc, ItemStack item, int amount) {
+    if (amount <= 0 || item == null || item.getType().isAir()) {
+      return;
+    }
+    int maxStack = item.getMaxStackSize();
+    int remaining = amount;
+    while (remaining > 0) {
+      int stackAmount = Math.min(remaining, maxStack);
+      ItemStack stack = item.clone();
+      stack.setAmount(stackAmount);
+      loc.getWorld().dropItemNaturally(loc, stack);
+      remaining -= stackAmount;
+    }
+  }
+
+  private record LootModifiers(double multiplier, double add) {
+  }
+
+  private LootModifiers buildLootModifiers(MobLootSpec loot, Player killer) {
+    double multiplier = 1.0;
+    double add = 0.0;
+    if (killer != null) {
+      AttributeInstance luck = killer.getAttribute(Attribute.LUCK);
+      if (luck != null && loot.luckMultiplier() > 0.0) {
+        multiplier *= 1.0 + luck.getValue() * loot.luckMultiplier();
+      }
+      for (ItemStack item : killer.getInventory().getContents()) {
+        LootModifiers modifiers = lootModifiersForItem(item);
+        multiplier *= modifiers.multiplier();
+        add += modifiers.add();
+      }
+      LootModifiers offhand = lootModifiersForItem(killer.getInventory().getItemInOffHand());
+      multiplier *= offhand.multiplier();
+      add += offhand.add();
+      LootModifiers helmet = lootModifiersForItem(killer.getInventory().getHelmet());
+      multiplier *= helmet.multiplier();
+      add += helmet.add();
+      LootModifiers chest = lootModifiersForItem(killer.getInventory().getChestplate());
+      multiplier *= chest.multiplier();
+      add += chest.add();
+      LootModifiers legs = lootModifiersForItem(killer.getInventory().getLeggings());
+      multiplier *= legs.multiplier();
+      add += legs.add();
+      LootModifiers boots = lootModifiersForItem(killer.getInventory().getBoots());
+      multiplier *= boots.multiplier();
+      add += boots.add();
+    }
+    return new LootModifiers(multiplier, add);
+  }
+
+  private static LootModifiers lootModifiersForItem(ItemStack item) {
+    if (item == null || item.getType().isAir()) {
+      return new LootModifiers(1.0, 0.0);
+    }
+    java.util.Map<String, Double> mods = ItemMarkers.getUpgradeModifiers(item);
+    if (mods.isEmpty()) {
+      return new LootModifiers(1.0, 0.0);
+    }
+    double mult = mods.getOrDefault(UpgradeModifierType.LOOT_MULT.key(),
+        UpgradeModifierType.LOOT_MULT.defaultValue());
+    double add = mods.getOrDefault(UpgradeModifierType.LOOT_ADD.key(),
+        UpgradeModifierType.LOOT_ADD.defaultValue());
+    if (mult == UpgradeModifierType.LOOT_MULT.defaultValue() && add == 0.0) {
+      return new LootModifiers(1.0, 0.0);
+    }
+    return new LootModifiers(mult, add);
+  }
+
+  private int rollAmount(MobDropSpec drop, LootModifiers modifiers, boolean applyModifiers) {
+    double chance = drop.chance();
+    if (applyModifiers && modifiers != null) {
+      chance = chance * modifiers.multiplier() + modifiers.add();
+    }
+    if (chance <= 0.0) {
+      return 0;
+    }
+    if (chance < 1.0 && rng.nextDouble() > chance) {
+      return 0;
+    }
+    if (drop.minAmount() == drop.maxAmount()) {
+      return drop.minAmount();
+    }
+    return drop.minAmount() + rng.nextInt(drop.maxAmount() - drop.minAmount() + 1);
+  }
+
+  private void maybeAnnounceDrop(MobLootSpec loot, MobSpec spec, Player killer, MobDropSpec drop, int amount,
+      ItemStack displayItem) {
+    if (loot == null || loot.announceTiers().isEmpty()) {
+      return;
+    }
+    String tier = drop.tier();
+    if (tier == null || !loot.announceTiers().contains(tier.toLowerCase(Locale.ROOT))) {
+      return;
+    }
+    String template = loot.announceTemplate();
+    if (template == null || template.isBlank()) {
+      template = "<gold>{player}</gold> found <yellow>{item}</yellow> from <red>{mob}</red>!";
+    }
+    String playerName = killer == null ? "Unknown" : killer.getName();
+    String mobName = displayName(spec);
+    String itemName = displayName(displayItem);
+    String message = template
+        .replace("{player}", playerName)
+        .replace("{mob}", mobName)
+        .replace("{item}", itemName)
+        .replace("{tier}", tier == null ? "" : tier)
+        .replace("{amount}", String.valueOf(amount));
+    Bukkit.broadcast(MobText.parse(message));
+  }
+
+  private static String displayName(ItemStack item) {
+    if (item == null) {
+      return "Unknown";
+    }
+    var meta = item.getItemMeta();
+    if (meta != null && meta.hasDisplayName()) {
+      return PlainTextComponentSerializer.plainText().serialize(meta.displayName());
+    }
+    return item.getType().name().toLowerCase(Locale.ROOT).replace('_', ' ');
+  }
+
+  private static String displayName(MobSpec spec) {
+    if (spec == null) {
+      return "Unknown";
+    }
+    Component name = spec.displayName();
+    if (name != null && !Component.empty().equals(name)) {
+      String plain = PlainTextComponentSerializer.plainText().serialize(name);
+      if (plain != null && !plain.isBlank()) {
+        return plain;
+      }
+    }
+    return spec.id();
+  }
+
+  private ItemStack defaultTokenItem() {
+    if (shopRegistry == null) {
+      return null;
+    }
+    ItemStack token = shopRegistry.resolveTokenItem("token");
+    return token == null ? null : token;
   }
 
   private void applyManaDrops(MobSpec spec, LivingEntity entity) {
@@ -867,6 +1296,9 @@ public final class MobRegistry implements Listener {
     if (mob.getWorld() != target.getWorld()) {
       return false;
     }
+    if (!isAllowedSpawnTarget(mob, target)) {
+      return false;
+    }
     if (radius <= 0.0) {
       return true;
     }
@@ -931,6 +1363,37 @@ public final class MobRegistry implements Listener {
     }
     MobAttackSpec secondary = phase != null && phase.secondaryAttack() != null ? phase.secondaryAttack() : spec.secondaryAttack();
     return secondary != null && secondary.trigger() == MobAttackTrigger.RANGED;
+  }
+
+  private boolean isAllowedSpawnTarget(LivingEntity mob, LivingEntity target) {
+    if (mob == null || target == null || spawnManager == null) {
+      return true;
+    }
+    MobSpawnSpec spec = spawnManager.spawnSpecForEntity(mob);
+    if (spec == null) {
+      return true;
+    }
+    if (spec.attackIgnorePlayers() && target instanceof Player) {
+      return false;
+    }
+    if (!spec.attackIgnoreOutsideRadius()) {
+      return true;
+    }
+    double radius = spec.attackRadius();
+    if (radius <= 0.0) {
+      return true;
+    }
+    Location center = spec.location();
+    World world = Bukkit.getWorld(spec.worldName());
+    if (center == null || world == null) {
+      return true;
+    }
+    if (!target.getWorld().equals(world)) {
+      return false;
+    }
+    Location spawnLoc = center.clone();
+    spawnLoc.setWorld(world);
+    return target.getLocation().distanceSquared(spawnLoc) <= radius * radius;
   }
 
   private MobPhaseSpec resolvePhase(MobSpec spec, LivingEntity entity, MobState state, long now) {

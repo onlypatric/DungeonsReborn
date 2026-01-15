@@ -6,6 +6,7 @@
 # - Use `phases` to swap attacks/passives at health thresholds.
 # - Use `manaDrops` to give mana to killer/nearby players on death.
 # - `eggs` defines spawn egg items for testing/admin use.
+# - If `ai` is omitted, the mob uses the library default AI settings.
 #
 # Phases:
 # - healthBelow is a ratio in (0, 1]; lower value = later phase.

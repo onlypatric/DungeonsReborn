@@ -19,6 +19,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.YamlValues;
 
 public final class CraftingYamlRegistry {
   public record ReloadResult(int loaded, List<String> errors) {
@@ -68,12 +70,12 @@ public final class CraftingYamlRegistry {
   }
 
   public ReloadResult reload() {
-    recipes.clear();
     List<String> errors = new ArrayList<>();
     File dir = recipesDir();
     if (!dir.exists()) {
       dir.mkdirs();
     }
+    Map<String, CraftingRecipeTemplate> next = new LinkedHashMap<>();
     File[] files = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml")
         || name.toLowerCase(Locale.ROOT).endsWith(".yaml"));
     if (files == null) {
@@ -90,11 +92,15 @@ public final class CraftingYamlRegistry {
             errors.add(base + ": output templates could not be resolved");
             continue;
           }
-          recipes.put(spec.id(), new CraftingRecipeTemplate(spec, outputTemplates));
+          next.put(spec.id(), new CraftingRecipeTemplate(spec, outputTemplates));
         }
       } catch (Exception ex) {
         errors.add(base + ": " + ex.getMessage());
       }
+    }
+    if (errors.isEmpty()) {
+      recipes.clear();
+      recipes.putAll(next);
     }
     if (!errors.isEmpty()) {
       logger.warn("[Crafting] YAML reload had " + errors.size() + " errors");
@@ -102,9 +108,15 @@ public final class CraftingYamlRegistry {
         logger.warn("[Crafting] YAML: " + e);
       }
     } else {
-      logger.info("[Crafting] YAML loaded " + recipes.size() + " recipes");
+      logger.info("[Crafting] YAML loaded " + next.size() + " recipes");
     }
-    return new ReloadResult(recipes.size(), errors);
+    SystemStatusStore.get().record(
+        "crafting",
+        "Crafting",
+        dir.getPath(),
+        "recipes=" + (errors.isEmpty() ? next.size() : recipes.size()),
+        errors);
+    return new ReloadResult(errors.isEmpty() ? next.size() : recipes.size(), errors);
   }
 
   private CraftingRecipeSpec loadRecipe(File file, String base, List<String> errors) {
@@ -121,16 +133,16 @@ public final class CraftingYamlRegistry {
       errors.add(base + ": unsupported schemaVersion=" + schemaVersion + " (expected 1)");
       return null;
     }
-    String idRaw = string(cfg.get("id"), fileIdRaw);
+    String idRaw = YamlValues.string(cfg.get("id"), fileIdRaw);
     String id = normalizeId(idRaw, base + ".id");
     if (recipes.containsKey(id)) {
       errors.add(base + ": duplicate recipe id=" + id);
       return null;
     }
-    String name = string(cfg.get("name"), "");
-    String description = string(cfg.get("description"), "");
+    String name = YamlValues.string(cfg.get("name"), "");
+    String description = YamlValues.string(cfg.get("description"), "");
     List<String> permissions = readPermissions(cfg, base);
-    double cooldownSeconds = doubleValue(cfg.get("cooldownSeconds"), doubleValue(cfg.get("cooldown"), 0.0));
+    double cooldownSeconds = YamlValues.doubleValue(cfg.get("cooldownSeconds"), YamlValues.doubleValue(cfg.get("cooldown"), 0.0));
 
     ScriptSpec scriptSpec = parseScript(cfg.get("script"), base + ".script", errors);
 
@@ -192,12 +204,12 @@ public final class CraftingYamlRegistry {
   }
 
   private CraftingIngredientSpec parseIngredient(Map<String, Object> map, String path, List<String> errors) {
-    String typeRaw = string(map.get("type"), null);
-    String itemIdRaw = string(map.get("item"), string(map.get("itemId"), string(map.get("id"), null)));
-    String tagRaw = string(map.get("tag"), null);
-    String materialRaw = string(map.get("material"), null);
-    String categoryRaw = string(map.get("category"), null);
-    int amount = intValue(map.get("amount"), 1);
+    String typeRaw = YamlValues.string(map.get("type"), null);
+    String itemIdRaw = YamlValues.string(map.get("item"), YamlValues.string(map.get("itemId"), YamlValues.string(map.get("id"), null)));
+    String tagRaw = YamlValues.string(map.get("tag"), null);
+    String materialRaw = YamlValues.string(map.get("material"), null);
+    String categoryRaw = YamlValues.string(map.get("category"), null);
+    int amount = YamlValues.intValue(map.get("amount"), 1);
     if (amount <= 0) {
       errors.add(path + ".amount: must be > 0");
       return null;
@@ -283,12 +295,12 @@ public final class CraftingYamlRegistry {
     for (Map.Entry<?, ?> entry : mapRaw.entrySet()) {
       map.put(String.valueOf(entry.getKey()), entry.getValue());
     }
-    String itemIdRaw = string(map.get("itemId"), string(map.get("item"), null));
+    String itemIdRaw = YamlValues.string(map.get("itemId"), YamlValues.string(map.get("item"), null));
     Object itemRaw = map.get("itemStack");
     if (itemRaw == null) {
       itemRaw = map.get("stack");
     }
-    int amount = intValue(map.get("amount"), 1);
+    int amount = YamlValues.intValue(map.get("amount"), 1);
     if (itemRaw instanceof ItemStack stack) {
       ItemStack copy = stack.clone();
       copy.setAmount(Math.max(1, amount));
@@ -384,7 +396,7 @@ public final class CraftingYamlRegistry {
     Object raw = cfg.get("permissions");
     if (raw instanceof List<?> list) {
       for (Object entry : list) {
-        String s = string(entry, null);
+        String s = YamlValues.string(entry, null);
         if (s != null && !s.isBlank()) {
           out.add(s);
         }
@@ -399,7 +411,7 @@ public final class CraftingYamlRegistry {
         }
         if (entry instanceof Map<?, ?> map) {
           Object permission = map.get("permission");
-          String s = string(permission, null);
+          String s = YamlValues.string(permission, null);
           if (s != null && !s.isBlank()) {
             out.add(s);
           }
@@ -417,11 +429,11 @@ public final class CraftingYamlRegistry {
       return new ScriptSpec(null, text);
     }
     if (raw instanceof Map<?, ?> mapRaw) {
-      String file = string(mapRaw.get("file"), null);
+      String file = YamlValues.string(mapRaw.get("file"), null);
       if (file == null) {
-        file = string(mapRaw.get("path"), null);
+        file = YamlValues.string(mapRaw.get("path"), null);
       }
-      String inline = string(mapRaw.get("code"), string(mapRaw.get("inline"), null));
+      String inline = YamlValues.string(mapRaw.get("code"), YamlValues.string(mapRaw.get("inline"), null));
       if (file == null && inline == null) {
         errors.add(path + ": script requires file or code");
       }
@@ -429,42 +441,6 @@ public final class CraftingYamlRegistry {
     }
     errors.add(path + ": script must be a string or object");
     return ScriptSpec.EMPTY;
-  }
-
-  private static String string(Object raw, String def) {
-    if (raw == null) {
-      return def;
-    }
-    String value = String.valueOf(raw);
-    return value.isBlank() ? def : value;
-  }
-
-  private static int intValue(Object raw, int def) {
-    if (raw == null) {
-      return def;
-    }
-    if (raw instanceof Number number) {
-      return number.intValue();
-    }
-    try {
-      return Integer.parseInt(String.valueOf(raw));
-    } catch (Exception ex) {
-      return def;
-    }
-  }
-
-  private static double doubleValue(Object raw, double def) {
-    if (raw == null) {
-      return def;
-    }
-    if (raw instanceof Number number) {
-      return number.doubleValue();
-    }
-    try {
-      return Double.parseDouble(String.valueOf(raw));
-    } catch (Exception ex) {
-      return def;
-    }
   }
 
   private static Map<String, Object> castMap(Object raw, String path, List<String> errors) {

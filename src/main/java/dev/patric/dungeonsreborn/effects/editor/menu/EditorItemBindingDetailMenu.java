@@ -15,9 +15,10 @@ import dev.patric.dungeonsreborn.effects.editor.EditorItemDraft;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemStore;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
+import dev.patric.dungeonsreborn.util.YamlValues;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
 import dev.patric.dungeonsreborn.gui.components.Button;
@@ -25,7 +26,9 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
 import dev.patric.dungeonsreborn.gui.components.input.CycleSelector;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class EditorItemBindingDetailMenu extends Window {
   private static final int SIZE = 54;
@@ -41,7 +44,7 @@ public final class EditorItemBindingDetailMenu extends Window {
 
   public EditorItemBindingDetailMenu(EditorServices services, EditorItemStore store, EditorItemDraft draft,
       List<Map<String, Object>> bindings, int index, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>Binding</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.items.editor.bindingDetail.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.store = Objects.requireNonNull(store, "store");
     this.draft = Objects.requireNonNull(draft, "draft");
@@ -52,18 +55,19 @@ public final class EditorItemBindingDetailMenu extends Window {
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
 
     clickSelector = new CycleSelector<>(List.of(InteractTrigger.RIGHT_CLICK, InteractTrigger.LEFT_CLICK),
-        (viewer, value) -> GuiItems.named(Material.ENDER_PEARL, GuiMini.mm("<aqua><bold>Click</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value.name() + "</white>"))))
+        (viewer, value) -> GuiItems.named(Material.ENDER_PEARL, GuiI18n.tr(viewer, "gui.items.editor.bindingDetail.click.title"), List.of(
+            GuiI18n.tr(viewer, "gui.items.editor.bindingDetail.click.current", Placeholder.unparsed("value", value.name())))))
         .onChange((viewer, value) -> {
           binding().put("type", "interact");
           binding().put("click", value.name());
           saveDraft(viewer, "binding.click");
         });
 
-    setFixedAt(0, 4, new Label(p -> GuiItems.named(Material.TRIPWIRE_HOOK, GuiMini.mm("<gold><bold>Binding #" + (index + 1) + "</bold></gold>"))));
+    setFixedAt(0, 4, new Label(p -> GuiItems.named(Material.TRIPWIRE_HOOK, GuiI18n.tr(p, "gui.items.editor.bindingDetail.header.title",
+        Placeholder.unparsed("index", String.valueOf(index + 1))))));
     setFixedAt(1, 1, clickSelector);
     setFixedAt(1, 3, abilityInput());
     setFixedAt(1, 5, permissionInput());
@@ -101,18 +105,20 @@ public final class EditorItemBindingDetailMenu extends Window {
 
   private Button abilityInput() {
     return new Button(p -> {
-      String value = string(binding(), "ability", "");
+      String value = YamlValues.string(binding(), "ability", "");
       List<Component> lore = new java.util.ArrayList<>();
-      lore.add(GuiMini.mm("<gray>Current:</gray> <white>" + (value.isBlank() ? "(unset)" : value) + "</white>"));
+      lore.add(GuiI18n.tr(p, "gui.items.editor.bindingDetail.ability.current",
+          Placeholder.component("value", value.isBlank() ? GuiI18n.tr(p, "gui.common.none") : Component.text(value))));
       if (!value.isBlank()) {
         AbilitySpec spec = services.engine().abilitySpec(value);
         if (spec != null && spec.name() != null && !spec.name().isBlank()) {
-          lore.add(GuiMini.mm("<gray>Name:</gray> <white>" + spec.name() + "</white>"));
+          lore.add(GuiI18n.tr(p, "gui.items.editor.bindingDetail.ability.name",
+              Placeholder.unparsed("value", spec.name())));
         }
       }
-      return GuiItems.named(Material.BOOK, GuiMini.mm("<aqua><bold>Ability</bold></aqua>"), lore);
+      return GuiItems.named(Material.BOOK, GuiI18n.tr(p, "gui.items.editor.bindingDetail.ability.title"), lore);
     })
-        .left(Component.text("Select ability"), ctx -> {
+        .left(GuiI18n.tr("gui.items.editor.bindingDetail.ability.select"), ctx -> {
           openSubWindow(ctx.player(), new EditorAbilityPickerMenu(services, (player, abilityId) -> {
             binding().put("ability", abilityId);
             saveDraft(player, "binding.ability");
@@ -120,7 +126,7 @@ public final class EditorItemBindingDetailMenu extends Window {
             GuiSounds.click(player);
           }));
         })
-        .right(Component.text("Clear ability"), ctx -> {
+        .right(GuiI18n.tr("gui.items.editor.bindingDetail.ability.clear"), ctx -> {
           binding().put("ability", "");
           saveDraft(ctx.player(), "binding.ability.clear");
           ctx.window().redrawSlot(ctx.player(), slotAt(1, 3));
@@ -131,12 +137,13 @@ public final class EditorItemBindingDetailMenu extends Window {
   private TextButton permissionInput() {
     return new TextButton(
         p -> {
-          String value = string(binding(), "permission", "");
-          return GuiItems.named(Material.NAME_TAG, GuiMini.mm("<aqua><bold>Permission</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value.isBlank() ? "(none)" : value) + "</white>")));
+          String value = YamlValues.string(binding(), "permission", "");
+          return GuiItems.named(Material.NAME_TAG, GuiI18n.tr(p, "gui.items.editor.bindingDetail.permission.title"), List.of(
+              GuiI18n.tr(p, "gui.items.editor.bindingDetail.permission.current",
+                  Placeholder.component("value", value.isBlank() ? GuiI18n.tr(p, "gui.common.none") : Component.text(value)))));
         },
-        GuiMini.mm("<gray>Enter permission (blank to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.items.editor.bindingDetail.permission.prompt"),
+        Locales.text(null, "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -158,12 +165,15 @@ public final class EditorItemBindingDetailMenu extends Window {
   private TextButton bindingIdInput() {
     return new TextButton(
         p -> {
-          String value = string(binding(), "id", "");
-          return GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>Binding Id</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value.isBlank() ? "(auto)" : value) + "</white>")));
+          String value = YamlValues.string(binding(), "id", "");
+          return GuiItems.named(Material.PAPER, GuiI18n.tr(p, "gui.items.editor.bindingDetail.id.title"), List.of(
+              GuiI18n.tr(p, "gui.items.editor.bindingDetail.id.current",
+                  Placeholder.component("value", value.isBlank()
+                      ? GuiI18n.tr(p, "gui.items.editor.bindingDetail.id.auto")
+                      : Component.text(value)))));
         },
-        GuiMini.mm("<gray>Enter binding id (blank for auto)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.items.editor.bindingDetail.id.prompt"),
+        Locales.text(null, "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -184,12 +194,13 @@ public final class EditorItemBindingDetailMenu extends Window {
 
   private Button sneakingToggle() {
     return new Button(p -> {
-      boolean enabled = bool(binding(), "requireSneaking", false);
+      boolean enabled = YamlValues.bool(binding(), "requireSneaking", false);
       Material mat = enabled ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Sneaking</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Status:</gray> <white>" + (enabled ? "on" : "off") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.items.editor.bindingDetail.sneak.title"), List.of(
+          GuiI18n.tr(p, "gui.common.line.status", Placeholder.component("value",
+              GuiI18n.tr(p, enabled ? "gui.common.status.enabled" : "gui.common.status.disabled")))));
     }, ctx -> {
-      boolean enabled = bool(binding(), "requireSneaking", false);
+      boolean enabled = YamlValues.bool(binding(), "requireSneaking", false);
       binding().put("requireSneaking", !enabled);
       saveDraft(ctx.player(), "binding.require_sneaking");
       ctx.window().redrawSlot(ctx.player(), slotAt(2, 1));
@@ -199,12 +210,13 @@ public final class EditorItemBindingDetailMenu extends Window {
 
   private Button cancelEventToggle() {
     return new Button(p -> {
-      boolean enabled = bool(binding(), "cancelEvent", true);
+      boolean enabled = YamlValues.bool(binding(), "cancelEvent", true);
       Material mat = enabled ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Cancel Event</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Status:</gray> <white>" + (enabled ? "on" : "off") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.items.editor.bindingDetail.cancel.title"), List.of(
+          GuiI18n.tr(p, "gui.common.line.status", Placeholder.component("value",
+              GuiI18n.tr(p, enabled ? "gui.common.status.enabled" : "gui.common.status.disabled")))));
     }, ctx -> {
-      boolean enabled = bool(binding(), "cancelEvent", true);
+      boolean enabled = YamlValues.bool(binding(), "cancelEvent", true);
       binding().put("cancelEvent", !enabled);
       saveDraft(ctx.player(), "binding.cancel_event");
       ctx.window().redrawSlot(ctx.player(), slotAt(2, 3));
@@ -213,7 +225,7 @@ public final class EditorItemBindingDetailMenu extends Window {
   }
 
   private Button deleteButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Delete")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.items.editor.bindingDetail.delete.title")), ctx -> {
       if (index < 0 || index >= bindings.size()) {
         return;
       }
@@ -230,17 +242,4 @@ public final class EditorItemBindingDetailMenu extends Window {
         LOCK_PREFIX + draft.id(), detail));
   }
 
-  private static String string(Map<String, Object> node, String key, String def) {
-    Object raw = node.get(key);
-    if (raw == null) {
-      return def;
-    }
-    String value = raw.toString();
-    return value.isBlank() ? def : value;
-  }
-
-  private static boolean bool(Map<String, Object> node, String key, boolean def) {
-    Object raw = node.get(key);
-    return raw == null ? def : Boolean.parseBoolean(raw.toString());
-  }
 }

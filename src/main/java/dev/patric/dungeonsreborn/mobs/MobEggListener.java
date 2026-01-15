@@ -16,6 +16,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
+import dev.patric.dungeonsreborn.locale.Locales;
 
 public final class MobEggListener implements Listener {
   private final EffectsEngine engine;
@@ -48,7 +49,8 @@ public final class MobEggListener implements Listener {
     }
     Player player = event.getPlayer();
     if (egg.permission() != null && !egg.permission().isBlank() && !player.hasPermission(egg.permission())) {
-      player.sendMessage("§cMissing permission: " + egg.permission());
+      player.sendMessage(Locales.component(player, "messages.mobs.egg.missingPermission",
+          Locales.placeholders("perm", egg.permission())));
       event.setCancelled(true);
       return;
     }
@@ -59,14 +61,15 @@ public final class MobEggListener implements Listener {
 
     Location spawn = resolveSpawnLocation(event, player);
     if (spawn == null) {
-      player.sendMessage("§cNo target block found.");
+      player.sendMessage(Locales.component(player, "messages.mobs.egg.noTarget"));
       event.setCancelled(true);
       return;
     }
     try {
       registry.spawn(egg.mobId(), spawn, player.getUniqueId());
     } catch (Exception ex) {
-      player.sendMessage("§cFailed to spawn: " + ex.getMessage());
+      player.sendMessage(Locales.component(player, "messages.mobs.egg.spawnFailed",
+          Locales.placeholders("message", ex.getMessage())));
       event.setCancelled(true);
       return;
     }
@@ -85,7 +88,8 @@ public final class MobEggListener implements Listener {
     Long until = playerCooldowns.get(egg.id());
     if (until != null && until > now) {
       long remaining = until - now;
-      player.sendMessage("§cEgg on cooldown (" + remaining + "t)");
+      player.sendMessage(Locales.component(player, "messages.mobs.egg.cooldown",
+          Locales.placeholders("ticks", String.valueOf(remaining))));
       return false;
     }
     playerCooldowns.put(egg.id(), now + cooldownTicks);

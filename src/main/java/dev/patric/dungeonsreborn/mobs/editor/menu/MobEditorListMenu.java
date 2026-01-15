@@ -10,16 +10,18 @@ import org.bukkit.entity.Player;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.editor.MobEditorYaml;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
-import dev.patric.dungeonsreborn.gui.components.BackButton;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.EmptyState;
 import dev.patric.dungeonsreborn.gui.components.Label;
+import dev.patric.dungeonsreborn.gui.components.list.ListSearchBar;
 import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
-import net.kyori.adventure.text.Component;
+import dev.patric.dungeonsreborn.gui.style.GuiNav;
+import dev.patric.dungeonsreborn.locale.Locales;
 
 public final class MobEditorListMenu extends Window {
   private static final int SIZE = 54;
@@ -32,7 +34,7 @@ public final class MobEditorListMenu extends Window {
   private final VirtualList<MobEntry> list;
 
   public MobEditorListMenu(MobYamlRegistry yaml, MobRegistry registry) {
-    super(SIZE, GuiMini.mm("<white><bold>Mob Editor</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.mobs.editor.list.title"), true);
     this.yaml = Objects.requireNonNull(yaml, "yaml");
     this.registry = Objects.requireNonNull(registry, "registry");
 
@@ -44,12 +46,15 @@ public final class MobEditorListMenu extends Window {
         (player, entry) -> entryItem(entry),
         (ctx, entry) -> openEntry(ctx.player(), entry));
     list.searchKey(entry -> entry.id + " " + entry.name);
+    list.emptyStateItem(EmptyState.list());
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiItems.named(Material.BARRIER, GuiMini.mm("<red><bold>Close</bold></red>"), List.of())));
+    navLeft(GuiNav.closeButton());
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
+    nav(3, ListSearchBar.searchButton(list));
+    nav(4, ListSearchBar.clearButton(list));
     nav(5, refreshButton());
     nav(6, errorsButton());
 
@@ -60,14 +65,14 @@ public final class MobEditorListMenu extends Window {
   }
 
   private Label header() {
-    return new Label(p -> GuiItems.named(Material.SPAWNER, GuiMini.mm("<gold><bold>Mobs</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Click a mob to edit.</gray>"),
-        GuiMini.mm("<gray>Loaded mobs show as green.</gray>"))));
+    return new Label(p -> GuiItems.named(Material.SPAWNER, GuiI18n.tr(p, "gui.mobs.editor.list.header.title"), List.of(
+        GuiI18n.tr(p, "gui.mobs.editor.list.header.hint1"),
+        GuiI18n.tr(p, "gui.mobs.editor.list.header.hint2"))));
   }
 
   private Button refreshButton() {
-    return new Button(p -> GuiItems.named(Material.CLOCK, GuiMini.mm("<yellow><bold>Refresh</bold></yellow>"), List.of(
-        GuiMini.mm("<gray>Reload the list.</gray>"))), ctx -> {
+    return new Button(p -> GuiItems.named(Material.CLOCK, GuiI18n.tr(p, "gui.mobs.editor.list.refresh.title"), List.of(
+        GuiI18n.tr(p, "gui.mobs.editor.list.refresh.hint"))), ctx -> {
       list.invalidate(ctx.player());
       list.redraw(ctx.window(), ctx.player());
       GuiSounds.click(ctx.player());
@@ -75,17 +80,19 @@ public final class MobEditorListMenu extends Window {
   }
 
   private Button errorsButton() {
-    return new Button(p -> GuiItems.named(Material.BOOK, GuiMini.mm("<aqua><bold>Errors</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Show last YAML errors.</gray>"))), ctx -> {
+    return new Button(p -> GuiItems.named(Material.BOOK, GuiI18n.tr(p, "gui.mobs.editor.list.errors.title"), List.of(
+        GuiI18n.tr(p, "gui.mobs.editor.list.errors.hint"))), ctx -> {
       Player player = ctx.player();
       List<String> errors = yaml.lastErrors();
       if (errors.isEmpty()) {
-        player.sendMessage(Component.text("§a[Mobs] No YAML errors."));
+        player.sendMessage(Locales.component(player, "messages.mobs.yaml.none"));
         return;
       }
-      player.sendMessage(Component.text("§6[Mobs] YAML errors (" + errors.size() + "):"));
+      player.sendMessage(Locales.component(player, "messages.mobs.yaml.header",
+          Locales.placeholders("count", String.valueOf(errors.size()))));
       for (String error : errors) {
-        player.sendMessage(Component.text("§c- " + error));
+        player.sendMessage(Locales.component(player, "messages.mobs.yaml.entry",
+            Locales.placeholders("message", error)));
       }
     }).autoDescribeInLore(false);
   }
@@ -103,9 +110,12 @@ public final class MobEditorListMenu extends Window {
 
   private org.bukkit.inventory.ItemStack entryItem(MobEntry entry) {
     Material material = entry.loaded ? Material.LIME_DYE : Material.RED_DYE;
-    return GuiItems.named(material, GuiMini.mm("<white><bold>" + entry.id + "</bold></white>"), List.of(
-        GuiMini.mm("<gray>Name:</gray> <white>" + entry.name + "</white>"),
-        GuiMini.mm("<gray>Status:</gray> " + (entry.loaded ? "<green>Loaded</green>" : "<red>Missing</red>"))));
+    String status = Locales.text(null, entry.loaded ? "gui.mobs.editor.list.status.loaded" : "gui.mobs.editor.list.status.missing");
+    return GuiItems.named(material,
+        Locales.component(null, "gui.mobs.editor.list.entry.title", Locales.placeholders("id", entry.id)),
+        List.of(
+            Locales.component(null, "gui.mobs.editor.list.entry.name", Locales.placeholders("name", entry.name)),
+            Locales.component(null, "gui.common.line.status", Locales.placeholders("value", status))));
   }
 
   private void openEntry(Player player, MobEntry entry) {

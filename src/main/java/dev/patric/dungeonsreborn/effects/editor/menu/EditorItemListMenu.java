@@ -19,18 +19,21 @@ import dev.patric.dungeonsreborn.effects.editor.EditorItemStore;
 import dev.patric.dungeonsreborn.effects.editor.EditorLockManager;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.gui.GuiItem;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
-import dev.patric.dungeonsreborn.gui.components.BackButton;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.EmptyState;
 import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
+import dev.patric.dungeonsreborn.gui.components.list.ListSearchBar;
 import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.gui.style.GuiNav;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class EditorItemListMenu extends Window {
   private static final int SIZE = 54;
@@ -48,7 +51,7 @@ public final class EditorItemListMenu extends Window {
   private final VirtualList<ItemEntry> list;
 
   public EditorItemListMenu(EditorServices services) {
-    super(SIZE, GuiMini.mm("<white><bold>Items</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.items.editor.list.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.store = new EditorItemStore(services.engine().plugin(), services.engine().logger());
 
@@ -60,9 +63,10 @@ public final class EditorItemListMenu extends Window {
         (player, entry) -> entryItem(player, entry),
         (ctx, entry) -> openEntry(ctx.player(), entry));
     list.searchKey(entry -> entry.id);
+    list.emptyStateItem(EmptyState.list());
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(GuiNav.backButton());
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
@@ -70,73 +74,46 @@ public final class EditorItemListMenu extends Window {
     nav(5, refreshButton());
 
     setFixedAt(0, 1, header());
-    setFixedAt(0, 7, filterButton());
-    setFixedAt(0, 8, clearFilterButton());
+    setFixedAt(0, 7, ListSearchBar.searchButton(list, slotAt(0, 7)));
+    setFixedAt(0, 8, ListSearchBar.clearButton(list, slotAt(0, 7)));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> GuiSounds.close(ctx.player()));
   }
 
   private Label header() {
-    return new Label(p -> GuiItems.named(Material.CHEST, GuiMini.mm("<gold><bold>Items</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Manage item definitions.</gray>"),
-        GuiMini.mm("<gray>Each item binds to abilities.</gray>"))));
-  }
-
-  private TextButton filterButton() {
-    return new TextButton(
-        p -> GuiItems.named(Material.NAME_TAG, GuiMini.mm("<aqua><bold>Filter</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Set a search query.</gray>"),
-            GuiMini.mm("<gray>Current:</gray> <white>" + (list.query(p).isBlank() ? "(none)" : list.query(p)) + "</white>"))),
-        GuiMini.mm("<gray>Type a filter query (or 'cancel')</gray>"),
-        "cancel",
-        Duration.ofSeconds(30),
-        (w, text) -> {
-          Player viewer = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
-          if (viewer == null) {
-            return;
-          }
-          list.query(viewer, text);
-          list.redraw(w, viewer);
-          w.redrawSlot(viewer, slotAt(0, 7));
-        },
-        true)
-            .inputMode(TextButton.InputMode.CHAT);
-  }
-
-  private Button clearFilterButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.CANCEL, Component.text("Clear")), ctx -> {
-      list.clearFilter(ctx.player());
-      list.redraw(ctx.window(), ctx.player());
-      ctx.window().redrawSlot(ctx.player(), slotAt(0, 7));
-      GuiSounds.click(ctx.player());
-    }).autoDescribeInLore(false);
+    return new Label(p -> GuiItems.named(Material.CHEST, GuiI18n.tr(p, "gui.items.editor.list.header.title"), List.of(
+        GuiI18n.tr(p, "gui.items.editor.list.header.hint1"),
+        GuiI18n.tr(p, "gui.items.editor.list.header.hint2"))));
   }
 
   private Button createButton() {
     return new TextButton(
-        p -> GuiButtons.item(GuiButtons.Type.PRIMARY, Component.text("New Item")),
-        GuiMini.mm("<gray>Enter a new item id</gray>"),
-        "cancel",
-        Duration.ofSeconds(30),
+        p -> GuiButtons.item(GuiButtons.Type.PRIMARY, GuiI18n.tr(p, "gui.items.editor.list.create.title")),
+        GuiI18n.tr("gui.items.editor.list.create.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
+        Duration.ofSeconds(45),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
           if (player == null) {
             return;
           }
           if (!services.access().canEdit(player)) {
-            player.sendMessage(Component.text("§cMissing permission: dungeonsreborn.editor.edit"));
+            player.sendMessage(GuiI18n.tr(player, "messages.command.missingPermission",
+                Placeholder.unparsed("permission", "dungeonsreborn.editor.edit")));
             return;
           }
           String id;
           try {
             id = Ids.normalize(text);
           } catch (Exception ex) {
-            player.sendMessage(Component.text("§cInvalid id: " + ex.getMessage()));
+            player.sendMessage(GuiI18n.tr(player, "messages.items.editor.invalidId",
+                Placeholder.unparsed("reason", ex.getMessage())));
             return;
           }
           if (store.load(id).isPresent()) {
-            player.sendMessage(Component.text("§cItem already exists: " + id));
+            player.sendMessage(GuiI18n.tr(player, "messages.items.editor.exists",
+                Placeholder.unparsed("id", id)));
             return;
           }
           EditorItemDraft draft = store.create(id);
@@ -150,12 +127,11 @@ public final class EditorItemListMenu extends Window {
           list.invalidateAll();
           openDraft(player, draft);
         },
-        true)
-            .inputMode(TextButton.InputMode.CHAT);
+        true).inputMode(TextButton.InputMode.CHAT);
   }
 
   private Button refreshButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, Component.text("Refresh")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, GuiI18n.tr(p, "gui.items.editor.list.refresh.title")), ctx -> {
       list.invalidate(ctx.player());
       list.redraw(ctx.window(), ctx.player());
       GuiSounds.click(ctx.player());
@@ -176,13 +152,15 @@ public final class EditorItemListMenu extends Window {
     Material mat = base == null || base.getType().isAir() ? Material.PAPER : base.getType();
     GuiItem item = GuiItem.of(base == null || base.getType().isAir() ? new ItemStack(mat) : base);
     if (base == null || base.getItemMeta() == null || !base.getItemMeta().hasDisplayName()) {
-      item.displayName(GuiMini.mm("<aqua><bold>" + entry.id + "</bold></aqua>"));
+      item.displayName(GuiI18n.tr(player, "gui.items.editor.list.entry.title",
+          Placeholder.unparsed("id", entry.id)));
     }
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + entry.id + "</white>"));
-    lore.add(GuiMini.mm("<gray>Bindings:</gray> <white>" + entry.bindings + "</white>"));
+    lore.add(GuiI18n.tr(player, "gui.common.line.id", Placeholder.unparsed("value", entry.id)));
+    lore.add(GuiI18n.tr(player, "gui.items.editor.list.entry.bindings",
+        Placeholder.unparsed("count", String.valueOf(entry.bindings))));
     if (base == null || base.getType().isAir()) {
-      lore.add(GuiMini.mm("<red>No item set</red>"));
+      lore.add(GuiI18n.tr(player, "gui.items.editor.list.entry.noItem"));
     }
     item.lore(lore);
     return item.build();
@@ -190,12 +168,13 @@ public final class EditorItemListMenu extends Window {
 
   private void openEntry(Player player, ItemEntry entry) {
     if (!services.access().canEdit(player)) {
-      player.sendMessage(Component.text("§cYou cannot edit items."));
+      player.sendMessage(GuiI18n.tr(player, "messages.items.editor.noEdit"));
       return;
     }
     EditorLockManager.LockResult lock = services.locks().tryLock(LOCK_PREFIX + entry.id, player);
     if (!lock.acquired()) {
-      player.sendMessage(Component.text("§cItem is locked by " + lock.lock().ownerName()));
+      player.sendMessage(GuiI18n.tr(player, "messages.items.editor.locked",
+          Placeholder.unparsed("name", lock.lock().ownerName())));
       return;
     }
     openDraft(player, entry.draft);

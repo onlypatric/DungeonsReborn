@@ -15,12 +15,14 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiManager;
+import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
 public final class TextButton extends Button {
-  private static final Component DEFAULT_TITLE = Component.text("Type in chat");
+  private static final String DEFAULT_CANCEL_WORD_KEY = "gui.textInput.cancelWord";
 
   public enum InputMode {
     CHAT,
@@ -45,7 +47,7 @@ public final class TextButton extends Button {
   private Component retryPrompt;
   private boolean showTitleOnPress;
   private InputMode inputMode = InputMode.CHAT;
-  private Component anvilTitle = Component.text("Enter text");
+  private Component anvilTitle = Locales.component(null, "gui.textInput.anvilTitle");
   private Function<Player, String> initialText = p -> "";
   private List<Component> signInitialLines = List.of(Component.empty(), Component.empty(), Component.empty(), Component.empty());
   private Side signSide = Side.FRONT;
@@ -56,7 +58,7 @@ public final class TextButton extends Button {
   };
 
   public TextButton(ItemStack item, Component prompt, BiConsumer<Window, String> onText) {
-    this(item, prompt, "cancel", Duration.ofSeconds(30), onText, true);
+    this(item, prompt, Locales.text(null, DEFAULT_CANCEL_WORD_KEY), Duration.ofSeconds(30), onText, true);
   }
 
   public TextButton(ItemStack item, Component prompt, String cancelWord, Duration timeout, BiConsumer<Window, String> onText,
@@ -74,7 +76,7 @@ public final class TextButton extends Button {
     this.reopen = reopen;
     this.retryPrompt = prompt;
 
-    Component desc = Component.text("Type in chat");
+    Component desc = Locales.component(null, "gui.textInput.tooltip");
     bind(ClickType.LEFT, desc, this::start);
     bind(ClickType.SHIFT_LEFT, desc, this::start);
   }
@@ -167,7 +169,7 @@ public final class TextButton extends Button {
     }
     return validate((window, player, input) -> input.length() >= min
         ? null
-        : Component.text("Must be at least " + min + " characters."));
+        : Locales.component(player, "gui.textInput.error.minLength", Locales.placeholders("min", min)));
   }
 
   public TextButton maxLength(int max) {
@@ -176,7 +178,7 @@ public final class TextButton extends Button {
     }
     return validate((window, player, input) -> input.length() <= max
         ? null
-        : Component.text("Must be at most " + max + " characters."));
+        : Locales.component(player, "gui.textInput.error.maxLength", Locales.placeholders("max", max)));
   }
 
   public TextButton matchesRegex(String regex) {
@@ -184,7 +186,7 @@ public final class TextButton extends Button {
     Pattern pattern = Pattern.compile(regex);
     return validate((window, player, input) -> pattern.matcher(input).matches()
         ? null
-        : Component.text("Invalid format."));
+        : Locales.component(player, "gui.textInput.error.invalidFormat"));
   }
 
   public TextButton integer() {
@@ -193,7 +195,7 @@ public final class TextButton extends Button {
         Integer.parseInt(input);
         return null;
       } catch (NumberFormatException ex) {
-        return Component.text("Please enter a whole number.");
+        return Locales.component(player, "gui.textInput.error.integer");
       }
     });
   }
@@ -207,10 +209,10 @@ public final class TextButton extends Button {
       try {
         value = Integer.parseInt(input);
       } catch (NumberFormatException ex) {
-        return Component.text("Please enter a whole number.");
+        return Locales.component(player, "gui.textInput.error.integer");
       }
       if (value < min || value > max) {
-        return Component.text("Number must be between " + min + " and " + max + ".");
+        return Locales.component(player, "gui.textInput.error.integerRange", Locales.placeholders("min", min, "max", max));
       }
       return null;
     });
@@ -218,7 +220,8 @@ public final class TextButton extends Button {
 
   private void start(Window.ClickContext ctx) {
     if (showTitleOnPress) {
-      ctx.player().showTitle(Title.title(DEFAULT_TITLE, prompt));
+      Component title = Locales.component(ctx.player(), "gui.textInput.title");
+      ctx.player().showTitle(Title.title(title, prompt));
     }
 
     GuiManager.get().debug("TextButton: press player=" + ctx.player().getName() + " window=" + ctx.window().getClass().getSimpleName());
@@ -289,6 +292,7 @@ public final class TextButton extends Button {
     Component error = validateAll(window, player, text);
     if (error != null) {
       GuiManager.get().debug("TextButton: invalid player=" + player.getName());
+      GuiSounds.error(player);
       player.sendMessage(error);
       Component nextPrompt = retryPrompt == null ? prompt : retryPrompt;
       if (inputMode == InputMode.CHAT) {

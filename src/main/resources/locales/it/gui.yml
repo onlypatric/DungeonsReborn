@@ -1,0 +1,1009 @@
+gui:
+  common:
+    none: (nessuno)
+    unnamed: (senza nome)
+  controls:
+    header: <gray><bold>Comandi</bold></gray>
+    bullet: <dark_gray>-</dark_gray>
+    separator: <dark_gray> • </dark_gray>
+    continuation: <dark_gray>...</dark_gray>
+    blank_line: "<gray> </gray>"
+  button:
+    back: Indietro
+    close: Chiudi
+  textInput:
+    title: Scrivi in chat
+    tooltip: Scrivi in chat
+    anvilTitle: Inserisci testo
+    cancelWord: annulla
+    error:
+      minLength: <red>Minimo {min} caratteri.</red>
+      maxLength: <red>Massimo {max} caratteri.</red>
+      invalidFormat: <red>Formato non valido.</red>
+      integer: <red>Inserisci un numero intero.</red>
+      integerRange: <red>Il numero deve essere tra {min} e {max}.</red>
+      positive: <red>Il valore deve essere maggiore di 0.</red>
+  itemPicker:
+    prompt: <gray>Clicca un oggetto nel tuo inventario per selezionarlo.</gray>
+    invalid: <red>Clicca un oggetto valido.</red>
+    title: Seleziona oggetto
+    action: Scegli un oggetto
+    status:
+      picking: <yellow>Selezione...</yellow>
+      selected: '<gray>Selezionato:</gray> '
+  numericInput:
+    label: Valore
+    prompt: 'Inserisci un numero (o ''annulla''):'
+    min: 'Min: {min}'
+    max: 'Max: {max}'
+    value: 'Valore: {value}'
+    clickToType: Clicca per digitare
+    stepMinus: -{step}
+    stepPlus: +{step}
+    minus: '-'
+    plus: +
+  cycle:
+    next: Avanti
+    previous: Precedente
+  dropdown:
+    selected: 'Selezionato: '
+  effects:
+    editor:
+      actionDetail:
+        error:
+          valueRequired: Valore richiesto.
+          invalidNumber: Numero non valido.
+  showcase:
+    settings:
+      tryThis: Prova questo
+    open: Apri
+  list:
+    prev:
+      title: Pagina prec.
+      action: Pagina precedente
+      disabled: Nessuna pagina precedente
+    next:
+      title: Pagina succ.
+      action: Pagina successiva
+      disabled: Nessuna pagina successiva
+    page: Pagina {current}/{total}
+    items: 'Oggetti: {count}'
+    truncated: Elenco troncato. Affina la ricerca.
+    filter: 'Filtro: {query}'
+  common:
+    line:
+      id: <gray>ID:</gray> <white>{value}</white>
+      status: <gray>Stato:</gray> {value}
+      permission: <gray>Permesso:</gray> <white>{value}</white>
+      detail: <gray>Dettaglio:</gray> <white>{value}</white>
+      source: <gray>Sorgente:</gray> <white>{value}</white>
+      lastReload: <gray>Ultimo reload:</gray> <white>{value}</white>
+      subsystem: <gray>Sottosistema:</gray> <white>{value}</white>
+    status:
+      enabled: <green>Attivo</green>
+      disabled: <red>Disattivato</red>
+    errors:
+      none: <green>Nessun errore.</green>
+      clickView: <red>Clicca per vedere gli errori.</red>
+      count: <red>Errori:</red> <white>{count}</white>
+    action:
+      leftClickEdit: <green>Clic sinistro per modificare.</green>
+      rightClickDelete: <red>Clic destro per eliminare.</red>
+    none: <gray>(nessuno)</gray>
+    unknown: <gray>(sconosciuto)</gray>
+  classes:
+    requirements:
+      level: <gray>Livello:</gray> <white>{current}/{required}</white>
+      tokens: <gray>Token:</gray> <white>{current}/{required}</white>
+      quests: <red>Richiede missioni:</red> <white>{quests}</white>
+      world: <red>Non disponibile in questo mondo.</red>
+    select:
+      title: <white><bold>Scegli Classe</bold></white>
+      header:
+        title: <gold><bold>Classi</bold></gold>
+        hint1: <gray>Seleziona una classe da sbloccare.</gray>
+        hint2: <gray>Solo una classe puo essere attiva.</gray>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica l'elenco.</gray>
+      entry:
+        selected: <green>Selezionata</green>
+      confirm:
+        title: <gold><bold>Conferma Classe</bold></gold>
+      stat:
+        strength: <gray>Forza:</gray> <white>+{value}</white>
+        dexterity: <gray>Destrezza:</gray> <white>+{value}</white>
+        intelligence: <gray>Intelligenza:</gray> <white>+{value}</white>
+        vitality: <gray>Vitalita:</gray> <white>+{value}</white>
+        manaMax: <gray>Mana Max:</gray> <white>+{value}</white>
+        manaRegen: <gray>Rigenerazione Mana:</gray> <white>+{value}</white>
+    skillTree:
+      title: <white><bold>Albero Abilita</bold></white>
+      header:
+        title: <gold><bold>Albero Abilita</bold></gold>
+        class: <gray>Classe:</gray> {value}
+        points:
+          unspent: <gray>Punti non spesi:</gray> <white>{value}</white>
+          total: <gray>Punti totali:</gray> <white>{value} (spesi {spent})</white>
+        unlocked: <gray>Nodi sbloccati:</gray> <white>{unlocked}/{total}</white>
+        respecCost: <gray>Costo respec:</gray> <white>{tokens} token, {points} punti</white>
+        hint:
+          unlock: <gray>Clic sinistro per sbloccare.</gray>
+          respec: <gray>Clic destro per respec.</gray>
+      node:
+        type: <gray>Tipo:</gray> <white>{value}</white>
+        cost: <gray>Costo:</gray> <white>{value}</white>
+        requires: <gray>Richiede:</gray> <white>{value}</white>
+        status:
+          unlocked: <green>Sbloccato</green>
+          locked: <red>Bloccato</red>
+      respec:
+        title: <gold><bold>Respec Abilita</bold></gold>
+        cost: <gray>Costo respec:</gray> <white>{tokens} token, {points} punti</white>
+  quests:
+    editor:
+      detail:
+        title: <white><bold>Editor Missioni</bold></white>
+        header:
+          title: <gold><bold>Missione:</bold> <white>{id}</white></gold>
+          hint: <gray>Configura le impostazioni della missione.</gray>
+        enabled:
+          title: <yellow><bold>Abilitata</bold></yellow>
+          state:
+            line: <gray>Stato:</gray> {value}
+            enabled: <green>Attiva</green>
+            disabled: <red>Disattiva</red>
+          hint: <gray>Clicca per cambiare.</gray>
+        name:
+          title: <yellow><bold>Nome</bold></yellow>
+          current: <gray>Attuale:</gray> <white>{value}</white>
+          prompt: <yellow>Inserisci il nome</yellow>
+        description:
+          title: <yellow><bold>Descrizione</bold></yellow>
+          lines: <gray>Righe:</gray> <white>{value}</white>
+          hint: <gray>Usa \n per nuove righe.</gray>
+          prompt: <yellow>Inserisci descrizione (usa \n)</yellow>
+        cooldown:
+          title: <yellow><bold>Cooldown</bold></yellow>
+          seconds: <gray>Secondi:</gray> <white>{value}</white>
+          prompt: <yellow>Inserisci i secondi di cooldown</yellow>
+        rotation:
+          title: <yellow><bold>Rotazione</bold></yellow>
+          current: <gray>Attuale:</gray> <white>{value}</white>
+          hint: <gray>Clicca per cambiare.</gray>
+        objectives:
+          title: <yellow><bold>Obiettivi</bold></yellow>
+          hint: <gray>Gestisci gli obiettivi.</gray>
+        delete:
+          title: <red><bold>Elimina</bold></red>
+          hint: <gray>Rimuovi questa missione.</gray>
+          prompt: <red>Scrivi <white>delete</white> per confermare</red>
+          error: <red>Scrivi delete per confermare.</red>
+        summary:
+          title: <gold><bold>Riepilogo Missione</bold></gold>
+          objectives: <gray>Obiettivi:</gray> <white>{count}</white>
+          objective: <gray>- {value}</gray>
+          more: <dark_gray>... +{count} altri</dark_gray>
+          rewards: <gray>Ricompense:</gray> <white>{value}</white>
+          allowlist: <gray>Allowlist:</gray> <white>{value}</white>
+          allowlist:
+            all: tutti i mondi
+          reward:
+            xp: "{value} xp"
+            tokens: "{value} token"
+            compressed: "{value} compressi"
+            pallets: "{value} pallet"
+            items: "{value} oggetti"
+        audit:
+          title: <gray><bold>Audit</bold></gray>
+          editor: <gray>Ultimo editor:</gray> <white>{value}</white>
+          when: <gray>Ultima modifica:</gray> <white>{value}</white>
+          unknown: sconosciuto
+        validation:
+          nonNegative: <red>Il valore deve essere >= 0.</red>
+          integer: <red>Inserisci un numero intero.</red>
+    objectives:
+      title: <white><bold>Obiettivi Quest</bold></white>
+      header:
+        title: <gold><bold>Obiettivi</bold></gold>
+        hint: <gray>Clicca per modificare.</gray>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica obiettivi.</gray>
+      add:
+        kill: <green><bold>Aggiungi obiettivo uccisione</bold></green>
+        use: <green><bold>Aggiungi obiettivo usa oggetto</bold></green>
+        visit: <green><bold>Aggiungi obiettivo visita regione</bold></green>
+        craft: <green><bold>Aggiungi obiettivo crafting</bold></green>
+      entry:
+        title: <white><bold>{type}</bold></white>
+        summary: <gray>{summary}</gray>
+    objective:
+      edit:
+        title: <white><bold>Modifica Obiettivo</bold></white>
+        header:
+          title: <gold><bold>Obiettivo</bold></gold>
+          index: <gray>Indice:</gray> <white>{value}</white>
+        type:
+          title: <aqua><bold>Tipo</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          hint: <gray>Clicca per cambiare.</gray>
+        count:
+          title: <aqua><bold>Quantita</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci quantita</gray>
+        mob:
+          title: <aqua><bold>ID Mob</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci id mob (vuoto per pulire)</gray>
+        entity:
+          title: <aqua><bold>Tipo Entita</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci tipo entita (vuoto per pulire)</gray>
+        itemId:
+          title: <aqua><bold>ID Oggetto</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci id oggetto (vuoto per pulire)</gray>
+        material:
+          title: <aqua><bold>Materiale</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci materiale (vuoto per pulire)</gray>
+        recipe:
+          title: <aqua><bold>ID Ricetta</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+          prompt: <gray>Inserisci id ricetta (vuoto per pulire)</gray>
+        region:
+          title: <aqua><bold>Regione</bold></aqua>
+          world: <gray>Mondo:</gray> <white>{value}</white>
+          xyz: <gray>XYZ:</gray> <white>{x},{y},{z}</white>
+          radius: <gray>Raggio:</gray> <white>{value}</white>
+          format: <gray>Formato:</gray> <white>world,x,y,z,radius</white>
+          prompt: <gray>Inserisci regione (world,x,y,z,radius)</gray>
+        delete:
+          title: <red><bold>Elimina</bold></red>
+          hint: <gray>Rimuovi questo obiettivo.</gray>
+    batch:
+      title: <white><bold>Strumenti Batch Quest</bold></white>
+      header:
+        title: <gold><bold>Strumenti Batch</bold></gold>
+        hint: <gray>Applica modifiche a tutte le quest.</gray>
+        count: <gray>Quest trovate:</gray> <white>{count}</white>
+      nameTemplate:
+        title: <aqua><bold>Template Nome</bold></aqua>
+        hint1: <gray>Usa {id} per id quest.</gray>
+        hint2: '<gray>Esempio:</gray> <white>Quest: {id}</white>'
+        prompt: <yellow>Inserisci template nome</yellow>
+        error:
+          required: <red>Il template e obbligatorio.</red>
+          apply: <red>Impossibile applicare il template.</red>
+        success: <green>Nomi quest aggiornati.</green>
+      enable:
+        title: <green><bold>Abilita Tutto</bold></green>
+        hint: <gray>Imposta enabled=true per tutte le quest.</gray>
+        error: <red>Impossibile abilitare le quest.</red>
+        success: <green>Tutte le quest abilitate.</green>
+      disable:
+        title: <red><bold>Disabilita Tutto</bold></red>
+        hint: <gray>Imposta enabled=false per tutte le quest.</gray>
+        error: <red>Impossibile disabilitare le quest.</red>
+        success: <green>Tutte le quest disabilitate.</green>
+      delete:
+        title: <red><bold>Elimina Tutto</bold></red>
+        hint: <gray>Scrivi '{word}' per confermare.</gray>
+        prompt: <red>Scrivi {word} per eliminare tutte le quest</red>
+        cancel: <gray>Eliminazione annullata.</gray>
+        error: <red>Impossibile eliminare le quest.</red>
+        success: <green>Tutte le quest eliminate.</green>
+    description:
+      line: <gray>{line}</gray>
+    log:
+      title: <white><bold>Diario Missioni</bold></white>
+      header:
+        title: <gold><bold>Diario Missioni</bold></gold>
+        hint1: <gray>Clicca una missione disponibile per accettarla.</gray>
+        hint2: <gray>Le missioni attive tracciano i progressi automaticamente.</gray>
+      entry:
+        title: <white><bold>{name}</bold></white>
+      action:
+        accept: <gray>Clicca per accettare.</gray>
+      badge:
+        label: <gray>Stato:</gray> {badge}
+        active: <green>ATTIVA</green>
+        available: <aqua>DISPONIBILE</aqua>
+        completed: <gray>COMPLETATA</gray>
+        cooldown: <yellow>COOLDOWN</yellow>
+        locked: <red>BLOCCATA</red>
+      progress: <gray>Progresso:</gray> <white>{bar} {percent}%</white>
+    giver:
+      title: <white><bold>Quest Giver</bold></white>
+      header:
+        title: <gold><bold>{name}</bold></gold>
+      order:
+        label: '<dark_gray>Ordine missioni: {order}</dark_gray>'
+        random: Pool casuale
+        ordered: Lista ordinata
+      partyLocked: <red>Le missioni party richiedono giver a pool casuale.</red>
+  systemStatus:
+    title: <white><bold>Stato Sistema</bold></white>
+    header:
+      title: <gold><bold>Stato</bold></gold>
+      hint: <gray>Riepiloghi reload + errori di validazione.</gray>
+    overview:
+      title: <gray>Panoramica</gray>
+      subsystems: <gray>Sottosistemi:</gray> <white>{count}</white>
+      errors: <gray>Errori:</gray> <white>{count}</white>
+    entry:
+      title: <yellow>{label}</yellow>
+    errors:
+      title: <red><bold>Report Errori</bold></red>
+      hint: <gray>Vedi tutti gli errori di validazione.</gray>
+      allSystems: Tutti i sistemi
+      windowTitle: <white><bold>{title}</bold></white>
+      header:
+        title: <red><bold>Errori</bold></red>
+        hint: <gray>Problemi di validazione + reload.</gray>
+      entry:
+        title: <red>Errore di validazione</red>
+        message: <red>{message}</red>
+  shop:
+    editor:
+      list:
+        title: <white><bold>Editor Negozio</bold></white>
+        header:
+          title: <gold><bold>Negozi</bold></gold>
+          hint1: <gray>Clic sinistro per modificare.</gray>
+          hint2: <gray>Clic destro per eliminare.</gray>
+        status:
+          title: <gray>Stato</gray>
+          count: <gray>Negozi:</gray> <white>{count}</white>
+          reloadHint: <dark_gray>/dr shop reload</dark_gray>
+        create:
+          title: <green><bold>Crea Negozio</bold></green>
+          hint: <gray>Crea una nuova voce negozio.</gray>
+          prompt: <yellow>Digita il nuovo id negozio</yellow>
+          missingId: <red>ID negozio obbligatorio.</red>
+          exists: <red>Il negozio esiste gia'.</red>
+        batch:
+          title: <aqua><bold>Strumenti Batch</bold></aqua>
+          hint: <gray>Rinomina, abilita, elimina in massa.</gray>
+        error:
+          notFound: <red>Negozio non trovato.</red>
+        entry:
+          title: <yellow>{title}</yellow>
+          trades: <gray>Scambi:</gray> <white>{count}</white>
+        delete:
+          word: elimina
+          prompt: <red>Scrivi <white>{word}</white> per eliminare <yellow>{id}</yellow>.</red>
+          cancelled: <gray>Eliminazione annullata.</gray>
+          failed: <red>Impossibile eliminare il negozio.</red>
+          success: <green>Negozio eliminato.</green>
+    tradeEditor:
+      title: <white><bold>Modifica Scambio</bold></white>
+      buyA:
+        title: <yellow><bold>Compra A</bold></yellow>
+        hint: <gray>Metti qui il primo costo.</gray>
+      buyB:
+        title: <yellow><bold>Compra B</bold></yellow>
+        hint: <gray>Secondo costo opzionale.</gray>
+      sell:
+        title: <green><bold>Vendi</bold></green>
+        hint: <gray>Oggetto risultato.</gray>
+      maxUses:
+        title: <yellow><bold>Usi Max</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>0 = illimitato.</dark_gray>
+        prompt: <yellow>Inserisci usi massimi</yellow>
+        invalid: <red>Inserisci un numero intero.</red>
+      rewardXp:
+        title: <yellow><bold>Ricompensa XP</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>Attiva/disattiva XP del villaggio.</dark_gray>
+      priceMult:
+        title: <yellow><bold>Moltiplicatore Prezzo</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>0 = nessuno.</dark_gray>
+        prompt: <yellow>Inserisci moltiplicatore</yellow>
+        invalid: <red>Inserisci un numero.</red>
+      tokens:
+        title: <gold><bold>Dai Token</bold></gold>
+        hint: <gray>Ottieni uno stack di token.</gray>
+      done:
+        title: <green><bold>Fatto</bold></green>
+        hint: <gray>Torna all'editor negozio.</gray>
+  upgrades:
+    inspect:
+      title: <white><bold>Ispezione Upgrade</bold></white>
+      header:
+        title: <gold><bold>Upgrade</bold></gold>
+        hint: <gray>Ispeziona e rimuovi upgrade.</gray>
+      clear:
+        title: <red><bold>Pulisci Upgrade</bold></red>
+        hint: <gray>Rimuovi tutti gli upgrade applicati.</gray>
+        missingItem: <red>Tieni un oggetto per rimuovere gli upgrade.</red>
+      noItem:
+        title: <dark_gray><bold>Nessun Oggetto</bold></dark_gray>
+        hint: <gray>Tieni un oggetto nella mano principale.</gray>
+      noUpgrades:
+        title: <dark_gray><bold>Nessun Upgrade</bold></dark_gray>
+        hint: <gray>Tieni prima un oggetto.</gray>
+      noneApplied:
+        title: <dark_gray><bold>Nessun Upgrade</bold></dark_gray>
+        hint: <gray>Questo oggetto non ha upgrade.</gray>
+      applied:
+        title: <aqua><bold>Upgrade Applicati</bold></aqua>
+      vanillaBook: <gray>• Libro Incantato</gray>
+    merge:
+      title: <white><bold>Potenziamenti Incantesimi</bold></white>
+      header:
+        title: <gold><bold>Unione Upgrade</bold></gold>
+        hint1: <gray>Metti un oggetto e un libro upgrade.</gray>
+        hint2: <dark_gray>Anteprima prima di applicare.</dark_gray>
+      clear:
+        title: <red><bold>Pulisci Input</bold></red>
+        hint: <gray>Rimetti gli oggetti in inventario.</gray>
+      preview:
+        waiting:
+          title: <dark_gray><bold>In Attesa</bold></dark_gray>
+          hint: <gray>Metti un oggetto e un libro upgrade.</gray>
+        missing:
+          title: <red><bold>Upgrade Mancanti</bold></red>
+          hint: <gray>Riprova piu tardi.</gray>
+        error:
+          title: <red><bold>Non Applicabile</bold></red>
+      diff:
+        title: <aqua><bold>Anteprima Modifiche</bold></aqua>
+        waiting:
+          title: <dark_gray><bold>Anteprima Modifiche</bold></dark_gray>
+          hint: <gray>Metti un oggetto e un upgrade.</gray>
+        missing:
+          title: <red><bold>Upgrade Mancanti</bold></red>
+          hint: <gray>Riprova piu tardi.</gray>
+        error:
+          title: <red><bold>Nessuna Modifica</bold></red>
+        none:
+          hint: <gray>Nessuna modifica rilevata.</gray>
+      section:
+        modifiers: <gold><bold>Modificatori</bold></gold>
+        enchants: <gold><bold>Incanti</bold></gold>
+        attributes: <gold><bold>Attributi</bold></gold>
+        status: <gold><bold>Effetti</bold></gold>
+        bindings: <gold><bold>Legami</bold></gold>
+        secondary: <gold><bold>Secondari</bold></gold>
+      error:
+        line: <red>{error}</red>
+      cost:
+        title: <gold>Costo</gold>
+        pallet: <gray>- {amount} pallet</gray>
+        compressed: <gray>- {amount} compressi</gray>
+        tokens: <gray>- {amount} token</gray>
+      requirements:
+        title: <gold>Requisiti</gold>
+        minXp: '<gray>- Richiede: {value} livelli XP</gray>'
+        consumeXp: '<gray>- Consuma: {value} livelli XP</gray>'
+        minTotalXp: '<gray>- Richiede: {value} XP totali</gray>'
+        consumeTotalXp: '<gray>- Consuma: {value} XP totali</gray>'
+        minProgress: '<gray>- Richiede: {value} progresso XP</gray>'
+        consumeProgress: '<gray>- Consuma: {value} progresso XP</gray>'
+        minMaxMana: '<gray>- Richiede: {value} mana massimo</gray>'
+      tip:
+        bindingSlot: '<dark_gray>Suggerimento: rimuovi il bind esistente.</dark_gray>'
+        enchantConflict: '<dark_gray>Suggerimento: rimuovi incanti in conflitto.</dark_gray>'
+        compatibility: '<dark_gray>Suggerimento: controlla la compatibilita.</dark_gray>'
+        manaProvider: '<dark_gray>Suggerimento: abilita il mana.</dark_gray>'
+        maxMana: '<dark_gray>Suggerimento: aumenta il mana massimo.</dark_gray>'
+        xp: '<dark_gray>Suggerimento: ottieni piu XP.</dark_gray>'
+        tokens: '<dark_gray>Suggerimento: ottieni piu token.</dark_gray>'
+      slot:
+        contains: <dark_gray>Slot contiene:</dark_gray>
+        line: <gray>- {value}</gray>
+        more: <gray>- ...</gray>
+        occupied: <dark_gray>Slot occupato da un binding.</dark_gray>
+      warning:
+        binding: '<yellow>Attenzione: binding {binding} esistente.</yellow>'
+        overwrite: <dark_gray>Questo upgrade sostituira il precedente.</dark_gray>
+      activator:
+        left: Click Sinistro
+        right: Click Destro
+        shiftLeft: Shift+Sinistro
+        shiftRight: Shift+Destro
+        passive: Passivo
+      conflicts:
+        title: <dark_gray>Conflitti:</dark_gray>
+        line: <gray>- {value}</gray>
+        more: <gray>- ...</gray>
+      apply:
+        title: <green><bold>Applica Upgrade</bold></green>
+        waiting:
+          title: <dark_gray><bold>Applica Upgrade</bold></dark_gray>
+          hint: <gray>Metti un oggetto e un upgrade.</gray>
+        missing:
+          title: <red><bold>Upgrade Mancanti</bold></red>
+          hint: <gray>Riprova piu tardi.</gray>
+        error:
+          title: <red><bold>Applica Upgrade</bold></red>
+        consume: <gray>Consuma il libro upgrade.</gray>
+      quick:
+        title: <green><bold>Applica Rapido</bold></green>
+        waiting:
+          title: <dark_gray><bold>Applica Rapido</bold></dark_gray>
+          hint: <gray>Metti un oggetto e un upgrade.</gray>
+        missing:
+          title: <red><bold>Applica Rapido</bold></red>
+          hint: <gray>Upgrade non disponibile.</gray>
+        error:
+          title: <red><bold>Applica Rapido</bold></red>
+        hint: <gray>Applica e chiudi.</gray>
+  userHub:
+    title: <white><bold>Hub Avventuriero</bold></white>
+    header:
+      title: <gold><bold>Hub Avventuriero</bold></gold>
+      subtitle: <gray>Accesso rapido ai sistemi del giocatore.</gray>
+    dungeonQueue:
+      title: <aqua><bold>Coda Dungeon</bold></aqua>
+      hint: <gray>Entra in un livello dungeon.</gray>
+    dungeonStatus:
+      title: <yellow><bold>Stato Dungeon</bold></yellow>
+      hint: <gray>Vedi la run attiva.</gray>
+    questLog:
+      title: <green><bold>Diario Missioni</bold></green>
+      hint: <gray>Vedi le tue missioni.</gray>
+    classes:
+      title: <gold><bold>Classi</bold></gold>
+      hint: <gray>Seleziona la tua classe.</gray>
+    skills:
+      title: <light_purple><bold>Abilita</bold></light_purple>
+      hint: <gray>Vedi il percorso abilita.</gray>
+      selectClass: <red>Seleziona prima una classe.</red>
+      missingClass: <red>Classe non trovata:</red> <white>{id}</white>
+    party:
+      title: <white><bold>Party</bold></white>
+      hint: <gray>Gestisci il tuo party.</gray>
+    crafting:
+      title: <aqua><bold>Crafting</bold></aqua>
+      hint: <gray>Apri il crafting personalizzato.</gray>
+    upgrades:
+      title: <red><bold>Potenziamenti</bold></red>
+      hint: <gray>Unisci potenziamenti incantesimi.</gray>
+    kits:
+      title: <gold><bold>Kit</bold></gold>
+      hint: <gray>Riscatta ricompense iniziali.</gray>
+  adminHub:
+    title: <white><bold>Hub Admin</bold></white>
+    header:
+      title: <gold><bold>Hub Admin</bold></gold>
+      subtitle: <gray>Accesso rapido agli strumenti admin.</gray>
+    effectsEditor:
+      title: <aqua><bold>Editor Effetti</bold></aqua>
+      hint: <gray>Modifica abilita e azioni.</gray>
+    itemsEditor:
+      title: <yellow><bold>Editor Oggetti</bold></yellow>
+      hint: <gray>Modifica oggetti e binding.</gray>
+    mobEditor:
+      title: <green><bold>Editor Mob</bold></green>
+      hint: <gray>Modifica mob personalizzati.</gray>
+    systemStatus:
+      title: <yellow><bold>Stato Sistema</bold></yellow>
+      hint: <gray>Riepiloghi ricarica + errori.</gray>
+    questEditor:
+      title: <gold><bold>Editor Missioni</bold></gold>
+      hint: <gray>Modifica missioni e obiettivi.</gray>
+    shopEditor:
+      title: <green><bold>Editor Negozi</bold></green>
+      hint: <gray>Modifica scambi negozio.</gray>
+    craftingEditor:
+      title: <aqua><bold>Editor Crafting</bold></aqua>
+      hint: <gray>Modifica ricette personalizzate.</gray>
+    classEditor:
+      title: <light_purple><bold>Editor Classi</bold></light_purple>
+      hint: <gray>Modifica classi e percorsi abilita.</gray>
+    dungeonAdmin:
+      title: <red><bold>Admin Dungeon</bold></red>
+      hint: <gray>Coda + strumenti sessione.</gray>
+  kits:
+    title: <white><bold>Kit</bold></white>
+    header:
+      title: <gold><bold>Kit</bold></gold>
+      subtitle: <gray>Riscatta ricompense iniziali.</gray>
+      note: <dark_gray>Valgono regole one-time e cooldown.</dark_gray>
+    lore:
+      id: <gray>ID:</gray> <white>{id}</white>
+      permission: <gray>Permesso:</gray> <white>{permission}</white>
+      status: <gray>Stato:</gray> <white>{message}</white>
+      oneTime: <gray>Una sola volta:</gray> <white>{value}</white>
+      cooldown: <gray>Cooldown:</gray> <white>{seconds}s</white>
+      action:
+        claim: <green>Clicca per riscattare.</green>
+        unavailable: <red>Non disponibile.</red>
+    status:
+      available: <green>Disponibile</green>
+      unavailable: <red>Non disponibile</red>
+    itemTitle: <yellow>{title}</yellow>
+    rewards:
+      itemsTitle: <gold>Oggetti</gold>
+      itemEntry: <gray>- {amount}x {name}</gray>
+      more: <gray>- ...</gray>
+      rewardsTitle: <gold>Ricompense</gold>
+      xp: <gray>- {amount} XP</gray>
+      tokens: <gray>- {amount} token</gray>
+      compressed: <gray>- {amount} token compressi</gray>
+      pallet: <gray>- {amount} pallet</gray>
+  party:
+    title: <white><bold>Party</bold></white>
+    header:
+      title: <gold><bold>Party</bold></gold>
+      empty: <gray>Non sei in un party.</gray>
+      emptyHint: <gray>Usa /dr party create.</gray>
+      world: <gray>Mondo:</gray> <white>{world}</white>
+      members: <gray>Membri:</gray> <white>{count}</white>
+      chat: <gray>Chat Party:</gray> {status}
+      worldMismatch: <red>Mondo diverso:</red> <gray>{world}</gray>
+    refresh:
+      title: <yellow><bold>Aggiorna</bold></yellow>
+      hint: <gray>Ricarica la lista party.</gray>
+    leave:
+      title: <red><bold>Esci</bold></red>
+      hint: <gray>Lascia il party.</gray>
+    error:
+      notInParty: <red>Non sei in un party.</red>
+    chat:
+      titleOn: <green><bold>Chat Party</bold></green>
+      titleOff: <red><bold>Chat Party</bold></red>
+      status: <gray>Stato:</gray> {status}
+      hint: <gray>Clicca per alternare.</gray>
+      true: <green>On</green>
+      false: <red>Off</red>
+    member:
+      title: <white><bold>{name}</bold></white>
+      status: <gray>Stato:</gray> {status}
+      role: <gray>Ruolo:</gray> {role}
+      online: <green>Online</green>
+      offline: <red>Offline</red>
+      leader: <gold>Leader</gold>
+      member: <white>Membro</white>
+  showcase:
+    title: <gradient:#5fa8ff:#2ee59d><bold>GUI DungeonsReborn</bold></gradient>
+    about:
+      button: Info
+      title: <white><bold>Info / Debug</bold></white>
+      what:
+        title: Cosa mostra
+        stack: <gray>- Stack finestre + barra di navigazione</gray>
+        clickOutside: <gray>- Click fuori finestra</gray>
+        reasons: <gray>- Motivi apertura/chiusura</gray>
+        tick: <gray>- Tick finestra (schermata aggiorna)</gray>
+        sound: <gray>- Suoni helper</gray>
+      toggleDebug: Attiva log debug
+      confirmDialog: Finestra di conferma
+      clickOutside: <gray>Hai cliccato fuori dalla finestra.</gray>
+      snapshot:
+        title: Snapshot finestra attiva
+        expected: <gray>expectedWindow:</gray> <white>{value}</white>
+        actual: <gray>actualTopHolder:</gray> <white>{value}</white>
+        pending: <gray>pendingResumeWindow:</gray> <white>{value}</white>
+        external: <gray>lastExternalTopHolder:</gray> <white>{value}</white>
+        event: <gray>lastEvent:</gray> <white>{value}</white>
+      reason:
+        title: Motivo apertura
+        none: <dark_gray>N/D</dark_gray>
+        reason: <gray>reason:</gray> <white>{value}</white>
+        detail: <gray>detail:</gray> <white>{value}</white>
+      confirm:
+        title: <white><bold>Conferma</bold></white>
+        header: <yellow><bold>Vuoi farlo?</bold></yellow>
+        detail: <gray>Esempio di finestra modale.</gray>
+        confirmed: <green>Confermato.</green>
+        cancelled: <red>Annullato.</red>
+    tick: <gray>Tick:</gray> <white>{value}</white>
+    header:
+      title: <white><bold>Showcase</bold></white>
+      subtitle: <gray>Tutto in questa schermata usa la nuova GUI a componenti.</gray>
+    tile:
+      action: <dark_gray>Clicca per aprire</dark_gray>
+      vault:
+        title: Deposito
+        subtitle: Storage multi-slot (regole + vanilla)
+      mobs:
+        title: Indice Mob
+        subtitle: Lista virtuale (pagine + filtri + preview)
+      settings:
+        title: Impostazioni
+        subtitle: Input + modalità testo + selettore item
+      slots:
+        title: Slot
+        subtitle: Slot trascinabili (vanilla + regole)
+      confirm:
+        title: Conferma
+        subtitle: Esempio di flusso modale
+      sounds:
+        title: Suoni
+        subtitle: Clicca per feedback sonoro
+      wizard:
+        title: Wizard
+        subtitle: Flusso a step (form)
+    sounds:
+      played: <gray>Riprodotto suono di click.</gray>
+    wizard:
+      title: <white><bold>Wizard Demo</bold></white>
+      none: (nessuno)
+      step1:
+        title: '<white><bold>Step 1: Testo</bold></white>'
+        current:
+          title: <yellow><bold>Nome attuale</bold></yellow>
+          value: <gray>{value}</gray>
+        set:
+          title: <aqua><bold>Imposta nome</bold></aqua>
+          hint: <gray>Apre input anvil.</gray>
+        prompt: <gray>Scrivi un nome (o 'cancel')</gray>
+        anvilTitle: <white><bold>Nome</bold></white>
+      step2:
+        title: '<white><bold>Step 2: Input</bold></white>'
+        amount: <white><bold>Quantità</bold></white>
+        theme: <white><bold>Tema</bold></white>
+      step3:
+        title: '<white><bold>Step 3: Riepilogo</bold></white>'
+        summary:
+          title: <green><bold>Riepilogo</bold></green>
+          name: <gray>Nome:</gray> <white>{value}</white>
+          amount: <gray>Quantità:</gray> <white>{value}</white>
+          theme: <gray>Tema:</gray> <white>{value}</white>
+          hint: <dark_gray>Usa Avanti -> Fine per completare.</dark_gray>
+      finished: <green>Wizard completato.</green>
+      cancelled: <red>Wizard annullato.</red>
+    vault:
+      title: <white><bold>Deposito</bold></white>
+      header:
+        title: Deposito
+        bins: '<gray>Riga sopra: contenitori a regole</gray>'
+        storage: '<gray>Righe sotto: slot storage vanilla</gray>'
+      clear:
+        title: <red><bold>Svuota deposito</bold></red>
+        hint: <gray>Apre una conferma.</gray>
+        confirm:
+          title: <white><bold>Svuota deposito</bold></white>
+          header: <red><bold>Svuotare tutto?</bold></red>
+          detail: <gray>Rimuove tutti gli oggetti dal tuo deposito.</gray>
+      clearInventory:
+        title: <white><bold>Svuota inventario</bold></white>
+        header: <red><bold>Vuoi davvero svuotare l'inventario?</bold></red>
+        detail: <gray>Non influisce sul deposito.</gray>
+      trash:
+        title: Cestino
+        clearInventory: Svuota inventario
+      rule:
+        diamonds: Solo diamanti
+        emeralds: Solo smeraldi
+        gold: Solo lingotti d'oro
+        iron: Solo lingotti di ferro
+        potions: Solo pozioni
+        blocks: Solo blocchi
+        food: Solo cibo
+        anything: Qualsiasi
+      bin:
+        title: <dark_gray><bold>{rule}</bold></dark_gray>
+        hint: <dark_gray>Metti gli oggetti qui.</dark_gray>
+      stats:
+        title: Statistiche deposito
+        stacks: <gray>Stack:</gray> <white>{value}</white>
+        items: <gray>Oggetti:</gray> <white>{value}</white>
+    slots:
+      title: <white><bold>Slot trascinabili</bold></white>
+      rule:
+        diamonds: Solo diamanti
+        vanilla: Slot vanilla
+        deposit: Solo deposito
+        withdraw: Solo prelievo
+      withdrawHint: <dark_gray>Prendi oggetti da qui.</dark_gray>
+      help:
+        title: <white><bold>Prova a cliccare gli slot</bold></white>
+        summary: <gray>Questi sono DraggableSlot, non normali pulsanti.</gray>
+        diamonds: '<dark_gray>• Solo diamanti: accetta diamanti</dark_gray>'
+        vanilla: '<dark_gray>• Slot vanilla: come un normale slot</dark_gray>'
+        deposit: '<dark_gray>• Solo deposito: puoi mettere ma non prendere</dark_gray>'
+        withdraw: '<dark_gray>• Solo prelievo: parte con oggetti, non puoi mettere</dark_gray>'
+      stats:
+        title: <yellow><bold>Contenuto slot</bold></yellow>
+        empty: <gray>{label}:</gray> <dark_gray>(vuoto)</dark_gray>
+        value: <gray>{label}:</gray> <white>{item}</white> <gray>x{amount}</gray>
+      placeholder: <dark_gray><bold>{title}</bold></dark_gray>
+      placeholderHint: <dark_gray>Rilascia oggetti qui.</dark_gray>
+    settings:
+      title: <white><bold>Impostazioni / Input</bold></white>
+      picker:
+        prompt: <gray>Clicca un oggetto nell'inventario per selezionarlo.</gray>
+      input:
+        chat: <aqua><bold>Input chat</bold></aqua>
+        anvil: <aqua><bold>Input anvil</bold></aqua>
+        sign: <aqua><bold>Input cartello</bold></aqua>
+        hint: <gray>Salva il tuo input nello stato.</gray>
+        prompt: <gray>Scrivi qualcosa (o 'cancel')</gray>
+        anvilTitle: <white><bold>Input</bold></white>
+      lastInput:
+        none: (nessuno)
+        title: <yellow><bold>Ultimo input</bold></yellow>
+        value: <gray>{value}</gray>
+      number:
+        title: <white><bold>Numero</bold></white>
+        prompt: <gray>Scrivi un numero 0..100 (o 'cancel')</gray>
+      theme:
+        title: <white><bold>Tema</bold></white>
+      preview:
+        none: Nessun oggetto selezionato
+      steps:
+        '1': <gray>1) Clicca un input</gray>
+        '2': <gray>2) Scegli un oggetto</gray>
+        '3': <gray>3) Osserva preview + confronto</gray>
+    mobs:
+      title: <white><bold>Indice Mob</bold></white>
+      none: Nessuna selezione
+      selected:
+        title: <yellow><bold>Selezionato</bold></yellow>
+        hint: <gray>Clicca un elemento per cambiare.</gray>
+      details:
+        title: Dettagli
+        none: <dark_gray>N/D</dark_gray>
+        id: <gray>ID:</gray> <white>{id}</white>
+        tip: '<dark_gray>Suggerimento: usa il filtro.</dark_gray>'
+      entry:
+        title: <gold><bold>{name}</bold></gold>
+        line: <gray>{text}</gray>
+        select: <dark_gray>Click sinistro per selezionare</dark_gray>
+  crafting:
+    test:
+      title: <white><bold>Crafting personalizzato (Test)</bold></white>
+      header:
+        title: <gold><bold>Crafting Test</bold></gold>
+        hint1: <gray>Rilascia gli oggetti nella griglia 4x4.</gray>
+        hint2: <dark_gray>Usa Craft per consumare gli input.</dark_gray>
+      result:
+        title: <aqua><bold>Risultato</bold></aqua>
+        hint: <gray>L'anteprima si aggiorna con gli input.</gray>
+      clear:
+        title: <red><bold>Pulisci input</bold></red>
+        hint: <gray>Riporta gli oggetti nell'inventario.</gray>
+      discover:
+        title: <aqua><bold>Scopri ricette</bold></aqua>
+        hint: <gray>Trova le ricette che puoi craftare.</gray>
+      craft:
+        title: <green><bold>Craft</bold></green>
+        hint: <gray>Crafta la ricetta mostrata.</gray>
+      noRecipe:
+        title: <dark_gray><bold>Nessuna ricetta</bold></dark_gray>
+        preview: <gray>Aggiungi oggetti per vedere l'anteprima.</gray>
+        craft: <gray>Aggiungi ingredienti per craftare.</gray>
+      invalidOutput:
+        title: <red><bold>Output non valido</bold></red>
+        hint: <gray>L'output della ricetta non è valido.</gray>
+      outputs:
+        more: <dark_gray>+{count} output aggiuntivi</dark_gray>
+      error:
+        registry: <red>Registro crafting non disponibile.</red>
+        missingIngredients: <red>Mancano ingredienti per questa ricetta.</red>
+        tooManyIngredients: <red>Troppi ingredienti per la griglia 4x4.</red>
+        noMatch: <red>Nessuna ricetta corrispondente.</red>
+        noPermission: <red>Non hai il permesso per craftare.</red>
+        missingOutput: <red>Manca l'output della ricetta.</red>
+        inventoryFull: <red>Inventario pieno.</red>
+      match:
+        strength: <gray>Forza match:</gray> <white>{percent}%</white>
+        consumed: <gray>Consumati:</gray> <white>{consumed}/{required}</white>
+        bestFit: '<dark_gray>Best fit: più consumati, poi specificità ({specificity})</dark_gray>'
+        requiredTitle: <gray>Oggetti richiesti:</gray>
+        requiredEntry: <dark_gray>- {value}</dark_gray>
+        requiredMore: <dark_gray>- ...</dark_gray>
+      format:
+        itemPrefix: 'item:'
+        tag: tag
+        tagPrefix: 'tag:'
+        material: materiale
+        categoryPrefix: 'categoria:'
+        any: qualsiasi oggetto
+    picker:
+      title: <white><bold>Seleziona ricetta</bold></white>
+      header:
+        title: <gold><bold>Ricette</bold></gold>
+        edit: <gray>Click sinistro per modificare.</gray>
+        delete: <gray>Click destro per eliminare.</gray>
+      lore:
+        id: <gray>ID:</gray> <white>{id}</white>
+        description: <dark_gray>{text}</dark_gray>
+        edit: <green>Click sinistro per modificare.</green>
+        delete: <red>Click destro per eliminare.</red>
+      entry:
+        title: <yellow>{title}</yellow>
+      delete:
+        prompt: <red>Digita <white>{word}</white> per eliminare <yellow>{id}</yellow>.</red>
+        cancelled: <gray>Eliminazione annullata.</gray>
+        failed: <red>Impossibile eliminare la ricetta.</red>
+        success: <green>Ricetta eliminata.</green>
+  effects:
+    editor:
+      abilityPicker:
+        title: <white><bold>Seleziona Abilita</bold></white>
+        header:
+          title: <gold><bold>Abilita</bold></gold>
+          hint: <gray>Seleziona un'abilita da associare.</gray>
+        entry:
+          select: <green>Clicca per selezionare.</green>
+          more: <gray>...</gray>
+          unnamed: <gray>(senza nome)</gray>
+      actionDetail:
+        param:
+          current:
+            label: <gray>Corrente:</gray>
+            value: <gray>Corrente:</gray> <white>{value}</white>
+          number:
+            prompt: <gray>Inserisci valore</gray>
+          text:
+            label: <aqua><bold>Testo</bold></aqua>
+            prompt: <gray>Inserisci testo</gray>
+          sound:
+            label: <aqua><bold>Suono</bold></aqua>
+            prompt: <gray>Inserisci suono</gray>
+          particle:
+            label: <aqua><bold>Particella</bold></aqua>
+            prompt: <gray>Inserisci particella</gray>
+          volume:
+            label: <aqua><bold>Volume</bold></aqua>
+          pitch:
+            label: <aqua><bold>Tono</bold></aqua>
+          count:
+            label: <aqua><bold>Quantita</bold></aqua>
+          offset:
+            label: <aqua><bold>Offset</bold></aqua>
+          extra:
+            label: <aqua><bold>Extra</bold></aqua>
+          amount:
+            label: <aqua><bold>Ammontare</bold></aqua>
+          ticks:
+            label: <aqua><bold>Tick</bold></aqua>
+          delay:
+            label: <aqua><bold>Ritardo</bold></aqua>
+          period:
+            label: <aqua><bold>Periodo</bold></aqua>
+          times:
+            label: <aqua><bold>Volte</bold></aqua>
+          maxTargets:
+            label: <aqua><bold>Max Bersagli</bold></aqua>
+          title:
+            label: <aqua><bold>Titolo</bold></aqua>
+            prompt: <gray>Inserisci titolo</gray>
+          subtitle:
+            label: <aqua><bold>Sottotitolo</bold></aqua>
+            prompt: <gray>Inserisci sottotitolo</gray>
+          fadeIn:
+            label: <aqua><bold>Dissolvenza In</bold></aqua>
+          stay:
+            label: <aqua><bold>Durata</bold></aqua>
+          fadeOut:
+            label: <aqua><bold>Dissolvenza Out</bold></aqua>
+        policy:
+          title: <aqua><bold>Politica</bold></aqua>
+          current: <gray>Corrente:</gray> <white>{value}</white>
+        condition:
+          title: <aqua><bold>Condizione</bold></aqua>
+          type: <gray>Tipo:</gray> <white>{value}</white>
+          none: <gray>Nessun parametro extra.</gray>
+          permission:
+            label: <aqua><bold>Permesso</bold></aqua>
+            prompt: <gray>Inserisci permesso</gray>
+          chance:
+            label: <aqua><bold>Probabilita</bold></aqua>
+        targeter:
+          title: <aqua><bold>Targeter</bold></aqua>
+          type: <gray>Tipo:</gray> <white>{value}</white>
+          filter:
+            title: <aqua><bold>Filtro</bold></aqua>
+            current: <gray>Corrente:</gray> <white>{value}</white>
+          mode:
+            title: <aqua><bold>Modalita</bold></aqua>
+            current: <gray>Corrente:</gray> <white>{value}</white>
+          origin:
+            title: <aqua><bold>Origine</bold></aqua>
+            current: <gray>Corrente:</gray> <white>{value}</white>
+          param:
+            radius: <aqua><bold>Raggio</bold></aqua>
+            xRadius: <aqua><bold>Raggio X</bold></aqua>
+            yRadius: <aqua><bold>Raggio Y</bold></aqua>
+            zRadius: <aqua><bold>Raggio Z</bold></aqua>
+            angle: <aqua><bold>Angolo</bold></aqua>
+            height: <aqua><bold>Altezza</bold></aqua>

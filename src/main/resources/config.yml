@@ -8,3 +8,104 @@ logging:
   effects: INFO
   mobs: INFO
   bindings: INFO
+  upgrades: INFO
+  shops: INFO
+  dungeons: INFO
+  locales: INFO
+
+# Locale settings.
+locales:
+  # Default locale code used for all players unless overridden.
+  default: en
+  # Enabled locales that will be loaded.
+  enabled:
+    - en
+    - it
+  # Optional per-player overrides (UUID -> locale).
+  playerOverrides: {}
+
+# Debug toggles for noisy subsystems.
+debug:
+  dungeons:
+    waveLogs: false
+  mobs:
+    spawnLogs: false
+
+# Mob performance controls.
+mobs:
+  performance:
+    # Optional cap on how many active mobs are processed per tick (0 = unlimited).
+    maxTickMobs: 0
+
+# Upgrade system settings.
+upgrades:
+  vanilla:
+    # Allow enchant levels outside the enchantment's normal min/max range.
+    allowUnsafeLevels: false
+    # Optional blacklist of enchantment keys that should be rejected on vanilla books.
+    # Use namespaced keys (e.g. minecraft:sharpness). Keys without a namespace default to minecraft:.
+    enchantBlacklist: []
+
+# Progression settings (vanilla XP is used as the point system).
+progression:
+  levelCurve:
+    # Curve type: VANILLA or CUSTOM_THRESHOLDS.
+    # - VANILLA uses the Minecraft XP level curve.
+    # - CUSTOM_THRESHOLDS uses the thresholds list below (total XP per level).
+    type: VANILLA
+    # Total XP required for each level when using CUSTOM_THRESHOLDS.
+    # Example: [0, 100, 250] means level 1 at 0 XP, level 2 at 100 XP, level 3 at 250 XP.
+    thresholds: []
+    # Optional soft cap applied to XP awards once a player reaches this total XP.
+    # Use 0 to disable.
+    softCapStart: 0
+    # Multiplier applied to awards after softCapStart (1.0 = no change).
+    softCapMultiplier: 1.0
+  skillPoints:
+    # How many total XP are required per skill point (0 disables skill points).
+    perXp: 100
+  stats:
+    strength:
+      # Attribute mapping for strength.
+      attribute: generic.attack_damage
+      amountPerPoint: 0.2
+      operation: ADD_NUMBER
+    dexterity:
+      attribute: generic.attack_speed
+      amountPerPoint: 0.02
+      operation: ADD_NUMBER
+    vitality:
+      attribute: generic.max_health
+      amountPerPoint: 1.0
+      operation: ADD_NUMBER
+    intelligence:
+      # No attribute mapping by default; used by mana scaling.
+      amountPerPoint: 0.0
+  mana:
+    # Base max mana before level/intelligence scaling.
+    base: 100.0
+    # Extra max mana per level.
+    perLevel: 0.0
+    # Extra max mana per intelligence point.
+    perIntelligence: 0.0
+
+# Global world allowlist for RPG systems.
+# - Empty list means all worlds are allowed.
+# - When set, RPG progression/skills/scoreboard should only work in these worlds.
+worlds:
+  allowlist:
+    - minecraft:world
+
+# Dungeon UI settings.
+dungeons:
+  # Message shown when no dungeon is configured.
+  unavailableMessage: "<gray>Dungeons coming soon...</gray>"
+
+# Party settings.
+party:
+  # Maximum members per party.
+  maxSize: 5
+  # Invite expiration in seconds.
+  inviteSeconds: 30
+  # Assist radius for party kill credit (blocks).
+  assistRadius: 24.0

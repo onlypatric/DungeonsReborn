@@ -26,6 +26,7 @@ public final class MobSpec {
   private final MobParticlesSpec deathParticles;
   private final MobSoundSpec spawnSound;
   private final MobSoundSpec deathSound;
+  private final MobBroadcastSpec bossBroadcast;
   private final ItemStack mainHand;
   private final ItemStack offHand;
   private final ItemStack head;
@@ -43,6 +44,9 @@ public final class MobSpec {
   private final MobManaDropSpec manaDrop;
   private final MobLootSpec loot;
   private final MobSummonSpec summonSpec;
+  private final MobProgressionSpec progressionSpec;
+  private final MobAdvancementRewardSpec advancementRewards;
+  private final boolean allowBlockDamage;
   private final Consumer<MobContext> onSpawn;
   private final Consumer<MobContext> onDeath;
   private final BiConsumer<MobContext, MobRemovalReason> onRemove;
@@ -57,6 +61,7 @@ public final class MobSpec {
     this.deathParticles = builder.deathParticles;
     this.spawnSound = builder.spawnSound;
     this.deathSound = builder.deathSound;
+    this.bossBroadcast = builder.bossBroadcast;
     this.mainHand = cloneItem(builder.mainHand);
     this.offHand = cloneItem(builder.offHand);
     this.head = cloneItem(builder.head);
@@ -74,6 +79,9 @@ public final class MobSpec {
     this.manaDrop = builder.manaDrop;
     this.loot = builder.loot;
     this.summonSpec = builder.summonSpec;
+    this.progressionSpec = builder.progressionSpec;
+    this.advancementRewards = builder.advancementRewards;
+    this.allowBlockDamage = builder.allowBlockDamage;
     this.onSpawn = builder.onSpawn;
     this.onDeath = builder.onDeath;
     this.onRemove = builder.onRemove;
@@ -113,6 +121,10 @@ public final class MobSpec {
 
   public MobSoundSpec deathSound() {
     return deathSound;
+  }
+
+  public MobBroadcastSpec bossBroadcast() {
+    return bossBroadcast;
   }
 
   public ItemStack mainHand() {
@@ -183,6 +195,18 @@ public final class MobSpec {
     return summonSpec;
   }
 
+  public MobProgressionSpec progressionSpec() {
+    return progressionSpec;
+  }
+
+  public MobAdvancementRewardSpec advancementRewards() {
+    return advancementRewards;
+  }
+
+  public boolean allowBlockDamage() {
+    return allowBlockDamage;
+  }
+
   public Consumer<MobContext> onSpawn() {
     return onSpawn;
   }
@@ -209,6 +233,7 @@ public final class MobSpec {
     private MobParticlesSpec deathParticles;
     private MobSoundSpec spawnSound;
     private MobSoundSpec deathSound;
+    private MobBroadcastSpec bossBroadcast;
     private ItemStack mainHand;
     private ItemStack offHand;
     private ItemStack head;
@@ -226,6 +251,9 @@ public final class MobSpec {
     private MobManaDropSpec manaDrop;
     private MobLootSpec loot;
     private MobSummonSpec summonSpec;
+    private MobProgressionSpec progressionSpec;
+    private MobAdvancementRewardSpec advancementRewards;
+    private boolean allowBlockDamage = true;
     private Consumer<MobContext> onSpawn = ctx -> {
     };
     private Consumer<MobContext> onDeath = ctx -> {
@@ -277,6 +305,11 @@ public final class MobSpec {
 
     public Builder deathSound(MobSoundSpec deathSound) {
       this.deathSound = deathSound;
+      return this;
+    }
+
+    public Builder bossBroadcast(MobBroadcastSpec bossBroadcast) {
+      this.bossBroadcast = bossBroadcast;
       return this;
     }
 
@@ -362,6 +395,21 @@ public final class MobSpec {
 
     public Builder summonSpec(MobSummonSpec summonSpec) {
       this.summonSpec = summonSpec;
+      return this;
+    }
+
+    public Builder progressionSpec(MobProgressionSpec progressionSpec) {
+      this.progressionSpec = progressionSpec;
+      return this;
+    }
+
+    public Builder advancementRewards(MobAdvancementRewardSpec advancementRewards) {
+      this.advancementRewards = advancementRewards;
+      return this;
+    }
+
+    public Builder allowBlockDamage(boolean allowBlockDamage) {
+      this.allowBlockDamage = allowBlockDamage;
       return this;
     }
 

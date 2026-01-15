@@ -18,6 +18,7 @@ import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
 import dev.patric.dungeonsreborn.gui.flow.OptionPickerWindow;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -36,7 +37,7 @@ public final class Dropdown<T> implements GuiComponent {
   public Dropdown(Component title, List<T> options, Function<T, Component> optionLabel) {
     this(title, options,
         (player, value) -> GuiItems.named(Material.CHEST, title, List.of(
-            Component.text("Selected: ").append(Objects.requireNonNull(optionLabel, "optionLabel").apply(value)))),
+            Locales.component(player, "gui.dropdown.selected").append(Objects.requireNonNull(optionLabel, "optionLabel").apply(value)))),
         optionLabel);
   }
 
@@ -50,7 +51,7 @@ public final class Dropdown<T> implements GuiComponent {
     this.optionLabel = Objects.requireNonNull(optionLabel, "optionLabel");
 
     this.button = new Button(p -> this.displayItem.apply(p, selected(p)))
-        .left(Component.text("Open"), ctx -> openPicker(ctx.window(), ctx.player()));
+        .left(Locales.component(null, "gui.dropdown.open"), ctx -> openPicker(ctx.window(), ctx.player()));
   }
 
   /**

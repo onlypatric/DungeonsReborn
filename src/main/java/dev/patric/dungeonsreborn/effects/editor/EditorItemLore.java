@@ -17,6 +17,7 @@ import dev.patric.dungeonsreborn.effects.AbilitySpec;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.gui.GuiItem;
+import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -199,11 +200,11 @@ public final class EditorItemLore {
   }
 
   private static String activationLabel(Map<String, Object> binding) {
-    String type = string(binding, "type", "interact");
+    String type = YamlValues.string(binding, "type", "interact");
     if ("passive".equalsIgnoreCase(type)) {
       return "Passive";
     }
-    String click = string(binding, "click", "RIGHT_CLICK");
+    String click = YamlValues.string(binding, "click", "RIGHT_CLICK");
     if ("passive".equalsIgnoreCase(click)) {
       return "Passive";
     }
@@ -212,12 +213,4 @@ public final class EditorItemLore {
     return sneaking ? "Shift+" + base : base;
   }
 
-  private static String string(Map<String, Object> node, String key, String def) {
-    Object raw = node.get(key);
-    if (raw == null) {
-      return def;
-    }
-    String value = raw.toString();
-    return value.isBlank() ? def : value;
-  }
 }

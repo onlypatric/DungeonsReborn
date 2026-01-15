@@ -19,6 +19,7 @@ import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.GuiText;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -28,7 +29,7 @@ import net.kyori.adventure.text.Component;
  * stored per-player.
  */
 public final class ItemPicker extends Button {
-  private static final Component DEFAULT_PROMPT = Component.text("Click an item in your inventory to select it.");
+  private static final Component DEFAULT_PROMPT = Locales.component(null, "gui.itemPicker.prompt");
 
   private final Map<UUID, ItemStack> selected = new ConcurrentHashMap<>();
   private final Set<UUID> picking = ConcurrentHashMap.newKeySet();
@@ -37,7 +38,7 @@ public final class ItemPicker extends Button {
   private Duration timeout = Duration.ofSeconds(30);
   private boolean allowAirSelection;
   private Predicate<ItemStack> filter = item -> item != null && !item.getType().isAir();
-  private Component invalidMessage = Component.text("Please click a valid item.");
+  private Component invalidMessage = Locales.component(null, "gui.itemPicker.invalid");
   private boolean redrawWindowOnChange = true;
   private BiConsumer<Window, ItemStack> onPick = (w, item) -> {
   };
@@ -47,8 +48,8 @@ public final class ItemPicker extends Button {
   };
 
   public ItemPicker() {
-    super(p -> GuiItem.of(Material.HOPPER).displayName(Component.text("Select item")).build());
-    bind(ClickType.LEFT, Component.text("Pick an item"), this::startOrCancel);
+    super(p -> GuiItem.of(Material.HOPPER).displayName(Locales.component(p, "gui.itemPicker.title")).build());
+    bind(ClickType.LEFT, Locales.component(null, "gui.itemPicker.action"), this::startOrCancel);
   }
 
   public ItemPicker prompt(Component prompt) {
@@ -202,14 +203,18 @@ public final class ItemPicker extends Button {
 
     UUID id = player.getUniqueId();
     if (picking.contains(id)) {
-      return GuiItem.of(base).glint(true).addLoreLine(Component.empty()).addLoreLine(Component.text("Picking...")).build();
+      return GuiItem.of(base).glint(true)
+          .addLoreLine(Component.empty())
+          .addLoreLine(Locales.component(player, "gui.itemPicker.status.picking"))
+          .build();
     }
 
     ItemStack picked = selected.get(id);
     if (picked != null && !picked.getType().isAir()) {
+      Component prefix = Locales.component(player, "gui.itemPicker.status.selected");
       return GuiItem.of(base)
           .addLoreLine(Component.empty())
-          .addLoreLine(Component.text("Selected: ").append(GuiText.itemName(picked.getType())))
+          .addLoreLine(prefix.append(GuiText.itemName(picked.getType())))
           .build();
     }
     return base;

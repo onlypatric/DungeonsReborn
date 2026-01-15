@@ -8,18 +8,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
-import dev.patric.dungeonsreborn.gui.components.BackButton;
-import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.EmptyState;
 import dev.patric.dungeonsreborn.gui.components.Label;
-import dev.patric.dungeonsreborn.gui.components.TextButton;
+import dev.patric.dungeonsreborn.gui.components.list.ListSearchBar;
 import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.state.GuiState;
-import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.gui.style.GuiNav;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 /**
  * Mob index showcase: virtual list + filter + preview + state binding.
@@ -88,7 +88,7 @@ public final class ShowcaseMobIndexMenu extends Window {
   private GuiState.Subscription selectedBinding;
 
   public ShowcaseMobIndexMenu() {
-    super(SIZE, GuiMini.mm("<white><bold>Mob Index</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.showcase.mobs.title"), true);
 
     background(dev.patric.dungeonsreborn.gui.GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
@@ -105,16 +105,17 @@ public final class ShowcaseMobIndexMenu extends Window {
           GuiSounds.click(ctx.player());
         });
     list.searchKey(entry -> entry.id() + " " + plainName(entry.name()));
+    list.emptyStateItem(EmptyState.list());
 
     list.apply(this, dev.patric.dungeonsreborn.gui.layout.Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))).autoDescribeInLore(false));
+    navLeft(GuiNav.backButton().autoDescribeInLore(false));
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
 
-    setFixed(SLOT_FILTER, filterButton());
-    setFixed(SLOT_CLEAR_FILTER, clearFilterButton());
+    setFixed(SLOT_FILTER, ListSearchBar.searchButton(list, SLOT_FILTER));
+    setFixed(SLOT_CLEAR_FILTER, ListSearchBar.clearButton(list, SLOT_FILTER));
 
     setFixed(SLOT_PREVIEW, new Label(this::previewItem));
     setFixed(SLOT_PREVIEW_LORE, new Label(this::previewLoreItem));
@@ -136,57 +137,14 @@ public final class ShowcaseMobIndexMenu extends Window {
     }
   }
 
-  private TextButton filterButton() {
-    return new TextButton(
-        p -> {
-          String q = list.query(p);
-          List<Component> lore = new ArrayList<>();
-          lore.add(GuiMini.mm("<gray>Set a search query for the list.</gray>"));
-          if (q != null && !q.isBlank()) {
-            lore.add(Component.text("Current: " + q));
-          } else {
-            lore.add(Component.text("Current: (none)"));
-          }
-          return GuiItem.of(Material.NAME_TAG)
-              .displayName(GuiMini.mm("<aqua><bold>Filter</bold></aqua>"))
-              .lore(lore)
-              .build();
-        },
-        GuiMini.mm("<gray>Type a filter query (or 'cancel')</gray>"),
-        "cancel",
-        java.time.Duration.ofSeconds(30),
-        (w, text) -> {
-          Player viewer = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
-          if (viewer == null) {
-            return;
-          }
-          list.query(viewer, text);
-          list.redraw(w, viewer);
-          w.redrawSlot(viewer, SLOT_FILTER);
-        },
-        true)
-            .inputMode(TextButton.InputMode.ANVIL)
-            .anvilTitle(GuiMini.mm("<white><bold>Search</bold></white>"))
-            .initialText(p -> Objects.requireNonNullElse(list.query(p), ""));
-  }
-
-  private Button clearFilterButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.CANCEL, Component.text("Clear")), ctx -> {
-      list.clearFilter(ctx.player());
-      list.redraw(ctx.window(), ctx.player());
-      ctx.window().redrawSlot(ctx.player(), SLOT_FILTER);
-      GuiSounds.click(ctx.player());
-    }).autoDescribeInLore(false);
-  }
-
   private ItemStack previewItem(Player player) {
     MobEntry entry = selected.get(player);
     if (entry == null) {
-      return GuiItem.of(Material.BARRIER).displayName(Component.text("No selection")).build();
+      return GuiItem.of(Material.BARRIER).displayName(GuiI18n.tr("gui.showcase.mobs.none")).build();
     }
     return GuiItem.of(entry.icon())
-        .displayName(GuiMini.mm("<yellow><bold>Selected</bold></yellow>"))
-        .lore(List.of(entry.name(), Component.empty(), GuiMini.mm("<gray>Click list entries to change.</gray>")))
+        .displayName(GuiI18n.tr(player, "gui.showcase.mobs.selected.title"))
+        .lore(List.of(entry.name(), Component.empty(), GuiI18n.tr(player, "gui.showcase.mobs.selected.hint")))
         .hideItemFlags(true)
         .build();
   }
@@ -194,25 +152,26 @@ public final class ShowcaseMobIndexMenu extends Window {
   private ItemStack previewLoreItem(Player player) {
     MobEntry entry = selected.get(player);
     if (entry == null) {
-      return GuiItem.of(Material.PAPER).displayName(Component.text("Details")).lore(List.of(Component.text("N/A"))).build();
+      return GuiItem.of(Material.PAPER).displayName(GuiI18n.tr("gui.showcase.mobs.details.title"))
+          .lore(List.of(GuiI18n.tr("gui.showcase.mobs.details.none"))).build();
     }
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + entry.id() + "</white>"));
+    lore.add(GuiI18n.tr(player, "gui.showcase.mobs.details.id", Placeholder.unparsed("id", entry.id())));
     lore.add(Component.empty());
     lore.addAll(entry.lore());
     lore.add(Component.empty());
-    lore.add(GuiMini.mm("<dark_gray>Tip: use the Filter button.</dark_gray>"));
-    return GuiItem.of(Material.PAPER).displayName(Component.text("Details")).lore(lore).build();
+    lore.add(GuiI18n.tr(player, "gui.showcase.mobs.details.tip"));
+    return GuiItem.of(Material.PAPER).displayName(GuiI18n.tr(player, "gui.showcase.mobs.details.title")).lore(lore).build();
   }
 
   private static MobEntry mob(String id, Material icon, String name, String... loreLines) {
     List<Component> lore = new ArrayList<>();
     for (String line : loreLines) {
-      lore.add(GuiMini.mm("<gray>" + line + "</gray>"));
+      lore.add(GuiI18n.tr("gui.showcase.mobs.entry.line", Placeholder.unparsed("text", line)));
     }
     lore.add(Component.empty());
-    lore.add(GuiMini.mm("<dark_gray>Left-click to select</dark_gray>"));
-    return new MobEntry(id, icon, GuiMini.mm("<gold><bold>" + name + "</bold></gold>"), lore);
+    lore.add(GuiI18n.tr("gui.showcase.mobs.entry.select"));
+    return new MobEntry(id, icon, GuiI18n.tr("gui.showcase.mobs.entry.title", Placeholder.unparsed("name", name)), lore);
   }
 
   private static String plainName(Component component) {

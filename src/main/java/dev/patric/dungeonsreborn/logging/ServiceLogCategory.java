@@ -4,7 +4,11 @@ public enum ServiceLogCategory {
   GUI("gui"),
   EFFECTS("effects"),
   MOBS("mobs"),
-  BINDINGS("bindings");
+  BINDINGS("bindings"),
+  UPGRADES("upgrades"),
+  SHOPS("shops"),
+  DUNGEONS("dungeons"),
+  LOCALES("locales");
 
   private final String configKey;
 

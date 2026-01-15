@@ -1,0 +1,11 @@
+schemaVersion: 1
+id: token_pallet
+name: Token Pallet Packing
+description: Convert 64 compressed tokens into 1 token pallet.
+inputs:
+  - type: tag
+    tag: dungeonsreborn:shop_token_compressed
+    amount: 64
+output:
+  itemId: token_pallet
+  amount: 1

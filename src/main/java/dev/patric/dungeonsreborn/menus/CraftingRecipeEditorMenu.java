@@ -1,10 +1,15 @@
 package dev.patric.dungeonsreborn.menus;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,8 +24,9 @@ import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.admin.AdminAuditStore;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.Window;
@@ -31,10 +37,12 @@ import dev.patric.dungeonsreborn.gui.components.TextButton;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageArea;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageSlot;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 public final class CraftingRecipeEditorMenu extends Window {
   private static final int SIZE = 54;
+  private static final DateTimeFormatter AUDIT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
   private static final int SLOT_TITLE = 4;
   private static final int SLOT_RESULT_LABEL = 16;
@@ -43,7 +51,10 @@ public final class CraftingRecipeEditorMenu extends Window {
   private static final int SLOT_RECIPE_DESC = 33;
   private static final int SLOT_LOAD = 32;
   private static final int SLOT_SAVE = 34;
+  private static final int SLOT_APPLY = 41;
   private static final int SLOT_CLEAR = 43;
+  private static final int SLOT_SUMMARY = 52;
+  private static final int SLOT_DIRTY = 7;
 
   private final CraftingYamlRegistry registry;
   private final StorageArea inputs = new StorageArea(1, 1, 4, 4);
@@ -53,29 +64,33 @@ public final class CraftingRecipeEditorMenu extends Window {
   private String recipeId = "";
   private String recipeName = "";
   private String recipeDescription = "";
+  private boolean dirty;
 
   public CraftingRecipeEditorMenu(CraftingYamlRegistry registry, CraftingGuiSessionManager sessions) {
-    super(SIZE, GuiMini.mm("<white><bold>Crafting Recipe Editor</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.crafting.editor.title"), true);
     this.registry = registry;
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
-    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, Component.text("Close"))).autoDescribeInLore(false));
+    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, GuiI18n.tr(p, "gui.button.close"))).autoDescribeInLore(false));
 
-    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.WRITABLE_BOOK, GuiMini.mm("<gold><bold>Recipe Editor</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Fill the 4x4 grid with inputs.</gray>"),
-        GuiMini.mm("<gray>Place output on the right.</gray>")))));
+    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.WRITABLE_BOOK, GuiI18n.tr("gui.crafting.editor.header.title"), List.of(
+        GuiI18n.tr("gui.crafting.editor.header.hint1"),
+        GuiI18n.tr("gui.crafting.editor.header.hint2")))));
 
-    setFixed(SLOT_RESULT_LABEL, new Label(GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>Output</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Place the crafted item here.</gray>")))));
+    setFixed(SLOT_RESULT_LABEL, new Label(GuiItems.named(Material.PAPER, GuiI18n.tr("gui.crafting.editor.output.title"), List.of(
+        GuiI18n.tr("gui.crafting.editor.output.hint")))));
 
+    setFixed(SLOT_DIRTY, new Label(p -> dirtyIndicatorItem()));
+    setFixedAt(0, 6, new Label(p -> auditItem()));
     setFixed(SLOT_RECIPE_ID, recipeIdButton());
     setFixed(SLOT_RECIPE_NAME, recipeNameButton());
     setFixed(SLOT_RECIPE_DESC, recipeDescriptionButton());
+    setFixed(SLOT_SUMMARY, new Label(p -> summaryItem(p)));
 
     setFixed(SLOT_LOAD, new Button(this::loadButtonItem, ctx -> {
       if (registry == null) {
         GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>Crafting registry not available.</red>"));
+        ctx.player().sendMessage(Locales.component(ctx.player(), "messages.crafting.editor.registryMissing"));
         return;
       }
       GuiManager.get().push(ctx.player(), new CraftingRecipePickerMenu(registry, this));
@@ -87,15 +102,29 @@ public final class CraftingRecipeEditorMenu extends Window {
         GuiSounds.error(ctx.player());
         return;
       }
+      dirty = false;
+      redrawSlot(ctx.player(), SLOT_DIRTY);
       GuiSounds.success(ctx.player());
-      ctx.player().sendMessage(GuiMini.mm("<green>Recipe saved.</green>"));
+      ctx.player().sendMessage(Locales.component(ctx.player(), "messages.crafting.editor.saved"));
       ctx.redraw();
     }).autoDescribeInLore(false));
 
-    setFixed(SLOT_CLEAR, new Button(p -> GuiItems.named(Material.BARRIER, GuiMini.mm("<red><bold>Clear Inputs</bold></red>"), List.of(
-        GuiMini.mm("<gray>Return items to your inventory.</gray>"))), ctx -> {
+    setFixed(SLOT_APPLY, new Button(p -> GuiItems.named(Material.LIME_DYE, GuiI18n.tr(p, "gui.crafting.editor.apply.title"), List.of(
+        GuiI18n.tr(p, "gui.crafting.editor.apply.hint"))), ctx -> {
+      if (registry != null) {
+        registry.reload();
+      }
+      dirty = false;
+      redrawSlot(ctx.player(), SLOT_DIRTY);
+      ctx.player().sendMessage(Locales.component(ctx.player(), "messages.crafting.editor.reloaded"));
+      GuiSounds.click(ctx.player());
+    }).autoDescribeInLore(false));
+
+    setFixed(SLOT_CLEAR, new Button(p -> GuiItems.named(Material.BARRIER, GuiI18n.tr(p, "gui.crafting.editor.clear.title"), List.of(
+        GuiI18n.tr(p, "gui.crafting.editor.clear.hint"))), ctx -> {
       returnItems(ctx.player());
       redraw(ctx.player());
+      markDirty(ctx.player());
       GuiSounds.click(ctx.player());
     }).autoDescribeInLore(false));
 
@@ -104,8 +133,16 @@ public final class CraftingRecipeEditorMenu extends Window {
     inputs.applyFixed(this);
     output.applyFixed(this);
 
-    inputs.onChange((player, index, stack) -> redrawSlot(player, SLOT_SAVE));
-    output.onChange((player, index, stack) -> redrawSlot(player, SLOT_SAVE));
+    inputs.onChange((player, index, stack) -> {
+      markDirty(player);
+      redrawSlot(player, SLOT_SAVE);
+      redrawSlot(player, SLOT_SUMMARY);
+    });
+    output.onChange((player, index, stack) -> {
+      markDirty(player);
+      redrawSlot(player, SLOT_SAVE);
+      redrawSlot(player, SLOT_SUMMARY);
+    });
 
     onOpenWithReason(ctx -> {
       if (sessions != null) {
@@ -135,7 +172,8 @@ public final class CraftingRecipeEditorMenu extends Window {
   }
 
   private TextButton recipeIdButton() {
-    return new TextButton(p -> recipeIdItem(p), GuiMini.mm("<yellow>Type recipe id</yellow>"), "cancel",
+    return new TextButton(p -> recipeIdItem(p), GuiI18n.tr("gui.crafting.editor.id.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30), (window, text) -> {
       String normalized;
       try {
@@ -143,78 +181,84 @@ public final class CraftingRecipeEditorMenu extends Window {
       } catch (IllegalArgumentException ex) {
         Player player = viewerPlayer(window);
         if (player != null) {
-          player.sendMessage(GuiMini.mm("<red>" + ex.getMessage() + "</red>"));
+          player.sendMessage(Locales.component(player, "messages.crafting.editor.invalidId",
+              Locales.placeholders("message", ex.getMessage())));
         }
         return;
       }
       this.recipeId = normalized;
       Player player = viewerPlayer(window);
       if (player != null) {
+        markDirty(player);
         window.redraw(player);
       }
     }, true).minLength(1);
   }
 
   private TextButton recipeNameButton() {
-    return new TextButton(p -> recipeNameItem(p), GuiMini.mm("<yellow>Type recipe name</yellow>"), "cancel",
+    return new TextButton(p -> recipeNameItem(p), GuiI18n.tr("gui.crafting.editor.name.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30), (window, text) -> {
       this.recipeName = text.trim();
       Player player = viewerPlayer(window);
       if (player != null) {
+        markDirty(player);
         window.redraw(player);
       }
     }, true).maxLength(64);
   }
 
   private TextButton recipeDescriptionButton() {
-    return new TextButton(p -> recipeDescriptionItem(p), GuiMini.mm("<yellow>Type recipe description</yellow>"), "cancel",
+    return new TextButton(p -> recipeDescriptionItem(p), GuiI18n.tr("gui.crafting.editor.description.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30), (window, text) -> {
       this.recipeDescription = text.trim();
       Player player = viewerPlayer(window);
       if (player != null) {
+        markDirty(player);
         window.redraw(player);
       }
     }, true).maxLength(120);
   }
 
   private ItemStack recipeIdItem(Player player) {
-    String display = recipeId.isBlank() ? "<gray>unset</gray>" : "<white>" + recipeId + "</white>";
-    return GuiItems.named(Material.NAME_TAG, GuiMini.mm("<gold><bold>Recipe ID</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Current:</gray> " + display),
-        GuiMini.mm("<dark_gray>Type in chat to change.</dark_gray>")));
+    String display = recipeId.isBlank() ? Locales.text(player, "gui.common.unset") : "<white>" + recipeId + "</white>";
+    return GuiItems.named(Material.NAME_TAG, GuiI18n.tr(player, "gui.crafting.editor.id.title"), List.of(
+        Locales.component(player, "gui.crafting.editor.field.current", Locales.placeholders("value", display)),
+        GuiI18n.tr(player, "gui.crafting.editor.id.hint")));
   }
 
   private ItemStack recipeNameItem(Player player) {
-    String display = recipeName.isBlank() ? "<gray>unset</gray>" : "<white>" + recipeName + "</white>";
-    return GuiItems.named(Material.OAK_SIGN, GuiMini.mm("<gold><bold>Recipe Name</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Current:</gray> " + display),
-        GuiMini.mm("<dark_gray>Optional.</dark_gray>")));
+    String display = recipeName.isBlank() ? Locales.text(player, "gui.common.unset") : "<white>" + recipeName + "</white>";
+    return GuiItems.named(Material.OAK_SIGN, GuiI18n.tr(player, "gui.crafting.editor.name.title"), List.of(
+        Locales.component(player, "gui.crafting.editor.field.current", Locales.placeholders("value", display)),
+        GuiI18n.tr(player, "gui.crafting.editor.name.hint")));
   }
 
   private ItemStack recipeDescriptionItem(Player player) {
-    String display = recipeDescription.isBlank() ? "<gray>unset</gray>" : "<white>" + recipeDescription + "</white>";
-    return GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Description</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Current:</gray> " + display),
-        GuiMini.mm("<dark_gray>Optional.</dark_gray>")));
+    String display = recipeDescription.isBlank() ? Locales.text(player, "gui.common.unset") : "<white>" + recipeDescription + "</white>";
+    return GuiItems.named(Material.BOOK, GuiI18n.tr(player, "gui.crafting.editor.description.title"), List.of(
+        Locales.component(player, "gui.crafting.editor.field.current", Locales.placeholders("value", display)),
+        GuiI18n.tr(player, "gui.crafting.editor.description.hint")));
   }
 
   private ItemStack loadButtonItem(Player player) {
-    return GuiItems.named(Material.COMPASS, GuiMini.mm("<yellow><bold>Edit Recipes</bold></yellow>"), List.of(
-        GuiMini.mm("<gray>Browse and load existing recipes.</gray>"),
-        GuiMini.mm("<dark_gray>Right-click a recipe to delete.</dark_gray>")));
+    return GuiItems.named(Material.COMPASS, GuiI18n.tr(player, "gui.crafting.editor.load.title"), List.of(
+        GuiI18n.tr(player, "gui.crafting.editor.load.hint1"),
+        GuiI18n.tr(player, "gui.crafting.editor.load.hint2")));
   }
 
   private ItemStack saveButtonItem(Player player) {
     boolean ready = isReady(player);
     Material mat = ready ? Material.LIME_DYE : Material.GRAY_DYE;
-    String title = ready ? "<green><bold>Save Recipe</bold></green>" : "<dark_gray><bold>Save Recipe</bold></dark_gray>";
+    Component title = GuiI18n.tr(player, ready ? "gui.crafting.editor.save.title" : "gui.crafting.editor.save.titleDisabled");
     List<Component> lore = new ArrayList<>();
     if (!ready) {
-      lore.add(GuiMini.mm("<gray>Set recipe id, inputs, and output.</gray>"));
+      lore.add(GuiI18n.tr(player, "gui.crafting.editor.save.hintMissing"));
     } else {
-      lore.add(GuiMini.mm("<gray>Writes a recipe file to disk.</gray>"));
+      lore.add(GuiI18n.tr(player, "gui.crafting.editor.save.hintReady"));
     }
-    return GuiItems.named(mat, GuiMini.mm(title), lore);
+    return GuiItems.named(mat, title, lore);
   }
 
   private boolean isReady(Player player) {
@@ -232,25 +276,25 @@ public final class CraftingRecipeEditorMenu extends Window {
 
   private boolean loadRecipe(Player player) {
     if (registry == null) {
-      player.sendMessage(GuiMini.mm("<red>Crafting registry not available.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.registryMissing"));
       return false;
     }
     if (recipeId == null || recipeId.isBlank()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe id is required.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.missingId"));
       return false;
     }
     var template = registry.recipeTemplate(recipeId);
     if (template == null) {
-      player.sendMessage(GuiMini.mm("<red>Recipe not found.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.notFound"));
       return false;
     }
     var spec = template.spec();
     if (spec.variants().isEmpty()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe has no inputs.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.noInputs"));
       return false;
     }
     if (spec.variants().size() > 1) {
-      player.sendMessage(GuiMini.mm("<yellow>Multiple variants found; loading the first.</yellow>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.multipleVariants"));
     }
     var variant = spec.variants().get(0);
     List<ItemStack> stacks = new ArrayList<>();
@@ -260,7 +304,8 @@ public final class CraftingRecipeEditorMenu extends Window {
         case ITEM_ID -> {
           stack = registry.resolveItemTemplate(ingredient.itemId());
           if (stack == null || stack.getType().isAir()) {
-            player.sendMessage(GuiMini.mm("<red>Missing item for id: " + ingredient.itemId() + "</red>"));
+            player.sendMessage(Locales.component(player, "messages.crafting.editor.missingItem",
+                Locales.placeholders("id", ingredient.itemId())));
             return false;
           }
         }
@@ -268,7 +313,8 @@ public final class CraftingRecipeEditorMenu extends Window {
           stack = new ItemStack(ingredient.material());
         }
         default -> {
-          player.sendMessage(GuiMini.mm("<red>Unsupported ingredient type in editor: " + ingredient.type().name().toLowerCase() + "</red>"));
+          player.sendMessage(Locales.component(player, "messages.crafting.editor.unsupportedIngredient",
+              Locales.placeholders("type", ingredient.type().name().toLowerCase(Locale.ROOT))));
           return false;
         }
       }
@@ -276,7 +322,7 @@ public final class CraftingRecipeEditorMenu extends Window {
       stacks.add(stack);
     }
     if (stacks.size() > inputs.size()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe has too many ingredients for the 4x4 grid.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.tooManyIngredients"));
       return false;
     }
     inputs.clear(player);
@@ -285,11 +331,11 @@ public final class CraftingRecipeEditorMenu extends Window {
       inputs.set(player, i, stacks.get(i));
     }
     if (spec.outputs().size() > 1) {
-      player.sendMessage(GuiMini.mm("<yellow>Multiple outputs found; loading the first.</yellow>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.multipleOutputs"));
     }
     ItemStack outputTemplate = template.outputTemplate();
     if (outputTemplate == null || outputTemplate.getType().isAir()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe output is missing.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.missingOutput"));
       return false;
     }
     int amount = Math.max(1, spec.outputs().get(0).amount());
@@ -298,17 +344,20 @@ public final class CraftingRecipeEditorMenu extends Window {
     output.set(player, 0, outputStack);
     recipeName = spec.name();
     recipeDescription = spec.description();
+    dirty = false;
+    redrawSlot(player, SLOT_DIRTY);
     return true;
   }
 
   public boolean loadRecipeById(Player player, String id) {
     if (id == null || id.isBlank()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe id is required.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.missingId"));
       return false;
     }
     this.recipeId = id.trim();
     boolean loaded = loadRecipe(player);
     if (loaded) {
+      dirty = false;
       redraw(player);
     }
     return loaded;
@@ -317,21 +366,21 @@ public final class CraftingRecipeEditorMenu extends Window {
   private boolean saveRecipe(Player player) {
     Objects.requireNonNull(player, "player");
     if (registry == null) {
-      player.sendMessage(GuiMini.mm("<red>Crafting registry not available.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.registryMissing"));
       return false;
     }
     if (recipeId == null || recipeId.isBlank()) {
-      player.sendMessage(GuiMini.mm("<red>Recipe id is required.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.missingId"));
       return false;
     }
     ItemStack outputItem = outputItem(player);
     if (outputItem == null || outputItem.getType().isAir()) {
-      player.sendMessage(GuiMini.mm("<red>Output item is required.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.outputRequired"));
       return false;
     }
     List<Map<String, Object>> inputs = inputsList(player);
     if (inputs.isEmpty()) {
-      player.sendMessage(GuiMini.mm("<red>Add at least one input item.</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.inputRequired"));
       return false;
     }
 
@@ -353,11 +402,26 @@ public final class CraftingRecipeEditorMenu extends Window {
     try {
       cfg.save(file);
     } catch (IOException ex) {
-      player.sendMessage(GuiMini.mm("<red>Failed to save: " + ex.getMessage() + "</red>"));
+      player.sendMessage(Locales.component(player, "messages.crafting.editor.saveFailed",
+          Locales.placeholders("message", ex.getMessage())));
       return false;
     }
+    AdminAuditStore.get().record("recipe:" + recipeId, player.getName());
     registry.reload();
     return true;
+  }
+
+  private ItemStack auditItem() {
+    AdminAuditStore.Entry entry = AdminAuditStore.get().entry("recipe:" + recipeId);
+    List<Component> lore = new ArrayList<>();
+    if (entry == null || entry.timestamp() <= 0L) {
+      lore.add(GuiI18n.tr("gui.crafting.editor.audit.none"));
+    } else {
+      String when = AUDIT_FORMAT.format(Instant.ofEpochMilli(entry.timestamp()).atZone(ZoneId.systemDefault()));
+      lore.add(Locales.component(null, "gui.crafting.editor.audit.lastEdit", Locales.placeholders("value", when)));
+      lore.add(Locales.component(null, "gui.crafting.editor.audit.by", Locales.placeholders("value", entry.editor())));
+    }
+    return GuiItems.named(Material.CLOCK, GuiI18n.tr("gui.crafting.editor.audit.title"), lore);
   }
 
   private ItemStack outputItem(Player player) {
@@ -432,5 +496,56 @@ public final class CraftingRecipeEditorMenu extends Window {
       return null;
     }
     return Bukkit.getPlayer(window.viewer());
+  }
+
+  private void markDirty(Player player) {
+    dirty = true;
+    if (player != null) {
+      redrawSlot(player, SLOT_DIRTY);
+    }
+  }
+
+  private ItemStack dirtyIndicatorItem() {
+    if (dirty) {
+      return GuiItems.named(Material.ORANGE_DYE, GuiI18n.tr("gui.crafting.editor.dirty.unsaved.title"), List.of(
+          GuiI18n.tr("gui.crafting.editor.dirty.unsaved.hint")));
+    }
+    return GuiItems.named(Material.LIME_DYE, GuiI18n.tr("gui.crafting.editor.dirty.saved.title"), List.of(
+        GuiI18n.tr("gui.crafting.editor.dirty.saved.hint")));
+  }
+
+  private ItemStack summaryItem(Player player) {
+    List<Component> lore = new ArrayList<>();
+    List<Map<String, Object>> inputs = inputsList(player);
+    if (inputs.isEmpty()) {
+      lore.add(GuiI18n.tr(player, "gui.crafting.editor.summary.ingredients.none"));
+    } else {
+      lore.add(Locales.component(player, "gui.crafting.editor.summary.ingredients.count",
+          Locales.placeholders("count", String.valueOf(inputs.size()))));
+      int shown = 0;
+      for (Map<String, Object> entry : inputs) {
+        if (shown >= 5) {
+          break;
+        }
+        String label = String.valueOf(entry.getOrDefault("item",
+            entry.getOrDefault("material", Locales.text(player, "gui.common.unknown"))));
+        Object amount = entry.getOrDefault("amount", 1);
+        lore.add(Locales.component(player, "gui.crafting.editor.summary.entry",
+            Locales.placeholders("amount", String.valueOf(amount), "label", label)));
+        shown++;
+      }
+      if (inputs.size() > shown) {
+        lore.add(GuiI18n.tr(player, "gui.crafting.editor.summary.more"));
+      }
+    }
+    ItemStack out = outputItem(player);
+    if (out == null || out.getType().isAir()) {
+      lore.add(GuiI18n.tr(player, "gui.crafting.editor.summary.output.none"));
+    } else {
+      lore.add(Locales.component(player, "gui.crafting.editor.summary.output.value",
+          Locales.placeholders("value",
+              out.getType().name().toLowerCase(Locale.ROOT) + " x" + out.getAmount())));
+    }
+    return GuiItems.named(Material.MAP, GuiI18n.tr(player, "gui.crafting.editor.summary.title"), lore);
   }
 }

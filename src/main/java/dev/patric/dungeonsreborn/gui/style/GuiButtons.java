@@ -11,7 +11,7 @@ import dev.patric.dungeonsreborn.gui.GuiItem;
 import net.kyori.adventure.text.Component;
 
 /**
- * Premade "button type" item stacks (10 common presets).
+ * Premade "button type" item stacks (14 common presets).
  * <p>
  * These only create the visuals (ItemStack). Use {@code new Button(...)} to add behavior.
  */
@@ -29,7 +29,11 @@ public final class GuiButtons {
     NEXT(GuiTheme.NAV, Material.ARROW, "gui.button.next"),
     PREV(GuiTheme.NAV, Material.ARROW, "gui.button.prev"),
     INFO(GuiTheme.INFO, Material.PAPER, "gui.button.info"),
-    TRASH(GuiTheme.WARNING, Material.LAVA_BUCKET, "gui.button.trash");
+    TRASH(GuiTheme.WARNING, Material.LAVA_BUCKET, "gui.button.trash"),
+    SAVE(GuiTheme.SUCCESS, Material.EMERALD, "gui.button.save"),
+    CREATE(GuiTheme.PRIMARY, Material.ANVIL, "gui.button.create"),
+    SEARCH(GuiTheme.INFO, Material.COMPASS, "gui.button.search"),
+    CLEAR(GuiTheme.WARNING, Material.WET_SPONGE, "gui.button.clear");
 
     private final GuiTheme theme;
     private final Material material;
@@ -107,5 +111,21 @@ public final class GuiButtons {
 
   public static ItemStack trash() {
     return item(Type.TRASH);
+  }
+
+  public static ItemStack save() {
+    return item(Type.SAVE);
+  }
+
+  public static ItemStack create() {
+    return item(Type.CREATE);
+  }
+
+  public static ItemStack search() {
+    return item(Type.SEARCH);
+  }
+
+  public static ItemStack clear() {
+    return item(Type.CLEAR);
   }
 }

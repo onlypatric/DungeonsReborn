@@ -9,8 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 public final class MobEditorYaml {
   private MobEditorYaml() {
@@ -103,6 +105,167 @@ public final class MobEditorYaml {
       }
       stats.set(key, value);
     });
+  }
+
+  public static boolean lootClearVanilla(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return false;
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot != null && loot.getBoolean("clearVanilla", false);
+  }
+
+  public static int lootRolls(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return 1;
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot == null ? 1 : loot.getInt("rolls", 1);
+  }
+
+  public static int lootBonusRolls(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return 0;
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot == null ? 0 : loot.getInt("bonusRolls", 0);
+  }
+
+  public static double lootLuckMultiplier(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return 0.0;
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot == null ? 0.0 : loot.getDouble("luckMultiplier", 0.0);
+  }
+
+  public static String lootAnnounceTemplate(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return null;
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot == null ? null : loot.getString("announceTemplate");
+  }
+
+  public static List<String> lootAnnounceTiers(File file, String id) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return List.of();
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    return loot == null ? List.of() : loot.getStringList("announceTiers");
+  }
+
+  public static List<Map<String, Object>> lootEntries(File file, String id, String listKey) {
+    YamlConfiguration cfg = load(file);
+    ConfigurationSection mob = mobSection(cfg, id, false);
+    if (mob == null) {
+      return List.of();
+    }
+    ConfigurationSection loot = mob.getConfigurationSection("loot");
+    if (loot == null) {
+      return List.of();
+    }
+    List<Map<?, ?>> raw = loot.getMapList(listKey);
+    if (raw.isEmpty()) {
+      return List.of();
+    }
+    List<Map<String, Object>> out = new java.util.ArrayList<>();
+    for (Map<?, ?> entry : raw) {
+      out.add(copyMap(entry));
+    }
+    return out;
+  }
+
+  public static void setLootEntries(File file, String id, String listKey, List<Map<String, Object>> entries) {
+    update(file, id, mob -> {
+      ConfigurationSection loot = mob.getConfigurationSection("loot");
+      if (loot == null) {
+        loot = mob.createSection("loot");
+      }
+      if (entries == null || entries.isEmpty()) {
+        loot.set(listKey, null);
+      } else {
+        loot.set(listKey, entries);
+      }
+    });
+  }
+
+  public static void setLootValue(File file, String id, String key, Object value) {
+    update(file, id, mob -> {
+      ConfigurationSection loot = mob.getConfigurationSection("loot");
+      if (loot == null) {
+        loot = mob.createSection("loot");
+      }
+      loot.set(key, value);
+    });
+  }
+
+  public static ItemStack previewLootItem(Map<?, ?> raw) {
+    if (raw == null) {
+      return new ItemStack(Material.BARRIER);
+    }
+    Object itemRaw = raw.get("item");
+    if (itemRaw instanceof ItemStack stack) {
+      return stack.clone();
+    }
+    if (itemRaw instanceof Map<?, ?> mapItem) {
+      return ItemStack.deserialize(copyMap(mapItem));
+    }
+    if (itemRaw instanceof String str) {
+      return new ItemStack(parseMaterialSafe(str));
+    }
+    Object materialRaw = raw.get("material");
+    if (materialRaw != null) {
+      return new ItemStack(parseMaterialSafe(materialRaw.toString()));
+    }
+    Object idRaw = raw.containsKey("itemId") ? raw.get("itemId") : raw.get("id");
+    if (idRaw != null) {
+      ItemStack item = new ItemStack(Material.PAPER);
+      var meta = item.getItemMeta();
+      meta.displayName(dev.patric.dungeonsreborn.gui.GuiMini.mm("<yellow>Item:</yellow> <white>" + idRaw + "</white>"));
+      item.setItemMeta(meta);
+      return item;
+    }
+    String token = raw.containsKey("token") ? String.valueOf(raw.get("token")) : null;
+    if (token == null || token.isBlank()) {
+      token = raw.containsKey("tokenTier") ? String.valueOf(raw.get("tokenTier")) : null;
+    }
+    if (token != null && !token.isBlank()) {
+      ItemStack item = new ItemStack(Material.SUNFLOWER);
+      var meta = item.getItemMeta();
+      meta.displayName(dev.patric.dungeonsreborn.gui.GuiMini.mm("<gold>Token:</gold> <white>" + token + "</white>"));
+      item.setItemMeta(meta);
+      return item;
+    }
+    return new ItemStack(Material.PAPER);
+  }
+
+  private static Material parseMaterialSafe(String raw) {
+    try {
+      return Material.valueOf(raw.trim().toUpperCase());
+    } catch (Exception ex) {
+      return Material.PAPER;
+    }
+  }
+
+  private static Map<String, Object> copyMap(Map<?, ?> input) {
+    Map<String, Object> out = new java.util.LinkedHashMap<>();
+    for (Map.Entry<?, ?> entry : input.entrySet()) {
+      out.put(String.valueOf(entry.getKey()), entry.getValue());
+    }
+    return out;
   }
 
   public static void exportSingle(File file, String id, File outFile) {

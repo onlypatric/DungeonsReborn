@@ -9,16 +9,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiItems;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
  * A simple navigation button that closes the current inventory.
  */
 public final class CloseButton extends Button {
-  private static final Component DEFAULT_TITLE = Component.text("Close");
-
   public CloseButton() {
-    this(DEFAULT_TITLE);
+    this(p -> GuiItems.named(Material.BARRIER, Locales.component(p, "gui.button.close")), true);
   }
 
   public CloseButton(Component title) {
@@ -40,4 +39,3 @@ public final class CloseButton extends Button {
     return new CloseButton(p -> GuiItems.named(Material.BARRIER, title, lore), true);
   }
 }
-

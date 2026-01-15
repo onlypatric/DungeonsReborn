@@ -16,6 +16,7 @@ import dev.patric.dungeonsreborn.gui.layout.Layout;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.components.Button;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -38,8 +39,8 @@ public final class NumericInput implements Layout {
   private Material plusMaterial = Material.LIME_STAINED_GLASS_PANE;
   private Material valueMaterial = Material.PAPER;
 
-  private Component label = Component.text("Value");
-  private Component typingPrompt = Component.text("Type a number (or 'cancel'):");
+  private Component label = Locales.component(null, "gui.numericInput.label");
+  private Component typingPrompt = Locales.component(null, "gui.numericInput.prompt");
 
   public NumericInput(int row, int leftCol, ToIntFunction<Player> get, ObjIntConsumer<Player> set) {
     this.row = row;
@@ -117,12 +118,16 @@ public final class NumericInput implements Layout {
       int value = clamp(get.applyAsInt(p));
       boolean enabled = value > min;
       if (!enabled) {
-        return GuiItems.named(Material.GRAY_DYE, Component.text("-"), List.of(Component.text("Min: " + min)));
+        return GuiItems.named(Material.GRAY_DYE, Locales.component(p, "gui.numericInput.minus"),
+            List.of(Locales.component(p, "gui.numericInput.min", Locales.placeholders("min", min))));
       }
-      return GuiItems.named(minusMaterial, Component.text("-"), List.of(Component.text("Value: " + value)));
+      return GuiItems.named(minusMaterial, Locales.component(p, "gui.numericInput.minus"),
+          List.of(Locales.component(p, "gui.numericInput.value", Locales.placeholders("value", value))));
     })
-        .left(Component.text("-" + step), ctx -> adjust(ctx.window(), ctx.player(), -step, minusSlot, valueSlot, plusSlot))
-        .shiftLeft(Component.text("-" + shiftStep), ctx -> adjust(ctx.window(), ctx.player(), -shiftStep, minusSlot, valueSlot, plusSlot))
+        .left(Locales.component(null, "gui.numericInput.stepMinus", Locales.placeholders("step", step)),
+            ctx -> adjust(ctx.window(), ctx.player(), -step, minusSlot, valueSlot, plusSlot))
+        .shiftLeft(Locales.component(null, "gui.numericInput.stepMinus", Locales.placeholders("step", shiftStep)),
+            ctx -> adjust(ctx.window(), ctx.player(), -shiftStep, minusSlot, valueSlot, plusSlot))
         .autoDescribeInLore(true);
   }
 
@@ -131,12 +136,16 @@ public final class NumericInput implements Layout {
       int value = clamp(get.applyAsInt(p));
       boolean enabled = value < max;
       if (!enabled) {
-        return GuiItems.named(Material.GRAY_DYE, Component.text("+"), List.of(Component.text("Max: " + max)));
+        return GuiItems.named(Material.GRAY_DYE, Locales.component(p, "gui.numericInput.plus"),
+            List.of(Locales.component(p, "gui.numericInput.max", Locales.placeholders("max", max))));
       }
-      return GuiItems.named(plusMaterial, Component.text("+"), List.of(Component.text("Value: " + value)));
+      return GuiItems.named(plusMaterial, Locales.component(p, "gui.numericInput.plus"),
+          List.of(Locales.component(p, "gui.numericInput.value", Locales.placeholders("value", value))));
     })
-        .left(Component.text("+" + step), ctx -> adjust(ctx.window(), ctx.player(), step, minusSlot, valueSlot, plusSlot))
-        .shiftLeft(Component.text("+" + shiftStep), ctx -> adjust(ctx.window(), ctx.player(), shiftStep, minusSlot, valueSlot, plusSlot))
+        .left(Locales.component(null, "gui.numericInput.stepPlus", Locales.placeholders("step", step)),
+            ctx -> adjust(ctx.window(), ctx.player(), step, minusSlot, valueSlot, plusSlot))
+        .shiftLeft(Locales.component(null, "gui.numericInput.stepPlus", Locales.placeholders("step", shiftStep)),
+            ctx -> adjust(ctx.window(), ctx.player(), shiftStep, minusSlot, valueSlot, plusSlot))
         .autoDescribeInLore(true);
   }
 
@@ -144,7 +153,8 @@ public final class NumericInput implements Layout {
     if (!allowTyping) {
       return new Button(p -> {
         int value = clamp(get.applyAsInt(p));
-        return GuiItems.named(valueMaterial, label, List.of(Component.text("Value: " + value)));
+        return GuiItems.named(valueMaterial, label, List.of(
+            Locales.component(p, "gui.numericInput.value", Locales.placeholders("value", value))));
       }).autoDescribeInLore(false);
     }
 
@@ -152,11 +162,11 @@ public final class NumericInput implements Layout {
         p -> {
           int value = clamp(get.applyAsInt(p));
           return GuiItems.named(valueMaterial, label, List.of(
-              Component.text("Value: " + value),
-              Component.text("Click to type")));
+              Locales.component(p, "gui.numericInput.value", Locales.placeholders("value", value)),
+              Locales.component(p, "gui.numericInput.clickToType")));
         },
         typingPrompt,
-        "cancel",
+        Locales.text(null, "gui.textInput.cancelWord"),
         typingTimeout,
         (w, text) -> {
           // Parse is validated before acceptance by the validators below.

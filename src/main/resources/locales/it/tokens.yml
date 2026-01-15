@@ -1,0 +1,14 @@
+tokens:
+  item:
+    name: <gold><bold>Token</bold></gold>
+    lore:
+    - <gray>Valuta per scambi e potenziamenti.</gray>
+    - <gray>Valore:</gray> <white>1 token</white>
+  compressed:
+    name: <gold><bold>Token Compresso</bold></gold>
+    lore:
+    - <gray>Valore:</gray> <white>64 token</white>
+  pallet:
+    name: <gold><bold>Pallet di Token</bold></gold>
+    lore:
+    - <gray>Valore:</gray> <white>64 token compressi</white>

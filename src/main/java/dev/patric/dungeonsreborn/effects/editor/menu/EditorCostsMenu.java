@@ -14,8 +14,8 @@ import dev.patric.dungeonsreborn.effects.editor.EditorAbilityYaml;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditAction;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditEvent;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -24,6 +24,7 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class EditorCostsMenu extends Window {
   private static final int SIZE = 27;
@@ -33,16 +34,16 @@ public final class EditorCostsMenu extends Window {
   private final Runnable onCloseRefresh;
 
   public EditorCostsMenu(EditorServices services, EditorAbilityDraft draft, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>Costs</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.costs.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.draft = Objects.requireNonNull(draft, "draft");
     this.onCloseRefresh = onCloseRefresh == null ? () -> {
     } : onCloseRefresh;
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.AMETHYST_SHARD, GuiMini.mm("<gold><bold>Costs</bold></gold>"))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.AMETHYST_SHARD, GuiI18n.tr("gui.effects.editor.costs.header.title"))));
 
     setFixedAt(1, 1, manaCost());
     setFixedAt(1, 3, consumeCost());
@@ -62,12 +63,13 @@ public final class EditorCostsMenu extends Window {
         p -> {
           Map<String, Object> entry = EditorAbilityYaml.findByType(EditorAbilityYaml.costs(draft), "mana");
           String value = entry == null ? null : String.valueOf(entry.get("amount"));
-          return GuiItems.named(Material.LAPIS_LAZULI, GuiMini.mm("<aqua><bold>Mana</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Mana cost per cast.</gray>"),
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value == null ? "(none)" : value) + "</white>")));
+          return GuiItems.named(Material.LAPIS_LAZULI, GuiI18n.tr(p, "gui.effects.editor.costs.mana.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.costs.mana.hint"),
+              GuiI18n.tr(p, "gui.effects.editor.costs.mana.current",
+                  Placeholder.unparsed("value", value == null ? GuiI18n.str(p, "gui.common.none") : value))));
         },
-        GuiMini.mm("<gray>Enter mana cost (0 to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.costs.mana.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -98,7 +100,7 @@ public final class EditorCostsMenu extends Window {
                 Double.parseDouble(input);
                 return null;
               } catch (NumberFormatException ex) {
-                return Component.text("Please enter a number.");
+                return GuiI18n.tr(player, "gui.textInput.error.integer");
               }
             });
   }
@@ -108,12 +110,13 @@ public final class EditorCostsMenu extends Window {
         p -> {
           Map<String, Object> entry = EditorAbilityYaml.findByType(EditorAbilityYaml.costs(draft), "consume_item");
           String value = entry == null ? null : String.valueOf(entry.get("amount"));
-          return GuiItems.named(Material.CHEST, GuiMini.mm("<aqua><bold>Consume Item</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Consumes items from main hand.</gray>"),
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value == null ? "(none)" : value) + "</white>")));
+          return GuiItems.named(Material.CHEST, GuiI18n.tr(p, "gui.effects.editor.costs.consume.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.costs.consume.hint"),
+              GuiI18n.tr(p, "gui.effects.editor.costs.consume.current",
+                  Placeholder.unparsed("value", value == null ? GuiI18n.str(p, "gui.common.none") : value))));
         },
-        GuiMini.mm("<gray>Enter item amount (0 to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.costs.consume.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -144,12 +147,13 @@ public final class EditorCostsMenu extends Window {
         p -> {
           Map<String, Object> entry = EditorAbilityYaml.findByType(EditorAbilityYaml.costs(draft), "durability");
           String value = entry == null ? null : String.valueOf(entry.get("damage"));
-          return GuiItems.named(Material.ANVIL, GuiMini.mm("<aqua><bold>Durability</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Durability damage per cast.</gray>"),
-              GuiMini.mm("<gray>Current:</gray> <white>" + (value == null ? "(none)" : value) + "</white>")));
+          return GuiItems.named(Material.ANVIL, GuiI18n.tr(p, "gui.effects.editor.costs.durability.title"), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.costs.durability.hint"),
+              GuiI18n.tr(p, "gui.effects.editor.costs.durability.current",
+                  Placeholder.unparsed("value", value == null ? GuiI18n.str(p, "gui.common.none") : value))));
         },
-        GuiMini.mm("<gray>Enter durability damage (0 to clear)</gray>"),
-        "cancel",
+        GuiI18n.tr("gui.effects.editor.costs.durability.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -183,14 +187,17 @@ public final class EditorCostsMenu extends Window {
       Map<String, Object> entry = EditorAbilityYaml.findByType(costs, "durability");
       boolean enabled = entry != null && Boolean.TRUE.equals(entry.get("allowBreak"));
       Material mat = enabled ? Material.LIME_DYE : Material.GRAY_DYE;
-      return GuiItems.named(mat, GuiMini.mm("<aqua><bold>Allow Break</bold></aqua>"), List.of(
-          GuiMini.mm("<gray>Allow item to break.</gray>"),
-          GuiMini.mm("<gray>Status:</gray> <white>" + (enabled ? "on" : "off") + "</white>")));
+      return GuiItems.named(mat, GuiI18n.tr(p, "gui.effects.editor.costs.allowBreak.title"), List.of(
+          GuiI18n.tr(p, "gui.effects.editor.costs.allowBreak.hint"),
+          GuiI18n.tr(p, "gui.effects.editor.costs.allowBreak.status",
+              Placeholder.component("value", GuiI18n.tr(p, enabled
+                  ? "gui.common.status.enabled"
+                  : "gui.common.status.disabled")))));
     }, ctx -> {
       List<Map<String, Object>> costs = EditorAbilityYaml.costs(draft);
       Map<String, Object> entry = EditorAbilityYaml.findByType(costs, "durability");
       if (entry == null) {
-        ctx.player().sendMessage(Component.text("§cSet a durability cost first."));
+        ctx.player().sendMessage(GuiI18n.tr(ctx.player(), "gui.effects.editor.costs.allowBreak.missing"));
         return;
       }
       boolean enabled = Boolean.TRUE.equals(entry.get("allowBreak"));
@@ -204,7 +211,7 @@ public final class EditorCostsMenu extends Window {
   }
 
   private Button clearAll() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Clear All")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.effects.editor.costs.clear")), ctx -> {
       EditorAbilityYaml.writeCosts(draft, List.of());
       saveDraft(ctx.player(), "costs.clear");
       ctx.window().redraw(ctx.player());

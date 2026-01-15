@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.PaginatedWindow;
 import dev.patric.dungeonsreborn.gui.GuiComponent;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
@@ -29,7 +30,8 @@ public final class PageIndicator implements GuiComponent {
 
   @Override
   public ItemStack render(Player player) {
-    return GuiItems.named(material, Component.text("Page " + (window.page() + 1) + "/" + window.pageCount()));
+    Component label = Locales.component(player, "gui.list.page",
+        Locales.placeholders("current", window.page() + 1, "total", window.pageCount()));
+    return GuiItems.named(material, label);
   }
 }
-

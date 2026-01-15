@@ -3,6 +3,7 @@ package dev.patric.dungeonsreborn.menus;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -22,9 +23,10 @@ import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeVariant;
+import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.Window;
@@ -34,7 +36,9 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageArea;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageSlot;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.quests.QuestService;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 /**
  * Sample crafting GUI: 9x6 with a 4x4 input grid and a result preview slot.
@@ -50,31 +54,36 @@ public final class CraftingTestMenu extends Window {
   private static final int SLOT_CLEAR = 43;
 
   private final CraftingYamlRegistry registry;
+  private final QuestService questService;
+  private final AdvancementService advancements;
   private final StorageArea inputs = new StorageArea(1, 1, 4, 4);
   private final Set<UUID> craftLocks = new HashSet<>();
   private final CraftingGuiSession sessionHandler = this::returnInputs;
 
-  public CraftingTestMenu(CraftingYamlRegistry registry, CraftingGuiSessionManager sessions) {
-    super(SIZE, GuiMini.mm("<white><bold>Custom Crafting (Test)</bold></white>"), true);
+  public CraftingTestMenu(CraftingYamlRegistry registry, CraftingGuiSessionManager sessions,
+      AdvancementService advancements, QuestService questService) {
+    super(SIZE, GuiI18n.tr("gui.crafting.test.title"), true);
     this.registry = registry;
+    this.advancements = advancements;
+    this.questService = questService;
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
-    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, Component.text("Close"))).autoDescribeInLore(false));
+    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, GuiI18n.tr(p, "gui.button.close"))).autoDescribeInLore(false));
 
-    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.CRAFTING_TABLE, GuiMini.mm("<gold><bold>Crafting Test</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Drop items into the 4x4 grid.</gray>"),
-        GuiMini.mm("<dark_gray>Use Craft to consume inputs.</dark_gray>")))));
+    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.CRAFTING_TABLE, GuiI18n.tr("gui.crafting.test.header.title"), List.of(
+        GuiI18n.tr("gui.crafting.test.header.hint1"),
+        GuiI18n.tr("gui.crafting.test.header.hint2")))));
 
-    setFixed(SLOT_RESULT_LABEL, new Label(GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>Result</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Preview updates as inputs change.</gray>")))));
+    setFixed(SLOT_RESULT_LABEL, new Label(GuiItems.named(Material.PAPER, GuiI18n.tr("gui.crafting.test.result.title"), List.of(
+        GuiI18n.tr("gui.crafting.test.result.hint")))));
 
     setFixed(SLOT_RESULT_PREVIEW, new Label(this::resultPreview));
 
     setFixed(SLOT_DISCOVER, new Button(this::discoverButtonItem, ctx -> {
       if (registry == null) {
         GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>Crafting registry not available.</red>"));
+        ctx.player().sendMessage(GuiI18n.tr(ctx.player(), "gui.crafting.test.error.registry"));
         return;
       }
       GuiManager.get().push(ctx.player(), new CraftingDiscoveryMenu(registry, this));
@@ -82,46 +91,11 @@ public final class CraftingTestMenu extends Window {
     }).autoDescribeInLore(false));
 
     setFixed(SLOT_CRAFT, new Button(this::craftButtonItem, ctx -> {
-      if (!lockCraft(ctx.player())) {
-        return;
-      }
-      CraftingMatchResult match = matchFor(ctx.player());
-      if (match == null) {
-        GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>No matching recipe.</red>"));
-        unlockCraft(ctx.player());
-        return;
-      }
-      if (!hasPermissions(ctx.player(), match.recipe().spec())) {
-        GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>You don't have permission to craft this.</red>"));
-        unlockCraft(ctx.player());
-        return;
-      }
-      List<ItemStack> outputs = buildOutputs(match);
-      if (outputs.isEmpty()) {
-        GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>Recipe output is missing.</red>"));
-        unlockCraft(ctx.player());
-        return;
-      }
-      if (!canFitOutputs(ctx.player(), outputs)) {
-        GuiSounds.error(ctx.player());
-        ctx.player().sendMessage(GuiMini.mm("<red>Inventory is full.</red>"));
-        unlockCraft(ctx.player());
-        return;
-      }
-      ItemStack[] before = inputs.contents(ctx.player());
-      consumeInputs(ctx.player(), match);
-      giveOutputs(ctx.player(), outputs);
-      logCraft(ctx.player(), match, before, outputs);
-      GuiSounds.success(ctx.player());
-      redraw(ctx.player());
-      unlockCraft(ctx.player());
+      tryCraft(ctx.player(), false);
     }).autoDescribeInLore(false));
 
-    setFixed(SLOT_CLEAR, new Button(p -> GuiItems.named(Material.BARRIER, GuiMini.mm("<red><bold>Clear Inputs</bold></red>"), List.of(
-        GuiMini.mm("<gray>Return items to your inventory.</gray>"))), ctx -> {
+    setFixed(SLOT_CLEAR, new Button(p -> GuiItems.named(Material.BARRIER, GuiI18n.tr(p, "gui.crafting.test.clear.title"), List.of(
+        GuiI18n.tr(p, "gui.crafting.test.clear.hint"))), ctx -> {
       returnInputs(ctx.player());
       redraw(ctx.player());
       GuiSounds.click(ctx.player());
@@ -157,34 +131,39 @@ public final class CraftingTestMenu extends Window {
   private ItemStack resultPreview(Player player) {
     CraftingMatchResult match = matchFor(player);
     if (match == null) {
-      return GuiItems.named(Material.GRAY_DYE, GuiMini.mm("<dark_gray><bold>No Recipe</bold></dark_gray>"), List.of(
-          GuiMini.mm("<gray>Add items to see a preview.</gray>")));
+      return GuiItems.named(Material.GRAY_DYE, GuiI18n.tr(player, "gui.crafting.test.noRecipe.title"), List.of(
+          GuiI18n.tr(player, "gui.crafting.test.noRecipe.preview")));
     }
     List<ItemStack> outputs = buildOutputs(match);
     if (outputs.isEmpty()) {
-      return GuiItems.named(Material.BARRIER, GuiMini.mm("<red><bold>Invalid Output</bold></red>"), List.of(
-          GuiMini.mm("<gray>Recipe output could not be built.</gray>")));
+      return GuiItems.named(Material.BARRIER, GuiI18n.tr(player, "gui.crafting.test.invalidOutput.title"), List.of(
+          GuiI18n.tr(player, "gui.crafting.test.invalidOutput.hint")));
     }
     ItemStack preview = outputs.get(0).clone();
+    List<Component> detail = new ArrayList<>(buildMatchLore(match));
     if (outputs.size() > 1) {
-      appendLore(preview, List.of(GuiMini.mm("<dark_gray>+" + (outputs.size() - 1) + " more outputs</dark_gray>")));
+      detail.add(GuiI18n.tr(player, "gui.crafting.test.outputs.more",
+          Placeholder.unparsed("count", String.valueOf(outputs.size() - 1))));
     }
+    appendLore(preview, detail);
     return preview;
   }
 
   private ItemStack craftButtonItem(Player player) {
     CraftingMatchResult match = matchFor(player);
     if (match == null) {
-      return GuiItems.named(Material.GRAY_DYE, GuiMini.mm("<dark_gray><bold>No Recipe</bold></dark_gray>"), List.of(
-          GuiMini.mm("<gray>Add ingredients to craft.</gray>")));
+      return GuiItems.named(Material.GRAY_DYE, GuiI18n.tr(player, "gui.crafting.test.noRecipe.title"), List.of(
+          GuiI18n.tr(player, "gui.crafting.test.noRecipe.craft")));
     }
-    return GuiItems.named(Material.LIME_DYE, GuiMini.mm("<green><bold>Craft</bold></green>"), List.of(
-        GuiMini.mm("<gray>Craft the previewed recipe.</gray>")));
+    List<Component> lore = new ArrayList<>();
+    lore.add(GuiI18n.tr(player, "gui.crafting.test.craft.hint"));
+    lore.addAll(buildMatchLore(match));
+    return GuiItems.named(Material.LIME_DYE, GuiI18n.tr(player, "gui.crafting.test.craft.title"), lore);
   }
 
   private ItemStack discoverButtonItem(Player player) {
-    return GuiItems.named(Material.BOOK, GuiMini.mm("<aqua><bold>Discover Recipes</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Find recipes you can craft.</gray>")));
+    return GuiItems.named(Material.BOOK, GuiI18n.tr(player, "gui.crafting.test.discover.title"), List.of(
+        GuiI18n.tr(player, "gui.crafting.test.discover.hint")));
   }
 
   private boolean lockCraft(Player player) {
@@ -223,6 +202,17 @@ public final class CraftingTestMenu extends Window {
       }
     }
     inputs.clear(player);
+  }
+
+  public boolean craftFromDiscovery(Player player, CraftingRecipeTemplate recipe, CraftingRecipeVariant variant,
+      boolean closeAfter) {
+    if (player == null || recipe == null || variant == null) {
+      return false;
+    }
+    if (!loadRecipeFromInventory(player, recipe, variant)) {
+      return false;
+    }
+    return tryCraft(player, closeAfter);
   }
 
   private void logCraft(Player player, CraftingMatchResult match, ItemStack[] before, List<ItemStack> outputs) {
@@ -265,6 +255,9 @@ public final class CraftingTestMenu extends Window {
         + " recipe=" + match.recipe().spec().id()
         + " inputs=[" + inputSummary + "]"
         + " outputs=[" + outputSummary + "]");
+    if (questService != null) {
+      questService.handleCraft(player, match.recipe().spec().id(), outputs);
+    }
   }
 
   private CraftingMatchResult matchFor(Player player) {
@@ -412,12 +405,12 @@ public final class CraftingTestMenu extends Window {
     ItemStack[] storage = player.getInventory().getStorageContents();
     Map<Integer, Integer> plan = CraftingInventoryPlanner.plan(storage, variant);
     if (plan == null || plan.isEmpty()) {
-      player.sendMessage(GuiMini.mm("<red>Missing ingredients for this recipe.</red>"));
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.missingIngredients"));
       return false;
     }
     List<ItemStack> stacks = CraftingInventoryPlanner.materialize(storage, plan);
     if (stacks.size() > inputs.size()) {
-      player.sendMessage(GuiMini.mm("<red>Too many ingredients for the 4x4 grid.</red>"));
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.tooManyIngredients"));
       return false;
     }
     ItemStack[] updated = CraftingInventoryPlanner.apply(storage, plan);
@@ -428,5 +421,128 @@ public final class CraftingTestMenu extends Window {
     }
     redraw(player);
     return true;
+  }
+
+  private boolean tryCraft(Player player, boolean closeAfter) {
+    if (!lockCraft(player)) {
+      return false;
+    }
+    CraftingMatchResult match = matchFor(player);
+    if (match == null) {
+      GuiSounds.error(player);
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.noMatch"));
+      unlockCraft(player);
+      return false;
+    }
+    if (!hasPermissions(player, match.recipe().spec())) {
+      GuiSounds.error(player);
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.noPermission"));
+      unlockCraft(player);
+      return false;
+    }
+    List<ItemStack> outputs = buildOutputs(match);
+    if (outputs.isEmpty()) {
+      GuiSounds.error(player);
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.missingOutput"));
+      unlockCraft(player);
+      return false;
+    }
+    if (!canFitOutputs(player, outputs)) {
+      GuiSounds.error(player);
+      player.sendMessage(GuiI18n.tr(player, "gui.crafting.test.error.inventoryFull"));
+      unlockCraft(player);
+      return false;
+    }
+    ItemStack[] before = inputs.contents(player);
+    consumeInputs(player, match);
+    giveOutputs(player, outputs);
+    logCraft(player, match, before, outputs);
+    recordTokenOutputs(player, outputs);
+    GuiSounds.success(player);
+    redraw(player);
+    unlockCraft(player);
+    if (closeAfter) {
+      player.closeInventory();
+    }
+    return true;
+  }
+
+  private void recordTokenOutputs(Player player, List<ItemStack> outputs) {
+    if (advancements == null || player == null || outputs == null || outputs.isEmpty()) {
+      return;
+    }
+    for (ItemStack output : outputs) {
+      if (output == null || output.getType().isAir()) {
+        continue;
+      }
+      advancements.recordTokensFromItem(player, output);
+    }
+  }
+
+  private List<Component> buildMatchLore(CraftingMatchResult match) {
+    List<Component> lore = new ArrayList<>();
+    if (match == null) {
+      return lore;
+    }
+    int required = 0;
+    for (var ingredient : match.variant().inputs()) {
+      required += Math.max(0, ingredient.amount());
+    }
+    int consumed = 0;
+    for (int amount : match.consumed().values()) {
+      consumed += Math.max(0, amount);
+    }
+    int percent = required <= 0 ? 100 : Math.min(100, (int) Math.round((consumed / (double) required) * 100.0));
+    int specificity = variantSpecificity(match.variant());
+    lore.add(GuiI18n.tr("gui.crafting.test.match.strength", Placeholder.unparsed("percent", String.valueOf(percent))));
+    lore.add(GuiI18n.tr("gui.crafting.test.match.consumed",
+        Placeholder.unparsed("consumed", String.valueOf(consumed)),
+        Placeholder.unparsed("required", String.valueOf(required))));
+    lore.add(GuiI18n.tr("gui.crafting.test.match.bestFit", Placeholder.unparsed("specificity", String.valueOf(specificity))));
+    lore.add(GuiI18n.tr("gui.crafting.test.match.requiredTitle"));
+    List<String> lines = new ArrayList<>();
+    for (var ingredient : match.variant().inputs()) {
+      lines.add(formatIngredient(ingredient));
+    }
+    int limit = Math.min(lines.size(), 6);
+    for (int i = 0; i < limit; i++) {
+      lore.add(GuiI18n.tr("gui.crafting.test.match.requiredEntry",
+          Placeholder.unparsed("value", lines.get(i))));
+    }
+    if (lines.size() > limit) {
+      lore.add(GuiI18n.tr("gui.crafting.test.match.requiredMore"));
+    }
+    return lore;
+  }
+
+  private String formatIngredient(dev.patric.dungeonsreborn.crafting.CraftingIngredientSpec ingredient) {
+    String name = switch (ingredient.type()) {
+      case ITEM_ID -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.itemPrefix") + ingredient.itemId();
+      case TAG -> ingredient.tag() == null
+          ? GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.tag")
+          : GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.tagPrefix") + ingredient.tag().asString();
+      case MATERIAL -> ingredient.material() == null
+          ? GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.material")
+          : ingredient.material().name().toLowerCase(Locale.ROOT);
+      case CATEGORY -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.categoryPrefix")
+          + ingredient.category().name().toLowerCase(Locale.ROOT);
+      case ANY -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.crafting.test.format.any");
+    };
+    return ingredient.amount() + "x " + name;
+  }
+
+  private int variantSpecificity(CraftingRecipeVariant variant) {
+    int score = 0;
+    for (var ingredient : variant.inputs()) {
+      int weight = switch (ingredient.type()) {
+        case ITEM_ID -> 5;
+        case TAG -> 4;
+        case MATERIAL -> 3;
+        case CATEGORY -> 2;
+        case ANY -> 1;
+      };
+      score += weight * Math.max(1, ingredient.amount());
+    }
+    return score;
   }
 }

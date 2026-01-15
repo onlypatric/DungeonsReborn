@@ -17,8 +17,8 @@ import dev.patric.dungeonsreborn.effects.editor.EditorAuditAction;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditEvent;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.gui.GuiComponent;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -27,8 +27,10 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
 import dev.patric.dungeonsreborn.gui.components.input.CycleSelector;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class EditorActionDetailMenu extends Window {
@@ -77,7 +79,7 @@ public final class EditorActionDetailMenu extends Window {
 
   public EditorActionDetailMenu(EditorServices services, EditorAbilityDraft draft, Map<String, Object> root,
       List<Map<String, Object>> actions, int index, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>Action</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.actionDetail.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.draft = Objects.requireNonNull(draft, "draft");
     this.root = Objects.requireNonNull(root, "root");
@@ -88,9 +90,11 @@ public final class EditorActionDetailMenu extends Window {
 
     background(GuiItems.blankPane(Material.GRAY_STAINED_GLASS_PANE));
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
 
-    setFixedAt(0, 4, new Label(p -> GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Action #" + (index + 1) + "</bold></gold>"))));
+    setFixedAt(0, 4, new Label(p -> GuiItems.named(Material.BOOK,
+        GuiI18n.tr(p, "gui.effects.editor.actionDetail.header.title",
+            Placeholder.unparsed("index", String.valueOf(index + 1))))));
     setFixedAt(1, 3, moveUpButton());
     setFixedAt(1, 5, moveDownButton());
     setFixedAt(1, 7, deleteButton());
@@ -127,12 +131,13 @@ public final class EditorActionDetailMenu extends Window {
   private GuiComponent typeLabel(String typeId, EditorActionType type) {
     String label = type == null ? typeId : type.label();
     Material mat = type == null ? Material.GRAY_DYE : type.icon();
-    return new Label(GuiItems.named(mat, GuiMini.mm("<aqua><bold>Type</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>" + label + "</gray>"))));
+    return new Label(GuiItems.named(mat, GuiI18n.tr("gui.effects.editor.actionDetail.type.title"), List.of(
+        GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.actionDetail.type.value",
+            Placeholder.unparsed("value", label)))));
   }
 
   private Button moveUpButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, Component.text("Up")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, GuiI18n.tr(p, "gui.effects.editor.actionDetail.move.up")), ctx -> {
       if (index <= 0 || index >= actions.size()) {
         return;
       }
@@ -144,7 +149,7 @@ public final class EditorActionDetailMenu extends Window {
   }
 
   private Button moveDownButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, Component.text("Down")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, GuiI18n.tr(p, "gui.effects.editor.actionDetail.move.down")), ctx -> {
       if (index < 0 || index >= actions.size() - 1) {
         return;
       }
@@ -156,7 +161,7 @@ public final class EditorActionDetailMenu extends Window {
   }
 
   private Button deleteButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Delete")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.effects.editor.actionDetail.delete")), ctx -> {
       if (index < 0 || index >= actions.size()) {
         return;
       }
@@ -167,24 +172,24 @@ public final class EditorActionDetailMenu extends Window {
   }
 
   private Button editChildrenButton(EditorActionType type) {
-    return new Button(p -> GuiItems.named(Material.CHEST, GuiMini.mm("<aqua><bold>Children</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Edit nested actions.</gray>"))), ctx -> {
+    return new Button(p -> GuiItems.named(Material.CHEST, GuiI18n.tr(p, "gui.effects.editor.actionDetail.children.title"), List.of(
+        GuiI18n.tr(p, "gui.effects.editor.actionDetail.children.hint"))), ctx -> {
       Map<String, Object> node = actions.get(index);
       List<Map<String, Object>> childList = EditorActionTree.ensureChildList(node, type.childKey());
       EditorActionGraphMenu menu = new EditorActionGraphMenu(services, draft, root, childList,
-          "Children", this::childUpdated);
+          GuiI18n.str(GuiI18n.defaultLocale(), "gui.effects.editor.actionDetail.children.graphTitle"), this::childUpdated);
       openSubWindow(ctx.player(), menu);
       saveDraft(ctx.player(), "action.children");
     }).autoDescribeInLore(false);
   }
 
   private Button editOtherwiseButton() {
-    return new Button(p -> GuiItems.named(Material.CHEST, GuiMini.mm("<aqua><bold>Otherwise</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>Edit else branch.</gray>"))), ctx -> {
+    return new Button(p -> GuiItems.named(Material.CHEST, GuiI18n.tr(p, "gui.effects.editor.actionDetail.otherwise.title"), List.of(
+        GuiI18n.tr(p, "gui.effects.editor.actionDetail.otherwise.hint"))), ctx -> {
       Map<String, Object> node = actions.get(index);
       List<Map<String, Object>> childList = EditorActionTree.ensureChildList(node, "otherwise");
       EditorActionGraphMenu menu = new EditorActionGraphMenu(services, draft, root, childList,
-          "Otherwise", this::childUpdated);
+          GuiI18n.str(GuiI18n.defaultLocale(), "gui.effects.editor.actionDetail.otherwise.graphTitle"), this::childUpdated);
       openSubWindow(ctx.player(), menu);
       saveDraft(ctx.player(), "action.otherwise");
     }).autoDescribeInLore(false);
@@ -200,28 +205,31 @@ public final class EditorActionDetailMenu extends Window {
   private void buildParams(Player player, Map<String, Object> node, String typeId) {
     switch (typeId) {
       case "message", "action_bar" -> {
-        setDynamicAt(3, 1, textParam("Text", node, "text", "Enter text"));
+        setDynamicAt(3, 1, textParam("gui.effects.editor.actionDetail.param.text.label",
+            node, "text", "gui.effects.editor.actionDetail.param.text.prompt"));
       }
       case "sound" -> {
-        setDynamicAt(3, 1, textParam("Sound", node, "sound", "Enter sound id"));
-        setDynamicAt(3, 3, numberParam("Volume", node, "volume", false));
-        setDynamicAt(3, 5, numberParam("Pitch", node, "pitch", false));
+        setDynamicAt(3, 1, textParam("gui.effects.editor.actionDetail.param.sound.label",
+            node, "sound", "gui.effects.editor.actionDetail.param.sound.prompt"));
+        setDynamicAt(3, 3, numberParam("gui.effects.editor.actionDetail.param.volume.label", node, "volume", false));
+        setDynamicAt(3, 5, numberParam("gui.effects.editor.actionDetail.param.pitch.label", node, "pitch", false));
       }
       case "particles_point" -> {
-        setDynamicAt(3, 1, textParam("Particle", node, "particle", "Enter particle"));
-        setDynamicAt(3, 3, numberParam("Count", node, "count", true));
-        setDynamicAt(3, 5, numberParam("Offset", node, "offset", false));
-        setDynamicAt(3, 7, numberParam("Extra", node, "extra", false));
+        setDynamicAt(3, 1, textParam("gui.effects.editor.actionDetail.param.particle.label",
+            node, "particle", "gui.effects.editor.actionDetail.param.particle.prompt"));
+        setDynamicAt(3, 3, numberParam("gui.effects.editor.actionDetail.param.count.label", node, "count", true));
+        setDynamicAt(3, 5, numberParam("gui.effects.editor.actionDetail.param.offset.label", node, "offset", false));
+        setDynamicAt(3, 7, numberParam("gui.effects.editor.actionDetail.param.extra.label", node, "extra", false));
       }
       case "damage" -> {
-        setDynamicAt(3, 1, numberParam("Amount", node, "amount", false));
+        setDynamicAt(3, 1, numberParam("gui.effects.editor.actionDetail.param.amount.label", node, "amount", false));
         setDynamicAt(3, 3, damagePolicySelector(node, player));
       }
-      case "delay" -> setDynamicAt(3, 1, numberParam("Ticks", node, "ticks", true));
+      case "delay" -> setDynamicAt(3, 1, numberParam("gui.effects.editor.actionDetail.param.ticks.label", node, "ticks", true));
       case "repeat_ticks" -> {
-        setDynamicAt(3, 1, numberParam("Delay", node, "delayTicks", true));
-        setDynamicAt(3, 3, numberParam("Period", node, "periodTicks", true));
-        setDynamicAt(3, 5, numberParam("Times", node, "times", true));
+        setDynamicAt(3, 1, numberParam("gui.effects.editor.actionDetail.param.delay.label", node, "delayTicks", true));
+        setDynamicAt(3, 3, numberParam("gui.effects.editor.actionDetail.param.period.label", node, "periodTicks", true));
+        setDynamicAt(3, 5, numberParam("gui.effects.editor.actionDetail.param.times.label", node, "times", true));
       }
       case "when" -> {
         setDynamicAt(3, 1, conditionSelector(node, player));
@@ -234,31 +242,33 @@ public final class EditorActionDetailMenu extends Window {
         setDynamicAt(3, 7, targeterParamThree(node));
         setDynamicAt(4, 1, targeterFilterSelector(node, player));
         setDynamicAt(4, 3, targeterModeSelector(node, player));
-        setDynamicAt(4, 5, numberParam("Max Targets", node, "maxTargets", true));
+        setDynamicAt(4, 5, numberParam("gui.effects.editor.actionDetail.param.maxTargets.label", node, "maxTargets", true));
         setDynamicAt(4, 7, targeterOriginSelector(node, player));
       }
       case "title" -> {
-        setDynamicAt(3, 1, textParam("Title", node, "title", "Enter title"));
-        setDynamicAt(3, 3, textParam("Subtitle", node, "subtitle", "Enter subtitle"));
-        setDynamicAt(4, 1, numberParam("Fade In", node, "fadeInTicks", true));
-        setDynamicAt(4, 3, numberParam("Stay", node, "stayTicks", true));
-        setDynamicAt(4, 5, numberParam("Fade Out", node, "fadeOutTicks", true));
+        setDynamicAt(3, 1, textParam("gui.effects.editor.actionDetail.param.title.label",
+            node, "title", "gui.effects.editor.actionDetail.param.title.prompt"));
+        setDynamicAt(3, 3, textParam("gui.effects.editor.actionDetail.param.subtitle.label",
+            node, "subtitle", "gui.effects.editor.actionDetail.param.subtitle.prompt"));
+        setDynamicAt(4, 1, numberParam("gui.effects.editor.actionDetail.param.fadeIn.label", node, "fadeInTicks", true));
+        setDynamicAt(4, 3, numberParam("gui.effects.editor.actionDetail.param.stay.label", node, "stayTicks", true));
+        setDynamicAt(4, 5, numberParam("gui.effects.editor.actionDetail.param.fadeOut.label", node, "fadeOutTicks", true));
       }
       default -> {
       }
     }
   }
 
-  private TextButton textParam(String label, Map<String, Object> node, String key, String prompt) {
+  private TextButton textParam(String labelKey, Map<String, Object> node, String key, String promptKey) {
     return new TextButton(
         p -> {
-          String current = valueOrNone(node.get(key));
-          return GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>" + label + "</bold></aqua>"), List.of(
-              GuiMini.mm("<gray>Current:</gray>"),
+          String current = valueOrNone(p, node.get(key));
+          return GuiItems.named(Material.PAPER, GuiI18n.tr(p, labelKey), List.of(
+              GuiI18n.tr(p, "gui.effects.editor.actionDetail.param.current.label"),
               renderValue(current)));
         },
-        GuiMini.mm("<gray>" + prompt + "</gray>"),
-        "cancel",
+        GuiI18n.tr(promptKey),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -273,12 +283,13 @@ public final class EditorActionDetailMenu extends Window {
             .inputMode(TextButton.InputMode.CHAT);
   }
 
-  private TextButton numberParam(String label, Map<String, Object> node, String key, boolean integer) {
+  private TextButton numberParam(String labelKey, Map<String, Object> node, String key, boolean integer) {
     return new TextButton(
-        p -> GuiItems.named(Material.PAPER, GuiMini.mm("<aqua><bold>" + label + "</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + valueOrNone(node.get(key)) + "</white>"))),
-        GuiMini.mm("<gray>Enter value</gray>"),
-        "cancel",
+        p -> GuiItems.named(Material.PAPER, GuiI18n.tr(p, labelKey), List.of(
+            GuiI18n.tr(p, "gui.effects.editor.actionDetail.param.current.value",
+                Placeholder.unparsed("value", valueOrNone(p, node.get(key)))))),
+        GuiI18n.tr("gui.effects.editor.actionDetail.param.number.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -295,14 +306,14 @@ public final class EditorActionDetailMenu extends Window {
         },
         true)
             .inputMode(TextButton.InputMode.CHAT)
-            .validate((window, player, input) -> validateNumber(input, integer));
+            .validate((window, player, input) -> validateNumber(player, input, integer));
   }
 
   private GuiComponent damagePolicySelector(Map<String, Object> node, Player player) {
     List<String> policies = List.of("hostile_default", "any", "pve_only", "pvp_only");
     CycleSelector<String> selector = new CycleSelector<>(policies,
-        (viewer, value) -> GuiItems.named(Material.IRON_SWORD, GuiMini.mm("<aqua><bold>Policy</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.IRON_SWORD, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.policy.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.policy.current", Placeholder.unparsed("value", value)))));
     Object raw = node.get("policy");
     String current = raw == null ? "hostile_default" : raw.toString();
     if (player != null && policies.contains(current)) {
@@ -319,8 +330,8 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> cond = conditionMap(node);
     List<ConditionType> types = List.of(ConditionType.values());
     CycleSelector<ConditionType> selector = new CycleSelector<>(types,
-        (viewer, value) -> GuiItems.named(Material.REDSTONE_TORCH, GuiMini.mm("<aqua><bold>Condition</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Type:</gray> <white>" + value.label + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.REDSTONE_TORCH, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.condition.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.condition.type", Placeholder.unparsed("value", value.label)))));
     ConditionType current = conditionType(cond);
     if (player != null) {
       selector.select(player, current);
@@ -343,21 +354,22 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> cond = conditionMap(node);
     ConditionType type = conditionType(cond);
     if (type == ConditionType.PERMISSION) {
-      return textParam("Permission", cond, "permission", "Enter permission");
+      return textParam("gui.effects.editor.actionDetail.condition.permission.label", cond, "permission",
+          "gui.effects.editor.actionDetail.condition.permission.prompt");
     }
     if (type == ConditionType.CHANCE) {
-      return numberParam("Chance", cond, "chance", false);
+      return numberParam("gui.effects.editor.actionDetail.condition.chance.label", cond, "chance", false);
     }
-    return new Label(GuiItems.named(Material.GRAY_DYE, GuiMini.mm("<aqua><bold>Condition</bold></aqua>"), List.of(
-        GuiMini.mm("<gray>No extra parameters.</gray>"))));
+    return new Label(GuiItems.named(Material.GRAY_DYE, GuiI18n.tr("gui.effects.editor.actionDetail.condition.title"), List.of(
+        GuiI18n.tr("gui.effects.editor.actionDetail.condition.none"))));
   }
 
   private GuiComponent targeterSelector(Map<String, Object> node, Player player) {
     Map<String, Object> targeter = targeterMap(node);
     List<TargeterType> types = List.of(TargeterType.values());
     CycleSelector<TargeterType> selector = new CycleSelector<>(types,
-        (viewer, value) -> GuiItems.named(Material.TARGET, GuiMini.mm("<aqua><bold>Targeter</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Type:</gray> <white>" + value.label + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.TARGET, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.type", Placeholder.unparsed("value", value.label)))));
     TargeterType current = targeterType(targeter);
     if (player != null) {
       selector.select(player, current);
@@ -377,8 +389,8 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> targeter = targeterMap(node);
     TargeterType type = targeterType(targeter);
     return switch (type) {
-      case SPHERE, NEAREST, CONE, CYLINDER -> numberParam("Radius", targeter, "radius", false);
-      case BOX -> numberParam("X Radius", targeter, "xRadius", false);
+      case SPHERE, NEAREST, CONE, CYLINDER -> numberParam("gui.effects.editor.actionDetail.targeter.param.radius", targeter, "radius", false);
+      case BOX -> numberParam("gui.effects.editor.actionDetail.targeter.param.xRadius", targeter, "xRadius", false);
       default -> new Label(GuiItems.named(Material.GRAY_DYE, Component.text("")));
     };
   }
@@ -387,9 +399,9 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> targeter = targeterMap(node);
     TargeterType type = targeterType(targeter);
     return switch (type) {
-      case CONE -> numberParam("Angle", targeter, "angleDegrees", false);
-      case BOX -> numberParam("Y Radius", targeter, "yRadius", false);
-      case CYLINDER -> numberParam("Height", targeter, "height", false);
+      case CONE -> numberParam("gui.effects.editor.actionDetail.targeter.param.angle", targeter, "angleDegrees", false);
+      case BOX -> numberParam("gui.effects.editor.actionDetail.targeter.param.yRadius", targeter, "yRadius", false);
+      case CYLINDER -> numberParam("gui.effects.editor.actionDetail.targeter.param.height", targeter, "height", false);
       default -> new Label(GuiItems.named(Material.GRAY_DYE, Component.text("")));
     };
   }
@@ -398,7 +410,7 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> targeter = targeterMap(node);
     TargeterType type = targeterType(targeter);
     return switch (type) {
-      case BOX -> numberParam("Z Radius", targeter, "zRadius", false);
+      case BOX -> numberParam("gui.effects.editor.actionDetail.targeter.param.zRadius", targeter, "zRadius", false);
       default -> new Label(GuiItems.named(Material.GRAY_DYE, Component.text("")));
     };
   }
@@ -407,8 +419,8 @@ public final class EditorActionDetailMenu extends Window {
     Map<String, Object> targeter = targeterMap(node);
     List<String> options = List.of("any", "players", "mobs");
     CycleSelector<String> selector = new CycleSelector<>(options,
-        (viewer, value) -> GuiItems.named(Material.CHAINMAIL_HELMET, GuiMini.mm("<aqua><bold>Filter</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.CHAINMAIL_HELMET, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.filter.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.filter.current", Placeholder.unparsed("value", value)))));
     String current = String.valueOf(targeter.getOrDefault("filter", "any"));
     if (player != null && options.contains(current)) {
       selector.select(player, current);
@@ -423,8 +435,8 @@ public final class EditorActionDetailMenu extends Window {
   private GuiComponent targeterModeSelector(Map<String, Object> node, Player player) {
     List<String> modes = List.of("each", "first");
     CycleSelector<String> selector = new CycleSelector<>(modes,
-        (viewer, value) -> GuiItems.named(Material.LEVER, GuiMini.mm("<aqua><bold>Mode</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.LEVER, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.mode.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.mode.current", Placeholder.unparsed("value", value)))));
     String current = String.valueOf(node.getOrDefault("mode", "each"));
     if (player != null && modes.contains(current)) {
       selector.select(player, current);
@@ -439,8 +451,8 @@ public final class EditorActionDetailMenu extends Window {
   private GuiComponent targeterOriginSelector(Map<String, Object> node, Player player) {
     List<String> options = List.of("origin", "caster", "target");
     CycleSelector<String> selector = new CycleSelector<>(options,
-        (viewer, value) -> GuiItems.named(Material.ENDER_PEARL, GuiMini.mm("<aqua><bold>Origin</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Current:</gray> <white>" + value + "</white>"))));
+        (viewer, value) -> GuiItems.named(Material.ENDER_PEARL, GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.origin.title"), List.of(
+            GuiI18n.tr(viewer, "gui.effects.editor.actionDetail.targeter.origin.current", Placeholder.unparsed("value", value)))));
     String current = String.valueOf(node.getOrDefault("originAt", "origin"));
     if (player != null && options.contains(current)) {
       selector.select(player, current);
@@ -522,9 +534,9 @@ public final class EditorActionDetailMenu extends Window {
     services.audit().log(EditorAuditEvent.of(EditorAuditAction.EDIT, player.getUniqueId(), player.getName(), draft.id(), detail));
   }
 
-  private static Component validateNumber(String input, boolean integer) {
+  private static Component validateNumber(Player player, String input, boolean integer) {
     if (input == null || input.isBlank()) {
-      return Component.text("Value required.");
+      return GuiI18n.tr(player, "gui.effects.editor.actionDetail.error.valueRequired");
     }
     try {
       if (integer) {
@@ -534,21 +546,21 @@ public final class EditorActionDetailMenu extends Window {
       }
       return null;
     } catch (NumberFormatException ex) {
-      return Component.text("Invalid number.");
+      return GuiI18n.tr(player, "gui.effects.editor.actionDetail.error.invalidNumber");
     }
   }
 
-  private static String valueOrNone(Object raw) {
+  private static String valueOrNone(Player player, Object raw) {
     if (raw == null) {
-      return "(none)";
+      return Locales.text(player, "gui.common.none");
     }
     String value = raw.toString();
-    return value.isBlank() ? "(none)" : value;
+    return value.isBlank() ? Locales.text(player, "gui.common.none") : value;
   }
 
   private static Component renderValue(String raw) {
     if (raw == null) {
-      return Component.text("(none)");
+      return GuiI18n.tr(GuiI18n.defaultLocale(), "gui.common.none");
     }
     if (raw.indexOf('§') >= 0) {
       return LEGACY.deserialize(raw);

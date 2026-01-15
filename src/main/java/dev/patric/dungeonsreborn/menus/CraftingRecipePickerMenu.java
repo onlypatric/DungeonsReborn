@@ -15,20 +15,20 @@ import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.Window;
-import dev.patric.dungeonsreborn.gui.components.BackButton;
-import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.EmptyState;
 import dev.patric.dungeonsreborn.gui.components.Label;
-import dev.patric.dungeonsreborn.gui.components.TextButton;
+import dev.patric.dungeonsreborn.gui.components.list.ListSearchBar;
 import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
-import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.gui.style.GuiNav;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class CraftingRecipePickerMenu extends Window {
   private static final int SIZE = 54;
@@ -43,7 +43,7 @@ public final class CraftingRecipePickerMenu extends Window {
   private final VirtualList<Entry> list;
 
   public CraftingRecipePickerMenu(CraftingYamlRegistry registry, CraftingRecipeEditorMenu editor) {
-    super(SIZE, GuiMini.mm("<white><bold>Select Recipe</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.crafting.picker.title"), true);
     this.registry = Objects.requireNonNull(registry, "registry");
     this.editor = Objects.requireNonNull(editor, "editor");
 
@@ -55,49 +55,22 @@ public final class CraftingRecipePickerMenu extends Window {
         (player, entry) -> entryItem(entry),
         (ctx, entry) -> handleClick(ctx, entry));
     list.searchKey(entry -> entryTitle(entry) + " " + entry.recipe().spec().id());
+    list.emptyStateItem(EmptyState.list());
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(GuiNav.backButton());
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
-    nav(3, searchButton());
-    nav(4, clearSearchButton());
+    nav(3, ListSearchBar.searchButton(list));
+    nav(4, ListSearchBar.clearButton(list));
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Recipes</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Left click to edit.</gray>"),
-        GuiMini.mm("<gray>Right click to delete.</gray>")))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiI18n.tr("gui.crafting.picker.header.title"), List.of(
+        GuiI18n.tr("gui.crafting.picker.header.edit"),
+        GuiI18n.tr("gui.crafting.picker.header.delete")))));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> GuiSounds.close(ctx.player()));
-  }
-
-  private TextButton searchButton() {
-    return new TextButton(
-        p -> GuiItems.named(Material.SPYGLASS, GuiMini.mm("<aqua><bold>Search</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Type a search term in chat.</gray>"))),
-        GuiMini.mm("<yellow>Type search text</yellow>"),
-        "cancel",
-        Duration.ofSeconds(30),
-        (window, text) -> {
-          Player player = window.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(window.viewer());
-          if (player == null) {
-            return;
-          }
-          list.query(player, text);
-          window.redraw(player);
-        },
-        true);
-  }
-
-  private Button clearSearchButton() {
-    return new Button(
-        p -> GuiItems.named(Material.MILK_BUCKET, GuiMini.mm("<gray><bold>Clear Search</bold></gray>"), List.of(
-            GuiMini.mm("<gray>Reset the search filter.</gray>"))),
-        ctx -> {
-          list.clearFilter(ctx.player());
-          ctx.redraw();
-        }).autoDescribeInLore(false);
   }
 
   private List<Entry> entries(Player player) {
@@ -128,14 +101,16 @@ public final class CraftingRecipePickerMenu extends Window {
     ItemStack output = recipe.outputTemplate();
     ItemStack base = output != null ? output.clone() : new ItemStack(Material.PAPER);
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + recipe.spec().id() + "</white>"));
+    lore.add(GuiI18n.tr("gui.crafting.picker.lore.id", Placeholder.unparsed("id", recipe.spec().id())));
     if (!recipe.spec().description().isBlank()) {
-      lore.add(GuiMini.mm("<dark_gray>" + recipe.spec().description() + "</dark_gray>"));
+      lore.add(GuiI18n.tr("gui.crafting.picker.lore.description",
+          Placeholder.unparsed("text", recipe.spec().description())));
     }
-    lore.add(GuiMini.mm("<green>Left click to edit.</green>"));
-    lore.add(GuiMini.mm("<red>Right click to delete.</red>"));
+    lore.add(GuiI18n.tr("gui.crafting.picker.lore.edit"));
+    lore.add(GuiI18n.tr("gui.crafting.picker.lore.delete"));
     return GuiItem.of(base)
-        .displayName(GuiMini.mm("<yellow>" + entryTitle(entry) + "</yellow>"))
+        .displayName(GuiI18n.tr("gui.crafting.picker.entry.title",
+            Placeholder.unparsed("title", entryTitle(entry))))
         .lore(lore)
         .build();
   }
@@ -151,21 +126,23 @@ public final class CraftingRecipePickerMenu extends Window {
   private void confirmDelete(Player player, CraftingRecipeTemplate recipe) {
     GuiManager.get().prepareTemporaryClose(player);
     player.closeInventory();
-    Component prompt = GuiMini.mm("<red>Type <white>" + DELETE_WORD + "</white> to delete <yellow>" + recipe.spec().id() + "</yellow>.</red>");
+    Component prompt = GuiI18n.tr("gui.crafting.picker.delete.prompt",
+        Placeholder.unparsed("word", DELETE_WORD),
+        Placeholder.unparsed("id", recipe.spec().id()));
     GuiManager.get().requestText(player, new GuiManager.TextRequest(
         prompt,
-        "cancel",
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         DELETE_TIMEOUT,
         (p, text) -> {
           if (!DELETE_WORD.equalsIgnoreCase(text.trim())) {
-            p.sendMessage(GuiMini.mm("<gray>Delete cancelled.</gray>"));
+            p.sendMessage(GuiI18n.tr(p, "gui.crafting.picker.delete.cancelled"));
             GuiManager.get().resume(p, this, "delete-cancel");
             return;
           }
           if (!deleteRecipe(recipe.spec().id())) {
-            p.sendMessage(GuiMini.mm("<red>Failed to delete recipe.</red>"));
+            p.sendMessage(GuiI18n.tr(p, "gui.crafting.picker.delete.failed"));
           } else {
-            p.sendMessage(GuiMini.mm("<green>Recipe deleted.</green>"));
+            p.sendMessage(GuiI18n.tr(p, "gui.crafting.picker.delete.success"));
           }
           registry.reload();
           GuiManager.get().resume(p, this, "delete");

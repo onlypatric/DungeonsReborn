@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiGive;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -18,7 +18,7 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageArea;
 import dev.patric.dungeonsreborn.gui.flow.ConfirmDialogWindow;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 /**
  * Vault showcase: mixed storage slots (custom rules + vanilla slots).
@@ -35,29 +35,30 @@ public final class ShowcaseVaultMenu extends Window {
   private final StorageArea vault = new StorageArea(2, 0, 3, 9);
 
   public ShowcaseVaultMenu() {
-    super(SIZE, GuiMini.mm("<white><bold>Vault</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.showcase.vault.title"), true);
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))).autoDescribeInLore(false));
-    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, Component.text("Close"))).autoDescribeInLore(false));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))).autoDescribeInLore(false));
+    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, GuiI18n.tr(p, "gui.button.close"))).autoDescribeInLore(false));
 
-    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.CHEST, Component.text("Vault"), List.of(
-        GuiMini.mm("<gray>Top row: rule-based bins</gray>"),
-        GuiMini.mm("<gray>Lower rows: vanilla storage slots</gray>")))));
+    setFixed(SLOT_TITLE, new Label(GuiItems.named(Material.CHEST, GuiI18n.tr("gui.showcase.vault.header.title"), List.of(
+        GuiI18n.tr("gui.showcase.vault.header.bins"),
+        GuiI18n.tr("gui.showcase.vault.header.storage")))));
 
     setFixed(SLOT_STATS, new Label(this::statsItem));
 
     setFixed(SLOT_CLEAR, new Button(p -> GuiItem.of(Material.TNT)
-        .displayName(GuiMini.mm("<red><bold>Clear Vault</bold></red>"))
-        .lore(List.of(GuiMini.mm("<gray>Opens a confirm dialog.</gray>")))
+        .displayName(GuiI18n.tr(p, "gui.showcase.vault.clear.title"))
+        .lore(List.of(GuiI18n.tr(p, "gui.showcase.vault.clear.hint")))
         .build(), ctx -> {
           openSubWindow(ctx.player(), clearConfirm());
           GuiSounds.click(ctx.player());
         }).autoDescribeInLore(false));
 
-    setFixed(SLOT_TRASH, new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, Component.text("Trash")), ctx -> trash(ctx))
-        .shiftRight(Component.text("Clear inventory"), ctx -> {
+    setFixed(SLOT_TRASH, new Button(p -> GuiButtons.item(GuiButtons.Type.TRASH, GuiI18n.tr(p, "gui.showcase.vault.trash.title")),
+        ctx -> trash(ctx))
+        .shiftRight(GuiI18n.tr("gui.showcase.vault.trash.clearInventory"), ctx -> {
           openSubWindow(ctx.player(), clearInventoryConfirm());
           GuiSounds.click(ctx.player());
         })
@@ -77,23 +78,23 @@ public final class ShowcaseVaultMenu extends Window {
   }
 
   private void configureBins() {
-    bins.slot(0).vanilla(false).emptyItem(binPlaceholder(Material.DIAMOND, "Only Diamonds"))
+    bins.slot(0).vanilla(false).emptyItem(binPlaceholder(Material.DIAMOND, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.diamonds")))
         .accepts(stack -> stack != null && stack.getType() == Material.DIAMOND);
-    bins.slot(1).vanilla(false).emptyItem(binPlaceholder(Material.EMERALD, "Only Emeralds"))
+    bins.slot(1).vanilla(false).emptyItem(binPlaceholder(Material.EMERALD, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.emeralds")))
         .accepts(stack -> stack != null && stack.getType() == Material.EMERALD);
-    bins.slot(2).vanilla(false).emptyItem(binPlaceholder(Material.GOLD_INGOT, "Only Gold Ingots"))
+    bins.slot(2).vanilla(false).emptyItem(binPlaceholder(Material.GOLD_INGOT, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.gold")))
         .accepts(stack -> stack != null && stack.getType() == Material.GOLD_INGOT);
-    bins.slot(3).vanilla(false).emptyItem(binPlaceholder(Material.IRON_INGOT, "Only Iron Ingots"))
+    bins.slot(3).vanilla(false).emptyItem(binPlaceholder(Material.IRON_INGOT, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.iron")))
         .accepts(stack -> stack != null && stack.getType() == Material.IRON_INGOT);
-    bins.slot(4).vanilla(false).emptyItem(binPlaceholder(Material.POTION, "Only Potions"))
+    bins.slot(4).vanilla(false).emptyItem(binPlaceholder(Material.POTION, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.potions")))
         .accepts(stack -> stack != null && stack.getType() == Material.POTION);
-    bins.slot(5).vanilla(false).emptyItem(binPlaceholder(Material.GRASS_BLOCK, "Only Blocks"))
+    bins.slot(5).vanilla(false).emptyItem(binPlaceholder(Material.GRASS_BLOCK, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.blocks")))
         .accepts(stack -> stack != null && stack.getType().isBlock());
-    bins.slot(6).vanilla(false).emptyItem(binPlaceholder(Material.COOKED_BEEF, "Only Food"))
+    bins.slot(6).vanilla(false).emptyItem(binPlaceholder(Material.COOKED_BEEF, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.food")))
         .accepts(stack -> stack != null && stack.getType().isEdible());
-    bins.slot(7).vanilla(false).emptyItem(binPlaceholder(Material.NETHER_STAR, "Anything"))
+    bins.slot(7).vanilla(false).emptyItem(binPlaceholder(Material.NETHER_STAR, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.anything")))
         .accepts(stack -> stack != null && !stack.getType().isAir());
-    bins.slot(8).vanilla(false).emptyItem(binPlaceholder(Material.BOOK, "Anything"))
+    bins.slot(8).vanilla(false).emptyItem(binPlaceholder(Material.BOOK, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.vault.rule.anything")))
         .accepts(stack -> stack != null && !stack.getType().isAir());
   }
 
@@ -105,18 +106,18 @@ public final class ShowcaseVaultMenu extends Window {
 
   private ItemStack binPlaceholder(Material icon, String rule) {
     return GuiItem.of(icon)
-        .displayName(GuiMini.mm("<dark_gray><bold>" + rule + "</bold></dark_gray>"))
+        .displayName(GuiI18n.tr("gui.showcase.vault.bin.title", Placeholder.unparsed("rule", rule)))
         .lore(List.of(
-            GuiMini.mm("<dark_gray>Put items here.</dark_gray>")))
+            GuiI18n.tr("gui.showcase.vault.bin.hint")))
         .build();
   }
 
   private ItemStack statsItem(Player player) {
     int items = countItems(player);
     int stacks = countStacks(player);
-    return GuiItems.named(Material.PAPER, Component.text("Vault Stats"), List.of(
-        Component.text("Stacks: " + stacks),
-        Component.text("Items: " + items)));
+    return GuiItems.named(Material.PAPER, GuiI18n.tr(player, "gui.showcase.vault.stats.title"), List.of(
+        GuiI18n.tr(player, "gui.showcase.vault.stats.stacks", Placeholder.unparsed("value", String.valueOf(stacks))),
+        GuiI18n.tr(player, "gui.showcase.vault.stats.items", Placeholder.unparsed("value", String.valueOf(items)))));
   }
 
   private int countStacks(Player player) {
@@ -161,9 +162,9 @@ public final class ShowcaseVaultMenu extends Window {
 
   private Window clearConfirm() {
     return new ConfirmDialogWindow(
-        GuiMini.mm("<white><bold>Clear Vault</bold></white>"),
-        GuiMini.mm("<red><bold>Clear everything?</bold></red>"),
-        List.of(GuiMini.mm("<gray>This removes all items stored in this vault for you.</gray>")),
+        GuiI18n.tr("gui.showcase.vault.clear.confirm.title"),
+        GuiI18n.tr("gui.showcase.vault.clear.confirm.header"),
+        List.of(GuiI18n.tr("gui.showcase.vault.clear.confirm.detail")),
         (player, result) -> {
           if (result == ConfirmDialogWindow.ConfirmResult.CONFIRM) {
             bins.clear(player);
@@ -178,9 +179,9 @@ public final class ShowcaseVaultMenu extends Window {
 
   private Window clearInventoryConfirm() {
     return new ConfirmDialogWindow(
-        GuiMini.mm("<white><bold>Clear Inventory</bold></white>"),
-        GuiMini.mm("<red><bold>Really clear your inventory?</bold></red>"),
-        List.of(GuiMini.mm("<gray>This does not affect the vault.</gray>")),
+        GuiI18n.tr("gui.showcase.vault.clearInventory.title"),
+        GuiI18n.tr("gui.showcase.vault.clearInventory.header"),
+        List.of(GuiI18n.tr("gui.showcase.vault.clearInventory.detail")),
         (player, result) -> {
           if (result == ConfirmDialogWindow.ConfirmResult.CONFIRM) {
             GuiGive.clearInventory(player);

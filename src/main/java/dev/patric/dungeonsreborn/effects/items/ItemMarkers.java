@@ -21,11 +21,20 @@ public final class ItemMarkers {
   public static final NamespacedKey DEBUG_MARKER = new NamespacedKey("dungeonsreborn", "effects_debug_marker");
   public static final NamespacedKey RIGHT_CLICK_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_right_click_abilities");
   public static final NamespacedKey LEFT_CLICK_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_left_click_abilities");
+  public static final NamespacedKey SHIFT_RIGHT_CLICK_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_shift_right_click_abilities");
+  public static final NamespacedKey SHIFT_LEFT_CLICK_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_shift_left_click_abilities");
+  public static final NamespacedKey PASSIVE_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_passive_abilities");
   public static final NamespacedKey ITEM_ID = new NamespacedKey("dungeonsreborn", "effects_item_id");
   public static final NamespacedKey MANA_MAX_BONUS = new NamespacedKey("dungeonsreborn", "effects_mana_max_bonus");
   public static final NamespacedKey MANA_REGEN_BONUS = new NamespacedKey("dungeonsreborn", "effects_mana_regen_bonus");
   public static final NamespacedKey CONSUME_MODE = new NamespacedKey("dungeonsreborn", "effects_item_consume_mode");
   public static final NamespacedKey CONSUME_AMOUNT = new NamespacedKey("dungeonsreborn", "effects_item_consume_amount");
+  public static final NamespacedKey UPGRADE_ID = new NamespacedKey("dungeonsreborn", "effects_upgrade_id");
+  public static final NamespacedKey UPGRADE_RECORDS = new NamespacedKey("dungeonsreborn", "effects_upgrade_records");
+  public static final NamespacedKey UPGRADE_MODIFIERS = new NamespacedKey("dungeonsreborn", "effects_upgrade_modifiers");
+  public static final NamespacedKey UPGRADE_SECONDARY_ABILITIES = new NamespacedKey("dungeonsreborn", "effects_upgrade_secondary_abilities");
+  public static final NamespacedKey UPGRADE_STATUS_EFFECTS = new NamespacedKey("dungeonsreborn", "effects_upgrade_status_effects");
+  public static final NamespacedKey UPGRADE_LORE_COMPACT = new NamespacedKey("dungeonsreborn", "effects_upgrade_lore_compact");
 
   private ItemMarkers() {
   }
@@ -120,6 +129,171 @@ public final class ItemMarkers {
     return item;
   }
 
+  public static List<String> getRawStringList(ItemStack item, NamespacedKey key) {
+    Objects.requireNonNull(key, "key");
+    if (item == null) {
+      return List.of();
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return List.of();
+    }
+    String raw = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+    if (raw == null || raw.isBlank()) {
+      return List.of();
+    }
+    String[] parts = raw.split("\n");
+    ArrayList<String> out = new ArrayList<>(parts.length);
+    for (String p : parts) {
+      if (p == null) {
+        continue;
+      }
+      String s = p.trim();
+      if (s.isEmpty()) {
+        continue;
+      }
+      out.add(s);
+    }
+    return Collections.unmodifiableList(out);
+  }
+
+  public static ItemStack setRawStringList(ItemStack item, NamespacedKey key, List<String> values) {
+    Objects.requireNonNull(item, "item");
+    Objects.requireNonNull(key, "key");
+    Objects.requireNonNull(values, "values");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setRawStringList must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    LinkedHashSet<String> normalized = new LinkedHashSet<>();
+    for (String v : values) {
+      if (v == null) {
+        continue;
+      }
+      String s = v.trim();
+      if (s.isEmpty()) {
+        continue;
+      }
+      normalized.add(s);
+    }
+    if (normalized.isEmpty()) {
+      meta.getPersistentDataContainer().remove(key);
+    } else {
+      meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, String.join("\n", normalized));
+    }
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  public static List<String> getUpgradeStatusEffects(ItemStack item) {
+    return getRawStringList(item, UPGRADE_STATUS_EFFECTS);
+  }
+
+  public static ItemStack setUpgradeStatusEffects(ItemStack item, List<String> records) {
+    return setRawStringList(item, UPGRADE_STATUS_EFFECTS, records);
+  }
+
+  public static boolean isUpgradeLoreCompact(ItemStack item) {
+    if (item == null) {
+      return false;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return false;
+    }
+    return meta.getPersistentDataContainer().has(UPGRADE_LORE_COMPACT, PersistentDataType.BYTE);
+  }
+
+  public static ItemStack setUpgradeLoreCompact(ItemStack item, boolean compact) {
+    Objects.requireNonNull(item, "item");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setUpgradeLoreCompact must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    if (compact) {
+      meta.getPersistentDataContainer().set(UPGRADE_LORE_COMPACT, PersistentDataType.BYTE, (byte) 1);
+    } else {
+      meta.getPersistentDataContainer().remove(UPGRADE_LORE_COMPACT);
+    }
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  public static java.util.Map<String, Double> getUpgradeModifiers(ItemStack item) {
+    if (item == null) {
+      return java.util.Map.of();
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return java.util.Map.of();
+    }
+    String raw = meta.getPersistentDataContainer().get(UPGRADE_MODIFIERS, PersistentDataType.STRING);
+    if (raw == null || raw.isBlank()) {
+      return java.util.Map.of();
+    }
+    java.util.LinkedHashMap<String, Double> out = new java.util.LinkedHashMap<>();
+    for (String line : raw.split("\n")) {
+      if (line == null) {
+        continue;
+      }
+      String trimmed = line.trim();
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      int eq = trimmed.indexOf('=');
+      if (eq <= 0 || eq >= trimmed.length() - 1) {
+        continue;
+      }
+      String key = trimmed.substring(0, eq).trim();
+      String value = trimmed.substring(eq + 1).trim();
+      if (key.isEmpty() || value.isEmpty()) {
+        continue;
+      }
+      try {
+        out.put(key, Double.parseDouble(value));
+      } catch (NumberFormatException ignored) {
+      }
+    }
+    return java.util.Collections.unmodifiableMap(out);
+  }
+
+  public static ItemStack setUpgradeModifiers(ItemStack item, java.util.Map<String, Double> modifiers) {
+    Objects.requireNonNull(item, "item");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setUpgradeModifiers must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    if (modifiers == null || modifiers.isEmpty()) {
+      meta.getPersistentDataContainer().remove(UPGRADE_MODIFIERS);
+    } else {
+      java.util.List<String> lines = new java.util.ArrayList<>(modifiers.size());
+      for (var entry : modifiers.entrySet()) {
+        String key = entry.getKey();
+        Double value = entry.getValue();
+        if (key == null || key.isBlank() || value == null || !Double.isFinite(value)) {
+          continue;
+        }
+        lines.add(key.trim() + "=" + value);
+      }
+      if (lines.isEmpty()) {
+        meta.getPersistentDataContainer().remove(UPGRADE_MODIFIERS);
+      } else {
+        meta.getPersistentDataContainer().set(UPGRADE_MODIFIERS, PersistentDataType.STRING, String.join("\n", lines));
+      }
+    }
+    item.setItemMeta(meta);
+    return item;
+  }
+
   public static ItemStack addToStringList(ItemStack item, NamespacedKey key, String value) {
     Objects.requireNonNull(item, "item");
     Objects.requireNonNull(key, "key");
@@ -184,6 +358,51 @@ public final class ItemMarkers {
     }
     item.setItemMeta(meta);
     return item;
+  }
+
+  public static String getUpgradeId(ItemStack item) {
+    if (item == null) {
+      return null;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return null;
+    }
+    String raw = meta.getPersistentDataContainer().get(UPGRADE_ID, PersistentDataType.STRING);
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    return raw.trim();
+  }
+
+  public static ItemStack setUpgradeId(ItemStack item, String id) {
+    Objects.requireNonNull(item, "item");
+    if (!Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("ItemMarkers.setUpgradeId must be called on the primary thread");
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    if (id == null || id.isBlank()) {
+      meta.getPersistentDataContainer().remove(UPGRADE_ID);
+    } else {
+      meta.getPersistentDataContainer().set(UPGRADE_ID, PersistentDataType.STRING, Ids.normalize(id));
+    }
+    item.setItemMeta(meta);
+    return item;
+  }
+
+  public static List<String> getUpgradeRecords(ItemStack item) {
+    return getStringList(item, UPGRADE_RECORDS);
+  }
+
+  public static ItemStack setUpgradeRecords(ItemStack item, List<String> values) {
+    return setStringList(item, UPGRADE_RECORDS, values);
+  }
+
+  public static ItemStack addUpgradeRecord(ItemStack item, String record) {
+    return addToStringList(item, UPGRADE_RECORDS, record);
   }
 
   public static double getDouble(ItemStack item, NamespacedKey key) {

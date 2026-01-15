@@ -10,15 +10,16 @@ import java.util.Objects;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.inventory.ClickType;
 
 import dev.patric.dungeonsreborn.crafting.CraftingInventoryPlanner;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeSpec;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeVariant;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -27,6 +28,7 @@ import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class CraftingDiscoveryMenu extends Window {
   private static final int SIZE = 54;
@@ -39,7 +41,7 @@ public final class CraftingDiscoveryMenu extends Window {
   private final VirtualList<Entry> list;
 
   public CraftingDiscoveryMenu(CraftingYamlRegistry registry, CraftingTestMenu craftMenu) {
-    super(SIZE, GuiMini.mm("<white><bold>Crafting Discovery</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.crafting.discovery.title"), true);
     this.registry = Objects.requireNonNull(registry, "registry");
     this.craftMenu = Objects.requireNonNull(craftMenu, "craftMenu");
 
@@ -50,7 +52,18 @@ public final class CraftingDiscoveryMenu extends Window {
         this::entries,
         (player, entry) -> entryItem(entry),
         (ctx, entry) -> {
-          boolean loaded = craftMenu.loadRecipeFromInventory(ctx.player(), entry.recipe(), entry.variant());
+          boolean craftNow = ctx.isShiftClick() || ctx.clickType() == ClickType.RIGHT;
+          if (craftNow) {
+            boolean crafted = this.craftMenu.craftFromDiscovery(ctx.player(), entry.recipe(), entry.variant(), false);
+            if (!crafted) {
+              GuiSounds.error(ctx.player());
+              return;
+            }
+            GuiSounds.success(ctx.player());
+            ctx.close();
+            return;
+          }
+          boolean loaded = this.craftMenu.loadRecipeFromInventory(ctx.player(), entry.recipe(), entry.variant());
           if (!loaded) {
             GuiSounds.error(ctx.player());
             return;
@@ -60,13 +73,13 @@ public final class CraftingDiscoveryMenu extends Window {
         });
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Craftable Recipes</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Click a recipe to auto-fill inputs.</gray>")))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.BOOK, GuiI18n.tr("gui.crafting.discovery.header.title"), List.of(
+        GuiI18n.tr("gui.crafting.discovery.header.hint")))));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> GuiSounds.close(ctx.player()));
@@ -134,16 +147,20 @@ public final class CraftingDiscoveryMenu extends Window {
     ItemStack output = recipe.outputTemplate();
     ItemStack base = output != null ? output.clone() : new ItemStack(Material.PAPER);
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + recipe.spec().id() + "</white>"));
+    lore.add(GuiI18n.tr("gui.crafting.discovery.lore.id", Placeholder.unparsed("id", recipe.spec().id())));
     if (!recipe.spec().description().isBlank()) {
-      lore.add(GuiMini.mm("<dark_gray>" + recipe.spec().description() + "</dark_gray>"));
+      lore.add(GuiI18n.tr("gui.crafting.discovery.lore.description",
+          Placeholder.unparsed("text", recipe.spec().description())));
     }
     if (recipe.spec().outputs().size() > 1) {
-      lore.add(GuiMini.mm("<gray>Outputs:</gray> <white>" + recipe.spec().outputs().size() + "</white>"));
+      lore.add(GuiI18n.tr("gui.crafting.discovery.lore.outputs",
+          Placeholder.unparsed("count", String.valueOf(recipe.spec().outputs().size()))));
     }
-    lore.add(GuiMini.mm("<green>Click to prepare.</green>"));
+    lore.add(GuiI18n.tr("gui.crafting.discovery.lore.prepare"));
+    lore.add(GuiI18n.tr("gui.crafting.discovery.lore.craftNow"));
     return GuiItem.of(base)
-        .displayName(GuiMini.mm("<yellow>" + entryTitle(entry) + "</yellow>"))
+        .displayName(GuiI18n.tr("gui.crafting.discovery.entry.title",
+            Placeholder.unparsed("title", entryTitle(entry))))
         .lore(lore)
         .build();
   }

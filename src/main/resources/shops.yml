@@ -1,0 +1,94 @@
+# DungeonsReborn shops.yml
+#
+# Shops are virtual villager GUIs. No real entity is spawned.
+# Trades accept items, tokens, or a mix of both.
+#
+# Token:
+# - This is the currency item for token-based trades.
+# - It is marked with a PDC key so it cannot be spoofed by a normal item.
+#
+schemaVersion: 1
+
+token:
+  markerKey: dungeonsreborn:shop_token
+  material: SUNFLOWER
+  name: "<gold><bold>Token</bold></gold>"
+  lore:
+    - "<gray>Official trade currency</gray>"
+    - "<dark_gray>Used in DungeonsReborn shops</dark_gray>"
+
+# Optional compacted token tiers for large trades.
+tokenTiers:
+  compressed:
+    markerKey: dungeonsreborn:shop_token_compressed
+    material: SUNFLOWER
+    name: "<yellow><bold>Compressed Token</bold></yellow>"
+    lore:
+      - "<gray>Worth <white>64</white> Tokens</gray>"
+      - "<dark_gray>Bulk trading currency</dark_gray>"
+  pallet:
+    markerKey: dungeonsreborn:shop_token_pallet
+    material: SUNFLOWER
+    name: "<gold><bold>Token Pallet</bold></gold>"
+    lore:
+      - "<gray>Worth <white>64</white> Compressed Tokens</gray>"
+      - "<dark_gray>High-value currency</dark_gray>"
+
+# Optional item value model (used by vendors/auto-pricing systems).
+# Values are per-item, in tokens.
+values:
+  - type: material
+    material: DIAMOND
+    value: 4
+  - type: itemId
+    itemId: mythic-sword
+    value: 200
+
+shops:
+  blacksmith:
+    title: "<gold>Blacksmith</gold>"
+    icon:
+      type: material
+      material: ANVIL
+      amount: 1
+    permission: dungeonsreborn.shop.blacksmith
+    cooldownSeconds: 0
+    worlds: [world]
+    stock:
+      # Global stock for the entire shop (all trades share this pool).
+      # Each restock picks a random number between min and max.
+      min: 10
+      max: 25
+      restockSeconds: 3600
+    trades:
+      - buyA:
+          type: token
+          amount: 5
+        sell:
+          type: material
+          material: IRON_INGOT
+          amount: 4
+        previewLore:
+          - "<gray>Bulk iron deal</gray>"
+          - "<dark_gray>Limited stock</dark_gray>"
+        dynamicPrice:
+          # Adjust priceMultiplier dynamically based on stock or time.
+          # mode: stock | time
+          # minMultiplier/maxMultiplier are passed to MerchantRecipe#setPriceMultiplier.
+          mode: stock
+          minMultiplier: 0.0
+          maxMultiplier: 1.5
+      - buyA:
+          type: material
+          material: DIAMOND
+          amount: 3
+        buyB:
+          type: token
+          amount: 10
+        sell:
+          type: itemId
+          itemId: mythic-sword
+          amount: 1
+        maxUses: 10
+        experienceReward: false
+        priceMultiplier: 0.0

@@ -9,16 +9,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiItems;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
  * A simple navigation button that closes the current window (returning to the previous one if present).
  */
 public final class BackButton extends Button {
-  private static final Component DEFAULT_TITLE = Component.text("Back");
-
   public BackButton() {
-    this(DEFAULT_TITLE);
+    this(p -> GuiItems.named(Material.ARROW, Locales.component(p, "gui.button.back")), true);
   }
 
   public BackButton(Component title) {
@@ -40,4 +39,3 @@ public final class BackButton extends Button {
     return new BackButton(p -> GuiItems.named(Material.ARROW, title, lore), true);
   }
 }
-

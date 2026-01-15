@@ -1,0 +1,17 @@
+schemaVersion: 1
+id: ember_focus
+name: "<gold>Ember Focus</gold>"
+description: "<gray>Refines fire magic into hotter strikes.</gray>\n<dark_gray>+15% damage, +5 mana cost.</dark_gray>"
+requirements:
+  minXp: 5
+  consumeXp: 2
+limits:
+  category: elemental
+  tier: 1
+  maxTier: 3
+  maxPerItem: 2
+modifiers:
+  - type: damage_mult
+    value: 1.15
+  - type: mana_add
+    value: 5

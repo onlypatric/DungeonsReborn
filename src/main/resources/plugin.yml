@@ -20,3 +20,9 @@ permissions:
   dungeonsreborn.editor.code:
     description: Allow editing of code-defined abilities in the editor.
     default: op
+  dungeonsreborn.classes.editor:
+    description: Open the class editor GUI.
+    default: op
+  dungeonsreborn.classes.reload:
+    description: Reload class YAML data.
+    default: op

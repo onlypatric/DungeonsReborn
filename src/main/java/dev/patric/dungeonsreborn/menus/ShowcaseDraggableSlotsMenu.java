@@ -9,9 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -20,6 +20,7 @@ import dev.patric.dungeonsreborn.gui.components.DraggableSlot;
 import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 /**
  * DraggableSlot showcase: illustrates vanilla-like slots and rule-based slots.
@@ -38,7 +39,7 @@ public final class ShowcaseDraggableSlotsMenu extends Window {
   private final Set<UUID> seeded = new HashSet<>();
 
   private final DraggableSlot diamondsOnly = new DraggableSlot(
-      placeholder(Material.DIAMOND, "Diamonds Only"),
+      placeholder(Material.DIAMOND, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.slots.rule.diamonds")),
       stack -> stack != null && stack.getType() == Material.DIAMOND,
       true,
       true,
@@ -47,7 +48,7 @@ public final class ShowcaseDraggableSlotsMenu extends Window {
   private final DraggableSlot vanilla = DraggableSlot.vanilla((player, stack) -> redrawSlot(player, SLOT_STATS));
 
   private final DraggableSlot depositOnly = new DraggableSlot(
-      placeholder(Material.HOPPER, "Deposit Only"),
+      placeholder(Material.HOPPER, GuiI18n.str(GuiI18n.defaultLocale(), "gui.showcase.slots.rule.deposit")),
       stack -> stack != null && !stack.getType().isAir(),
       false,
       true,
@@ -55,8 +56,8 @@ public final class ShowcaseDraggableSlotsMenu extends Window {
 
   private final DraggableSlot withdrawOnly = new DraggableSlot(
       GuiItem.of(Material.CHEST)
-          .displayName(GuiMini.mm("<dark_gray><bold>Withdraw Only</bold></dark_gray>"))
-          .lore(List.of(GuiMini.mm("<dark_gray>Take items from here.</dark_gray>")))
+          .displayName(GuiI18n.tr("gui.showcase.slots.rule.withdraw"))
+          .lore(List.of(GuiI18n.tr("gui.showcase.slots.withdrawHint")))
           .build(),
       stack -> false,
       true,
@@ -64,21 +65,21 @@ public final class ShowcaseDraggableSlotsMenu extends Window {
       (player, stack) -> redrawSlot(player, SLOT_STATS));
 
   public ShowcaseDraggableSlotsMenu() {
-    super(SIZE, GuiMini.mm("<white><bold>Draggable Slots</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.showcase.slots.title"), true);
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))).autoDescribeInLore(false));
-    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, Component.text("Close"))).autoDescribeInLore(false));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))).autoDescribeInLore(false));
+    navRight(new CloseButton(p -> GuiButtons.item(GuiButtons.Type.CLOSE, GuiI18n.tr(p, "gui.button.close"))).autoDescribeInLore(false));
 
     setFixed(SLOT_HELP, new Label(GuiItem.of(Material.PAPER)
-        .displayName(GuiMini.mm("<white><bold>Try clicking the slots</bold></white>"))
+        .displayName(GuiI18n.tr("gui.showcase.slots.help.title"))
         .lore(List.of(
-            GuiMini.mm("<gray>These are DraggableSlot components, not normal buttons.</gray>"),
-            GuiMini.mm("<dark_gray>• Diamonds Only: accepts diamonds</dark_gray>"),
-            GuiMini.mm("<dark_gray>• Vanilla Slot: behaves like a free chest slot</dark_gray>"),
-            GuiMini.mm("<dark_gray>• Deposit Only: you can put items, but not take</dark_gray>"),
-            GuiMini.mm("<dark_gray>• Withdraw Only: starts with items, but you can't put</dark_gray>")))
+            GuiI18n.tr("gui.showcase.slots.help.summary"),
+            GuiI18n.tr("gui.showcase.slots.help.diamonds"),
+            GuiI18n.tr("gui.showcase.slots.help.vanilla"),
+            GuiI18n.tr("gui.showcase.slots.help.deposit"),
+            GuiI18n.tr("gui.showcase.slots.help.withdraw")))
         .build()));
 
     setFixed(SLOT_STATS, new Label(this::statsItem));
@@ -101,26 +102,30 @@ public final class ShowcaseDraggableSlotsMenu extends Window {
 
   private ItemStack statsItem(Player player) {
     return GuiItem.of(Material.PAPER)
-        .displayName(GuiMini.mm("<yellow><bold>Slot Contents</bold></yellow>"))
+        .displayName(GuiI18n.tr(player, "gui.showcase.slots.stats.title"))
         .lore(List.of(
-            loreLine("Diamonds Only", diamondsOnly.stored(player)),
-            loreLine("Vanilla Slot", vanilla.stored(player)),
-            loreLine("Deposit Only", depositOnly.stored(player)),
-            loreLine("Withdraw Only", withdrawOnly.stored(player))))
+            loreLine("gui.showcase.slots.rule.diamonds", diamondsOnly.stored(player)),
+            loreLine("gui.showcase.slots.rule.vanilla", vanilla.stored(player)),
+            loreLine("gui.showcase.slots.rule.deposit", depositOnly.stored(player)),
+            loreLine("gui.showcase.slots.rule.withdraw", withdrawOnly.stored(player))))
         .build();
   }
 
-  private static Component loreLine(String label, ItemStack stack) {
+  private static Component loreLine(String key, ItemStack stack) {
+    String label = GuiI18n.str(GuiI18n.defaultLocale(), key);
     if (stack == null || stack.getType().isAir() || stack.getAmount() <= 0) {
-      return GuiMini.mm("<gray>" + label + ":</gray> <dark_gray>(empty)</dark_gray>");
+      return GuiI18n.tr("gui.showcase.slots.stats.empty", Placeholder.unparsed("label", label));
     }
-    return Component.text(label + ": " + stack.getType() + " x" + stack.getAmount());
+    return GuiI18n.tr("gui.showcase.slots.stats.value",
+        Placeholder.unparsed("label", label),
+        Placeholder.unparsed("item", stack.getType().toString()),
+        Placeholder.unparsed("amount", String.valueOf(stack.getAmount())));
   }
 
   private static ItemStack placeholder(Material icon, String title) {
     return GuiItem.of(icon)
-        .displayName(GuiMini.mm("<dark_gray><bold>" + title + "</bold></dark_gray>"))
-        .lore(List.of(GuiMini.mm("<dark_gray>Drop items here.</dark_gray>")))
+        .displayName(GuiI18n.tr("gui.showcase.slots.placeholder", Placeholder.unparsed("title", title)))
+        .lore(List.of(GuiI18n.tr("gui.showcase.slots.placeholderHint")))
         .build();
   }
 }

@@ -29,7 +29,12 @@ public final class Costs {
       if (provider == null) {
         return Component.text("No mana provider installed.");
       }
-      Component fail = provider.tryConsume(player, amount);
+      double cost = amount * readMultiplier(ctx, "upgrade_mana_mult", 1.0)
+          + readNumber(ctx, "upgrade_mana_add", 0.0);
+      if (cost <= 0.0) {
+        return null;
+      }
+      Component fail = provider.tryConsume(player, cost);
       if (fail != null) {
         return fail;
       }
@@ -39,6 +44,29 @@ public final class Costs {
       player.sendActionBar(Component.text("§bMana: §f" + format(current) + "§7/§f" + format(max)).decorate(TextDecoration.BOLD));
       return null;
     };
+  }
+
+  private static double readNumber(dev.patric.dungeonsreborn.effects.CastContext ctx, String key, double fallback) {
+    Object value = ctx.variables().get(key);
+    if (value instanceof Number number) {
+      return number.doubleValue();
+    }
+    if (value instanceof String raw) {
+      try {
+        return Double.parseDouble(raw.trim());
+      } catch (Exception ignored) {
+        return fallback;
+      }
+    }
+    return fallback;
+  }
+
+  private static double readMultiplier(dev.patric.dungeonsreborn.effects.CastContext ctx, String key, double fallback) {
+    double value = readNumber(ctx, key, fallback);
+    if (!Double.isFinite(value)) {
+      return fallback;
+    }
+    return value;
   }
 
   public static Cost consumeMainHand(int amount) {

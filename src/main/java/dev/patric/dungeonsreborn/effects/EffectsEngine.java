@@ -167,6 +167,7 @@ public final class EffectsEngine {
   private BukkitTask ticker;
   private volatile boolean debugEnabled;
   private volatile long lastTickNanos;
+  private long lastParticleWarnTick;
 
   public record ResistanceSnapshot(double previous, long token) {
   }
@@ -915,6 +916,7 @@ public final class EffectsEngine {
       tickManaRegen();
       cleanupOldCastRecords(20L * 60L * 5L);
       particles.flush();
+      warnParticleBudget();
       lastTickNanos = Math.max(0L, System.nanoTime() - start);
       return;
     }
@@ -987,7 +989,28 @@ public final class EffectsEngine {
     tickManaRegen();
     cleanupOldCastRecords(20L * 60L * 5L);
     particles.flush();
+    warnParticleBudget();
     lastTickNanos = Math.max(0L, System.nanoTime() - start);
+  }
+
+  private void warnParticleBudget() {
+    ParticleEngine.Stats stats = particles.stats();
+    long droppedBudget = stats.lastFlushParticlesDroppedByBudget();
+    long droppedQueue = stats.lastDroppedRequestsByQueueCap();
+    if (droppedBudget <= 0 && droppedQueue <= 0) {
+      return;
+    }
+    long nowTick = tickNow();
+    if (nowTick - lastParticleWarnTick < 20L * 10L) {
+      return;
+    }
+    lastParticleWarnTick = nowTick;
+    if (droppedBudget > 0) {
+      warn("[Effects] Particle budget dropped " + droppedBudget + " particles in last flush.");
+    }
+    if (droppedQueue > 0) {
+      warn("[Effects] Particle queue cap dropped " + droppedQueue + " requests in last flush.");
+    }
   }
 
   private void tickManaRegen() {
@@ -1010,6 +1033,7 @@ public final class EffectsEngine {
     for (Player player : Bukkit.getOnlinePlayers()) {
       double maxBonus = 0.0;
       double regenBonus = 0.0;
+      double classRegenBonus = 0.0;
       var inv = player.getInventory();
       ItemStack[] items = {
           inv.getItemInMainHand(),
@@ -1029,13 +1053,14 @@ public final class EffectsEngine {
       if (session != null) {
         session.setMaxBonus(player, maxBonus);
         session.setRegenBonus(player, regenBonus);
+        classRegenBonus = session.classRegenBonus(player);
       }
       double max = provider.getMax(player);
       double current = provider.get(player);
       if (current >= max - 1e-9) {
         continue;
       }
-      double total = amount + Math.max(0.0, regenBonus) * (period / 20.0);
+      double total = amount + Math.max(0.0, regenBonus + classRegenBonus) * (period / 20.0);
       if (total <= 0.0) {
         continue;
       }

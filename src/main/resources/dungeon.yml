@@ -1,0 +1,36 @@
+dungeon:
+  id: "abyssal_trial"
+  name: "<gold>Abyssal Trial</gold>"
+  world: "world"
+  region:
+    min: [0, 0, 0]
+    max: [0, 0, 0]
+  entry:
+    spawn: [0, 0, 0]
+    exit: [0, 0, 0]
+  queue:
+    maxSizePerLevel: 0
+    entryTimeoutSeconds: 0
+  levels:
+    1:
+      queueTokens: 0
+      waitSeconds: 5
+      timeLimitSeconds: 0
+      checkpoint:
+        enabled: false
+        onWave: false
+        location: [0, 0, 0]
+      modifiers:
+        healthMultiplier: 1.0
+        damageMultiplier: 1.0
+      spawnPoints:
+        - id: "main"
+          pos: [0, 0, 0]
+      waves:
+        - mobs: []
+      boss:
+        mob: ""
+      rewards:
+        tokens: [0, 0]
+        skillPoints: 0
+        extraLoot: []

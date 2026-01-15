@@ -1,0 +1,25 @@
+# Quest giver definitions. NPCs are provided by external plugins; use /dr quests giver <id>.
+#
+# Format:
+# givers:
+#   giver_id:
+#     title: "Quest Giver Name"
+#     dialogue:
+#       - "Greeting line 1"
+#       - "Greeting line 2"
+#     mode: fixed | random_pool
+#     poolSize: 0
+#     quests:
+#       - quest_id_1
+#       - quest_id_2
+#     pool:
+#       - quest_id_3
+#       - quest_id_4
+#
+# Notes:
+# - FIXED uses the ordered list in quests.
+# - RANDOM_POOL uses the list in pool.
+# - poolSize controls how many quests are shown per player (0 = show all).
+# - Quest requirements are enforced at accept time.
+
+givers: {}

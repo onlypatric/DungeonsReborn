@@ -16,9 +16,9 @@ import dev.patric.dungeonsreborn.effects.editor.EditorAuditAction;
 import dev.patric.dungeonsreborn.effects.editor.EditorAuditEvent;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.BackButton;
@@ -28,6 +28,7 @@ import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class EditorBindingsMenu extends Window {
   private static final int SIZE = 54;
@@ -41,7 +42,7 @@ public final class EditorBindingsMenu extends Window {
   private final VirtualList<BindingEntry> list;
 
   public EditorBindingsMenu(EditorServices services, EditorAbilityDraft draft, Runnable onCloseRefresh) {
-    super(SIZE, GuiMini.mm("<white><bold>Bindings</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.bindings.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.draft = Objects.requireNonNull(draft, "draft");
     this.onCloseRefresh = onCloseRefresh == null ? () -> {
@@ -56,15 +57,15 @@ public final class EditorBindingsMenu extends Window {
         (ctx, entry) -> openBinding(ctx.player(), entry.index()));
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Back"))));
+    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, GuiI18n.tr(p, "gui.button.back"))));
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
     nav(4, addButton(InteractTrigger.RIGHT_CLICK));
     nav(5, addButton(InteractTrigger.LEFT_CLICK));
 
-    setFixedAt(0, 4, new Label(GuiItems.named(Material.TRIPWIRE_HOOK, GuiMini.mm("<gold><bold>Bindings</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Configure right/left click triggers.</gray>")))));
+    setFixedAt(0, 4, new Label(GuiItems.named(Material.TRIPWIRE_HOOK, GuiI18n.tr("gui.effects.editor.bindings.header.title"), List.of(
+        GuiI18n.tr("gui.effects.editor.bindings.header.hint")))));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> {
@@ -100,23 +101,27 @@ public final class EditorBindingsMenu extends Window {
   private org.bukkit.inventory.ItemStack entryItem(BindingEntry entry) {
     Material mat = "LEFT_CLICK".equalsIgnoreCase(entry.click()) ? Material.RED_DYE : Material.LIME_DYE;
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>Click:</gray> <white>" + entry.click() + "</white>"));
-    lore.add(GuiMini.mm("<gray>Matcher:</gray> <white>" + entry.matcher() + "</white>"));
+    lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.click",
+        Placeholder.unparsed("value", entry.click())));
+    lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.matcher",
+        Placeholder.unparsed("value", entry.matcher())));
     Object raw = entry.trigger().get("permission");
     if (raw != null && !raw.toString().isBlank()) {
-      lore.add(GuiMini.mm("<gray>Perm:</gray> <white>" + raw + "</white>"));
+      lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.permission",
+          Placeholder.unparsed("value", raw.toString())));
     }
     if (Boolean.TRUE.equals(entry.trigger().get("requireSneaking"))) {
-      lore.add(GuiMini.mm("<gray>Requires sneaking</gray>"));
+      lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.sneaking"));
     }
     if (Boolean.FALSE.equals(entry.trigger().get("cancelEvent"))) {
-      lore.add(GuiMini.mm("<gray>Does not cancel event</gray>"));
+      lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.noCancel"));
     }
     if (entry.conflict()) {
-      lore.add(GuiMini.mm("<red>Potential conflict</red>"));
+      lore.add(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.conflict"));
     }
     return GuiItem.of(mat)
-        .displayName(GuiMini.mm("<yellow><bold>Binding #" + (entry.index() + 1) + "</bold></yellow>"))
+        .displayName(GuiI18n.tr(GuiI18n.defaultLocale(), "gui.effects.editor.bindings.entry.title",
+            Placeholder.unparsed("index", String.valueOf(entry.index() + 1))))
         .lore(lore)
         .build();
   }
@@ -126,9 +131,11 @@ public final class EditorBindingsMenu extends Window {
   }
 
   private Button addButton(InteractTrigger trigger) {
-    String label = trigger == InteractTrigger.LEFT_CLICK ? "Add Left" : "Add Right";
+    String labelKey = trigger == InteractTrigger.LEFT_CLICK
+        ? "gui.effects.editor.bindings.add.left"
+        : "gui.effects.editor.bindings.add.right";
     Material mat = trigger == InteractTrigger.LEFT_CLICK ? Material.RED_WOOL : Material.LIME_WOOL;
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.PRIMARY, Component.text(label)), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.PRIMARY, GuiI18n.tr(p, labelKey)), ctx -> {
       List<Map<String, Object>> triggers = EditorAbilityYaml.triggers(draft);
       Map<String, Object> entry = new java.util.LinkedHashMap<>();
       entry.put("type", "interact");
@@ -146,7 +153,9 @@ public final class EditorBindingsMenu extends Window {
     }) {
       @Override
       public org.bukkit.inventory.ItemStack render(Player player) {
-        return GuiItems.named(mat, Component.text(label), List.of(Component.text("Create a " + trigger.name() + " binding")));
+        return GuiItems.named(mat, GuiI18n.tr(player, labelKey), List.of(
+            GuiI18n.tr(player, "gui.effects.editor.bindings.add.hint",
+                Placeholder.unparsed("value", trigger.name()))));
       }
     };
   }

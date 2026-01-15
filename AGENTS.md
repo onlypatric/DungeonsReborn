@@ -210,6 +210,8 @@ Crafting:
 - `docs/checklists/PARTICLE_CUSTOMIZATION_CHECKLIST.md`
 - `docs/checklists/MINIONS_TEST_CHECKLIST.md`
 - `docs/checklists/CUSTOM_ITEM_CRAFTING_GUI_CHECKLIST.md`
+- `docs/checklists/SPELL_ITEM_UPGRADE_CHECKLIST.md`
+- `docs/checklists/RPG_POLISH_AND_GUI_RETHINK_CHECKLIST.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies

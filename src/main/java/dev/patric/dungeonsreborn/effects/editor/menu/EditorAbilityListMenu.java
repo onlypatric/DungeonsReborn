@@ -29,20 +29,24 @@ import dev.patric.dungeonsreborn.effects.editor.EditorLockManager;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.integration.InteractBinding;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
 import dev.patric.dungeonsreborn.gui.Window;
-import dev.patric.dungeonsreborn.gui.components.BackButton;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.EmptyState;
 import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
+import dev.patric.dungeonsreborn.gui.components.list.ListSearchBar;
 import dev.patric.dungeonsreborn.gui.components.list.VirtualList;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
+import dev.patric.dungeonsreborn.gui.style.GuiNav;
+import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class EditorAbilityListMenu extends Window {
@@ -70,7 +74,7 @@ public final class EditorAbilityListMenu extends Window {
   private final EditorAbilityImporter importer;
 
   public EditorAbilityListMenu(EditorServices services) {
-    super(SIZE, GuiMini.mm("<white><bold>Spell Editor</bold></white>"), true);
+    super(SIZE, GuiI18n.tr("gui.effects.editor.list.title"), true);
     this.services = Objects.requireNonNull(services, "services");
     this.importer = services.yaml() == null ? null : new EditorAbilityImporter(services.yaml(), services.drafts());
 
@@ -82,9 +86,10 @@ public final class EditorAbilityListMenu extends Window {
         (player, entry) -> entryItem(player, entry),
         (ctx, entry) -> openEntry(ctx.player(), entry));
     list.searchKey(entry -> entry.id + " " + entry.name);
+    list.emptyStateItem(EmptyState.list());
     list.apply(this, Placement.FIXED);
 
-    navLeft(new BackButton(p -> GuiButtons.item(GuiButtons.Type.BACK, Component.text("Close"))));
+    navLeft(GuiNav.closeButton());
     nav(0, list.prevButton());
     nav(1, list.pageIndicator());
     nav(2, list.nextButton());
@@ -93,54 +98,24 @@ public final class EditorAbilityListMenu extends Window {
     nav(6, itemsButton());
 
     setFixedAt(0, 1, header());
-    setFixedAt(0, 7, filterButton());
-    setFixedAt(0, 8, clearFilterButton());
+    setFixedAt(0, 7, ListSearchBar.searchButton(list, slotAt(0, 7)));
+    setFixedAt(0, 8, ListSearchBar.clearButton(list, slotAt(0, 7)));
 
     onOpenWithReason(ctx -> GuiSounds.open(ctx.player()));
     onCloseWithReason(ctx -> GuiSounds.close(ctx.player()));
   }
 
   private Label header() {
-    return new Label(p -> GuiItems.named(Material.BOOK, GuiMini.mm("<gold><bold>Abilities</bold></gold>"), List.of(
-        GuiMini.mm("<gray>Manage spell ability drafts.</gray>"),
-        GuiMini.mm("<gray>Click to edit, or create a new draft.</gray>"))));
-  }
-
-  private TextButton filterButton() {
-    return new TextButton(
-        p -> GuiItems.named(Material.NAME_TAG, GuiMini.mm("<aqua><bold>Filter</bold></aqua>"), List.of(
-            GuiMini.mm("<gray>Set a search query.</gray>"),
-            GuiMini.mm("<gray>Current:</gray> <white>" + (list.query(p).isBlank() ? "(none)" : list.query(p)) + "</white>"))),
-        GuiMini.mm("<gray>Type a filter query (or 'cancel')</gray>"),
-        "cancel",
-        Duration.ofSeconds(30),
-        (w, text) -> {
-          Player viewer = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
-          if (viewer == null) {
-            return;
-          }
-          list.query(viewer, text);
-          list.redraw(w, viewer);
-          w.redrawSlot(viewer, slotAt(0, 7));
-        },
-        true)
-            .inputMode(TextButton.InputMode.CHAT);
-  }
-
-  private Button clearFilterButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.CANCEL, Component.text("Clear")), ctx -> {
-      list.clearFilter(ctx.player());
-      list.redraw(ctx.window(), ctx.player());
-      ctx.window().redrawSlot(ctx.player(), slotAt(0, 7));
-      GuiSounds.click(ctx.player());
-    }).autoDescribeInLore(false);
+    return new Label(p -> GuiItems.named(Material.BOOK, GuiI18n.tr(p, "gui.effects.editor.list.header.title"), List.of(
+        GuiI18n.tr(p, "gui.effects.editor.list.header.line1"),
+        GuiI18n.tr(p, "gui.effects.editor.list.header.line2"))));
   }
 
   private Button createButton() {
     return new TextButton(
-        p -> GuiButtons.item(GuiButtons.Type.PRIMARY, Component.text("New")),
-        GuiMini.mm("<gray>Enter a new ability id</gray>"),
-        "cancel",
+        p -> GuiButtons.item(GuiButtons.Type.PRIMARY, GuiI18n.tr(p, "gui.effects.editor.list.new")),
+        GuiI18n.tr("gui.effects.editor.list.new.prompt"),
+        GuiI18n.str(GuiI18n.defaultLocale(), "gui.textInput.cancelWord"),
         Duration.ofSeconds(30),
         (w, text) -> {
           Player player = w.viewer() == null ? null : org.bukkit.Bukkit.getPlayer(w.viewer());
@@ -148,14 +123,16 @@ public final class EditorAbilityListMenu extends Window {
             return;
           }
           if (!services.access().canEdit(player)) {
-            player.sendMessage(Component.text("§cMissing permission: dungeonsreborn.editor.edit"));
+            player.sendMessage(Locales.component(player, "messages.command.missingPermission",
+                Locales.placeholders("permission", "dungeonsreborn.editor.edit")));
             return;
           }
           String id;
           try {
             id = Ids.normalize(text);
           } catch (Exception ex) {
-            player.sendMessage(Component.text("§cInvalid id: " + ex.getMessage()));
+            player.sendMessage(Locales.component(player, "messages.common.invalidId",
+                Locales.placeholders("id", ex.getMessage())));
             return;
           }
           EditorAbilityDraft draft = services.drafts().create(id);
@@ -170,7 +147,7 @@ public final class EditorAbilityListMenu extends Window {
   }
 
   private Button refreshButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, Component.text("Refresh")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.INFO, GuiI18n.tr(p, "gui.effects.editor.list.refresh")), ctx -> {
       list.invalidate(ctx.player());
       list.redraw(ctx.window(), ctx.player());
       GuiSounds.click(ctx.player());
@@ -178,7 +155,7 @@ public final class EditorAbilityListMenu extends Window {
   }
 
   private Button itemsButton() {
-    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, Component.text("Items")), ctx -> {
+    return new Button(p -> GuiButtons.item(GuiButtons.Type.SECONDARY, GuiI18n.tr(p, "gui.effects.editor.list.items")), ctx -> {
       openSubWindow(ctx.player(), new EditorItemListMenu(services));
       GuiSounds.click(ctx.player());
     }).autoDescribeInLore(false);
@@ -223,23 +200,26 @@ public final class EditorAbilityListMenu extends Window {
 
   private org.bukkit.inventory.ItemStack entryItem(Player player, AbilityEntry entry) {
     List<Component> lore = new ArrayList<>();
-    lore.add(GuiMini.mm("<gray>ID:</gray> <white>" + entry.id + "</white>"));
+    lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.id",
+        Placeholder.unparsed("id", entry.id)));
     List<String> activations = entry.draft != null
         ? activationsFromDraft(entry.draft)
         : activationsFromSpec(services.engine().abilitySpec(entry.id));
-    lore.add(GuiMini.mm("<gray>Activation:</gray> <white>" + formatActivation(activations) + "</white>"));
+    lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.activation",
+        Placeholder.unparsed("activation", formatActivation(activations))));
     if (entry.draft != null) {
-      lore.add(GuiMini.mm("<green>Draft</green>"));
+      lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.status.draft"));
     }
     if (entry.published) {
-      lore.add(GuiMini.mm("<gold>Published</gold>"));
+      lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.status.published"));
     }
     if (entry.code) {
-      lore.add(GuiMini.mm("<gray>Code ability</gray>"));
+      lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.status.code"));
     }
     EditorLockManager.LockInfo lock = services.locks().lockInfo(entry.id);
     if (lock != null && !lock.ownerId().equals(player.getUniqueId())) {
-      lore.add(GuiMini.mm("<red>Locked by:</red> <white>" + lock.ownerName() + "</white>"));
+      lore.add(GuiI18n.tr(player, "gui.effects.editor.list.entry.locked",
+          Placeholder.unparsed("owner", lock.ownerName())));
     }
     return GuiItem.of(entry.draft != null ? Material.BOOK : Material.PAPER)
         .displayName(render(entry.name))
@@ -249,12 +229,13 @@ public final class EditorAbilityListMenu extends Window {
 
   private void openEntry(Player player, AbilityEntry entry) {
     if (!services.access().canEditAbility(player, entry.id, services.yaml(), services.engine())) {
-      player.sendMessage(Component.text("§cYou cannot edit this ability."));
+      player.sendMessage(Locales.component(player, "messages.effects.editor.cannotEdit"));
       return;
     }
     EditorLockManager.LockResult lock = services.locks().tryLock(entry.id, player);
     if (!lock.acquired()) {
-      player.sendMessage(Component.text("§cAbility is locked by " + lock.lock().ownerName()));
+      player.sendMessage(Locales.component(player, "messages.effects.editor.locked",
+          Locales.placeholders("owner", lock.lock().ownerName())));
       return;
     }
 
@@ -290,7 +271,7 @@ public final class EditorAbilityListMenu extends Window {
     }
 
     if (draft == null) {
-      player.sendMessage(Component.text("§cUnable to open draft for this ability."));
+      player.sendMessage(GuiI18n.tr(player, "messages.effects.editor.unableOpenDraft"));
       services.locks().release(entry.id, player.getUniqueId());
       return;
     }
@@ -307,7 +288,7 @@ public final class EditorAbilityListMenu extends Window {
 
   private static Component render(String raw) {
     if (raw == null) {
-      return Component.text("(unnamed)");
+      return GuiI18n.tr(GuiI18n.defaultLocale(), "gui.common.unnamed");
     }
     if (raw.indexOf('§') >= 0) {
       return LEGACY.deserialize(raw);

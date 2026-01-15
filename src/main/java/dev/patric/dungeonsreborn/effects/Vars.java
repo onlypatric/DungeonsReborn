@@ -13,4 +13,5 @@ public final class Vars {
   public static final String MINION_IDS = "minion_ids";
   public static final String MINION_ID = "minion_id";
   public static final String MINION_DURATION = "minion_duration";
+  public static final String UPGRADE_STATUS_EFFECTS = "upgrade_status_effects";
 }
