@@ -29,5 +29,6 @@ src/main/resources/effects/.DS_Store
 !docs/usage/
 !docs/usage/**
 docs/dev/
-# Local libs (do not commit)
-!/lib/UltimateAdvancementAPI-Plugin-2.7.2.jar
+# Keep local libs
+!/lib/
+!/lib/**
