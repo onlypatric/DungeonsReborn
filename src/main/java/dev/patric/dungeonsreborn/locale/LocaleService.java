@@ -142,13 +142,6 @@ public final class LocaleService {
   }
 
   public String localeFor(Player player) {
-    if (player == null) {
-      return defaultLocale;
-    }
-    String override = playerOverrides.get(player.getUniqueId());
-    if (override != null && !override.isBlank()) {
-      return override;
-    }
     return defaultLocale;
   }
 
@@ -186,6 +179,13 @@ public final class LocaleService {
     String text = lookupInLocale(normalizedLocale, key);
     if (text != null) {
       return text;
+    }
+    if (normalizedLocale.contains("-")) {
+      String baseLocale = normalizedLocale.substring(0, normalizedLocale.indexOf('-'));
+      text = lookupInLocale(baseLocale, key);
+      if (text != null) {
+        return text;
+      }
     }
     if (!normalizedLocale.equals(defaultLocale)) {
       text = lookupInLocale(defaultLocale, key);

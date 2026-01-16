@@ -1,0 +1,79 @@
+schemaVersion: 1
+mobs:
+  undead_t1_cinderbrand:
+    type: ZOMBIE
+    name: <red>Cinderbrand</red>
+    showName: true
+    equipment:
+      head: LEATHER_HELMET
+    stats:
+      maxHealth: 11
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 20
+      leashRadius: 24
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 40
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=FLAME radius=1.6 points=20 count=2\n\
+          }"
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    damage_over_time amount=1 periodTicks=20 times=2\n\
+            \  }\n}"
+    loot:
+      clearVanilla: true
+      rolls: 1
+      drops:
+      - token: token
+        min: 1
+        max: 2
+      - material: WOODEN_SWORD
+        chance: 25
+      - material: WOODEN_AXE
+        chance: 25
+      - material: LEATHER_CHESTPLATE
+        chance: 20
+      - material: LEATHER_BOOTS
+        chance: 20
+      - material: CARROT
+        chance: 40
+        min: 1
+        max: 2
+      - material: MELON_SLICE
+        chance: 40
+        min: 1
+        max: 2
+    progression:
+      minXp: 175
+      maxXp: 238
+spawnerBlocks:
+  undead_t1_cinderbrand_spawner:
+    mob: undead_t1_cinderbrand
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 100
+      respawnJitterTicks: 20
+      radius: 8
+      activationRadius: 24
+      attackRadius: 18
+      allowBlockDamage: false
+      tether:
+        radius: 12
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

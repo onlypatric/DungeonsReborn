@@ -218,6 +218,13 @@
 #
 #         - type: title
 #           title: "<gold>Spell!</gold>"
+
+# --------------------------------------------------------------------------------------
+# DEFAULT TEST MOB ABILITIES (bundled)
+# --------------------------------------------------------------------------------------
+# (removed for clean template)
+abilities: {}
+
 #           subtitle: "<gray>subtitle</gray>"
 #           fadeInTicks: 10
 #           stayTicks: 40

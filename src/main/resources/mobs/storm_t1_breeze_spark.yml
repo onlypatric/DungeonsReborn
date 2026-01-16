@@ -1,0 +1,60 @@
+schemaVersion: 1
+mobs:
+  storm_t1_breeze_spark:
+    type: BREEZE
+    name: <aqua>Breeze Spark</aqua>
+    showName: true
+    stats:
+      maxHealth: 25
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 28
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 60
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=EXPLOSION radius=2.0 points=8\
+          \ count=1\n  particles.ring particle=DRIPPING_WATER radius=2.4 points=16\
+          \ count=1\n  particles.point particle=ELECTRIC_SPARK count=6\n}"
+    attacks:
+      main:
+        trigger: RANGED
+        cooldownTicks: 22
+        chance: 1.0
+        range: 14
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=80 amplifier=0\n\
+            \    potion effect=WEAKNESS durationTicks=60 amplifier=0\n    knockback\
+            \ horizontal=0.7 vertical=0.12\n  }\n}"
+    xpGating:
+      minLevel: 2000
+    progression:
+      minXp: 208994
+      maxXp: 282756
+spawnerBlocks:
+  storm_t1_breeze_spark_spawner:
+    mob: storm_t1_breeze_spark
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 120
+      respawnJitterTicks: 20
+      radius: 9
+      activationRadius: 26
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 14
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <aqua>{mob}</aqua> <gray>({alive}/{cap})</gray>

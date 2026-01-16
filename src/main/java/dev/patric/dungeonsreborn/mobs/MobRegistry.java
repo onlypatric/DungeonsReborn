@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import org.bukkit.Location;
 import org.bukkit.Bukkit;
@@ -49,6 +50,7 @@ import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.minions.MinionMode;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
+import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
@@ -75,6 +77,11 @@ public final class MobRegistry implements Listener {
   private ShopYamlRegistry shopRegistry;
   private AdvancementService advancementService;
   private int maxActivePerTick;
+  private boolean xpGatingEnabled = true;
+  private String xpGatingBypassPermission = "";
+  private long xpGatingMessageCooldownMs = 2000L;
+  private final Map<UUID, Long> nextXpGateMessageAt = new java.util.HashMap<>();
+  private Predicate<World> worldAllowed = world -> true;
 
   private static final class MobState {
     private UUID lastAttacker;
@@ -114,6 +121,17 @@ public final class MobRegistry implements Listener {
 
   public void setAdvancementService(AdvancementService advancementService) {
     this.advancementService = advancementService;
+  }
+
+  public void setWorldAllowedPredicate(Predicate<World> worldAllowed) {
+    this.worldAllowed = worldAllowed == null ? world -> true : worldAllowed;
+  }
+
+  public void configureXpGating(boolean enabled, String bypassPermission, int messageCooldownTicks) {
+    this.xpGatingEnabled = enabled;
+    this.xpGatingBypassPermission = bypassPermission == null ? "" : bypassPermission;
+    int cooldown = Math.max(0, messageCooldownTicks);
+    this.xpGatingMessageCooldownMs = cooldown == 0 ? 0L : cooldown * 50L;
   }
 
   public void register(MobSpec spec) {
@@ -217,6 +235,7 @@ public final class MobRegistry implements Listener {
     if (variant != null) {
       applyVariant(entity, variant);
     }
+    applyScaleVariance(entity, spec.scaleVariance());
     applyResistances(entity, spec.resistances());
   }
 
@@ -232,16 +251,18 @@ public final class MobRegistry implements Listener {
       return;
     }
     MobInstance inst = active.remove(entity.getUniqueId());
-    states.remove(entity.getUniqueId());
+    MobState state = states.remove(entity.getUniqueId());
     UUID ownerId = inst == null ? MobMarkers.getOwner(entity) : inst.ownerId();
     MobContext ctx = new MobContext(spec, entity, ownerId);
-    MobState state = states.remove(entity.getUniqueId());
     if (state != null) {
       removeBossBar(state);
     }
     playDeathFx(spec, entity);
     applyLoot(spec, entity, event);
     applyManaDrops(spec, entity);
+    if (advancementService != null && entity.getKiller() != null) {
+      advancementService.recordMobKill(entity.getKiller(), spec);
+    }
     broadcastBossKill(spec, entity);
     spec.onDeath().accept(ctx);
     spec.onRemove().accept(ctx, MobRemovalReason.DEATH);
@@ -252,7 +273,7 @@ public final class MobRegistry implements Listener {
     Entity entity = event.getEntity();
     UUID uuid = entity.getUniqueId();
     MobInstance inst = active.remove(uuid);
-    states.remove(uuid);
+    MobState state = states.remove(uuid);
     if (inst == null) {
       return;
     }
@@ -263,7 +284,6 @@ public final class MobRegistry implements Listener {
     engine.clearResistances(uuid);
     engine.clearReflect(uuid);
     MobContext ctx = new MobContext(spec, living, inst.ownerId());
-    MobState state = states.remove(uuid);
     if (state != null) {
       removeBossBar(state);
     }
@@ -320,6 +340,13 @@ public final class MobRegistry implements Listener {
     LivingEntity attacker = resolveDamager(event.getDamager());
     if (attacker == null) {
       return;
+    }
+    if (attacker instanceof Player player) {
+      MobSpec spec = resolveSpecFromEntity(entity);
+      if (spec != null && shouldBlockDamage(player, spec)) {
+        event.setCancelled(true);
+        return;
+      }
     }
     MobState state = states.get(entity.getUniqueId());
     if (state != null) {
@@ -430,6 +457,48 @@ public final class MobRegistry implements Listener {
       }
     }
     return null;
+  }
+
+  private boolean shouldBlockDamage(Player player, MobSpec spec) {
+    if (!xpGatingEnabled || spec == null) {
+      return false;
+    }
+    if (!worldAllowed.test(player.getWorld())) {
+      return false;
+    }
+    String mobId = spec.id();
+    if (mobId.startsWith("undead_t1_") || mobId.startsWith("hostile_t1_") || mobId.startsWith("corrupted_t1_")) {
+      return false;
+    }
+    MobAiSpec ai = spec.aiSpec();
+    if (ai != null && ai.aggroTargetMode() == MobTargetMode.NEAREST_HOSTILE) {
+      return false;
+    }
+    int minLevel = spec.minXpLevel();
+    if (minLevel <= 0) {
+      return false;
+    }
+    if (!xpGatingBypassPermission.isBlank() && player.hasPermission(xpGatingBypassPermission)) {
+      return false;
+    }
+    if (player.getLevel() >= minLevel) {
+      return false;
+    }
+    maybeWarnXpGate(player, minLevel);
+    return true;
+  }
+
+  private void maybeWarnXpGate(Player player, int minLevel) {
+    long now = System.currentTimeMillis();
+    long nextAt = nextXpGateMessageAt.getOrDefault(player.getUniqueId(), 0L);
+    if (now < nextAt) {
+      return;
+    }
+    if (xpGatingMessageCooldownMs > 0L) {
+      nextXpGateMessageAt.put(player.getUniqueId(), now + xpGatingMessageCooldownMs);
+    }
+    player.sendMessage(Locales.component(player, "messages.mobs.damage.xpLocked",
+        Locales.placeholders("level", minLevel)));
   }
 
   private boolean shouldPreventBlockDamage(Entity entity) {
@@ -602,6 +671,11 @@ public final class MobRegistry implements Listener {
 
     LivingEntity target = resolveTarget(state.currentTarget);
     if (target == null) {
+      return;
+    }
+
+    if (!(entity instanceof Mob)) {
+      moveToward(entity, target.getLocation(), ai.chaseSpeed());
       return;
     }
 
@@ -818,6 +892,23 @@ public final class MobRegistry implements Listener {
     if (variant.followRangeMultiplier() != 1.0) {
       multiplyAttribute(entity, Attribute.FOLLOW_RANGE, variant.followRangeMultiplier(), false);
     }
+  }
+
+  private void applyScaleVariance(LivingEntity entity, double variance) {
+    if (variance <= 0.0) {
+      return;
+    }
+    AttributeInstance inst = entity.getAttribute(Attribute.SCALE);
+    if (inst == null) {
+      return;
+    }
+    double base = inst.getBaseValue();
+    if (base <= 0.0) {
+      base = 1.0;
+    }
+    double delta = (rng.nextDouble() * 2.0 - 1.0) * variance;
+    double next = Math.max(0.1, base + delta);
+    inst.setBaseValue(next);
   }
 
   private void multiplyAttribute(LivingEntity entity, Attribute attribute, double multiplier, boolean clampHealth) {

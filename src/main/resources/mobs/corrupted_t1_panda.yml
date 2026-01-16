@@ -1,0 +1,48 @@
+schemaVersion: 1
+mobs:
+  corrupted_t1_panda:
+    type: PANDA
+    name: <red>Corrupted Panda</red>
+    showName: true
+    stats:
+      maxHealth: 16
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 18
+      leashRadius: 22
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    knockback horizontal=0.8 vertical=0.25\n    potion\
+            \ effect=SLOWNESS durationTicks=60 amplifier=0\n  }\n}"
+    progression:
+      minXp: 175
+      maxXp: 238
+spawnerBlocks:
+  corrupted_t1_panda_spawner:
+    mob: corrupted_t1_panda
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 100
+      respawnJitterTicks: 20
+      radius: 8
+      activationRadius: 22
+      attackRadius: 16
+      allowBlockDamage: false
+      tether:
+        radius: 10
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

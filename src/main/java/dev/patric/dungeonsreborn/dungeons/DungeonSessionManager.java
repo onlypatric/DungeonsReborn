@@ -417,6 +417,9 @@ public final class DungeonSessionManager {
       advancements.recordDungeonCompletion(sessionState.dungeon, entry.level(), player,
           sessionState.hadDeath, duration, sessionState.level.timeLimitSeconds());
     }
+    if (!success && player != null && sessionState != null && advancements != null) {
+      advancements.recordDungeonFailure(sessionState.dungeon, player);
+    }
     if (success && player != null) {
       applyRewards(sessionState, player);
     }

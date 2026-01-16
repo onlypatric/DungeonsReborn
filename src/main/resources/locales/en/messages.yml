@@ -39,6 +39,7 @@ messages:
       dungeonDebugStart: <gray>/{root} dungeon debug start &lt;level&gt;</gray> <dark_gray>- start debug run</dark_gray>
       dungeonDebugSkip: <gray>/{root} dungeon debug skip</gray> <dark_gray>- skip wave</dark_gray>
       dungeonDebugEnd: <gray>/{root} dungeon debug end [win|fail]</gray> <dark_gray>- end debug run</dark_gray>
+      advancementsReload: <gray>/{root} advancements reload</gray> <dark_gray>- reload advancement config</dark_gray>
       quests: <gray>/{root} quests</gray> <dark_gray>- quest log</dark_gray>
       questsGiver: <gray>/{root} quests giver &lt;id&gt;</gray> <dark_gray>- open quest giver</dark_gray>
       questsEditor: <gray>/{root} quests editor</gray> <dark_gray>- open quest editor</dark_gray>
@@ -52,7 +53,11 @@ messages:
       crafting: <gray>/{root} crafting</gray> <dark_gray>- open crafting GUI</dark_gray>
       craftingEditor: <gray>/{root} crafting editor</gray> <dark_gray>- open recipe editor</dark_gray>
       craftingReload: <gray>/{root} crafting reload</gray> <dark_gray>- reload recipes</dark_gray>
+      reloadAll: <gray>/{root} reload</gray> <dark_gray>- reload all plugin data</dark_gray>
     missingPermission: <red>Missing permission:</red> <white>{permission}</white>
+    reload:
+      allOk: <green>Reloaded all systems.</green>
+      allErrors: <red>Reload completed with {errors} errors. Check logs.</red>
   shop:
     tokens:
       missing: <red>Token item not configured.</red>
@@ -208,6 +213,7 @@ messages:
       conflict: <yellow>Upgrade overrides an existing slot.</yellow>
       requirements: <red>Requirements not met.</red>
       notEnoughTokens: <red>Not enough tokens.</red>
+      xpLocked: <red>Requires level {level} to apply this upgrade.</red>
   bindings:
     reload:
       ok: <green>Bindings loaded:</green> <white>{count}</white>
@@ -227,20 +233,22 @@ messages:
         errors: <yellow>Reloaded with {count} errors. Check server logs.</yellow>
       setItemFirst: <red>Set an item first.</red>
   mobs:
+    damage:
+      xpLocked: <red>Requires level {level} to damage this mob.</red>
     egg:
-      missingPermission: <red>Missing permission: {perm}</red>
+      missingPermission: '<red>Missing permission: {perm}</red>'
       noTarget: <red>No target block found.</red>
-      spawnFailed: <red>Failed to spawn: {message}</red>
+      spawnFailed: '<red>Failed to spawn: {message}</red>'
       cooldown: <red>Egg on cooldown ({ticks}t)</red>
     spawner:
-      unknownBlockId: <red>Unknown spawner block id: {id}</red>
-      unknownMobId: <red>Unknown mob id: {id}</red>
+      unknownBlockId: '<red>Unknown spawner block id: {id}</red>'
+      unknownMobId: '<red>Unknown mob id: {id}</red>'
       mustPlaceSpawner: <red>Spawner items must be placed as a spawner block.</red>
-      mobMismatch: <red>Spawner mob mismatch: {mob}</red>
-      createFailed: <red>Failed to create spawner: {message}</red>
+      mobMismatch: '<red>Spawner mob mismatch: {mob}</red>'
+      createFailed: '<red>Failed to create spawner: {message}</red>'
       created: <green>Spawner created:</green> <white>{id}</white>
       removed: <green>Spawner removed:</green> <white>{id}</white>
-      entryNotFound: <red>Spawner entry not found: {id}</red>
+      entryNotFound: '<red>Spawner entry not found: {id}</red>'
   shops:
     open:
       missingId: <red>Missing shop id.</red>
@@ -493,3 +501,9 @@ messages:
       win: <green>Dungeon cleared!</green>
       lose: <red>Dungeon failed.</red>
       summary: <gray>Level:</gray> <white>{level}</white> <gray>Players:</gray> <white>{players}</white>
+  advancements:
+    unlocked: <green>Advancement unlocked:</green> <yellow>{title}</yellow>
+    bossKills: <green>Advancement unlocked:</green> <yellow>{title} {count}x</yellow>
+    reload:
+      ok: <green>Advancements reloaded.</green>
+      disabled: <yellow>Advancements are not available.</yellow>

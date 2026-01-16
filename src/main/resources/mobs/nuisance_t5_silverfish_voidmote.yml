@@ -1,0 +1,51 @@
+schemaVersion: 1
+mobs:
+  nuisance_t5_silverfish_voidmote:
+    type: SILVERFISH
+    name: <dark_purple>Voidmote</dark_purple>
+    showName: true
+    stats:
+      maxHealth: 50
+      movementSpeed: 0.38
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 26
+      idleWanderRadius: 6
+      idleWanderIntervalTicks: 60
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    potion effect=WITHER durationTicks=80 amplifier=0\n\
+            \  }\n}"
+    xpGating:
+      minLevel: 800
+    progression:
+      minXp: 8996
+      maxXp: 12171
+spawnerBlocks:
+  nuisance_t5_silverfish_voidmote_spawner:
+    mob: nuisance_t5_silverfish_voidmote
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 90
+      respawnJitterTicks: 20
+      radius: 7
+      activationRadius: 22
+      attackRadius: 16
+      allowBlockDamage: false
+      tether:
+        radius: 12
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

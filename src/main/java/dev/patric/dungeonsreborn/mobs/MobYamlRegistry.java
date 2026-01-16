@@ -40,7 +40,47 @@ import net.kyori.adventure.bossbar.BossBar;
 public final class MobYamlRegistry {
   private static final String DEFAULT_BOSS_BROADCAST =
       "<gold>{player}</gold> defeated <red>{mob}</red>!";
+  private static final String[] DEFAULT_MOB_FILES = {
+      "undead_t1_bonewalker.yml",
+      "undead_t1_boneshiver.yml",
+      "undead_t1_cinderbrand.yml",
+      "undead_t1_cryptleap.yml",
+      "undead_t1_dustcaller.yml",
+      "undead_t1_gloomthrall.yml",
+      "undead_t1_gravebound.yml",
+      "undead_t1_gravetouched.yml",
+      "undead_t1_ironjaw.yml",
+      "undead_t1_marshrot.yml",
+      "undead_t1_nightmoan.yml",
+      "undead_t1_tombwarden.yml",
+      "undead_t2_blightshot.yml",
+      "undead_t2_boneguard.yml",
+      "undead_t2_cryptarcher.yml",
+      "undead_t2_dreadmonger.yml",
+      "undead_t2_frostvein.yml",
+      "undead_t2_graveknight.yml",
+      "undead_t2_grimcharger.yml",
+      "undead_t2_marrowmage.yml",
+      "undead_t2_mirestalker.yml",
+      "undead_t2_plaguebearer.yml",
+      "undead_t2_rotfang.yml",
+      "undead_t2_wailreaper.yml",
+      "undead_t3_boneward.yml",
+      "undead_t3_boneshard.yml",
+      "undead_t3_cinderwretch.yml",
+      "undead_t3_cryptstalker.yml",
+      "undead_t3_dreadcaster.yml",
+      "undead_t3_frostmarshal.yml",
+      "undead_t3_gravewarden.yml",
+      "undead_t3_gravetide.yml",
+      "undead_t3_marshhexer.yml",
+      "undead_t3_nightgaunt.yml",
+      "undead_t3_rotreaver.yml",
+      "undead_t3_wailbringer.yml"
+  };
   public record ReloadResult(int loadedMobs, int loadedSpawns, List<String> errors) {
+  }
+  private record YamlSource(String source, YamlConfiguration cfg) {
   }
 
   private final JavaPlugin plugin;
@@ -69,6 +109,10 @@ public final class MobYamlRegistry {
 
   public File file() {
     return new File(plugin.getDataFolder(), "mobs.yml");
+  }
+
+  public File folder() {
+    return new File(plugin.getDataFolder(), "mobs");
   }
 
   public List<String> lastErrors() {
@@ -121,6 +165,38 @@ public final class MobYamlRegistry {
     return MobSpawnerItems.createSpawnerBlockItem(spec);
   }
 
+  public ItemStack spawnerBlockItemForMob(String mobId) {
+    if (mobId == null || mobId.isBlank()) {
+      return null;
+    }
+    String normalized = Ids.normalize(mobId);
+    for (MobSpawnerBlockSpec spec : spawnerBlocks.values()) {
+      if (spec == null || spec.mobId() == null) {
+        continue;
+      }
+      if (normalized.equals(Ids.normalize(spec.mobId()))) {
+        return MobSpawnerItems.createSpawnerBlockItem(spec);
+      }
+    }
+    return null;
+  }
+
+  public MobSpawnerBlockSpec spawnerBlockSpecForMob(String mobId) {
+    if (mobId == null || mobId.isBlank()) {
+      return null;
+    }
+    String normalized = Ids.normalize(mobId);
+    for (MobSpawnerBlockSpec spec : spawnerBlocks.values()) {
+      if (spec == null || spec.mobId() == null) {
+        continue;
+      }
+      if (normalized.equals(Ids.normalize(spec.mobId()))) {
+        return spec;
+      }
+    }
+    return null;
+  }
+
   public Set<String> spawnerBlockIds() {
     return Set.copyOf(spawnerBlocks.keySet());
   }
@@ -153,6 +229,19 @@ public final class MobYamlRegistry {
     }
     YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
     List<String> errors = new ArrayList<>();
+    List<YamlSource> sources = new ArrayList<>();
+    sources.add(new YamlSource(file.getPath(), cfg));
+    File folder = folder();
+    if (!folder.exists()) {
+      folder.mkdirs();
+    }
+    if (listYamlFiles(folder).isEmpty()) {
+      saveDefaultMobFiles(folder);
+    }
+    for (File extra : listYamlFiles(folder)) {
+      YamlConfiguration extraCfg = YamlConfiguration.loadConfiguration(extra);
+      sources.add(new YamlSource(extra.getPath(), extraCfg));
+    }
 
     Set<String> previousLoadedIds = new HashSet<>(loadedIds);
     Map<String, MobSpec> previousSpecs = new LinkedHashMap<>();
@@ -179,68 +268,23 @@ public final class MobYamlRegistry {
     loadedScriptAbilityIds.clear();
 
     Map<String, MobSpec> specs = new HashMap<>();
-    ConfigurationSection mobsSec = cfg.getConfigurationSection("mobs");
-    if (mobsSec != null) {
-      for (String rawId : mobsSec.getKeys(false)) {
-        String base = "mobs." + rawId;
-        try {
-          String id = Ids.normalize(rawId);
-          if (specs.containsKey(id)) {
-            errors.add(base + ": duplicate mob id");
-            continue;
-          }
-          ConfigurationSection node = mobsSec.getConfigurationSection(rawId);
-          if (node == null) {
-            errors.add(base + ": must be an object");
-            continue;
-          }
-          MobSpec spec = parseMobSpec(id, node, errors, base);
-          specs.put(id, spec);
-        } catch (Exception ex) {
-          errors.add(base + ": " + ex.getMessage());
-        }
-      }
+    for (YamlSource source : sources) {
+      parseMobs(source.cfg(), specs, errors, source.source());
     }
 
     Map<String, MobEggSpec> nextEggs = new HashMap<>();
     Map<String, MobSpawnerBlockSpec> nextBlocks = new HashMap<>();
-    int loadedEggs = parseEggs(cfg, specs, nextEggs, errors);
-    int loadedBlocks = parseSpawnerBlocks(cfg, specs, nextBlocks, errors);
-    List<MobSpawnSpec> spawnSpecs = parseSpawns(cfg, errors);
+    int loadedEggs = 0;
+    int loadedBlocks = 0;
+    List<MobSpawnSpec> spawnSpecs = new ArrayList<>();
+    for (YamlSource source : sources) {
+      loadedEggs += parseEggs(source.cfg(), specs, nextEggs, errors, source.source());
+      loadedBlocks += parseSpawnerBlocks(source.cfg(), specs, nextBlocks, errors, source.source());
+      spawnSpecs.addAll(parseSpawns(source.cfg(), specs, errors, source.source()));
+    }
     Set<String> enabledWorlds = parseEnabledWorlds(cfg);
     boolean despawnOnReload = cfg.getBoolean("options.despawnOnReload", false);
     int maxSpawnersPerTick = Math.max(0, cfg.getInt("options.maxSpawnersPerTick", 0));
-
-    if (!errors.isEmpty()) {
-      for (String abilityId : loadedScriptAbilityIds) {
-        engine.unregisterAbility(abilityId);
-      }
-      loadedScriptAbilityIds.clear();
-      for (String id : previousScriptAbilityIds) {
-        AbilitySpec spec = previousScriptAbilities.get(id);
-        if (spec != null) {
-          engine.registerAbility(spec);
-          loadedScriptAbilityIds.add(id);
-        }
-      }
-      eggSpecs.clear();
-      eggSpecs.putAll(previousEggs);
-      spawnerBlocks.clear();
-      spawnerBlocks.putAll(previousBlocks);
-
-      logger.warn("[Mobs] YAML reload had " + errors.size() + " errors (some mobs/spawns may be missing)");
-      for (String error : errors) {
-        logger.warn("[Mobs] YAML: " + error);
-      }
-      lastErrors = List.copyOf(errors);
-      SystemStatusStore.get().record(
-          "mobs",
-          "Mobs",
-          file().getPath(),
-          "mobs=" + previousLoadedIds.size() + ", spawns=" + spawns.activeSpawns() + ", eggs=" + previousEggs.size(),
-          errors);
-      return new ReloadResult(previousLoadedIds.size(), spawns.activeSpawns(), errors);
-    }
 
     for (String id : previousLoadedIds) {
       registry.unregister(id);
@@ -402,6 +446,9 @@ public final class MobYamlRegistry {
       }
       node.set("groupMaxAlive", template.groupMaxAlive());
     }
+    if (template.groups() != null && !template.groups().isEmpty()) {
+      node.set("groups", serializeSpawnerGroups(template.groups()));
+    }
     if (template.respawnTicks() != null) {
       if (template.respawnTicks() < 0L) {
         throw new IllegalArgumentException("spawn.respawnTicks must be >= 0");
@@ -428,6 +475,24 @@ public final class MobYamlRegistry {
         throw new IllegalArgumentException("spawn.activationRadius must be >= 0");
       }
       node.set("activationRadius", template.activationRadius());
+    }
+    boolean hasBeam = template.beamEnabled() != null
+        || template.beamParticle() != null
+        || template.beamStep() != null;
+    if (hasBeam) {
+      ConfigurationSection beam = node.getConfigurationSection("beam");
+      if (beam == null) {
+        beam = node.createSection("beam");
+      }
+      if (template.beamEnabled() != null) {
+        beam.set("enabled", template.beamEnabled());
+      }
+      if (template.beamParticle() != null) {
+        beam.set("particle", template.beamParticle().name());
+      }
+      if (template.beamStep() != null) {
+        beam.set("step", template.beamStep());
+      }
     }
     if (template.respectDifficulty() != null) {
       node.set("respectDifficulty", template.respectDifficulty());
@@ -539,14 +604,15 @@ public final class MobYamlRegistry {
     return Ids.normalize("spawn_" + mobId + "_" + suffix);
   }
 
-  private int parseSpawnerBlocks(YamlConfiguration cfg, Map<String, MobSpec> specs, Map<String, MobSpawnerBlockSpec> out, List<String> errors) {
+  private int parseSpawnerBlocks(YamlConfiguration cfg, Map<String, MobSpec> specs, Map<String, MobSpawnerBlockSpec> out,
+                                 List<String> errors, String source) {
     ConfigurationSection blocksSec = cfg.getConfigurationSection("spawnerBlocks");
     if (blocksSec == null) {
       return 0;
     }
     int loaded = 0;
     for (String rawId : blocksSec.getKeys(false)) {
-      String base = "spawnerBlocks." + rawId;
+      String base = prefix(source) + "spawnerBlocks." + rawId;
       ConfigurationSection node = blocksSec.getConfigurationSection(rawId);
       if (node == null) {
         errors.add(base + ": must be an object");
@@ -592,6 +658,7 @@ public final class MobYamlRegistry {
       groupId = YamlValues.string(node, "groupId", null);
     }
     Integer groupMaxAlive = node.contains("groupMaxAlive") ? node.getInt("groupMaxAlive") : null;
+    List<MobSpawnGroupSpec> groups = parseSpawnerGroups(node.getMapList("groups"), base + ".groups");
     Long respawnTicks = node.contains("respawnTicks") ? node.getLong("respawnTicks") : null;
     Long respawnJitterTicks = node.contains("respawnJitterTicks") ? node.getLong("respawnJitterTicks") : null;
     if (node.contains("respawnJitterSeconds")) {
@@ -608,6 +675,24 @@ public final class MobYamlRegistry {
       allowBlockDamage = !node.getBoolean("noBlockDamage");
     }
     Double activationRadius = node.contains("activationRadius") ? node.getDouble("activationRadius") : null;
+    Boolean beamEnabled = null;
+    Particle beamParticle = null;
+    Double beamStep = null;
+    ConfigurationSection beam = node.getConfigurationSection("beam");
+    if (beam != null) {
+      if (beam.contains("enabled")) {
+        beamEnabled = beam.getBoolean("enabled");
+      }
+      if (beam.contains("particle")) {
+        beamParticle = parseParticleType(YamlValues.requireString(beam, "particle", base + ".beam.particle"), base + ".beam.particle");
+      }
+      if (beam.contains("step")) {
+        beamStep = beam.getDouble("step");
+      }
+    }
+    if (beamStep != null && beamStep <= 0.0) {
+      throw new IllegalArgumentException(base + ".beam.step: must be > 0");
+    }
     Boolean respectDifficulty = node.contains("respectDifficulty") ? node.getBoolean("respectDifficulty") : null;
     Boolean respectGameRules = node.contains("respectGameRules") ? node.getBoolean("respectGameRules") : null;
     Double attackRadius = node.contains("attackRadius") ? node.getDouble("attackRadius") : null;
@@ -665,11 +750,15 @@ public final class MobYamlRegistry {
         maxAlive,
         groupId,
         groupMaxAlive,
+        groups,
         respawnTicks,
         respawnJitterTicks,
         radius,
         allowBlockDamage,
         activationRadius,
+        beamEnabled,
+        beamParticle,
+        beamStep,
         respectDifficulty,
         respectGameRules,
         attackRadius,
@@ -735,7 +824,11 @@ public final class MobYamlRegistry {
 
     ConfigurationSection equipment = node.getConfigurationSection("equipment");
     if (equipment != null) {
-      builder.mainHand(itemStack(equipment, "mainHand"));
+      ItemStack mainHand = itemStack(equipment, "mainHand");
+      if (mainHand == null) {
+        mainHand = itemStack(equipment, "mainhand");
+      }
+      builder.mainHand(mainHand);
       builder.offHand(itemStack(equipment, "offHand"));
       builder.head(itemStack(equipment, "head"));
       builder.chest(itemStack(equipment, "chest"));
@@ -746,6 +839,12 @@ public final class MobYamlRegistry {
     ConfigurationSection stats = node.getConfigurationSection("stats");
     if (stats != null) {
       for (String key : stats.getKeys(false)) {
+        String normalized = key.trim().toLowerCase(Locale.ROOT).replace("_", "").replace("-", "");
+        if (normalized.equals("scalevariance") || normalized.equals("scalevar")) {
+          double variance = stats.getDouble(key);
+          builder.scaleVariance(variance);
+          continue;
+        }
         Attribute attr = parseAttribute(key, base + ".stats." + key);
         double value = stats.getDouble(key);
         builder.attribute(attr, value);
@@ -835,6 +934,19 @@ public final class MobYamlRegistry {
       builder.advancementRewards(new MobAdvancementRewardSpec(xp, skillPoints, rewardItems));
     }
 
+    ConfigurationSection xpGating = node.getConfigurationSection("xpGating");
+    if (xpGating != null) {
+      int minLevel = xpGating.contains("minLevel") ? xpGating.getInt("minLevel") : 0;
+      if (!xpGating.contains("minLevel")) {
+        minLevel = xpGating.contains("minXpLevel") ? xpGating.getInt("minXpLevel")
+            : xpGating.getInt("minXp", 0);
+      }
+      if (minLevel < 0) {
+        throw new IllegalArgumentException(base + ".xpGating.minLevel: must be >= 0");
+      }
+      builder.minXpLevel(minLevel);
+    }
+
     ConfigurationSection summon = node.getConfigurationSection("summon");
     if (summon != null) {
       boolean enabled = summon.getBoolean("enabled", true);
@@ -869,7 +981,8 @@ public final class MobYamlRegistry {
           .idleWanderRadius(ai.getDouble("idleWanderRadius", 6.0))
           .idleWanderIntervalTicks(ai.getLong("idleWanderIntervalTicks", 80L))
           .kiteMinRange(ai.getDouble("kiteMinRange", 0.0))
-          .kiteSpeed(ai.getDouble("kiteSpeed", 0.0));
+          .kiteSpeed(ai.getDouble("kiteSpeed", 0.0))
+          .chaseSpeed(ai.getDouble("chaseSpeed", 0.25));
       String mode = YamlValues.string(ai, "aggroTargetMode", "NEAREST_PLAYER");
       aiBuilder.aggroTargetMode(parseTargetMode(mode, base + ".ai.aggroTargetMode"));
       builder.aiSpec(aiBuilder.build());
@@ -1079,7 +1192,7 @@ public final class MobYamlRegistry {
     throw new IllegalArgumentException(path + ": must be a number or object");
   }
 
-  private List<MobSpawnSpec> parseSpawns(YamlConfiguration cfg, List<String> errors) {
+  private List<MobSpawnSpec> parseSpawns(YamlConfiguration cfg, Map<String, MobSpec> specs, List<String> errors, String source) {
     List<MobSpawnSpec> out = new ArrayList<>();
     ConfigurationSection spawnsSec = cfg.getConfigurationSection("spawns");
     if (spawnsSec == null) {
@@ -1087,16 +1200,19 @@ public final class MobYamlRegistry {
     }
     for (String key : spawnsSec.getKeys(false)) {
       ConfigurationSection node = spawnsSec.getConfigurationSection(key);
-      String base = "spawns." + key;
+      String base = prefix(source) + "spawns." + key;
       if (node == null) {
         errors.add(base + ": must be an object");
         continue;
       }
       try {
         String id = Ids.normalize(key);
-        String mobId = Ids.normalize(YamlValues.requireString(node, "mob", base + ".mob"));
-        if (!registry.has(mobId)) {
-          throw new IllegalArgumentException(base + ".mob: unknown mob id: " + mobId);
+        String mobId = YamlValues.string(node, "mob", null);
+        if (mobId != null && !mobId.isBlank()) {
+          mobId = Ids.normalize(mobId);
+          if (!specs.containsKey(mobId) && !registry.has(mobId)) {
+            throw new IllegalArgumentException(base + ".mob: unknown mob id: " + mobId);
+          }
         }
         String world = YamlValues.requireString(node, "world", base + ".world");
         double x = node.getDouble("x");
@@ -1123,6 +1239,7 @@ public final class MobYamlRegistry {
           groupId = null;
         }
         int groupMaxAlive = (int) node.getLong("groupMaxAlive", 0L);
+        List<MobSpawnGroupSpec> groups = parseSpawnerGroups(node.getMapList("groups"), base + ".groups");
         long respawnTicks = node.getLong("respawnTicks", 200L);
         long respawnJitterTicks = node.getLong("respawnJitterTicks", 0L);
         if (node.contains("respawnJitterSeconds")) {
@@ -1136,7 +1253,7 @@ public final class MobYamlRegistry {
         if (attack != null && attack.contains("radius")) {
           attackRadius = attack.getDouble("radius", attackRadius);
         }
-        boolean attackIgnoreOutsideRadius = attackRadius > 0.0;
+        boolean attackIgnoreOutsideRadius = false;
         boolean attackIgnorePlayers = false;
         if (node.contains("attackIgnoreOutsideRadius")) {
           attackIgnoreOutsideRadius = node.getBoolean("attackIgnoreOutsideRadius", attackIgnoreOutsideRadius);
@@ -1219,12 +1336,33 @@ public final class MobYamlRegistry {
           allowBlockDamage = !node.getBoolean("noBlockDamage", false);
         }
         double activationRadius = node.getDouble("activationRadius", 0.0);
+        boolean beamEnabled = false;
+        Particle beamParticle = null;
+        double beamStep = 0.3;
+        ConfigurationSection beam = node.getConfigurationSection("beam");
+        if (beam != null) {
+          if (beam.contains("enabled")) {
+            beamEnabled = beam.getBoolean("enabled", beamEnabled);
+          }
+          if (beam.contains("particle")) {
+            beamParticle = parseParticleType(YamlValues.requireString(beam, "particle", base + ".beam.particle"), base + ".beam.particle");
+          }
+          if (beam.contains("step")) {
+            beamStep = beam.getDouble("step");
+          }
+        }
         ConfigurationSection activation = node.getConfigurationSection("activation");
         if (activation != null && activation.contains("radius")) {
           activationRadius = activation.getDouble("radius", activationRadius);
         }
         if (activationRadius < 0.0) {
           throw new IllegalArgumentException(base + ".activationRadius: must be >= 0");
+        }
+        if (beamEnabled && beamParticle == null) {
+          throw new IllegalArgumentException(base + ".beam.particle: missing particle");
+        }
+        if (beamStep <= 0.0) {
+          throw new IllegalArgumentException(base + ".beam.step: must be > 0");
         }
         boolean respectDifficulty = node.getBoolean("respectDifficulty", true);
         boolean respectGameRules = node.getBoolean("respectGameRules", true);
@@ -1248,9 +1386,14 @@ public final class MobYamlRegistry {
         if (tetherDespawnTicks < 0L) {
           throw new IllegalArgumentException(base + ".tetherDespawnTicks: must be >= 0");
         }
-        out.add(new MobSpawnSpec(id, mobId, world, location, count, maxAlive, groupId, groupMaxAlive, respawnTicks,
-            respawnJitterTicks, radius, allowBlockDamage, activationRadius, respectDifficulty, respectGameRules,
-            attackRadius, attackIgnoreOutsideRadius, attackIgnorePlayers, tetherRadius,
+        validateSpawnerGroups(groups, specs, base + ".groups");
+        if ((mobId == null || mobId.isBlank()) && (groups == null || groups.isEmpty())) {
+          throw new IllegalArgumentException(base + ".mob: missing mob id (no groups configured)");
+        }
+        out.add(new MobSpawnSpec(id, mobId == null ? "" : mobId, world, location, count, maxAlive, groupId, groupMaxAlive,
+            groups, respawnTicks,
+            respawnJitterTicks, radius, allowBlockDamage, activationRadius, beamEnabled, beamParticle, beamStep,
+            respectDifficulty, respectGameRules, attackRadius, attackIgnoreOutsideRadius, attackIgnorePlayers, tetherRadius,
             tetherAction == null ? MobSpawnTetherAction.NONE : tetherAction, tetherPullSpeed, tetherDespawnTicks,
             hologramEnabled, hologramOffsetY, hologramFormat, enabled));
       } catch (Exception ex) {
@@ -1260,14 +1403,137 @@ public final class MobYamlRegistry {
     return out;
   }
 
-  private int parseEggs(YamlConfiguration cfg, Map<String, MobSpec> specs, Map<String, MobEggSpec> out, List<String> errors) {
+  private void parseMobs(YamlConfiguration cfg, Map<String, MobSpec> specs, List<String> errors, String source) {
+    ConfigurationSection mobsSec = cfg.getConfigurationSection("mobs");
+    if (mobsSec == null) {
+      return;
+    }
+    for (String rawId : mobsSec.getKeys(false)) {
+      String base = prefix(source) + "mobs." + rawId;
+      try {
+        String id = Ids.normalize(rawId);
+        if (specs.containsKey(id)) {
+          errors.add(base + ": duplicate mob id");
+          continue;
+        }
+        ConfigurationSection node = mobsSec.getConfigurationSection(rawId);
+        if (node == null) {
+          errors.add(base + ": must be an object");
+          continue;
+        }
+        MobSpec spec = parseMobSpec(id, node, errors, base);
+        specs.put(id, spec);
+      } catch (Exception ex) {
+        errors.add(base + ": " + ex.getMessage());
+      }
+    }
+  }
+
+  private static String prefix(String source) {
+    if (source == null || source.isBlank()) {
+      return "";
+    }
+    return source + ": ";
+  }
+
+  private static List<File> listYamlFiles(File folder) {
+    List<File> out = new ArrayList<>();
+    File[] entries = folder.listFiles();
+    if (entries == null) {
+      return out;
+    }
+    for (File entry : entries) {
+      if (entry.isDirectory()) {
+        continue;
+      }
+      String name = entry.getName().toLowerCase(Locale.ROOT);
+      if (name.endsWith(".yml") || name.endsWith(".yaml")) {
+        out.add(entry);
+      }
+    }
+    out.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+    return out;
+  }
+
+  private void saveDefaultMobFiles(File folder) {
+    List<String> bundled = listBundledMobFiles();
+    if (bundled.isEmpty()) {
+      bundled = java.util.Arrays.asList(DEFAULT_MOB_FILES);
+    }
+    for (String file : bundled) {
+      File target = new File(folder, file);
+      if (target.exists()) {
+        continue;
+      }
+      try {
+        plugin.saveResource("mobs/" + file, false);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+  }
+
+  private List<String> listBundledMobFiles() {
+    try {
+      java.net.URL url = plugin.getClass().getClassLoader().getResource("mobs");
+      if (url == null) {
+        return List.of();
+      }
+      String protocol = url.getProtocol();
+      if ("file".equalsIgnoreCase(protocol)) {
+        File dir = new File(url.toURI());
+        List<String> names = new ArrayList<>();
+        File[] entries = dir.listFiles();
+        if (entries == null) {
+          return List.of();
+        }
+        for (File entry : entries) {
+          if (!entry.isFile()) {
+            continue;
+          }
+          String name = entry.getName();
+          String lower = name.toLowerCase(Locale.ROOT);
+          if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+            names.add(name);
+          }
+        }
+        names.sort(String.CASE_INSENSITIVE_ORDER);
+        return names;
+      }
+      if ("jar".equalsIgnoreCase(protocol)) {
+        java.net.JarURLConnection conn = (java.net.JarURLConnection) url.openConnection();
+        try (java.util.jar.JarFile jar = conn.getJarFile()) {
+          List<String> names = new ArrayList<>();
+          java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+          while (entries.hasMoreElements()) {
+            java.util.jar.JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (!name.startsWith("mobs/") || entry.isDirectory()) {
+              continue;
+            }
+            String base = name.substring("mobs/".length());
+            String lower = base.toLowerCase(Locale.ROOT);
+            if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+              names.add(base);
+            }
+          }
+          names.sort(String.CASE_INSENSITIVE_ORDER);
+          return names;
+        }
+      }
+    } catch (Exception ignored) {
+    }
+    return List.of();
+  }
+
+  private int parseEggs(YamlConfiguration cfg, Map<String, MobSpec> specs, Map<String, MobEggSpec> out,
+                        List<String> errors, String source) {
     ConfigurationSection eggsSec = cfg.getConfigurationSection("eggs");
     if (eggsSec == null) {
       return 0;
     }
     int loaded = 0;
     for (String rawId : eggsSec.getKeys(false)) {
-      String base = "eggs." + rawId;
+      String base = prefix(source) + "eggs." + rawId;
       ConfigurationSection node = eggsSec.getConfigurationSection(rawId);
       if (node == null) {
         errors.add(base + ": must be an object");
@@ -1387,6 +1653,7 @@ public final class MobYamlRegistry {
       case "knockbackresistance" -> Attribute.KNOCKBACK_RESISTANCE;
       case "armor" -> Attribute.ARMOR;
       case "armortoughness" -> Attribute.ARMOR_TOUGHNESS;
+      case "scale", "size" -> Attribute.SCALE;
       default -> throw new IllegalArgumentException(path + ": unknown stat " + raw);
     };
   }
@@ -1545,19 +1812,22 @@ public final class MobYamlRegistry {
       return null;
     }
     String particleRaw = YamlValues.requireString(sec, "particle", path + ".particle");
-    Particle particle;
-    String token = particleRaw.contains(":") ? particleRaw.substring(particleRaw.indexOf(':') + 1) : particleRaw;
-    try {
-      particle = Particle.valueOf(token.trim().toUpperCase(Locale.ROOT));
-    } catch (Exception ex) {
-      throw new IllegalArgumentException(path + ".particle: unknown particle=" + particleRaw);
-    }
+    Particle particle = parseParticleType(particleRaw, path + ".particle");
     int count = sec.getInt("count", 10);
     double offsetX = sec.getDouble("offsetX", sec.getDouble("offset", 0.2));
     double offsetY = sec.getDouble("offsetY", sec.getDouble("offset", 0.2));
     double offsetZ = sec.getDouble("offsetZ", sec.getDouble("offset", 0.2));
     double extra = sec.getDouble("extra", 0.0);
     return new MobParticlesSpec(particle, count, offsetX, offsetY, offsetZ, extra);
+  }
+
+  private static Particle parseParticleType(String raw, String path) {
+    String token = raw.contains(":") ? raw.substring(raw.indexOf(':') + 1) : raw;
+    try {
+      return Particle.valueOf(token.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": unknown particle=" + raw);
+    }
   }
 
   private static MobSoundSpec parseSound(ConfigurationSection sec, String path) {
@@ -1578,6 +1848,111 @@ public final class MobYamlRegistry {
     float volume = (float) sec.getDouble("volume", 1.0);
     float pitch = (float) sec.getDouble("pitch", 1.0);
     return new MobSoundSpec(sound, volume, pitch);
+  }
+
+  private List<MobSpawnGroupSpec> parseSpawnerGroups(List<Map<?, ?>> rawGroups, String base) {
+    if (rawGroups == null || rawGroups.isEmpty()) {
+      return List.of();
+    }
+    List<MobSpawnGroupSpec> groups = new ArrayList<>();
+    for (int i = 0; i < rawGroups.size(); i++) {
+      Map<?, ?> raw = rawGroups.get(i);
+      if (raw == null) {
+        continue;
+      }
+      String entryBase = base + "[" + i + "]";
+      double chance = 1.0;
+      Integer count = null;
+      Object chanceRaw = raw.get("chance");
+      if (chanceRaw instanceof Number num) {
+        chance = num.doubleValue();
+      }
+      Object countRaw = raw.get("count");
+      if (countRaw instanceof Number num) {
+        count = num.intValue();
+      }
+      List<MobSpawnGroupEntry> entries = parseSpawnerGroupEntries(raw.get("mobs"), entryBase + ".mobs");
+      if (entries.isEmpty()) {
+        continue;
+      }
+      groups.add(new MobSpawnGroupSpec(chance, count, entries));
+    }
+    return groups;
+  }
+
+  private List<MobSpawnGroupEntry> parseSpawnerGroupEntries(Object raw, String base) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<MobSpawnGroupEntry> entries = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Object item = list.get(i);
+        if (item instanceof String s) {
+          String id = Ids.normalize(s);
+          entries.add(new MobSpawnGroupEntry(id, 1.0));
+        } else if (item instanceof Map<?, ?> map) {
+          Object idRaw = map.get("mob");
+          if (idRaw == null) {
+            idRaw = map.get("id");
+          }
+          if (!(idRaw instanceof String s) || s.isBlank()) {
+            continue;
+          }
+          String id = Ids.normalize(s);
+          double weight = 1.0;
+          Object weightRaw = map.get("weight");
+          if (weightRaw instanceof Number num) {
+            weight = num.doubleValue();
+          }
+          entries.add(new MobSpawnGroupEntry(id, weight));
+        }
+      }
+    }
+    return entries;
+  }
+
+  private void validateSpawnerGroups(List<MobSpawnGroupSpec> groups, Map<String, MobSpec> specs, String base) {
+    if (groups == null || groups.isEmpty()) {
+      return;
+    }
+    for (int i = 0; i < groups.size(); i++) {
+      MobSpawnGroupSpec group = groups.get(i);
+      if (group.mobs() == null || group.mobs().isEmpty()) {
+        throw new IllegalArgumentException(base + "[" + i + "]: mobs list is empty");
+      }
+      for (MobSpawnGroupEntry entry : group.mobs()) {
+        String mobId = entry.mobId();
+        if (!specs.containsKey(mobId) && !registry.has(mobId)) {
+          throw new IllegalArgumentException(base + "[" + i + "]: unknown mob id: " + mobId);
+        }
+      }
+    }
+  }
+
+  private List<Map<String, Object>> serializeSpawnerGroups(List<MobSpawnGroupSpec> groups) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (MobSpawnGroupSpec group : groups) {
+      Map<String, Object> map = new LinkedHashMap<>();
+      if (group.chance() != 1.0) {
+        map.put("chance", group.chance());
+      }
+      if (group.count() != null) {
+        map.put("count", group.count());
+      }
+      List<Map<String, Object>> mobs = new ArrayList<>();
+      for (MobSpawnGroupEntry entry : group.mobs()) {
+        Map<String, Object> entryMap = new LinkedHashMap<>();
+        entryMap.put("mob", entry.mobId());
+        if (entry.weight() != 1.0) {
+          entryMap.put("weight", entry.weight());
+        }
+        mobs.add(entryMap);
+      }
+      map.put("mobs", mobs);
+      out.add(map);
+    }
+    return out;
   }
 
   private String registerScriptAbility(String abilityId, Action action, String path) {

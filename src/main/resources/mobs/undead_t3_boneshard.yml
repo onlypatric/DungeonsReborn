@@ -1,0 +1,84 @@
+schemaVersion: 1
+mobs:
+  undead_t3_boneshard:
+    type: SKELETON
+    name: <gray>Boneshard</gray>
+    showName: true
+    equipment:
+      head: CHAINMAIL_HELMET
+      chest: LEATHER_CHESTPLATE
+      mainhand: BOW
+    stats:
+      maxHealth: 27
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 26
+      leashRadius: 30
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 50
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=CRIT radius=1.7 points=18 count=1\n\
+          \  for_each_target type=nearest radius=8 filter=players originAt=origin\
+          \ {\n    potion effect=BLINDNESS durationTicks=100 amplifier=0\n  }\n}"
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=1.5 filter=players\
+            \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=120 amplifier=0\n\
+            \    potion effect=WEAKNESS durationTicks=120 amplifier=0\n  }\n}"
+    loot:
+      clearVanilla: true
+      rolls: 1
+      drops:
+      - token: token
+        min: 4
+        max: 7
+      - material: IRON_SWORD
+        chance: 20
+      - material: BOW
+        chance: 30
+      - material: CHAINMAIL_HELMET
+        chance: 20
+      - material: LEATHER_CHESTPLATE
+        chance: 20
+      - material: CARROT
+        chance: 40
+        min: 1
+        max: 3
+      - material: MELON_SLICE
+        chance: 40
+        min: 1
+        max: 3
+    xpGating:
+      minLevel: 500
+    progression:
+      minXp: 18665
+      maxXp: 25252
+spawnerBlocks:
+  undead_t3_boneshard_spawner:
+    mob: undead_t3_boneshard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 140
+      respawnJitterTicks: 20
+      radius: 10
+      activationRadius: 30
+      attackRadius: 22
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

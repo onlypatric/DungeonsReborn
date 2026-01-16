@@ -26,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
@@ -35,6 +36,7 @@ import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.PassiveBinding;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
+import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.shops.ShopTokenTierSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
@@ -51,14 +53,16 @@ public final class UpgradeService {
   private final EffectsEngine engine;
   private final EffectsBindings bindings;
   private final UpgradeYamlRegistry registry;
+  private final JavaPlugin plugin;
   private final ServiceLogger logger;
   private final ShopYamlRegistry shopRegistry;
   private static final String INVENTORY_UPGRADE_PREFIX = "inv_upgrade_";
   private static final int INVENTORY_EFFECT_MIN_TICKS = 40;
   private final Map<UUID, Map<String, Long>> onDamagedCooldowns = new HashMap<>();
 
-  public UpgradeService(EffectsEngine engine, EffectsBindings bindings, UpgradeYamlRegistry registry,
+  public UpgradeService(JavaPlugin plugin, EffectsEngine engine, EffectsBindings bindings, UpgradeYamlRegistry registry,
       ShopYamlRegistry shopRegistry, ServiceLogger logger) {
+    this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.engine = Objects.requireNonNull(engine, "engine");
     this.bindings = Objects.requireNonNull(bindings, "bindings");
     this.registry = Objects.requireNonNull(registry, "registry");
@@ -669,35 +673,47 @@ public final class UpgradeService {
     if (requirements == null) {
       return null;
     }
+    boolean xpGatingEnabled = plugin.getConfig().getBoolean("upgrades.xpGating.enabled", true);
+    String bypassPermission = plugin.getConfig().getString("upgrades.xpGating.bypassPermission", "");
+    boolean bypass = !bypassPermission.isBlank() && player.hasPermission(bypassPermission);
     int level = player.getLevel();
-    if (requirements.minXp() > 0 && level < requirements.minXp()) {
-      return "Requires at least " + requirements.minXp() + " XP levels.";
-    }
-    if (requirements.consumeXp() > 0 && level < requirements.consumeXp()) {
-      return "Not enough XP to apply the upgrade.";
-    }
-    int totalXp = player.getTotalExperience();
-    if (requirements.minTotalXp() > 0 && totalXp < requirements.minTotalXp()) {
-      return "Requires at least " + requirements.minTotalXp() + " total XP.";
-    }
-    if (requirements.consumeTotalXp() > 0 && totalXp < requirements.consumeTotalXp()) {
-      return "Not enough total XP to apply the upgrade.";
-    }
-    double progress = player.getExp();
-    if (requirements.minProgress() > 0.0 && progress + 1e-9 < requirements.minProgress()) {
-      return "Requires at least " + formatPercent(requirements.minProgress()) + " XP progress.";
-    }
-    if (requirements.consumeProgress() > 0.0 && progress + 1e-9 < requirements.consumeProgress()) {
-      return "Not enough XP progress to apply the upgrade.";
+    if (xpGatingEnabled && !bypass) {
+      if (requirements.minXp() > 0 && level < requirements.minXp()) {
+        return Locales.text(player, "labels.upgrades.requirements.xpLevelMin",
+            Locales.placeholders("level", requirements.minXp()));
+      }
+      if (requirements.consumeXp() > 0 && level < requirements.consumeXp()) {
+        return Locales.text(player, "labels.upgrades.requirements.xpLevelConsume",
+            Locales.placeholders("level", requirements.consumeXp()));
+      }
+      int totalXp = player.getTotalExperience();
+      if (requirements.minTotalXp() > 0 && totalXp < requirements.minTotalXp()) {
+        return Locales.text(player, "labels.upgrades.requirements.totalXpMin",
+            Locales.placeholders("xp", requirements.minTotalXp()));
+      }
+      if (requirements.consumeTotalXp() > 0 && totalXp < requirements.consumeTotalXp()) {
+        return Locales.text(player, "labels.upgrades.requirements.totalXpConsume",
+            Locales.placeholders("xp", requirements.consumeTotalXp()));
+      }
+      double progress = player.getExp();
+      if (requirements.minProgress() > 0.0 && progress + 1e-9 < requirements.minProgress()) {
+        return Locales.text(player, "labels.upgrades.requirements.xpProgressMin",
+            Locales.placeholders("percent", formatPercent(requirements.minProgress())));
+      }
+      if (requirements.consumeProgress() > 0.0 && progress + 1e-9 < requirements.consumeProgress()) {
+        return Locales.text(player, "labels.upgrades.requirements.xpProgressConsume",
+            Locales.placeholders("percent", formatPercent(requirements.consumeProgress())));
+      }
     }
     if (requirements.minMaxMana() > 0.0) {
       ManaProvider provider = engine.manaProvider();
       if (provider == null) {
-        return "Mana system not available.";
+        return Locales.text(player, "labels.upgrades.requirements.manaMissing");
       }
       double max = provider.getMax(player);
       if (max + 1e-9 < requirements.minMaxMana()) {
-        return "Requires at least " + format(requirements.minMaxMana()) + " max mana.";
+        return Locales.text(player, "labels.upgrades.requirements.manaMin",
+            Locales.placeholders("mana", format(requirements.minMaxMana())));
       }
     }
     return null;

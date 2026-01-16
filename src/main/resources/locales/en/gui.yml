@@ -11,6 +11,19 @@ gui:
   button:
     back: Back
     close: Close
+    search: Search
+    clear: Clear
+  click:
+    left: Left-click
+    shift_left: Shift-left-click
+    shift_right: Shift-right-click
+    right: Right-click
+  search:
+    prompt: "Type search (or 'cancel'):"
+    hint: <gray>Search by id or name.</gray>
+    none: <gray>No results.</gray>
+    current: <gray>Search:</gray> <white>{query}</white>
+    clear_hint: <gray>Clear search filter.</gray>
   textInput:
     title: Type in chat
     tooltip: Type in chat
@@ -185,6 +198,26 @@ gui:
           objective: <gray>- {value}</gray>
           more: <dark_gray>... +{count} more</dark_gray>
           rewards: <gray>Rewards:</gray> <white>{value}</white>
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Mob Editor</bold></white>
+        header:
+          title: <gold><bold>Mobs</bold></gold>
+          hint1: <gray>Select a mob to edit.</gray>
+          hint2: <gray>Red entries are not loaded.</gray>
+        status:
+          loaded: <green>Loaded</green>
+          missing: <red>Missing</red>
+        entry:
+          title: <white><bold>{id}</bold></white>
+          name: <gray>Name:</gray> <white>{name}</white>
+        refresh:
+          title: <yellow><bold>Refresh</bold></yellow>
+          hint: <gray>Reload the list.</gray>
+        errors:
+          title: <red><bold>Errors</bold></red>
+          hint: <gray>View last reload errors.</gray>
           allowlist: <gray>Allowlist:</gray> <white>{value}</white>
           allowlist:
             all: all worlds
@@ -198,6 +231,26 @@ gui:
           title: <gray><bold>Audit</bold></gray>
           editor: <gray>Last editor:</gray> <white>{value}</white>
           when: <gray>Last change:</gray> <white>{value}</white>
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Mob Editor</bold></white>
+        header:
+          title: <gold><bold>Mobs</bold></gold>
+          hint1: <gray>Select a mob to edit.</gray>
+          hint2: <gray>Use search to filter the list.</gray>
+        refresh:
+          title: <yellow><bold>Refresh</bold></yellow>
+          hint: <gray>Reload the mob list.</gray>
+        errors:
+          title: <red><bold>Errors</bold></red>
+          hint: <gray>View YAML load errors.</gray>
+        entry:
+          title: <gold><bold>Mob:</bold> <white>{id}</white></gold>
+          name: <gray>Name:</gray> <white>{name}</white>
+        status:
+          loaded: <green>Loaded</green>
+          missing: <red>Missing</red>
           unknown: unknown
         validation:
           nonNegative: <red>Value must be >= 0.</red>
@@ -1084,6 +1137,26 @@ gui:
           title: Reload YAML
         delete:
           title: Delete
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Mob Editor</bold></white>
+        header:
+          title: <gold><bold>Mobs</bold></gold>
+          hint1: <gray>Select a mob to edit.</gray>
+          hint2: <gray>Use search to filter.</gray>
+        status:
+          loaded: <green>Loaded</green>
+          missing: <red>Missing</red>
+        entry:
+          title: <white>{id}</white>
+          name: <gray>Name:</gray> <white>{value}</white>
+        refresh:
+          title: <yellow><bold>Refresh</bold></yellow>
+          hint: <gray>Reload the list.</gray>
+        errors:
+          title: <red><bold>Errors</bold></red>
+          hint: <gray>Click to view reload errors.</gray>
           confirm:
             title: <red><bold>Delete Item</bold></red>
             header: <red>Delete {id}?</red>

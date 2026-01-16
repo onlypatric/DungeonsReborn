@@ -10,12 +10,14 @@ public final class AdvancementIds {
 
   public static String key(String id) {
     if (id == null || id.isBlank()) {
-      return NAMESPACE + ":unknown";
+      return "unknown";
     }
     String normalized = id.toLowerCase(Locale.ROOT).trim();
     if (normalized.startsWith(NAMESPACE + ":")) {
-      return normalized;
+      normalized = normalized.substring(NAMESPACE.length() + 1);
+    } else if (normalized.contains(":")) {
+      normalized = normalized.substring(normalized.indexOf(':') + 1);
     }
-    return NAMESPACE + ":" + normalized;
+    return normalized;
   }
 }

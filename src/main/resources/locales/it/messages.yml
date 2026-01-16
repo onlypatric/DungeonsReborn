@@ -39,6 +39,7 @@ messages:
       dungeonDebugStart: <gray>/{root} dungeon debug start &lt;level&gt;</gray> <dark_gray>- avvia debug</dark_gray>
       dungeonDebugSkip: <gray>/{root} dungeon debug skip</gray> <dark_gray>- salta ondata</dark_gray>
       dungeonDebugEnd: <gray>/{root} dungeon debug end [win|fail]</gray> <dark_gray>- termina debug</dark_gray>
+      advancementsReload: <gray>/{root} advancements reload</gray> <dark_gray>- ricarica configurazione avanzamenti</dark_gray>
       quests: <gray>/{root} quests</gray> <dark_gray>- registro missioni</dark_gray>
       questsGiver: <gray>/{root} quests giver &lt;id&gt;</gray> <dark_gray>- apri quest giver</dark_gray>
       questsEditor: <gray>/{root} quests editor</gray> <dark_gray>- editor missioni</dark_gray>
@@ -52,7 +53,11 @@ messages:
       crafting: <gray>/{root} crafting</gray> <dark_gray>- GUI crafting</dark_gray>
       craftingEditor: <gray>/{root} crafting editor</gray> <dark_gray>- editor ricette</dark_gray>
       craftingReload: <gray>/{root} crafting reload</gray> <dark_gray>- ricarica ricette</dark_gray>
+      reloadAll: <gray>/{root} reload</gray> <dark_gray>- ricarica tutti i dati</dark_gray>
     missingPermission: <red>Permesso mancante:</red> <white>{permission}</white>
+    reload:
+      allOk: <green>Tutti i sistemi ricaricati.</green>
+      allErrors: <red>Ricarica completata con {errors} errori. Controlla i log.</red>
   shop:
     tokens:
       missing: <red>Oggetto token non configurato.</red>
@@ -208,25 +213,28 @@ messages:
       conflict: <yellow>Il potenziamento sovrascrive uno slot esistente.</yellow>
       requirements: <red>Requisiti non soddisfatti.</red>
       notEnoughTokens: <red>Token insufficienti.</red>
+      xpLocked: <red>Richiede livello {level} per applicare questo potenziamento.</red>
   bindings:
     reload:
       ok: <green>Collegamenti caricati:</green> <white>{count}</white>
       errors: <red>Ricarica collegamenti con {errors} errori. Controlla i log.</red>
   mobs:
+    damage:
+      xpLocked: <red>Richiede livello {level} per colpire questo mob.</red>
     egg:
-      missingPermission: <red>Permesso mancante: {perm}</red>
+      missingPermission: '<red>Permesso mancante: {perm}</red>'
       noTarget: <red>Nessun blocco trovato.</red>
-      spawnFailed: <red>Spawn fallito: {message}</red>
+      spawnFailed: '<red>Spawn fallito: {message}</red>'
       cooldown: <red>Uovo in cooldown ({ticks}t)</red>
     spawner:
-      unknownBlockId: <red>Id blocco spawner sconosciuto: {id}</red>
-      unknownMobId: <red>Id mob sconosciuto: {id}</red>
+      unknownBlockId: '<red>Id blocco spawner sconosciuto: {id}</red>'
+      unknownMobId: '<red>Id mob sconosciuto: {id}</red>'
       mustPlaceSpawner: <red>Gli spawner vanno piazzati come blocco spawner.</red>
-      mobMismatch: <red>Mob spawner non corrisponde: {mob}</red>
-      createFailed: <red>Creazione spawner fallita: {message}</red>
+      mobMismatch: '<red>Mob spawner non corrisponde: {mob}</red>'
+      createFailed: '<red>Creazione spawner fallita: {message}</red>'
       created: <green>Spawner creato:</green> <white>{id}</white>
       removed: <green>Spawner rimosso:</green> <white>{id}</white>
-      entryNotFound: <red>Spawner non trovato: {id}</red>
+      entryNotFound: '<red>Spawner non trovato: {id}</red>'
   shops:
     open:
       missingId: <red>ID shop mancante.</red>
@@ -477,3 +485,9 @@ messages:
       win: <green>Dungeon completato!</green>
       lose: <red>Dungeon fallito.</red>
       summary: <gray>Livello:</gray> <white>{level}</white> <gray>Giocatori:</gray> <white>{players}</white>
+  advancements:
+    unlocked: <green>Avanzamento sbloccato:</green> <yellow>{title}</yellow>
+    bossKills: <green>Avanzamento sbloccato:</green> <yellow>{title} {count}x</yellow>
+    reload:
+      ok: <green>Avanzamenti ricaricati.</green>
+      disabled: <yellow>Avanzamenti non disponibili.</yellow>

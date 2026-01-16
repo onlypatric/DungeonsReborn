@@ -1,0 +1,58 @@
+schemaVersion: 1
+mobs:
+  pack_stalker_enderman_voidlurker:
+    type: ENDERMAN
+    name: <dark_gray>Voidlurker</dark_gray>
+    showName: true
+    stats:
+      maxHealth: 40
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 18
+      leashRadius: 24
+      idleWanderRadius: 5
+      idleWanderIntervalTicks: 70
+    passives:
+    - periodTicks: 100
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  potion effect=INVISIBILITY durationTicks=60 amplifier=0\
+          \ particles=false icon=false\n}"
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 18
+        chance: 1.0
+        range: 3
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=80 amplifier=0\n\
+            \    potion effect=SLOWNESS durationTicks=60 amplifier=0\n  }\n}"
+    xpGating:
+      minLevel: 750
+    progression:
+      minXp: 10926
+      maxXp: 14782
+spawnerBlocks:
+  pack_stalker_enderman_voidlurker_spawner:
+    mob: pack_stalker_enderman_voidlurker
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 120
+      respawnJitterTicks: 20
+      radius: 9
+      activationRadius: 22
+      attackRadius: 16
+      allowBlockDamage: false
+      tether:
+        radius: 12
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <dark_gray>{mob}</dark_gray> <gray>({alive}/{cap})</gray>

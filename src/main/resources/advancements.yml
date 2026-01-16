@@ -1,0 +1,66 @@
+# DungeonsReborn advancements configuration.
+#
+# Disable any category by setting it to false.
+advancements:
+  categories:
+    bosses: true
+    dungeons: true
+    mobKills: true
+    xpLevels: true
+    xpTotals: true
+    tokens: true
+
+  bosses:
+    # Number of boss kills required for repeat milestones.
+    thresholds: [5, 20]
+    rewards:
+      # Tokens for the first kill of a boss.
+      firstKillTokens: 50
+      # Tokens awarded when completing a kill threshold.
+      thresholdTokens: 20
+
+  dungeons:
+    # Number of completions required for repeat milestones.
+    thresholds: [5, 20]
+    # Streak milestones (consecutive completions).
+    streaks: [3, 5]
+    rewards:
+      # Tokens for clearing a dungeon level.
+      levelTokens: 30
+      # Tokens for completion milestones.
+      completionTokens: 15
+
+  xp:
+    # XP level milestones.
+    levels:
+      - 100
+      - 200
+      - 300
+      - 400
+      - 500
+      - 600
+      - 700
+      - 800
+      - 900
+      - 1000
+      - 2000
+      - 3000
+      - 4000
+      - 5000
+      - 6000
+      - 7000
+      - 8000
+      - 9000
+      - 10000
+      - 20000
+      - 30000
+      - 40000
+      - 50000
+    # Total XP milestones.
+    totals: [1000, 5000, 10000, 25000, 50000]
+
+  tokens:
+    # Token milestone totals.
+    milestones: [100, 1000, 10000]
+    # Token pallet milestones (1 pallet = 4096 tokens).
+    palletMilestones: [1, 5, 10]

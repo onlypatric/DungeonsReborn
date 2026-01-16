@@ -11,6 +11,19 @@ gui:
   button:
     back: Indietro
     close: Chiudi
+    search: Cerca
+    clear: Pulisci
+  click:
+    left: Clic sinistro
+    shift_left: Shift + clic sinistro
+    shift_right: Shift + clic destro
+    right: Clic destro
+  search:
+    prompt: "Digita ricerca (o 'cancel'):"
+    hint: <gray>Cerca per id o nome.</gray>
+    none: <gray>Nessun risultato.</gray>
+    current: <gray>Ricerca:</gray> <white>{query}</white>
+    clear_hint: <gray>Rimuovi filtro di ricerca.</gray>
   textInput:
     title: Scrivi in chat
     tooltip: Scrivi in chat
@@ -185,6 +198,26 @@ gui:
           objective: <gray>- {value}</gray>
           more: <dark_gray>... +{count} altri</dark_gray>
           rewards: <gray>Ricompense:</gray> <white>{value}</white>
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Editor Mob</bold></white>
+        header:
+          title: <gold><bold>Mob</bold></gold>
+          hint1: <gray>Seleziona un mob da modificare.</gray>
+          hint2: <gray>Le voci rosse non sono caricate.</gray>
+        status:
+          loaded: <green>Caricato</green>
+          missing: <red>Mancante</red>
+        entry:
+          title: <white><bold>{id}</bold></white>
+          name: <gray>Nome:</gray> <white>{name}</white>
+        refresh:
+          title: <yellow><bold>Aggiorna</bold></yellow>
+          hint: <gray>Ricarica la lista.</gray>
+        errors:
+          title: <red><bold>Errori</bold></red>
+          hint: <gray>Mostra gli errori dell'ultimo reload.</gray>
           allowlist: <gray>Allowlist:</gray> <white>{value}</white>
           allowlist:
             all: tutti i mondi
@@ -198,6 +231,26 @@ gui:
           title: <gray><bold>Audit</bold></gray>
           editor: <gray>Ultimo editor:</gray> <white>{value}</white>
           when: <gray>Ultima modifica:</gray> <white>{value}</white>
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Editor Mob</bold></white>
+        header:
+          title: <gold><bold>Mob</bold></gold>
+          hint1: <gray>Seleziona un mob da modificare.</gray>
+          hint2: <gray>Usa la ricerca per filtrare.</gray>
+        refresh:
+          title: <yellow><bold>Aggiorna</bold></yellow>
+          hint: <gray>Ricarica l'elenco dei mob.</gray>
+        errors:
+          title: <red><bold>Errori</bold></red>
+          hint: <gray>Mostra gli errori YAML.</gray>
+        entry:
+          title: <gold><bold>Mob:</bold> <white>{id}</white></gold>
+          name: <gray>Nome:</gray> <white>{name}</white>
+        status:
+          loaded: <green>Caricato</green>
+          missing: <red>Mancante</red>
           unknown: sconosciuto
         validation:
           nonNegative: <red>Il valore deve essere >= 0.</red>
@@ -1007,3 +1060,23 @@ gui:
             zRadius: <aqua><bold>Raggio Z</bold></aqua>
             angle: <aqua><bold>Angolo</bold></aqua>
             height: <aqua><bold>Altezza</bold></aqua>
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Editor Mob</bold></white>
+        header:
+          title: <gold><bold>Mob</bold></gold>
+          hint1: <gray>Seleziona un mob da modificare.</gray>
+          hint2: <gray>Usa la ricerca per filtrare.</gray>
+        status:
+          loaded: <green>Caricato</green>
+          missing: <red>Mancante</red>
+        entry:
+          title: <white>{id}</white>
+          name: <gray>Nome:</gray> <white>{value}</white>
+        refresh:
+          title: <yellow><bold>Aggiorna</bold></yellow>
+          hint: <gray>Ricarica la lista.</gray>
+        errors:
+          title: <red><bold>Errori</bold></red>
+          hint: <gray>Clicca per vedere gli errori di reload.</gray>

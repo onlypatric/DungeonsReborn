@@ -23,7 +23,7 @@ public final class AdvancementXpListener implements Listener {
     if (newLevel <= event.getOldLevel()) {
       return;
     }
-    advancements.recordXpLevel(player, newLevel);
+    advancements.recordXpLevelProgress(player, newLevel - event.getOldLevel());
   }
 
   @EventHandler

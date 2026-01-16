@@ -2,6 +2,7 @@ package dev.patric.dungeonsreborn.mobs.editor.menu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.bukkit.Material;
@@ -98,10 +99,11 @@ public final class MobEditorListMenu extends Window {
   }
 
   private List<MobEntry> entries(Player player) {
-    List<String> ids = MobEditorYaml.mobIds(yaml.file());
+    java.util.Map<String, String> names = MobEditorYaml.mobNames(yaml.file());
     List<MobEntry> out = new ArrayList<>();
-    for (String id : ids) {
-      String name = MobEditorYaml.name(yaml.file(), id);
+    for (Map.Entry<String, String> entry : names.entrySet()) {
+      String id = entry.getKey();
+      String name = entry.getValue();
       boolean loaded = registry.has(id);
       out.add(new MobEntry(id, name == null ? id : name, loaded));
     }
@@ -112,9 +114,11 @@ public final class MobEditorListMenu extends Window {
     Material material = entry.loaded ? Material.LIME_DYE : Material.RED_DYE;
     String status = Locales.text(null, entry.loaded ? "gui.mobs.editor.list.status.loaded" : "gui.mobs.editor.list.status.missing");
     return GuiItems.named(material,
-        Locales.component(null, "gui.mobs.editor.list.entry.title", Locales.placeholders("id", entry.id)),
+        Locales.component(null, "gui.mobs.editor.list.entry.title",
+            Locales.placeholders("id", entry.id)),
         List.of(
-            Locales.component(null, "gui.mobs.editor.list.entry.name", Locales.placeholders("name", entry.name)),
+            Locales.component(null, "gui.mobs.editor.list.entry.name",
+                Locales.placeholders("value", entry.name)),
             Locales.component(null, "gui.common.line.status", Locales.placeholders("value", status))));
   }
 

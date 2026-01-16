@@ -36,6 +36,13 @@ mobs:
   performance:
     # Optional cap on how many active mobs are processed per tick (0 = unlimited).
     maxTickMobs: 0
+  xpGating:
+    # Require a minimum XP level to damage certain mobs.
+    enabled: true
+    # Permission that bypasses XP gating (leave blank to disable bypass).
+    bypassPermission: dungeonsreborn.bypass.xp.mobs
+    # Cooldown (ticks) for warning messages to avoid spam.
+    messageCooldownTicks: 40
 
 # Upgrade system settings.
 upgrades:
@@ -45,6 +52,11 @@ upgrades:
     # Optional blacklist of enchantment keys that should be rejected on vanilla books.
     # Use namespaced keys (e.g. minecraft:sharpness). Keys without a namespace default to minecraft:.
     enchantBlacklist: []
+  xpGating:
+    # Require a minimum XP level to apply certain upgrades.
+    enabled: true
+    # Permission that bypasses XP gating (leave blank to disable bypass).
+    bypassPermission: dungeonsreborn.bypass.xp.upgrades
 
 # Progression settings (vanilla XP is used as the point system).
 progression:
@@ -89,12 +101,13 @@ progression:
     # Extra max mana per intelligence point.
     perIntelligence: 0.0
 
+
 # Global world allowlist for RPG systems.
 # - Empty list means all worlds are allowed.
 # - When set, RPG progression/skills/scoreboard should only work in these worlds.
 worlds:
   allowlist:
-    - minecraft:world
+    - minecraft:overworld
 
 # Dungeon UI settings.
 dungeons:

@@ -212,6 +212,8 @@ Crafting:
 - `docs/checklists/CUSTOM_ITEM_CRAFTING_GUI_CHECKLIST.md`
 - `docs/checklists/SPELL_ITEM_UPGRADE_CHECKLIST.md`
 - `docs/checklists/RPG_POLISH_AND_GUI_RETHINK_CHECKLIST.md`
+- `docs/checklists/RPG_PLUGIN_TEST_CHECKLIST.md`
+- `docs/checklists/MOB_DESIGN_CHECKLIST.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies

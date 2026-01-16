@@ -1,12 +1,17 @@
 # DungeonsReborn mobs.yml
 #
-# Quick guide:
-# - Each mob lives under `mobs.<id>`.
-# - Use `attacks` and `passives` for the default behavior.
-# - Use `phases` to swap attacks/passives at health thresholds.
-# - Use `manaDrops` to give mana to killer/nearby players on death.
-# - `eggs` defines spawn egg items for testing/admin use.
-# - If `ai` is omitted, the mob uses the library default AI settings.
+# This bundled file is an empty template. Add mobs over time in the runtime
+# file under `plugins/DungeonsReborn/mobs.yml`.
+#
+# Format:
+# - mobs.<id> defines a custom mob.
+# - spawnerBlocks.<id> defines a placeable spawner block.
+# - eggs.<id> defines a spawn egg item.
+#
+# Reload after edits:
+#   /dr mobs reload
+#
+# If `ai` is omitted, the mob uses the library default AI settings.
 #
 # Phases:
 # - healthBelow is a ratio in (0, 1]; lower value = later phase.
@@ -20,10 +25,14 @@
 #       killer: { min: 8, max: 16 }
 #       nearby: { radius: 6, min: 2, max: 5 }
 #
+# Loot:
+# - Use percentage chances per entry and optional guaranteed drops.
+# - Non-token entries should not exceed a stack.
+#
 schemaVersion: 1
 options:
   despawnOnReload: true
 
 mobs: {}
-
+spawnerBlocks: {}
 eggs: {}

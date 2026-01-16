@@ -1,0 +1,81 @@
+schemaVersion: 1
+mobs:
+  earth_t2_ravager_colossus:
+    type: RAVAGER
+    name: <gold>Colossus</gold>
+    showName: true
+    stats:
+      maxHealth: 100
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 24
+      leashRadius: 30
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 50
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=DUST color=\"0x8b5a2b\" size=1\
+          \ radius=2.4 points=22 count=1 offset=-1\n  particles.ring particle=CLOUD\
+          \ radius=1.9 points=18 count=1\n}"
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        range: 12
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=120 amplifier=0\n\
+            \    potion effect=WEAKNESS durationTicks=90 amplifier=0\n    knockback\
+            \ horizontal=0.6 vertical=0.15\n  }\n}"
+    phases:
+    - id: enraged
+      healthBelow: 0.5
+      attacks:
+        main:
+          trigger: MELEE
+          cooldownTicks: 16
+          chance: 1.0
+          script:
+            language: dsl-v1
+            source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+              \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=160 amplifier=1\n\
+              \    potion effect=WEAKNESS durationTicks=120 amplifier=0\n    pull\
+              \ horizontal=0.7 vertical=0.12\n  }\n}"
+      passives:
+      - periodTicks: 40
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  particles.ring particle=DUST color=\"0x8b5a2b\" size=1\
+            \ radius=2.8 points=26 count=2 offset=-1\n  particles.ring particle=CLOUD\
+            \ radius=2.2 points=20 count=1\n}"
+    xpGating:
+      minLevel: 8000
+    progression:
+      minXp: 916158
+      maxXp: 1239508
+spawnerBlocks:
+  earth_t2_ravager_colossus_spawner:
+    mob: earth_t2_ravager_colossus
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 140
+      respawnJitterTicks: 20
+      radius: 10
+      activationRadius: 28
+      attackRadius: 22
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

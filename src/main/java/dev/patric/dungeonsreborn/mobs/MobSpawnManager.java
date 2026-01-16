@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -70,6 +71,8 @@ public final class MobSpawnManager implements Listener {
   private final Map<String, SpawnState> states = new HashMap<>();
   private final Map<UUID, String> entityToSpawn = new HashMap<>();
   private final Random rng = new Random();
+  private final List<MobSpawnSpec> spawnListCache = new ArrayList<>();
+  private boolean hasGroupCaps;
   private Set<String> enabledWorlds = Set.of();
   private int maxSpawnersPerTick = 0;
   private int tickCursor = 0;
@@ -96,9 +99,15 @@ public final class MobSpawnManager implements Listener {
     spawns.clear();
     states.clear();
     entityToSpawn.clear();
+    spawnListCache.clear();
+    hasGroupCaps = false;
     this.enabledWorlds = enabledWorlds == null ? Set.of() : Set.copyOf(enabledWorlds);
     for (MobSpawnSpec spec : newSpawns) {
       spawns.put(spec.id(), spec);
+      spawnListCache.add(spec);
+      if (spec.groupId() != null && !spec.groupId().isBlank()) {
+        hasGroupCaps = true;
+      }
       SpawnState state = new SpawnState();
       SpawnState previous = previousStates.get(spec.id());
       if (previous != null) {
@@ -167,7 +176,8 @@ public final class MobSpawnManager implements Listener {
     if (alive >= max) {
       return false;
     }
-    LivingEntity entity = spawn(spec);
+    MobSpawnGroupSpec group = pickGroup(spec);
+    LivingEntity entity = spawn(spec, group);
     if (entity == null) {
       return false;
     }
@@ -193,17 +203,16 @@ public final class MobSpawnManager implements Listener {
   }
 
   private void tick() {
-    if (spawns.isEmpty()) {
+    if (spawnListCache.isEmpty()) {
       return;
     }
     long now = engine.tickNow();
-    Map<String, Integer> groupCounts = computeGroupCounts();
-    List<MobSpawnSpec> spawnList = new ArrayList<>(spawns.values());
-    int total = spawnList.size();
+    Map<String, Integer> groupCounts = hasGroupCaps ? computeGroupCounts() : Map.of();
+    int total = spawnListCache.size();
     int limit = maxSpawnersPerTick <= 0 || maxSpawnersPerTick >= total ? total : maxSpawnersPerTick;
     int start = total == 0 ? 0 : Math.floorMod(tickCursor, total);
     for (int i = 0; i < limit; i++) {
-      MobSpawnSpec spec = spawnList.get((start + i) % total);
+      MobSpawnSpec spec = spawnListCache.get((start + i) % total);
       SpawnState state = states.computeIfAbsent(spec.id(), k -> new SpawnState());
       if (!spec.enabled()) {
         updateHologram(spec, state, now);
@@ -215,6 +224,10 @@ public final class MobSpawnManager implements Listener {
       }
       World world = Bukkit.getWorld(spec.worldName());
       if (world == null) {
+        updateHologram(spec, state, now);
+        continue;
+      }
+      if (world.getPlayers().isEmpty()) {
         updateHologram(spec, state, now);
         continue;
       }
@@ -251,8 +264,10 @@ public final class MobSpawnManager implements Listener {
       if (state.nextSpawnTick > now) {
         continue;
       }
+      MobSpawnGroupSpec group = pickGroup(spec);
+      int desiredCount = group != null && group.count() != null ? group.count() : spec.count();
       int max = spec.maxAlive() <= 0 ? Integer.MAX_VALUE : spec.maxAlive();
-      int toSpawn = Math.min(spec.count(), max - alive);
+      int toSpawn = Math.min(desiredCount, max - alive);
       if (spec.groupId() != null && spec.groupMaxAlive() > 0) {
         toSpawn = Math.min(toSpawn, spec.groupMaxAlive() - groupAlive);
       }
@@ -260,7 +275,7 @@ public final class MobSpawnManager implements Listener {
         continue;
       }
       for (int j = 0; j < toSpawn; j++) {
-        LivingEntity entity = spawn(spec);
+        LivingEntity entity = spawn(spec, group);
         if (entity != null) {
           state.alive.add(entity.getUniqueId());
           entityToSpawn.put(entity.getUniqueId(), spec.id());
@@ -300,7 +315,7 @@ public final class MobSpawnManager implements Listener {
     state.outOfBoundsSince.keySet().retainAll(state.alive);
   }
 
-  private LivingEntity spawn(MobSpawnSpec spec) {
+  private LivingEntity spawn(MobSpawnSpec spec, MobSpawnGroupSpec group) {
     World world = Bukkit.getWorld(spec.worldName());
     if (world == null) {
       logger.warn("[Mobs] spawn: unknown world " + spec.worldName() + " for spawn " + spec.id());
@@ -313,9 +328,13 @@ public final class MobSpawnManager implements Listener {
       spawnLoc = base;
     }
     try {
-      LivingEntity entity = registry.spawn(spec.mobId(), spawnLoc);
+      String mobId = resolveMobId(spec, group);
+      if (spec.beamEnabled() && spec.beamParticle() != null) {
+        spawnBeam(world, base, spawnLoc, spec.beamParticle(), spec.beamStep());
+      }
+      LivingEntity entity = registry.spawn(mobId, spawnLoc);
       if (debugSpawns) {
-        logger.debug("[Mobs] spawn: id=" + spec.id() + " mob=" + spec.mobId()
+        logger.debug("[Mobs] spawn: id=" + spec.id() + " mob=" + mobId
             + " world=" + spec.worldName() + " x=" + spawnLoc.getX() + " y=" + spawnLoc.getY() + " z=" + spawnLoc.getZ());
       }
       return entity;
@@ -323,6 +342,66 @@ public final class MobSpawnManager implements Listener {
       logger.warn("[Mobs] spawn: failed id=" + spec.id() + " mob=" + spec.mobId()
           + " reason=" + ex.getMessage());
       return null;
+    }
+  }
+
+  private MobSpawnGroupSpec pickGroup(MobSpawnSpec spec) {
+    List<MobSpawnGroupSpec> groups = spec.groups();
+    if (groups == null || groups.isEmpty()) {
+      return null;
+    }
+    double total = 0.0;
+    for (MobSpawnGroupSpec group : groups) {
+      total += Math.max(0.0, group.chance());
+    }
+    if (total <= 0.0) {
+      return null;
+    }
+    double roll = ThreadLocalRandom.current().nextDouble() * total;
+    double acc = 0.0;
+    for (MobSpawnGroupSpec group : groups) {
+      acc += Math.max(0.0, group.chance());
+      if (roll <= acc) {
+        return group;
+      }
+    }
+    return groups.get(groups.size() - 1);
+  }
+
+  private String resolveMobId(MobSpawnSpec spec, MobSpawnGroupSpec group) {
+    if (group == null || group.mobs() == null || group.mobs().isEmpty()) {
+      return spec.mobId();
+    }
+    double total = 0.0;
+    for (MobSpawnGroupEntry entry : group.mobs()) {
+      total += Math.max(0.0, entry.weight());
+    }
+    if (total <= 0.0) {
+      return spec.mobId();
+    }
+    double roll = ThreadLocalRandom.current().nextDouble() * total;
+    double acc = 0.0;
+    for (MobSpawnGroupEntry entry : group.mobs()) {
+      acc += Math.max(0.0, entry.weight());
+      if (roll <= acc) {
+        return entry.mobId();
+      }
+    }
+    return group.mobs().get(group.mobs().size() - 1).mobId();
+  }
+
+  private void spawnBeam(World world, Location from, Location to, org.bukkit.Particle particle, double step) {
+    double distance = from.distance(to);
+    if (distance <= 0.0) {
+      return;
+    }
+    double safeStep = Math.max(0.1, step);
+    int points = Math.max(1, (int) Math.ceil(distance / safeStep));
+    Vector dir = to.clone().subtract(from).toVector().multiply(1.0 / points);
+    Location cursor = from.clone();
+    for (int i = 0; i <= points; i++) {
+      world.spawnParticle(particle, cursor, 1, 0.0, 0.0, 0.0, 0.0);
+      cursor.add(dir);
     }
   }
 
@@ -638,7 +717,7 @@ public final class MobSpawnManager implements Listener {
 
   private Map<String, Integer> computeGroupCounts() {
     Map<String, Integer> counts = new HashMap<>();
-    for (MobSpawnSpec spec : spawns.values()) {
+    for (MobSpawnSpec spec : spawnListCache) {
       String groupId = spec.groupId();
       if (groupId == null || groupId.isBlank()) {
         continue;

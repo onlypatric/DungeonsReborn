@@ -16,6 +16,9 @@ import org.bukkit.inventory.ItemStack;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.admin.AdminAuditStore;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
+import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockSpec;
+import dev.patric.dungeonsreborn.mobs.MobSpawnerItems;
+import dev.patric.dungeonsreborn.mobs.MobSpec;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.editor.MobEditorYaml;
 import dev.patric.dungeonsreborn.gui.GuiItems;
@@ -50,6 +53,7 @@ public final class MobEditorDetailMenu extends Window {
 
     setFixedAt(1, 1, nameButton());
     setFixedAt(1, 3, showNameButton());
+    setFixedAt(1, 4, giveSpawnerButton());
     setFixedAt(1, 5, previewButton());
     setFixedAt(1, 6, giveEggButton());
     setFixedAt(1, 7, exportButton());
@@ -230,6 +234,27 @@ public final class MobEditorDetailMenu extends Window {
     }).autoDescribeInLore(false);
   }
 
+  private Button giveSpawnerButton() {
+    return new Button(p -> GuiItems.named(Material.SPAWNER, GuiMini.mm("<aqua><bold>Give Spawner</bold></aqua>"), List.of(
+        GuiMini.mm("<gray>Give yourself the spawner block.</gray>"))), ctx -> {
+      Player player = ctx.player();
+      MobSpawnerBlockSpec spec = yaml.spawnerBlockSpecForMob(mobId);
+      ItemStack spawner = yaml.spawnerBlockItemForMob(mobId);
+      if (spawner == null || spec == null) {
+        player.sendMessage(Component.text("§cNo spawner block configured for " + mobId));
+        return;
+      }
+      MobSpec mobSpec = registry.get(mobId);
+      spawner = MobSpawnerItems.decorateSpawnerItem(spawner, spec, mobSpec);
+      var leftovers = player.getInventory().addItem(spawner);
+      if (!leftovers.isEmpty()) {
+        player.sendMessage(Component.text("§cInventory full."));
+        return;
+      }
+      player.sendMessage(Component.text("§aGiven spawner for " + mobId));
+    }).autoDescribeInLore(false);
+  }
+
   private Button exportButton() {
     return new Button(p -> GuiItems.named(Material.WRITABLE_BOOK, GuiMini.mm("<aqua><bold>Export</bold></aqua>"), List.of(
         GuiMini.mm("<gray>Save this mob to an export file.</gray>"))), ctx -> {
@@ -334,13 +359,7 @@ public final class MobEditorDetailMenu extends Window {
   }
 
   private int passiveCount() {
-    org.bukkit.configuration.file.YamlConfiguration cfg = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file());
-    org.bukkit.configuration.ConfigurationSection mob = cfg.getConfigurationSection("mobs." + mobId);
-    if (mob == null) {
-      return 0;
-    }
-    List<?> list = mob.getMapList("passives");
-    return list == null ? 0 : list.size();
+    return MobEditorYaml.passiveCount(file(), mobId);
   }
 
   private List<Component> lootSummaryLore(boolean guaranteed) {

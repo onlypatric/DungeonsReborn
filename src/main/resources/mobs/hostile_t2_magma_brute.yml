@@ -1,0 +1,50 @@
+schemaVersion: 1
+mobs:
+  hostile_t2_magma_brute:
+    type: MAGMA_CUBE
+    name: <red>Magma Brute</red>
+    showName: true
+    stats:
+      maxHealth: 24
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 26
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    ignite durationTicks=80\n    potion effect=SLOWNESS\
+            \ durationTicks=80 amplifier=0\n  }\n}"
+    xpGating:
+      minLevel: 100
+    progression:
+      minXp: 5752
+      maxXp: 7782
+spawnerBlocks:
+  hostile_t2_magma_brute_spawner:
+    mob: hostile_t2_magma_brute
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 120
+      respawnJitterTicks: 20
+      radius: 9
+      activationRadius: 26
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 14
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

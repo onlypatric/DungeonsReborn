@@ -1,0 +1,77 @@
+schemaVersion: 1
+mobs:
+  cultist_mirage:
+    type: ILLUSIONER
+    name: <dark_purple>Mirage</dark_purple>
+    showName: true
+    equipment:
+      head: LEATHER_HELMET
+      mainhand: BOW
+    stats:
+      maxHealth: 80
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 28
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 60
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=PORTAL radius=2.1 points=20\
+          \ count=1\n  particles.point particle=END_ROD count=4\n}"
+    attacks:
+      main:
+        trigger: RANGED
+        cooldownTicks: 26
+        chance: 1.0
+        range: 14
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    damage amount=3 policy=hostile_default\n    potion\
+            \ effect=WITHER durationTicks=120 amplifier=0\n    potion effect=WEAKNESS\
+            \ durationTicks=80 amplifier=0\n    potion effect=SLOWNESS durationTicks=60\
+            \ amplifier=0\n  }\n}"
+      secondary:
+        trigger: RANGED
+        cooldownTicks: 80
+        chance: 0.35
+        range: 14
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    damage amount=3 policy=hostile_default\n    potion\
+            \ effect=WITHER durationTicks=120 amplifier=0\n    potion effect=WEAKNESS\
+            \ durationTicks=120 amplifier=0\n    potion effect=SLOWNESS durationTicks=100\
+            \ amplifier=0\n    pull horizontal=0.4 vertical=0.1\n  }\n  particles.ring\
+            \ particle=SOUL radius=1.4 points=16 count=2\n}"
+    xpGating:
+      minLevel: 15000
+    progression:
+      minXp: 4457896
+      maxXp: 6031271
+spawnerBlocks:
+  cultist_mirage_spawner:
+    mob: cultist_mirage
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 120
+      respawnJitterTicks: 20
+      radius: 9
+      activationRadius: 24
+      attackRadius: 18
+      allowBlockDamage: false
+      tether:
+        radius: 14
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <dark_purple>{mob}</dark_purple> <gray>({alive}/{cap})</gray>

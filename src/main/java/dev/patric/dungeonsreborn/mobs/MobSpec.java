@@ -46,7 +46,9 @@ public final class MobSpec {
   private final MobSummonSpec summonSpec;
   private final MobProgressionSpec progressionSpec;
   private final MobAdvancementRewardSpec advancementRewards;
+  private final int minXpLevel;
   private final boolean allowBlockDamage;
+  private final double scaleVariance;
   private final Consumer<MobContext> onSpawn;
   private final Consumer<MobContext> onDeath;
   private final BiConsumer<MobContext, MobRemovalReason> onRemove;
@@ -81,7 +83,9 @@ public final class MobSpec {
     this.summonSpec = builder.summonSpec;
     this.progressionSpec = builder.progressionSpec;
     this.advancementRewards = builder.advancementRewards;
+    this.minXpLevel = builder.minXpLevel;
     this.allowBlockDamage = builder.allowBlockDamage;
+    this.scaleVariance = builder.scaleVariance;
     this.onSpawn = builder.onSpawn;
     this.onDeath = builder.onDeath;
     this.onRemove = builder.onRemove;
@@ -203,8 +207,16 @@ public final class MobSpec {
     return advancementRewards;
   }
 
+  public int minXpLevel() {
+    return minXpLevel;
+  }
+
   public boolean allowBlockDamage() {
     return allowBlockDamage;
+  }
+
+  public double scaleVariance() {
+    return scaleVariance;
   }
 
   public Consumer<MobContext> onSpawn() {
@@ -253,7 +265,9 @@ public final class MobSpec {
     private MobSummonSpec summonSpec;
     private MobProgressionSpec progressionSpec;
     private MobAdvancementRewardSpec advancementRewards;
+    private int minXpLevel;
     private boolean allowBlockDamage = true;
+    private double scaleVariance;
     private Consumer<MobContext> onSpawn = ctx -> {
     };
     private Consumer<MobContext> onDeath = ctx -> {
@@ -408,8 +422,24 @@ public final class MobSpec {
       return this;
     }
 
+    public Builder minXpLevel(int minXpLevel) {
+      if (minXpLevel < 0) {
+        throw new IllegalArgumentException("minXpLevel must be >= 0");
+      }
+      this.minXpLevel = minXpLevel;
+      return this;
+    }
+
     public Builder allowBlockDamage(boolean allowBlockDamage) {
       this.allowBlockDamage = allowBlockDamage;
+      return this;
+    }
+
+    public Builder scaleVariance(double scaleVariance) {
+      if (scaleVariance < 0.0) {
+        throw new IllegalArgumentException("scaleVariance must be >= 0");
+      }
+      this.scaleVariance = scaleVariance;
       return this;
     }
 

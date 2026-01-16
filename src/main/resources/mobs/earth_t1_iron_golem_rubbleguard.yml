@@ -1,0 +1,60 @@
+schemaVersion: 1
+mobs:
+  earth_t1_iron_golem_rubbleguard:
+    type: IRON_GOLEM
+    name: <gold>Rubbleguard</gold>
+    showName: true
+    stats:
+      maxHealth: 40
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 28
+      idleWanderRadius: 3
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 60
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=DUST color=\"0x8b5a2b\" size=1\
+          \ radius=2.0 points=18 count=1 offset=-1\n  particles.ring particle=CLOUD\
+          \ radius=1.6 points=16 count=1\n}"
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 24
+        chance: 1.0
+        range: 12
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=80 amplifier=0\n\
+            \    potion effect=WEAKNESS durationTicks=60 amplifier=0\n    knockback\
+            \ horizontal=0.6 vertical=0.15\n  }\n}"
+    xpGating:
+      minLevel: 5000
+    progression:
+      minXp: 991738
+      maxXp: 1341762
+spawnerBlocks:
+  earth_t1_iron_golem_rubbleguard_spawner:
+    mob: earth_t1_iron_golem_rubbleguard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 120
+      respawnJitterTicks: 20
+      radius: 9
+      activationRadius: 26
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 14
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

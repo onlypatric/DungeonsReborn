@@ -1,0 +1,59 @@
+schemaVersion: 1
+mobs:
+  frost_t2_stray_icecaller:
+    type: STRAY
+    name: <aqua>Icecaller</aqua>
+    showName: true
+    stats:
+      maxHealth: 40
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 24
+      leashRadius: 30
+      idleWanderRadius: 5
+      idleWanderIntervalTicks: 80
+    passives:
+    - periodTicks: 60
+      script:
+        language: dsl-v1
+        source: "on_cast {\n  particles.ring particle=SNOWFLAKE radius=2.2 points=26\
+          \ count=1\n}"
+    attacks:
+      main:
+        trigger: RANGED
+        cooldownTicks: 18
+        chance: 1.0
+        range: 16
+        requireLineOfSight: false
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=4 filter=players\
+            \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=120 amplifier=0\n\
+            \    freeze durationTicks=120\n    potion effect=WEAKNESS durationTicks=80\
+            \ amplifier=0\n  }\n}"
+    xpGating:
+      minLevel: 1500
+    progression:
+      minXp: 44165
+      maxXp: 59752
+spawnerBlocks:
+  frost_t2_stray_icecaller_spawner:
+    mob: frost_t2_stray_icecaller
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 140
+      respawnJitterTicks: 20
+      radius: 10
+      activationRadius: 28
+      attackRadius: 22
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <aqua>{mob}</aqua> <gray>({alive}/{cap})</gray>

@@ -1,0 +1,12 @@
+enabled: true
+updateTicks: 40
+title: "<gold>DungeonsReborn</gold>"
+lines:
+  - "<gray>Level:</gray> <green>{level}</green>"
+  - "<gray>XP:</gray> <green>{xp}</green>"
+  - "<gray>SP:</gray> <yellow>{skill_points}</yellow>"
+  - "<gray>STR:</gray> <red>{strength}</red>"
+  - "<gray>DEX:</gray> <blue>{dexterity}</blue>"
+  - "<gray>INT:</gray> <light_purple>{intelligence}</light_purple>"
+  - "<gray>VIT:</gray> <dark_red>{vitality}</dark_red>"
+  - "<gray>Mana:</gray> <aqua>{mana}/{mana_max}</aqua>"

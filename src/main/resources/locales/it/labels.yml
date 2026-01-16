@@ -18,3 +18,13 @@ labels:
     mobsYaml: Loader YAML mob
     mobsEditor: Editor mob
     mobSpawners: Sistema spawner
+  upgrades:
+    requirements:
+      xpLevelMin: Richiede livello {level} per applicare questo potenziamento.
+      xpLevelConsume: Richiede livello {level} per consumare XP per questo potenziamento.
+      totalXpMin: Richiede {xp} XP totali per applicare questo potenziamento.
+      totalXpConsume: Richiede {xp} XP totali da consumare per questo potenziamento.
+      xpProgressMin: Richiede {percent} progressione XP per applicare questo potenziamento.
+      xpProgressConsume: Richiede {percent} progressione XP da consumare per questo potenziamento.
+      manaMin: Richiede {mana} mana massima per applicare questo potenziamento.
+      manaMissing: Sistema mana non disponibile.

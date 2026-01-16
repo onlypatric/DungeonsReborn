@@ -2,10 +2,13 @@ package dev.patric.dungeonsreborn.progression;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.io.File;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -24,11 +27,13 @@ import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.classes.ClassBonusService;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class ProgressionHudService {
   private static final String OBJECTIVE_ID = "dr_hud";
-  private static final long UPDATE_TICKS = 40L;
+  private static final long DEFAULT_UPDATE_TICKS = 40L;
+  private static final int MAX_LINES = 15;
 
   private final JavaPlugin plugin;
   private final ProgressionService progressionService;
@@ -36,6 +41,9 @@ public final class ProgressionHudService {
   private final EffectsEngine effectsEngine;
   private final Predicate<World> worldAllowed;
   private final ScoreboardManager scoreboardManager;
+  private final MiniMessage miniMessage = MiniMessage.miniMessage();
+  private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacySection();
+  private Layout layout;
   private ClassBonusService classBonuses;
   private int taskId = -1;
   private SharedTickScheduler.Handle schedulerHandle;
@@ -48,6 +56,7 @@ public final class ProgressionHudService {
     this.effectsEngine = Objects.requireNonNull(effectsEngine, "effectsEngine");
     this.worldAllowed = worldAllowed;
     this.scoreboardManager = Objects.requireNonNull(Bukkit.getScoreboardManager(), "scoreboardManager");
+    this.layout = Layout.load(plugin);
   }
 
   public void setClassBonuses(ClassBonusService classBonuses) {
@@ -61,7 +70,8 @@ public final class ProgressionHudService {
     if (taskId != -1) {
       return;
     }
-    taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, UPDATE_TICKS, UPDATE_TICKS);
+    long ticks = layout.updateTicks();
+    taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, ticks, ticks);
   }
 
   public void start(SharedTickScheduler scheduler) {
@@ -72,7 +82,7 @@ public final class ProgressionHudService {
     if (schedulerHandle != null || taskId != -1) {
       return;
     }
-    schedulerHandle = scheduler.schedule("progressionHud", UPDATE_TICKS, this::tick);
+    schedulerHandle = scheduler.schedule("progressionHud", layout.updateTicks(), this::tick);
   }
 
   public void stop() {
@@ -97,6 +107,10 @@ public final class ProgressionHudService {
       hide(player);
       return;
     }
+    if (!layout.enabled()) {
+      hide(player);
+      return;
+    }
     if (statService != null) {
       statService.apply(player);
     }
@@ -107,8 +121,10 @@ public final class ProgressionHudService {
     Objective objective = board.getObjective(OBJECTIVE_ID);
     if (objective == null) {
       objective = board.registerNewObjective(
-          OBJECTIVE_ID, Criteria.DUMMY, Component.text("DungeonsReborn", NamedTextColor.GOLD), RenderType.INTEGER);
+          OBJECTIVE_ID, Criteria.DUMMY, layout.titleComponent(), RenderType.INTEGER);
       objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+    } else {
+      objective.displayName(layout.titleComponent());
     }
     updateBoard(player, board, objective);
     player.setScoreboard(board);
@@ -133,6 +149,10 @@ public final class ProgressionHudService {
         hide(player);
         continue;
       }
+      if (!layout.enabled()) {
+        hide(player);
+        continue;
+      }
       if (statService != null) {
         statService.apply(player);
       }
@@ -152,20 +172,11 @@ public final class ProgressionHudService {
   private void updateBoard(Player player, Scoreboard board, Objective objective) {
     progressionService.syncFromPlayer(player);
     PlayerProgression progression = progressionService.getOrCreate(player.getUniqueId());
-    List<String> lines = new ArrayList<>();
-    lines.add(formatLine("Level", String.valueOf(progression.level()), NamedTextColor.GREEN));
-    lines.add(formatLine("XP", String.valueOf(progression.points()), NamedTextColor.GREEN));
-    lines.add(formatLine("SP", String.valueOf(progression.skillPoints()), NamedTextColor.YELLOW));
-    lines.add(formatLine("STR", String.valueOf(progression.strength()), NamedTextColor.RED));
-    lines.add(formatLine("DEX", String.valueOf(progression.dexterity()), NamedTextColor.BLUE));
-    lines.add(formatLine("INT", String.valueOf(progression.intelligence()), NamedTextColor.LIGHT_PURPLE));
-    lines.add(formatLine("VIT", String.valueOf(progression.vitality()), NamedTextColor.DARK_RED));
     ManaProvider manaProvider = effectsEngine.manaProvider();
-    if (manaProvider != null) {
-      double mana = manaProvider.get(player);
-      double maxMana = manaProvider.getMax(player);
-      lines.add(formatLine("Mana", format(mana) + "/" + format(maxMana), NamedTextColor.AQUA));
-    }
+    double mana = manaProvider == null ? 0.0 : manaProvider.get(player);
+    double maxMana = manaProvider == null ? 0.0 : manaProvider.getMax(player);
+    String classId = "";
+    List<String> lines = formatLines(player, progression, mana, maxMana, classId);
     applyLines(board, objective, lines);
   }
 
@@ -175,6 +186,9 @@ public final class ProgressionHudService {
       board.resetScores(entry);
     }
     List<String> unique = dedupe(lines);
+    if (unique.size() > MAX_LINES) {
+      unique = unique.subList(0, MAX_LINES);
+    }
     int score = unique.size();
     for (String line : unique) {
       objective.getScore(line).setScore(score--);
@@ -199,12 +213,6 @@ public final class ProgressionHudService {
     return out;
   }
 
-  private static String formatLine(String label, String value, NamedTextColor labelColor) {
-    Component line = Component.text(label + ": ", labelColor)
-        .append(Component.text(value, NamedTextColor.WHITE));
-    return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(line);
-  }
-
   private boolean isWorldAllowed(World world) {
     return worldAllowed == null || worldAllowed.test(world);
   }
@@ -214,5 +222,94 @@ public final class ProgressionHudService {
       return String.valueOf((long) Math.round(value));
     }
     return String.format(java.util.Locale.ROOT, "%.1f", value);
+  }
+
+  public void reloadConfig() {
+    Layout newLayout = Layout.load(plugin);
+    if (newLayout.updateTicks() != layout.updateTicks()) {
+      stop();
+      layout = newLayout;
+      start();
+      return;
+    }
+    layout = newLayout;
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      refresh(player);
+    }
+  }
+
+  private List<String> formatLines(Player player, PlayerProgression progression, double mana, double maxMana,
+      String classId) {
+    List<String> out = new ArrayList<>();
+    Map<String, String> placeholders = new HashMap<>();
+    placeholders.put("level", String.valueOf(progression.level()));
+    placeholders.put("xp", String.valueOf(progression.points()));
+    placeholders.put("skill_points", String.valueOf(progression.skillPoints()));
+    placeholders.put("strength", String.valueOf(progression.strength()));
+    placeholders.put("dexterity", String.valueOf(progression.dexterity()));
+    placeholders.put("intelligence", String.valueOf(progression.intelligence()));
+    placeholders.put("vitality", String.valueOf(progression.vitality()));
+    placeholders.put("mana", format(mana));
+    placeholders.put("mana_max", format(maxMana));
+    placeholders.put("mana_percent",
+        maxMana <= 0 ? "0" : String.valueOf((int) Math.round((mana / maxMana) * 100)));
+    placeholders.put("class", classId);
+    placeholders.put("world", player.getWorld().getName());
+    for (String template : layout.lines()) {
+      if (template == null) {
+        continue;
+      }
+      String rendered = replacePlaceholders(template, placeholders);
+      Component component = miniMessage.deserialize(rendered);
+      out.add(legacySerializer.serialize(component));
+    }
+    return out;
+  }
+
+  private static String replacePlaceholders(String template, Map<String, String> placeholders) {
+    String out = template;
+    for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+      String key = entry.getKey();
+      String value = entry.getValue();
+      if (key == null || value == null) {
+        continue;
+      }
+      out = out.replace("{" + key + "}", value);
+    }
+    return out;
+  }
+
+  private record Layout(boolean enabled, long updateTicks, Component titleComponent, List<String> lines) {
+    static Layout load(JavaPlugin plugin) {
+      Objects.requireNonNull(plugin, "plugin");
+      File file = new File(plugin.getDataFolder(), "scoreboard.yml");
+      if (!file.exists()) {
+        plugin.saveResource("scoreboard.yml", false);
+      }
+      org.bukkit.configuration.file.YamlConfiguration yaml =
+          org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
+      boolean enabled = yaml.getBoolean("enabled", true);
+      long updateTicks = Math.max(10L, yaml.getLong("updateTicks", DEFAULT_UPDATE_TICKS));
+      String title = yaml.getString("title", "<gold>DungeonsReborn</gold>");
+      List<String> lines = yaml.getStringList("lines");
+      if (lines.isEmpty()) {
+        lines = defaultLines();
+      }
+      Component titleComponent = MiniMessage.miniMessage().deserialize(title);
+      return new Layout(enabled, updateTicks, titleComponent, lines);
+    }
+
+    private static List<String> defaultLines() {
+      List<String> lines = new ArrayList<>();
+      lines.add("<gray>Level:</gray> <green>{level}</green>");
+      lines.add("<gray>XP:</gray> <green>{xp}</green>");
+      lines.add("<gray>SP:</gray> <yellow>{skill_points}</yellow>");
+      lines.add("<gray>STR:</gray> <red>{strength}</red>");
+      lines.add("<gray>DEX:</gray> <blue>{dexterity}</blue>");
+      lines.add("<gray>INT:</gray> <light_purple>{intelligence}</light_purple>");
+      lines.add("<gray>VIT:</gray> <dark_red>{vitality}</dark_red>");
+      lines.add("<gray>Mana:</gray> <aqua>{mana}/{mana_max}</aqua>");
+      return lines;
+    }
   }
 }

@@ -1,0 +1,48 @@
+schemaVersion: 1
+mobs:
+  hostile_t1_illusion_rascal:
+    type: ILLUSIONER
+    name: <light_purple>Illusion Rascal</light_purple>
+    showName: true
+    stats:
+      maxHealth: 14
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 20
+      leashRadius: 24
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 20
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    potion effect=BLINDNESS durationTicks=80 amplifier=0\n\
+            \  }\n}"
+    progression:
+      minXp: 175
+      maxXp: 238
+spawnerBlocks:
+  hostile_t1_illusion_rascal_spawner:
+    mob: hostile_t1_illusion_rascal
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 3
+      respawnTicks: 100
+      respawnJitterTicks: 20
+      radius: 8
+      activationRadius: 24
+      attackRadius: 18
+      allowBlockDamage: false
+      tether:
+        radius: 12
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

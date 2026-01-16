@@ -118,6 +118,16 @@ public final class EntityActions {
     };
   }
 
+  public static TargetAction<LivingEntity> ignite(int ticks) {
+    if (ticks <= 0) {
+      throw new IllegalArgumentException("ticks must be > 0");
+    }
+    return (ctx, target) -> {
+      int applied = Math.max(target.getFireTicks(), ticks);
+      target.setFireTicks(applied);
+    };
+  }
+
   public static TargetAction<LivingEntity> damageTrue(double amount, DamagePolicy policy) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
@@ -402,13 +412,18 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> potion(PotionEffectType type, Duration duration, int amplifier) {
+    return potion(type, duration, amplifier, false, true, true);
+  }
+
+  public static TargetAction<LivingEntity> potion(PotionEffectType type, Duration duration, int amplifier,
+      boolean ambient, boolean particles, boolean icon) {
     Objects.requireNonNull(type, "type");
     Objects.requireNonNull(duration, "duration");
     if (amplifier < 0) {
       throw new IllegalArgumentException("amplifier must be >= 0");
     }
     int ticks = Math.max(1, (int) Math.min(Integer.MAX_VALUE, (duration.toMillis() + 49L) / 50L));
-    return (ctx, target) -> target.addPotionEffect(new PotionEffect(type, ticks, amplifier, false, true, true));
+    return (ctx, target) -> target.addPotionEffect(new PotionEffect(type, ticks, amplifier, ambient, particles, icon));
   }
 
   /**

@@ -1889,6 +1889,8 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        String targetRaw = string(node, "targetAt", null);
+        final AtMode targetAt = targetRaw == null ? null : parseAt(targetRaw, path + ".targetAt");
         yield ctx -> {
           double len = evalDouble(length, ctx);
           double st = evalDouble(step, ctx);
@@ -1896,7 +1898,30 @@ public final class EffectsYamlAbilities {
           if (len <= 0.0 || st <= 0.0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesLine(particle, len, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          CastContext exec = ctx;
+          if (targetAt != null) {
+            Location target = resolveAt(ctx, targetAt);
+            if (target.getWorld() == null || !target.getWorld().equals(ctx.origin().getWorld())) {
+              return;
+            }
+            Vector direction = target.toVector().subtract(ctx.origin().toVector());
+            if (direction.lengthSquared() < 1e-9) {
+              return;
+            }
+            direction.normalize();
+            exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                ctx.origin().clone(),
+                direction,
+                ctx.itemInHand());
+          }
+          Actions.particlesLine(particle, len, st, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_arc" -> {
@@ -4236,6 +4261,9 @@ public final class EffectsYamlAbilities {
         PotionEffectType effect = parsePotionEffect(requireAttr(attrs, "effect", stmtToken), stmtToken, "effect");
         NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
         NumValue amplifier = numAttr(attrs, "amplifier", 0.0, stmtToken);
+        boolean ambient = boolAttr(attrs, "ambient", false, stmtToken);
+        boolean particles = boolAttr(attrs, "particles", true, stmtToken);
+        boolean icon = boolAttr(attrs, "icon", true, stmtToken);
         return ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target == null) {
@@ -4243,7 +4271,42 @@ public final class EffectsYamlAbilities {
           }
           long ticks = Math.max(1L, evalLong(durationTicks, ctx));
           int amp = Math.max(0, evalInt(amplifier, ctx));
-          EntityActions.potion(effect, Duration.ofMillis(ticks * 50L), amp).execute(ctx, target);
+          EntityActions.potion(effect, Duration.ofMillis(ticks * 50L), amp, ambient, particles, icon).execute(ctx, target);
+        };
+      }
+
+      if ("ignite".equalsIgnoreCase(name) || "fire".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
+        if (attrs.containsKey("ticks")) {
+          durationTicks = numFromValue(requireAttr(attrs, "ticks", stmtToken), "ticks", stmtToken);
+        }
+        NumValue finalDuration = durationTicks;
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          int ticks = (int) Math.max(1L, evalLong(finalDuration, ctx));
+          EntityActions.ignite(ticks).execute(ctx, target);
+        };
+      }
+
+      if ("freeze".equalsIgnoreCase(name) || "freeze_ticks".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 80.0, stmtToken);
+        if (attrs.containsKey("ticks")) {
+          durationTicks = numFromValue(requireAttr(attrs, "ticks", stmtToken), "ticks", stmtToken);
+        }
+        NumValue finalDuration = durationTicks;
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          int ticks = (int) Math.max(0L, evalLong(finalDuration, ctx));
+          int capped = Math.min(ticks, target.getMaxFreezeTicks());
+          target.setFreezeTicks(capped);
         };
       }
 
@@ -4603,6 +4666,7 @@ public final class EffectsYamlAbilities {
       NumValue extra = numAttr(attrs, "extra", 0.0, stmtToken);
       String atRaw = stringAttr(attrs, "at", "origin", stmtToken);
       AtMode at = parseAt(atRaw, pathAt(stmtToken) + ".at");
+      Object data = particleDataFromAttrs(particle, attrs, stmtToken);
 
       switch (shape) {
         case "point" -> {
@@ -4620,7 +4684,8 @@ public final class EffectsYamlAbilities {
             }
             double off = evalDouble(offset, ctx);
             double ex = evalDouble(extra, ctx);
-            ctx.engine().particles().emit(loc.getWorld(), loc, particle, emitCount, off, off, off, ex);
+            Object resolved = resolveParticleData(data, ctx, loc);
+            ctx.engine().particles().emit(loc.getWorld(), loc, particle, emitCount, off, off, off, ex, resolved);
           };
         }
         case "ring" -> {
@@ -4645,12 +4710,18 @@ public final class EffectsYamlAbilities {
             double off = evalDouble(offset, ctx);
             double ex = evalDouble(extra, ctx);
             dev.patric.dungeonsreborn.effects.particles.ParticleShapes.ring(center, new Vector(0, 1, 0), r, pts,
-                loc -> pe.emit(center.getWorld(), loc, particle, emitCount, off, off, off, ex));
+                loc -> {
+                  Object resolved = resolveParticleData(data, ctx, loc);
+                  pe.emit(center.getWorld(), loc, particle, emitCount, off, off, off, ex, resolved);
+                });
           };
         }
         case "line" -> {
           NumValue length = numAttr(attrs, "length", 10.0, stmtToken);
           NumValue step = numAttr(attrs, "step", 0.35, stmtToken);
+          final AtMode targetAt = attrs.containsKey("targetAt")
+              ? parseAt(stringAttr(attrs, "targetAt", "origin", stmtToken), pathAt(stmtToken) + ".targetAt")
+              : null;
           return ctx -> {
             double len = evalDouble(length, ctx);
             double st = evalDouble(step, ctx);
@@ -4663,7 +4734,30 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesLine(particle, len, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            CastContext exec = ctx;
+            if (targetAt != null) {
+              Location target = resolveAt(ctx, targetAt);
+              if (target.getWorld() == null || !target.getWorld().equals(ctx.origin().getWorld())) {
+                return;
+              }
+              Vector direction = target.toVector().subtract(ctx.origin().toVector());
+              if (direction.lengthSquared() < 1e-9) {
+                return;
+              }
+              direction.normalize();
+              exec = new CastContext(
+                  ctx.engine(),
+                  ctx.plugin(),
+                  ctx.castId(),
+                  ctx.abilityId(),
+                  ctx.tick(),
+                  ctx.state(),
+                  ctx.caster(),
+                  ctx.origin().clone(),
+                  direction,
+                  ctx.itemInHand());
+            }
+            Actions.particlesLine(particle, len, st, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "arc" -> {
@@ -4682,7 +4776,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "disk" -> {
@@ -4706,7 +4800,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "sphere_shell", "sphere-shell", "sphere" -> {
@@ -4723,7 +4817,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "sphere_filled", "sphere-filled", "sphere_fill" -> {
@@ -4740,7 +4834,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "helix" -> {
@@ -4761,7 +4855,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "bezier" -> {
@@ -4810,7 +4904,8 @@ public final class EffectsYamlAbilities {
                 particle,
                 emitCount,
                 evalDouble(offset, exec),
-                evalDouble(extra, exec)).execute(exec);
+                evalDouble(extra, exec),
+                data).execute(exec);
           };
         }
         case "spline" -> {
@@ -4850,7 +4945,8 @@ public final class EffectsYamlAbilities {
                   ctx.direction().clone(),
                   ctx.itemInHand());
             }
-            Actions.particlesSpline(fns, ppm, maxPts, particle, emitCount, evalDouble(offset, exec), evalDouble(extra, exec)).execute(exec);
+            Actions.particlesSpline(fns, ppm, maxPts, particle, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+                .execute(exec);
           };
         }
         case "cone" -> {
@@ -4872,7 +4968,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx))
+            Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
                 .execute(ctx);
           };
         }
@@ -4895,7 +4991,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx))
+            Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
                 .execute(ctx);
           };
         }
@@ -4921,7 +5017,7 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+            Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "polygon" -> {
@@ -4941,7 +5037,8 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx))
+            Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+                data)
                 .execute(ctx);
           };
         }
@@ -4967,7 +5064,8 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.presetOrbit(particle, r, duration, period, easingFromId(easingId), c, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx))
+            Actions.presetOrbit(particle, r, duration, period, easingFromId(easingId), c, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+                data)
                 .execute(ctx);
           };
         }
@@ -4995,7 +5093,8 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.presetSwirl(particle, r, h, duration, period, easingFromId(easingId), pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx))
+            Actions.presetSwirl(particle, r, h, duration, period, easingFromId(easingId), pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+                data)
                 .execute(ctx);
           };
         }
@@ -5024,7 +5123,7 @@ public final class EffectsYamlAbilities {
               return;
             }
             Actions.presetShockwave(particle, start, end, duration, period, easingFromId(easingId), pts, emitCount,
-                evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+                evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         case "beam_chargeup", "beam-chargeup" -> {
@@ -5054,7 +5153,7 @@ public final class EffectsYamlAbilities {
               return;
             }
             Actions.presetBeamChargeup(particle, start, end, duration, period, easingFromId(easingId), st, emitCount,
-                evalDouble(offset, ctx), evalDouble(extra, ctx)).execute(ctx);
+                evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
           };
         }
         default -> throw error(stmtToken, "unknown particles shape: " + shape);
@@ -5371,6 +5470,40 @@ public final class EffectsYamlAbilities {
         throw error(at, "invalid " + key + ": expected string");
       }
       return value.text();
+    }
+
+    private Object rawValue(Value value, String key, Token at) {
+      return switch (value.kind()) {
+        case NUMBER -> value.number();
+        case STRING, IDENT -> value.text();
+        default -> throw error(at, "invalid " + key + ": expected string or number");
+      };
+    }
+
+    private Object particleDataFromAttrs(Particle particle, Map<String, Value> attrs, Token at) {
+      if (particle == Particle.DUST) {
+        Value colorValue = attrs.getOrDefault("color", attrs.get("colour"));
+        if (colorValue == null) {
+          throw error(at, "missing color for DUST particle");
+        }
+        Color color = parseColor(rawValue(colorValue, "color", at), pathAt(at) + ".color");
+        NumValue size = numAttr(attrs, "size", 1.0, at);
+        return (java.util.function.BiFunction<CastContext, Location, Object>) (ctx, loc) ->
+            new Particle.DustOptions(color, (float) evalDouble(size, ctx));
+      }
+      if (particle == Particle.DUST_COLOR_TRANSITION) {
+        Value fromValue = attrs.getOrDefault("color", attrs.get("from"));
+        Value toValue = attrs.get("toColor");
+        if (fromValue == null || toValue == null) {
+          throw error(at, "DUST_COLOR_TRANSITION requires color and toColor");
+        }
+        Color from = parseColor(rawValue(fromValue, "color", at), pathAt(at) + ".color");
+        Color to = parseColor(rawValue(toValue, "toColor", at), pathAt(at) + ".toColor");
+        NumValue size = numAttr(attrs, "size", 1.0, at);
+        return (java.util.function.BiFunction<CastContext, Location, Object>) (ctx, loc) ->
+            new Particle.DustTransition(from, to, (float) evalDouble(size, ctx));
+      }
+      return null;
     }
 
     private boolean boolAttr(Map<String, Value> attrs, String key, boolean def, Token at) {

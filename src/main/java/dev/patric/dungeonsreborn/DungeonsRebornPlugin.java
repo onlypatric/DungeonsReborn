@@ -137,6 +137,23 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private DungeonProgressRepository dungeonProgress;
     private DungeonSessionManager dungeonSessions;
 
+    private AdvancementService initAdvancements() {
+        try {
+            if (Bukkit.getPluginManager().getPlugin("UltimateAdvancementAPI") == null) {
+                getLogger().warning("[Advancements] UltimateAdvancementAPI not installed, skipping.");
+                return null;
+            }
+            AdvancementService service = new AdvancementService(this);
+            if (service.enable()) {
+                return service;
+            }
+        } catch (NoClassDefFoundError | Exception ex) {
+            getLogger().log(java.util.logging.Level.WARNING,
+                "[Advancements] Failed to initialize, continuing without advancements", ex);
+        }
+        return null;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -145,22 +162,19 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         localeService = new LocaleService(this, serviceLog.locales());
         localeService.reload();
         Locales.install(localeService);
-        advancementService = new AdvancementService(this);
-        advancementService.enable();
+        advancementService = initAdvancements();
         sharedTicks = new SharedTickScheduler(this, getLogger());
         sharedTicks.start();
         worldAllowlist = WorldAllowlist.fromConfig(getConfig());
-        if (advancementService.isEnabled()) {
+        logStartupSummary();
+        if (advancementService != null && advancementService.isEnabled()) {
             Bukkit.getPluginManager().registerEvents(
                 new AdvancementWorldListener(advancementService, worldAllowlist), this);
             Bukkit.getPluginManager().registerEvents(new AdvancementXpListener(advancementService), this);
-            advancementService.registerXpAdvancements();
-            advancementService.registerXpTotalAdvancements();
-            advancementService.registerTokenAdvancements();
         }
         getLogger().info("DungeonsReborn enabled");
         initProgression();
-        if (advancementService.isEnabled()) {
+        if (advancementService != null && advancementService.isEnabled()) {
             advancementService.setProgressionService(progressionService);
         }
         GuiManager.init(this, serviceLog.gui());
@@ -181,6 +195,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DamageMechanicsListener(effectsEngine), this);
         mobRegistry = new MobRegistry(effectsEngine);
         mobRegistry.setMaxActivePerTick(getConfig().getInt("mobs.performance.maxTickMobs", 0));
+        mobRegistry.configureXpGating(
+            getConfig().getBoolean("mobs.xpGating.enabled", true),
+            getConfig().getString("mobs.xpGating.bypassPermission", ""),
+            getConfig().getInt("mobs.xpGating.messageCooldownTicks", 40));
+        mobRegistry.setWorldAllowedPredicate(this::isWorldAllowed);
         if (advancementService != null && advancementService.isEnabled()) {
             mobRegistry.setAdvancementService(advancementService);
         }
@@ -243,7 +262,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, shopRegistry, mobRegistry, mobSpawnManager, serviceLog.mobs());
         mobYamlRegistry.reload();
         if (advancementService != null && advancementService.isEnabled()) {
-            advancementService.registerBossAdvancements(mobRegistry);
             Bukkit.getPluginManager().registerEvents(new BossAdvancementListener(mobRegistry, advancementService), this);
         }
         spawnerBlockStore = new MobSpawnerBlockStore(getDataFolder(), serviceLog.mobs());
@@ -297,7 +315,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         dungeonRegistry = new DungeonYamlRegistry(this, serviceLog.dungeons(), worldAllowlist);
         dungeonRegistry.reload();
         if (advancementService != null && advancementService.isEnabled()) {
-            advancementService.registerDungeonAdvancements(dungeonRegistry);
+            advancementService.rebuildAll(mobRegistry, dungeonRegistry);
         }
         if (progressionDatabase != null) {
             dungeonProgress = new DungeonProgressJdbcRepository(progressionDatabase, serviceLog.dungeons());
@@ -316,7 +334,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
         upgradeRegistry = new UpgradeYamlRegistry(this, effectsEngine, serviceLog.effects());
         upgradeRegistry.reload();
-        upgradeService = new UpgradeService(effectsEngine, effectsBindings, upgradeRegistry, shopRegistry, serviceLog.upgrades());
+        upgradeService = new UpgradeService(this, effectsEngine, effectsBindings, upgradeRegistry, shopRegistry,
+            serviceLog.upgrades());
         upgradeService.migrateOnlinePlayers();
         if (sharedTicks != null) {
             sharedTicks.schedule("upgradeAuras", 20L, upgradeService::tickInventoryAuras);
@@ -329,6 +348,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             commands.registrar().register(
                 DungeonsRebornCommand.createCommand(
                     "dr",
+                    this,
                     effectsEngine,
                     yamlAbilities,
                     effectsBindings,
@@ -351,6 +371,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,
+                    questRegistry,
                     questService,
                     questGiverRegistry,
                     partyService,
@@ -360,6 +381,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             commands.registrar().register(
                 DungeonsRebornCommand.createCommand(
                     "droam",
+                    this,
                     effectsEngine,
                     yamlAbilities,
                     effectsBindings,
@@ -382,6 +404,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,
+                    questRegistry,
                     questService,
                     questGiverRegistry,
                     partyService,
@@ -391,6 +414,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             commands.registrar().register(
                 DungeonsRebornCommand.createCommand(
                     "dungeonroam",
+                    this,
                     effectsEngine,
                     yamlAbilities,
                     effectsBindings,
@@ -413,6 +437,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,
+                    questRegistry,
                     questService,
                     questGiverRegistry,
                     partyService,
@@ -597,6 +622,56 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public void reloadWorldAllowlist() {
         worldAllowlist = WorldAllowlist.fromConfig(getConfig());
+    }
+
+    public void reloadLogging() {
+        if (serviceLog != null) {
+            serviceLog.reloadFromConfig(this);
+        }
+    }
+
+    public void reloadScoreboardConfig() {
+        if (progressionHud != null) {
+            progressionHud.reloadConfig();
+        }
+    }
+
+    private void logStartupSummary() {
+        if (worldAllowlist == null) {
+            return;
+        }
+        if (worldAllowlist.allowAll()) {
+            getLogger().info("[RPG] World allowlist: ALL (no restriction)");
+        } else {
+            getLogger().info("[RPG] World allowlist: " + String.join(", ", worldAllowlist.worlds()));
+        }
+        StringBuilder worldSummary = new StringBuilder();
+        StringBuilder blockedSummary = new StringBuilder();
+        for (org.bukkit.World world : Bukkit.getWorlds()) {
+            String name = world.getName();
+            String key = world.getKey().toString();
+            boolean allowed = worldAllowlist.isAllowed(world);
+            if (worldSummary.length() > 0) {
+                worldSummary.append(", ");
+            }
+            worldSummary.append(name).append(" (").append(key).append(") -> ")
+                .append(allowed ? "allowed" : "blocked");
+            if (!allowed) {
+                if (blockedSummary.length() > 0) {
+                    blockedSummary.append(", ");
+                }
+                blockedSummary.append(name).append(" (").append(key).append(")");
+            }
+        }
+        getLogger().info("[RPG] Worlds: " + worldSummary);
+        if (blockedSummary.length() > 0) {
+            getLogger().info("[RPG] Worlds blocked by allowlist: " + blockedSummary);
+        }
+        String defaultLocale = getConfig().getString("locales.default", "en");
+        var enabledLocales = getConfig().getStringList("locales.enabled");
+        getLogger().info("[Locales] default=" + defaultLocale + " enabled=" + enabledLocales);
+        boolean advEnabled = advancementService != null && advancementService.isEnabled();
+        getLogger().info("[Advancements] " + (advEnabled ? "enabled" : "disabled"));
     }
 
     public void reloadRuntimeConfig() {

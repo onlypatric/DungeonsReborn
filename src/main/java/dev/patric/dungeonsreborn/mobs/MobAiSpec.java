@@ -17,6 +17,7 @@ public final class MobAiSpec {
   private final long idleWanderIntervalTicks;
   private final double kiteMinRange;
   private final double kiteSpeed;
+  private final double chaseSpeed;
   private final MobAiController controller;
 
   private MobAiSpec(Builder builder) {
@@ -34,6 +35,7 @@ public final class MobAiSpec {
     this.idleWanderIntervalTicks = builder.idleWanderIntervalTicks;
     this.kiteMinRange = builder.kiteMinRange;
     this.kiteSpeed = builder.kiteSpeed;
+    this.chaseSpeed = builder.chaseSpeed;
     this.controller = builder.controller;
   }
 
@@ -93,6 +95,10 @@ public final class MobAiSpec {
     return kiteSpeed;
   }
 
+  public double chaseSpeed() {
+    return chaseSpeed;
+  }
+
   public MobAiController controller() {
     return controller;
   }
@@ -116,6 +122,7 @@ public final class MobAiSpec {
     private long idleWanderIntervalTicks = 80L;
     private double kiteMinRange;
     private double kiteSpeed;
+    private double chaseSpeed = 0.25;
     private MobAiController controller;
 
     private Builder() {
@@ -218,6 +225,14 @@ public final class MobAiSpec {
         throw new IllegalArgumentException("kiteSpeed must be >= 0");
       }
       this.kiteSpeed = kiteSpeed;
+      return this;
+    }
+
+    public Builder chaseSpeed(double chaseSpeed) {
+      if (chaseSpeed < 0.0) {
+        throw new IllegalArgumentException("chaseSpeed must be >= 0");
+      }
+      this.chaseSpeed = chaseSpeed;
       return this;
     }
 

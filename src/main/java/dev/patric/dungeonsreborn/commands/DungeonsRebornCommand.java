@@ -22,7 +22,9 @@ import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeService;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.kits.KitService;
+import dev.patric.dungeonsreborn.kits.KitYamlRegistry;
 import dev.patric.dungeonsreborn.shops.ShopSessionManager;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.menus.CraftingRecipeEditorMenu;
@@ -57,6 +59,7 @@ public final class DungeonsRebornCommand {
 
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(
       String root,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin,
       EffectsEngine engine,
       EffectsYamlAbilities yaml,
       EffectsBindings bindings,
@@ -79,6 +82,7 @@ public final class DungeonsRebornCommand {
       DungeonYamlRegistry dungeonRegistry,
       DungeonQueueService dungeonQueue,
       DungeonSessionManager dungeonSessions,
+      QuestYamlRegistry questRegistry,
       QuestService quests,
       QuestGiverYamlRegistry questGivers,
       PartyService parties,
@@ -86,6 +90,9 @@ public final class DungeonsRebornCommand {
   ) {
     return Commands.literal(root)
         .executes(ctx -> help(ctx, root))
+        .then(Commands.literal("reload").executes(ctx -> reloadAll(ctx, plugin, yaml, mobsYaml, mobsRegistry,
+            crafting, advancements, upgrades, shops, kits, classRegistry, dungeonRegistry, questRegistry,
+            questGivers, locales, spawnerStore)))
         .then(Commands.literal("hub").executes(ctx -> openHub(ctx, classRegistry, classService, classSkills,
             dungeonRegistry, dungeonQueue, dungeonSessions, quests, parties, crafting, craftingSessions,
             advancements, upgrades, kits)))
@@ -107,6 +114,9 @@ public final class DungeonsRebornCommand {
         .then(ChatCommand.createCommand(parties))
         .then(Commands.literal("locale")
             .then(Commands.literal("reload").executes(ctx -> localeReload(ctx, locales))))
+        .then(Commands.literal("advancements")
+            .then(Commands.literal("reload")
+                .executes(ctx -> advancementsReload(ctx, advancements, mobsRegistry, dungeonRegistry))))
         .then(Commands.literal("upgrades")
             .executes(ctx -> upgradesOpen(ctx, upgrades))
             .then(Commands.literal("reload").executes(ctx -> upgradesReload(ctx, upgrades)))
@@ -165,6 +175,8 @@ public final class DungeonsRebornCommand {
     CommandMessages.send(sender, "messages.command.help.crafting", placeholders);
     CommandMessages.send(sender, "messages.command.help.craftingEditor", placeholders);
     CommandMessages.send(sender, "messages.command.help.craftingReload", placeholders);
+    CommandMessages.send(sender, "messages.command.help.advancementsReload", placeholders);
+    CommandMessages.send(sender, "messages.command.help.reloadAll", placeholders);
     return Command.SINGLE_SUCCESS;
   }
 
@@ -182,6 +194,141 @@ public final class DungeonsRebornCommand {
       CommandMessages.send(sender, "messages.locale.reload.errors", Locales.placeholders("errors", result.errors().size()));
     }
     return Command.SINGLE_SUCCESS;
+  }
+
+  private static int advancementsReload(CommandContext<CommandSourceStack> ctx,
+      AdvancementService advancements,
+      MobRegistry mobsRegistry,
+      DungeonYamlRegistry dungeonRegistry) {
+    var sender = ctx.getSource().getSender();
+    if (advancements == null || !advancements.isEnabled()) {
+      CommandMessages.send(sender, "messages.advancements.reload.disabled");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof org.bukkit.entity.Player player
+        && !player.hasPermission("dungeonsreborn.advancements.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.advancements.reload"));
+      return 1;
+    }
+    advancements.reloadAll(mobsRegistry, dungeonRegistry);
+    CommandMessages.send(sender, "messages.advancements.reload.ok");
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int reloadAll(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin,
+      EffectsYamlAbilities yaml,
+      MobYamlRegistry mobsYaml,
+      MobRegistry mobsRegistry,
+      CraftingYamlRegistry crafting,
+      AdvancementService advancements,
+      UpgradeService upgrades,
+      ShopYamlRegistry shops,
+      KitService kits,
+      ClassYamlRegistry classes,
+      DungeonYamlRegistry dungeons,
+      QuestYamlRegistry quests,
+      QuestGiverYamlRegistry questGivers,
+      LocaleService locales,
+      dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore spawnerStore) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof org.bukkit.entity.Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    if (plugin != null) {
+      plugin.reloadConfig();
+      plugin.reloadLogging();
+      plugin.reloadRuntimeConfig();
+      plugin.reloadScoreboardConfig();
+    }
+
+    LocaleService.ReloadResult localeResult = locales == null ? null : locales.reload();
+    EffectsYamlAbilities.ReloadResult effectsResult = yaml == null ? null : yaml.reload();
+    if (yaml != null) {
+      yaml.syncOnlineItems();
+    }
+    MobYamlRegistry.ReloadResult mobsResult = mobsYaml == null ? null : mobsYaml.reload();
+    if (spawnerStore != null) {
+      spawnerStore.load();
+    }
+    CraftingYamlRegistry.ReloadResult craftingResult = crafting == null ? null : crafting.reload();
+    UpgradeYamlRegistry.ReloadResult upgradesResult = upgrades == null ? null : upgrades.registry().reload();
+    ShopYamlRegistry.ReloadResult shopsResult = shops == null ? null : shops.reload();
+    KitYamlRegistry.ReloadResult kitsResult = kits == null ? null : kits.registry().reload();
+    ClassYamlRegistry.ReloadResult classesResult = classes == null ? null : classes.reload();
+    DungeonYamlRegistry.ReloadResult dungeonsResult = dungeons == null ? null : dungeons.reload();
+    QuestYamlRegistry.ReloadResult questsResult = quests == null ? null : quests.reload();
+    QuestGiverYamlRegistry.ReloadResult questGiversResult = questGivers == null ? null : questGivers.reload();
+    if (advancements != null && advancements.isEnabled()) {
+      advancements.reloadAll(mobsRegistry, dungeons);
+    }
+
+    int errors = 0;
+    errors += errors(localeResult);
+    errors += errors(effectsResult);
+    errors += errors(mobsResult);
+    errors += errors(craftingResult);
+    errors += errors(upgradesResult);
+    errors += errors(shopsResult);
+    errors += errors(kitsResult);
+    errors += errors(classesResult);
+    errors += errors(dungeonsResult);
+    errors += errors(questsResult);
+    errors += errors(questGiversResult);
+
+    if (errors == 0) {
+      CommandMessages.send(sender, "messages.command.reload.allOk");
+    } else {
+      CommandMessages.send(sender, "messages.command.reload.allErrors", Locales.placeholders("errors", errors));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int errors(EffectsYamlAbilities.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(MobYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(CraftingYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(UpgradeYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(ShopYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(KitYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(ClassYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(DungeonYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(QuestYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(QuestGiverYamlRegistry.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(LocaleService.ReloadResult result) {
+    return result == null || result.errors() == null ? 0 : result.errors().size();
   }
 
   private static int openAdmin(CommandContext<CommandSourceStack> ctx,

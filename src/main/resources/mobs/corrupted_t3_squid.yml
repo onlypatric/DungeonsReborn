@@ -1,0 +1,50 @@
+schemaVersion: 1
+mobs:
+  corrupted_t3_squid:
+    type: SQUID
+    name: <dark_red>Corrupted Squid</dark_red>
+    showName: true
+    stats:
+      maxHealth: 26
+    ai:
+      enabled: true
+      aggroTargetMode: NEAREST_PLAYER
+      aggroRadius: 22
+      leashRadius: 28
+      idleWanderRadius: 4
+      idleWanderIntervalTicks: 80
+    attacks:
+      main:
+        trigger: MELEE
+        cooldownTicks: 24
+        chance: 1.0
+        script:
+          language: dsl-v1
+          source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
+            \ originAt=origin {\n    potion effect=BLINDNESS durationTicks=120 amplifier=0\n\
+            \    potion effect=NAUSEA durationTicks=120 amplifier=0\n  }\n}"
+    xpGating:
+      minLevel: 500
+    progression:
+      minXp: 18665
+      maxXp: 25252
+spawnerBlocks:
+  corrupted_t3_squid_spawner:
+    mob: corrupted_t3_squid
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 4
+      respawnTicks: 140
+      respawnJitterTicks: 30
+      radius: 10
+      activationRadius: 26
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 14
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        format: <gold>{mob}</gold> <gray>({alive}/{cap})</gray>

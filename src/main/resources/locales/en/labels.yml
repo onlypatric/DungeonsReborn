@@ -18,3 +18,13 @@ labels:
     mobsYaml: Mob YAML loader
     mobsEditor: Mob editor
     mobSpawners: Spawner system
+  upgrades:
+    requirements:
+      xpLevelMin: Requires level {level} to apply this upgrade.
+      xpLevelConsume: Requires level {level} to consume XP for this upgrade.
+      totalXpMin: Requires {xp} total XP to apply this upgrade.
+      totalXpConsume: Requires {xp} total XP to consume for this upgrade.
+      xpProgressMin: Requires {percent} XP progress to apply this upgrade.
+      xpProgressConsume: Requires {percent} XP progress to consume for this upgrade.
+      manaMin: Requires {mana} max mana to apply this upgrade.
+      manaMissing: Mana system not available.
