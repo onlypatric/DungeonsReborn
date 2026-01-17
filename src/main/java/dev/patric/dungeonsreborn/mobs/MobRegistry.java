@@ -690,10 +690,7 @@ public final class MobRegistry implements Listener {
       return;
     }
 
-    if (!(entity instanceof Mob)) {
-      moveToward(entity, target.getLocation(), ai.chaseSpeed());
-      return;
-    }
+    boolean useVelocityChase = ai.overrideDefault() || !(entity instanceof Mob);
 
     if (ai.fleeHealthRatio() > 0.0) {
       double max = maxHealth(entity);
@@ -708,7 +705,15 @@ public final class MobRegistry implements Listener {
       double dist = entity.getLocation().distanceSquared(target.getLocation());
       if (dist < ai.kiteMinRange() * ai.kiteMinRange()) {
         moveAwayFrom(entity, target, ai.kiteSpeed());
+        if (useVelocityChase) {
+          return;
+        }
       }
+    }
+
+    if (useVelocityChase) {
+      moveToward(entity, target.getLocation(), ai.chaseSpeed());
+      return;
     }
 
     if (ai.controller() != null) {

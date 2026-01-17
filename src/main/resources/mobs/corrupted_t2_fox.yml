@@ -9,6 +9,7 @@ mobs:
       scaleVariance: 0.12
       maxHealth: 18
     ai:
+      overrideDefault: true
       enabled: true
       aggroTargetMode: NEAREST_PLAYER
       aggroRadius: 20
