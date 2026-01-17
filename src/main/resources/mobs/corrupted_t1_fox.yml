@@ -9,7 +9,7 @@ mobs:
       scaleVariance: 0.12
       maxHealth: 10
     ai:
-enabled: true
+      enabled: false
       aggroTargetMode: NEAREST_PLAYER
       aggroRadius: 18
       leashRadius: 22
