@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_shield_guardia_i
+name: <yellow>Runa di Guardia I</yellow>
+description: Ricetta per creare <yellow>Runa di Guardia I</yellow>.
+inputs: []
+output:
+  itemId: basic_shield_guardia_i
+  amount: 1

@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: STRING
+  amount: 1
+  meta:
+    display-name: "Panno Logoro"
+    lore:
+      - "Stracci consumati."

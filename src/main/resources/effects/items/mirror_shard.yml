@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: GLASS_PANE
+  amount: 1
+  meta:
+    display-name: "Scheggia di Specchio"
+    lore:
+      - "Un frammento riflettente."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

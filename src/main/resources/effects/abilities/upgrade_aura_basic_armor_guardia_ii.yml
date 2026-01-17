@@ -1,0 +1,17 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_armor_guardia_ii:
+    name: "<gray>Aura Guardia II</gray>"
+    description: "<dark_gray>Debolezza e rallentamento ai nemici vicini.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.6 points=28 count=1 offset=0.05 color="#b0b0b0" size=1.1
+          particles.point particle=SMOKE count=2 offset=0.08
+          for_each_target type=sphere radius=3 filter=mobs originAt=origin {
+            potion effect=WEAKNESS durationTicks=40 amplifier=0
+            potion effect=SLOWNESS durationTicks=40 amplifier=0
+          }
+        }

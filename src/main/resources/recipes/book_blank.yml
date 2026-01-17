@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: book_blank
+name: book_blank
+description: Ricetta per creare book_blank.
+inputs: []
+output:
+  itemId: book_blank
+  amount: 1

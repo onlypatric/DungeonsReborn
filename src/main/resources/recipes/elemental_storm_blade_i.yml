@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_storm_blade_i
+name: <aqua>Lama Folgorante I</aqua>
+description: Ricetta per creare <aqua>Lama Folgorante I</aqua>.
+inputs: []
+output:
+  itemId: elemental_storm_blade_i
+  amount: 1

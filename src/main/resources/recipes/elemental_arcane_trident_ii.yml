@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_arcane_trident_ii
+name: <aqua>Trama Astrale II</aqua>
+description: Ricetta per creare <aqua>Trama Astrale II</aqua>.
+inputs: []
+output:
+  itemId: elemental_arcane_trident_ii
+  amount: 1

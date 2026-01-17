@@ -1,6 +1,10 @@
 package dev.patric.dungeonsreborn.effects.upgrades;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -82,6 +86,8 @@ public final class UpgradeYamlRegistry {
     if (!dir.exists()) {
       dir.mkdirs();
     }
+    UpgradeLore.configure(plugin.getConfig().getConfigurationSection("upgrades.lore"), engine);
+    ensureDefaultUpgrades(dir);
     Map<String, UpgradeTemplate> next = new LinkedHashMap<>();
     File[] files = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml")
         || name.toLowerCase(Locale.ROOT).endsWith(".yaml"));
@@ -121,6 +127,45 @@ public final class UpgradeYamlRegistry {
     return new ReloadResult(errors.isEmpty() ? next.size() : upgrades.size(), errors);
   }
 
+  private void ensureDefaultUpgrades(File dir) {
+    List<String> entries = readResourceIndex("effects/upgrades/index.txt");
+    if (entries.isEmpty()) {
+      return;
+    }
+    for (String entry : entries) {
+      String trimmed = entry.trim();
+      if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+        continue;
+      }
+      if (!trimmed.endsWith(".yml") && !trimmed.endsWith(".yaml")) {
+        continue;
+      }
+      File out = new File(dir, trimmed);
+      if (out.exists()) {
+        continue;
+      }
+      plugin.saveResource("effects/upgrades/" + trimmed, false);
+    }
+  }
+
+  private List<String> readResourceIndex(String path) {
+    InputStream stream = plugin.getResource(path);
+    if (stream == null) {
+      return List.of();
+    }
+    List<String> lines = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        lines.add(line);
+      }
+    } catch (Exception ex) {
+      logger.warn("[Upgrades] Unable to read " + path + ": " + ex.getMessage());
+      return List.of();
+    }
+    return lines;
+  }
+
   private UpgradeTemplate loadUpgrade(File file, String base, List<String> errors) {
     String filename = file.getName();
     int dot = filename.lastIndexOf('.');
@@ -152,12 +197,12 @@ public final class UpgradeYamlRegistry {
     UpgradeCompatibilitySpec compatibility = parseCompatibility(cfg.getConfigurationSection("compatibility"), base, errors);
     UpgradeLimitsSpec limits = parseLimits(cfg.getConfigurationSection("limits"), base, errors);
     UpgradeBehaviorSpec behaviors = parseBehaviors(cfg.getConfigurationSection("behaviors"), base, errors);
-    UpgradeSpellSpec spell = parseSpell(cfg.getConfigurationSection("spell"), base, errors);
+    List<UpgradeSpellSpec> spells = parseSpells(cfg, base, errors);
     List<UpgradeModifierSpec> modifiers = parseModifiers(cfg.get("modifiers"), base + ".modifiers", errors);
     List<UpgradeAttributeSpec> attributes = parseAttributes(cfg.get("attributes"), base + ".attributes", errors);
     List<UpgradeEnchantSpec> enchants = parseEnchants(cfg.get("enchants"), base + ".enchants", errors);
 
-    UpgradeSpec spec = new UpgradeSpec(id, name, description, requirements, price, target, compatibility, limits, behaviors, allowUnsafe, modifiers, attributes, enchants, spell);
+    UpgradeSpec spec = new UpgradeSpec(id, name, description, requirements, price, target, compatibility, limits, behaviors, allowUnsafe, modifiers, attributes, enchants, spells);
     ItemStack template = buildUpgradeItem(cfg, spec, base, errors);
     if (template == null) {
       return null;
@@ -233,29 +278,80 @@ public final class UpgradeYamlRegistry {
     return normalized;
   }
 
-  private UpgradeSpellSpec parseSpell(ConfigurationSection section, String base, List<String> errors) {
+  private List<UpgradeSpellSpec> parseSpells(ConfigurationSection section, String base, List<String> errors) {
     if (section == null) {
-      return null;
+      return List.of();
     }
-    String abilityRaw = YamlValues.string(section.get("ability"), null);
+    List<UpgradeSpellSpec> out = new ArrayList<>();
+    Object spellValue = section.get("spell");
+    if (spellValue != null) {
+      out.addAll(parseSpellValue(spellValue, base + ".spell", errors));
+    }
+    Object spellsValue = section.get("spells");
+    if (spellsValue != null) {
+      out.addAll(parseSpellValue(spellsValue, base + ".spells", errors));
+    }
+    return out;
+  }
+
+  private List<UpgradeSpellSpec> parseSpellValue(Object value, String base, List<String> errors) {
+    if (value instanceof ConfigurationSection section) {
+      UpgradeSpellSpec spell = parseSpellEntry(section, base, errors);
+      return spell == null ? List.of() : List.of(spell);
+    }
+    if (value instanceof Map<?, ?> map) {
+      UpgradeSpellSpec spell = parseSpellEntry(map, base, errors);
+      return spell == null ? List.of() : List.of(spell);
+    }
+    if (value instanceof List<?> list) {
+      List<UpgradeSpellSpec> out = new ArrayList<>();
+      int index = 0;
+      for (Object entry : list) {
+        UpgradeSpellSpec spell = parseSpellEntry(entry, base + "[" + index + "]", errors);
+        if (spell != null) {
+          out.add(spell);
+        }
+        index++;
+      }
+      return out;
+    }
+    errors.add(base + ": expected map or list for spell definition");
+    return List.of();
+  }
+
+  private UpgradeSpellSpec parseSpellEntry(Object entry, String base, List<String> errors) {
+    if (entry instanceof ConfigurationSection section) {
+      String abilityRaw = YamlValues.string(section.get("ability"), null);
+      String activatorRaw = YamlValues.string(section.get("activator"), YamlValues.string(section.get("activation"), null));
+      return parseSpellData(abilityRaw, activatorRaw, base, errors);
+    }
+    if (entry instanceof Map<?, ?> map) {
+      String abilityRaw = YamlValues.string(map.get("ability"), null);
+      String activatorRaw = YamlValues.string(map.get("activator"), YamlValues.string(map.get("activation"), null));
+      return parseSpellData(abilityRaw, activatorRaw, base, errors);
+    }
+    errors.add(base + ": expected map for spell entry");
+    return null;
+  }
+
+  private UpgradeSpellSpec parseSpellData(String abilityRaw, String activatorRaw, String base, List<String> errors) {
     if (abilityRaw == null || abilityRaw.isBlank()) {
-      errors.add(base + ".spell.ability: missing ability id");
+      errors.add(base + ".ability: missing ability id");
       return null;
     }
     String abilityId;
     try {
       abilityId = Ids.normalize(abilityRaw);
     } catch (Exception ex) {
-      errors.add(base + ".spell.ability: invalid id (" + ex.getMessage() + ")");
+      errors.add(base + ".ability: invalid id (" + ex.getMessage() + ")");
       return null;
     }
     if (!engine.hasAbility(abilityId)) {
-      errors.add(base + ".spell.ability: ability not registered: " + abilityId);
+      errors.add(base + ".ability: ability not registered: " + abilityId);
       return null;
     }
-    String activatorRaw = YamlValues.string(section.get("activator"), YamlValues.string(section.get("activation"), null));
     try {
-      UpgradeActivator activator = UpgradeActivator.parse(activatorRaw, base + ".spell.activator");
+      UpgradeActivator activator = UpgradeActivator.parse(activatorRaw, base + ".activator");
       return new UpgradeSpellSpec(abilityId, activator);
     } catch (Exception ex) {
       errors.add(ex.getMessage());
@@ -329,6 +425,10 @@ public final class UpgradeYamlRegistry {
     if (secondaryAbilities.isEmpty()) {
       secondaryAbilities = parseAbilityList(section.get("secondaryAbility"), base + ".behaviors.secondaryAbility", errors);
     }
+    List<String> secondaryDescriptions = readStringList(section.get("secondaryDescriptions"));
+    if (secondaryDescriptions.isEmpty()) {
+      secondaryDescriptions = readStringList(section.get("secondaryDescription"));
+    }
     List<String> particlePresets = parseAbilityList(section.get("particlePresets"), base + ".behaviors.particlePresets", errors);
     if (particlePresets.isEmpty()) {
       particlePresets = parseAbilityList(section.get("particlePreset"), base + ".behaviors.particlePreset", errors);
@@ -349,7 +449,8 @@ public final class UpgradeYamlRegistry {
     if (!inventoryEffects.isEmpty()) {
       inventoryActive = true;
     }
-    return new UpgradeBehaviorSpec(List.copyOf(secondaryAbilities), List.copyOf(particlePresets),
+    return new UpgradeBehaviorSpec(List.copyOf(secondaryAbilities), List.copyOf(secondaryDescriptions),
+        List.copyOf(particlePresets),
         List.copyOf(statusEffects), List.copyOf(inventoryEffects), inventoryActive, List.copyOf(onDamagedEffects));
   }
 

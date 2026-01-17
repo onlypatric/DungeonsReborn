@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_storm_shield_ii
+name: <aqua>Scudo della Tempesta II</aqua>
+description: Ricetta per creare <aqua>Scudo della Tempesta II</aqua>.
+inputs: []
+output:
+  itemId: elemental_storm_shield_ii
+  amount: 1

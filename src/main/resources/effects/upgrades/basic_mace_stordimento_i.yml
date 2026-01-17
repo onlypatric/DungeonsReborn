@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: basic_mace_stordimento_i
+name: "<yellow>Mazza Stordente I</yellow>"
+description: |-
+  I colpi applicano Rallentamento per 2 secondi (7s di ricarica).
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:mace
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_mace_stordimento_i
+    - upgrade_proc_stagger
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+    - "<dark_gray>Indebolisce e rallenta brevemente.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_mace_stordimento_i
+  activator: LEFT_CLICK

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_bow_tracciamento_i
+name: "<yellow>Corda della Traiettoria I</yellow>"
+description: |-
+  Aumenta la velocita delle frecce per tiri piu tesi.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_bow_tracciamento_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_bow_tracciamento_i
+  activator: RIGHT_CLICK

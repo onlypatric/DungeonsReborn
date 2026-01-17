@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: basic_rune_fortuna_ii
+name: basic_rune_fortuna_ii
+description: Ricetta per creare basic_rune_fortuna_ii.
+inputs:
+- type: item
+  itemId: lucky_charm
+  amount: 6
+- type: item
+  itemId: lucky_core
+  amount: 2
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 1
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 36
+- type: item
+  itemId: book_blank
+  amount: 1
+output:
+  itemId: basic_rune_fortuna_ii
+  amount: 1

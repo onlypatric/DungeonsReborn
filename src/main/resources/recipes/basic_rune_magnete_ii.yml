@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: basic_rune_magnete_ii
+name: <yellow>Runa del Richiamo II</yellow>
+description: Ricetta per creare <yellow>Runa del Richiamo II</yellow>.
+inputs:
+- type: item
+  itemId: corrupted_thread
+  amount: 6
+- type: item
+  itemId: corrupted_core
+  amount: 2
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 1
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 36
+- type: item
+  itemId: book_blank
+  amount: 1
+output:
+  itemId: basic_rune_magnete_ii
+  amount: 1

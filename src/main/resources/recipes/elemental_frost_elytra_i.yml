@@ -1,0 +1,11 @@
+schemaVersion: 1
+id: elemental_frost_elytra_i
+name: <aqua>Trama dell'Aria Fredda I</aqua>
+description: Ricetta per creare <aqua>Trama dell'Aria Fredda I</aqua>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 5
+output:
+  itemId: elemental_frost_elytra_i
+  amount: 1

@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: hybrid_frost_arcane_rune_ii
+name: "<light_purple>Runa del Silenzio Freddo II</light_purple>"
+description: |-
+  Un vortice gelido e arcano travolge i nemici.
+limits:
+  category: hybrid
+  tier: 3
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_frost_arcane_rune_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_frost_arcane_rune_ii
+  activator: SHIFT_RIGHT_CLICK

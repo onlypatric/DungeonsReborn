@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_shield_ripresa_i:
+    name: "<gray>Aura Ripresa I</gray>"
+    description: "<dark_gray>Affatica i nemici vicini.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=24 count=1 offset=0.04 color="#7aa6d8" size=1.0
+          for_each_target type=sphere radius=3 filter=mobs originAt=origin {
+            potion effect=MINING_FATIGUE durationTicks=40 amplifier=0
+          }
+        }

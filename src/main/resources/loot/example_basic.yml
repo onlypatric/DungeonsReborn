@@ -1,0 +1,38 @@
+# Example shared loot pool. Add more files under loot/ for batch-specific pools.
+loot:
+  rolls: 1
+  bonusRolls: 0
+  clearVanilla: false
+  drops:
+    - material: STICK
+      chance: 0.25
+      min: 1
+      max: 2
+    - material: ROTTEN_FLESH
+      chance: 0.25
+      min: 1
+      max: 2
+    - material: BONE
+      chance: 0.25
+      min: 1
+      max: 2
+    - material: BREAD
+      chance: 0.25
+      min: 1
+      max: 1
+    - itemId: useless_rag
+      chance: 0.005000
+      min: 1
+      max: 1
+    - itemId: useless_scrap
+      chance: 0.005000
+      min: 1
+      max: 1
+    - itemId: useless_pebble
+      chance: 0.005000
+      min: 1
+      max: 1
+    - itemId: useless_dust
+      chance: 0.005000
+      min: 1
+      max: 1

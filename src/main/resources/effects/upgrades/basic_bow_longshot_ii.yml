@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_bow_longshot_ii
+name: "<yellow>Corda del Lungo Tiro II</yellow>"
+description: |-
+  I colpi da lunga distanza infliggono molti piu danni.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_bow_longshot_ii
+  secondaryDescriptions:
+    - "<dark_gray>Indebolisce i nemici vicini.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_bow_longshot_ii
+  activator: RIGHT_CLICK

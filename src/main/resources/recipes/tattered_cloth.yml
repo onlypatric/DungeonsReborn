@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: tattered_cloth
+name: tattered_cloth
+description: Ricetta per creare tattered_cloth.
+inputs: []
+output:
+  itemId: tattered_cloth
+  amount: 1

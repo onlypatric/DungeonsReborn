@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_fire_crossbow_ii
+name: <aqua>Dardo Incendiario II</aqua>
+description: Ricetta per creare <aqua>Dardo Incendiario II</aqua>.
+inputs: []
+output:
+  itemId: elemental_fire_crossbow_ii
+  amount: 1

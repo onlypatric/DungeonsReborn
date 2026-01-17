@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_penetrazione_ii
+name: "<yellow>Dardo Penetrante II</yellow>"
+description: |-
+  I dardi della balestra attraversano piu bersagli.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_penetrazione_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_penetrazione_ii
+  activator: RIGHT_CLICK

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: stone_sword
+name: stone_sword
+description: Ricetta per creare stone_sword.
+inputs: []
+output:
+  itemId: stone_sword
+  amount: 1

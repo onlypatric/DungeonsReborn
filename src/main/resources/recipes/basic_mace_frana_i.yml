@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_mace_frana_i
+name: <yellow>Mazza di Frana I</yellow>
+description: Ricetta per creare <yellow>Mazza di Frana I</yellow>.
+inputs: []
+output:
+  itemId: basic_mace_frana_i
+  amount: 1

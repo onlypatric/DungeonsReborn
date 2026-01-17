@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_sword_sanguisuga_i
+name: <yellow>Sigillo Sanguisuga I</yellow>
+description: Ricetta per creare <yellow>Sigillo Sanguisuga I</yellow>.
+inputs: []
+output:
+  itemId: basic_sword_sanguisuga_i
+  amount: 1

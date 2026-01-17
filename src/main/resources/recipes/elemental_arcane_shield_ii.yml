@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_arcane_shield_ii
+name: <aqua>Scudo del Silenzio II</aqua>
+description: Ricetta per creare <aqua>Scudo del Silenzio II</aqua>.
+inputs: []
+output:
+  itemId: elemental_arcane_shield_ii
+  amount: 1

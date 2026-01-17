@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_caduta_i
+name: <yellow>Sigillo della Caduta I</yellow>
+description: Ricetta per creare <yellow>Sigillo della Caduta I</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_caduta_i
+  amount: 1

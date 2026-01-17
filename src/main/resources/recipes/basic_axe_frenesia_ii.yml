@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_axe_frenesia_ii
+name: <yellow>Ascia della Frenesia II</yellow>
+description: Ricetta per creare <yellow>Ascia della Frenesia II</yellow>.
+inputs: []
+output:
+  itemId: basic_axe_frenesia_ii
+  amount: 1

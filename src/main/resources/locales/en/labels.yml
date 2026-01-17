@@ -22,9 +22,64 @@ labels:
     requirements:
       xpLevelMin: Requires level {level} to apply this upgrade.
       xpLevelConsume: Requires level {level} to consume XP for this upgrade.
-      totalXpMin: Requires {xp} total XP to apply this upgrade.
-      totalXpConsume: Requires {xp} total XP to consume for this upgrade.
-      xpProgressMin: Requires {percent} XP progress to apply this upgrade.
-      xpProgressConsume: Requires {percent} XP progress to consume for this upgrade.
+      totalXpMin: Requires {xp} custom XP to apply this upgrade.
+      totalXpConsume: Requires {xp} custom XP to consume for this upgrade.
+      xpProgressMin: Requires {percent} custom XP progress to apply this upgrade.
+      xpProgressConsume: Requires {percent} custom XP progress to consume for this upgrade.
       manaMin: Requires {mana} max mana to apply this upgrade.
       manaMissing: Mana system not available.
+    lore:
+      bookName: "<gradient:#ff9f1a:#ffd166><bold>Upgrade Tome</bold></gradient>"
+      activation: "<gold><bold>Activation</bold></gold> <dark_gray>-</dark_gray> <yellow>{binding}</yellow>"
+      category: "<dark_gray>Category: <gray>{category}</gray></dark_gray>"
+      categoryTier: "Tier {tier}"
+      exclusive: "<dark_gray>Exclusive</dark_gray>"
+      exclusiveCategory: "<dark_gray>Exclusive: <gray>{category}</gray></dark_gray>"
+      limitPerItem: "<dark_gray>Limit:</dark_gray> <gray>{count} per item</gray>"
+      maxTier: "<dark_gray>Max Tier:</dark_gray> <gray>{tier}</gray>"
+      requiresLevels: "<gray>Requires:</gray> <white>{level}</white> <gray>Levels</gray>"
+      consumesLevels: "<dark_gray>Consumes:</dark_gray> <gray>{level}</gray> <dark_gray>Levels</dark_gray>"
+      requiresTotalXp: "<gray>Requires:</gray> <white>{xp}</white> <gray>Custom XP</gray>"
+      consumesTotalXp: "<dark_gray>Consumes:</dark_gray> <gray>{xp}</gray> <dark_gray>Custom XP</dark_gray>"
+      requiresProgress: "<gray>Requires:</gray> <white>{percent}</white> <gray>Custom XP Progress</gray>"
+      consumesProgress: "<dark_gray>Consumes:</dark_gray> <gray>{percent}</gray> <dark_gray>Custom XP Progress</dark_gray>"
+      requiresMaxMana: "<gray>Requires:</gray> <white>{mana}</white> <gray>Max Mana</gray>"
+      cost: "<gold><bold>Cost</bold></gold> <dark_gray>-</dark_gray> <yellow>{price}</yellow>"
+      inventoryActive: "<dark_gray>Inventory Active</dark_gray>"
+      secondary: "<aqua>Secondary:</aqua> <gray>{value}</gray>"
+      particlePreset: "<dark_gray>Particle Preset:</dark_gray> <gray>{preset}</gray>"
+      statusEffect: "<dark_gray>{value}</dark_gray>"
+      onDamagedLine: "<dark_gray>{value}</dark_gray>"
+      blockedItems: "<dark_gray>Blocked Items:</dark_gray> <gray>{items}</gray>"
+      blockedMaterials: "<dark_gray>Blocked Materials:</dark_gray> <gray>{materials}</gray>"
+      conflicts: "<dark_gray>This item may conflict with {binding}</dark_gray>"
+      attribute: "<gray>{value}</gray>"
+      enchant: "<dark_gray>{value}</dark_gray>"
+      hintApply: "<green><bold>Use /dr upgrades to apply</bold></green>"
+      appliedHeader: "<dark_gray>Applied Upgrades ({count})</dark_gray>"
+      appliedVanilla: "<gray>• Enchanted Book</gray>"
+      inventoryActiveApplied: "<dark_gray>  Inventory Active</dark_gray>"
+      appliedTotals: "<dark_gray>Totals</dark_gray>"
+      activator:
+        left: "Left Click"
+        right: "Right Click"
+        shiftLeft: "Shift+Left"
+        shiftRight: "Shift+Right"
+        passive: "Passive"
+      attributeValue: "{sign}{amount} {name}"
+      enchantValue: "Enchant: {name} {level}"
+      statusEffectValue: "{prefix}: {effect} {level} ({seconds}s)"
+      statusEffectCooldown: "{base} (cd {seconds}s)"
+      pricePallet: "{count} Pallet"
+      priceCompressed: "{count} Compressed"
+      priceTokens: "{count} Tokens"
+      priceFree: "Free"
+      bindsSeparator: "<dark_gray>--------------------</dark_gray>"
+      bindsAny: "<gold><bold>Binds to</bold></gold> <dark_gray>-</dark_gray> <gray>Any item</gray>"
+      bindsHeader: "<gold><bold>Binds to</bold></gold>"
+      bindsEntry: "<gray>• {entry}</gray>"
+      bindsMore: "<dark_gray>... {remaining} more</dark_gray>"
+      prefix:
+        onHit: "On hit"
+        inInventory: "While in inventory"
+        onDamaged: "On damaged"

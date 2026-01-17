@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: arcane_heart
+name: arcane_heart
+description: Ricetta per creare arcane_heart.
+inputs: []
+output:
+  itemId: arcane_heart
+  amount: 1

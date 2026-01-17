@@ -26,6 +26,8 @@ import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.classes.ClassBonusService;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -37,6 +39,7 @@ public final class ProgressionHudService {
 
   private final JavaPlugin plugin;
   private final ProgressionService progressionService;
+  private final CustomXpService customXpService;
   private final ProgressionStatService statService;
   private final EffectsEngine effectsEngine;
   private final Predicate<World> worldAllowed;
@@ -48,10 +51,11 @@ public final class ProgressionHudService {
   private int taskId = -1;
   private SharedTickScheduler.Handle schedulerHandle;
 
-  public ProgressionHudService(JavaPlugin plugin, ProgressionService progressionService, ProgressionStatService statService,
-      EffectsEngine effectsEngine, Predicate<World> worldAllowed) {
+  public ProgressionHudService(JavaPlugin plugin, ProgressionService progressionService, CustomXpService customXpService,
+      ProgressionStatService statService, EffectsEngine effectsEngine, Predicate<World> worldAllowed) {
     this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.progressionService = Objects.requireNonNull(progressionService, "progressionService");
+    this.customXpService = customXpService;
     this.statService = statService;
     this.effectsEngine = Objects.requireNonNull(effectsEngine, "effectsEngine");
     this.worldAllowed = worldAllowed;
@@ -176,7 +180,8 @@ public final class ProgressionHudService {
     double mana = manaProvider == null ? 0.0 : manaProvider.get(player);
     double maxMana = manaProvider == null ? 0.0 : manaProvider.getMax(player);
     String classId = "";
-    List<String> lines = formatLines(player, progression, mana, maxMana, classId);
+    XpSnapshot xpSnapshot = resolveXp(player, progression);
+    List<String> lines = formatLines(player, progression, xpSnapshot, mana, maxMana, classId);
     applyLines(board, objective, lines);
   }
 
@@ -224,6 +229,27 @@ public final class ProgressionHudService {
     return String.format(java.util.Locale.ROOT, "%.1f", value);
   }
 
+  private static String formatCompact(long value) {
+    long abs = Math.abs(value);
+    if (abs < 1000) {
+      return String.valueOf(value);
+    }
+    String suffix;
+    double scaled;
+    if (abs >= 1_000_000_000L) {
+      suffix = "B";
+      scaled = value / 1_000_000_000.0;
+    } else if (abs >= 1_000_000L) {
+      suffix = "M";
+      scaled = value / 1_000_000.0;
+    } else {
+      suffix = "K";
+      scaled = value / 1_000.0;
+    }
+    String formatted = String.format(java.util.Locale.ROOT, "%.1f", scaled);
+    return formatted + suffix;
+  }
+
   public void reloadConfig() {
     Layout newLayout = Layout.load(plugin);
     if (newLayout.updateTicks() != layout.updateTicks()) {
@@ -238,12 +264,13 @@ public final class ProgressionHudService {
     }
   }
 
-  private List<String> formatLines(Player player, PlayerProgression progression, double mana, double maxMana,
+  private List<String> formatLines(Player player, PlayerProgression progression, XpSnapshot xpSnapshot, double mana,
+      double maxMana,
       String classId) {
     List<String> out = new ArrayList<>();
     Map<String, String> placeholders = new HashMap<>();
-    placeholders.put("level", String.valueOf(progression.level()));
-    placeholders.put("xp", String.valueOf(progression.points()));
+    placeholders.put("level", formatCompact(xpSnapshot.level));
+    placeholders.put("xp", formatCompact(xpSnapshot.points));
     placeholders.put("skill_points", String.valueOf(progression.skillPoints()));
     placeholders.put("strength", String.valueOf(progression.strength()));
     placeholders.put("dexterity", String.valueOf(progression.dexterity()));
@@ -264,6 +291,24 @@ public final class ProgressionHudService {
       out.add(legacySerializer.serialize(component));
     }
     return out;
+  }
+
+  private XpSnapshot resolveXp(Player player, PlayerProgression progression) {
+    if (customXpService == null || player == null) {
+      return new XpSnapshot(progression.level(), progression.points());
+    }
+    CustomXpProfile profile = customXpService.getOrCreate(player.getUniqueId());
+    return new XpSnapshot(profile.level(), profile.points());
+  }
+
+  private static final class XpSnapshot {
+    private final int level;
+    private final long points;
+
+    private XpSnapshot(int level, long points) {
+      this.level = Math.max(1, level);
+      this.points = Math.max(0L, points);
+    }
   }
 
   private static String replacePlaceholders(String template, Map<String, String> placeholders) {

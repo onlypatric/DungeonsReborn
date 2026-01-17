@@ -35,33 +35,14 @@ mobs:
             \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=140 amplifier=0\n\
             \    potion effect=SLOWNESS durationTicks=80 amplifier=0\n  }\n}"
     loot:
-      clearVanilla: true
-      rolls: 1
-      drops:
-      - token: token
-        min: 4
-        max: 7
-      - material: IRON_SWORD
-        chance: 25
-      - material: IRON_AXE
-        chance: 20
-      - material: CHAINMAIL_CHESTPLATE
-        chance: 20
-      - material: LEATHER_BOOTS
-        chance: 20
-      - material: CARROT
-        chance: 40
-        min: 1
-        max: 3
-      - material: MELON_SLICE
-        chance: 40
-        min: 1
-        max: 3
+      pool: undead_t3
+      merge: true
     xpGating:
-      minLevel: 500
+      minLevel: 8000
     progression:
-      minXp: 18665
-      maxXp: 25252
+      minXp: 22
+      maxXp: 32
+      maxPlayerXp: 1200000
 spawnerBlocks:
   undead_t3_dreadcaster_spawner:
     mob: undead_t3_dreadcaster

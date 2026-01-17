@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: GUNPOWDER
+  amount: 1
+  meta:
+    display-name: "Mucchio di Cenere"
+    lore:
+      - "Cenere fredda e polvere."

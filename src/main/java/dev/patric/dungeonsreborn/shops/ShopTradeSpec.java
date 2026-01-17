@@ -5,6 +5,7 @@ public record ShopTradeSpec(
     ShopIngredientSpec buyB,
     ShopIngredientSpec sell,
     int maxUses,
+    int minLevel,
     boolean experienceReward,
     float priceMultiplier,
     java.util.List<String> previewLore,
@@ -19,6 +20,9 @@ public record ShopTradeSpec(
     }
     if (maxUses < 0) {
       throw new IllegalArgumentException("maxUses must be >= 0");
+    }
+    if (minLevel < 0) {
+      throw new IllegalArgumentException("minLevel must be >= 0");
     }
     if (previewLore == null) {
       previewLore = java.util.List.of();

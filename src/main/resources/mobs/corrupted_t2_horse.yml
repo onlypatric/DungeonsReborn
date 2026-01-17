@@ -24,10 +24,14 @@ mobs:
             \ originAt=origin {\n    knockback horizontal=1.0 vertical=0.3\n    potion\
             \ effect=SLOWNESS durationTicks=100 amplifier=0\n  }\n}"
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
+    loot:
+      pool: corrupted_t2
+      merge: true
 spawnerBlocks:
   corrupted_t2_horse_spawner:
     mob: corrupted_t2_horse

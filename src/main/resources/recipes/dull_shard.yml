@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: dull_shard
+name: dull_shard
+description: Ricetta per creare dull_shard.
+inputs: []
+output:
+  itemId: dull_shard
+  amount: 1

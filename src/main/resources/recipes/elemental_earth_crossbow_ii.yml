@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_earth_crossbow_ii
+name: <aqua>Dardo della Frana II</aqua>
+description: Ricetta per creare <aqua>Dardo della Frana II</aqua>.
+inputs: []
+output:
+  itemId: elemental_earth_crossbow_ii
+  amount: 1

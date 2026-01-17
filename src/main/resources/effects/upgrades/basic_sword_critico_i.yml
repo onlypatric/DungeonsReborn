@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: basic_sword_critico_i
+name: "<yellow>Lama Critica I</yellow>"
+description: |-
+  Aumenta la probabilita di colpi critici con la spada.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_sword_critico_i
+    - upgrade_proc_crit_flash
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+    - "<dark_gray>Lampo accecante con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_sword_critico_i
+  activator: LEFT_CLICK

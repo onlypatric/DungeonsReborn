@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_sword_ritmo_i
+name: <yellow>Lama Rapida I</yellow>
+description: Ricetta per creare <yellow>Lama Rapida I</yellow>.
+inputs: []
+output:
+  itemId: basic_sword_ritmo_i
+  amount: 1

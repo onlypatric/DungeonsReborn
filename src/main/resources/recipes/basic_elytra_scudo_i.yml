@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_elytra_scudo_i
+name: <yellow>Trama di Scudo I</yellow>
+description: Ricetta per creare <yellow>Trama di Scudo I</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 4
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 4
+output:
+  itemId: basic_elytra_scudo_i
+  amount: 1

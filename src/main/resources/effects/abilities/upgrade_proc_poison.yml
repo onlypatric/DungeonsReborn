@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_poison:
+    name: "<green>Proc: Veleno</green>"
+    description: "<dark_gray>Avvelena il bersaglio vicino.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.point particle=ITEM_SLIME count=6 offset=0.1
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            potion effect=POISON durationTicks=60 amplifier=0
+          }
+        }

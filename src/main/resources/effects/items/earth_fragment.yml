@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: CLAY_BALL
+  amount: 1
+  meta:
+    display-name: "Frammento di Terra"
+    lore:
+      - "Pieno di polvere e grit."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

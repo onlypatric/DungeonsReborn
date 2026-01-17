@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: fire_core
+name: fire_core
+description: Ricetta per creare fire_core.
+inputs: []
+output:
+  itemId: fire_core
+  amount: 1

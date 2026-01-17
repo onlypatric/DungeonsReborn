@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: corrupted_thread
+name: corrupted_thread
+description: Ricetta per creare corrupted_thread.
+inputs: []
+output:
+  itemId: corrupted_thread
+  amount: 1

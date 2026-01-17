@@ -38,6 +38,8 @@ import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.shops.ShopTokenTierSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import io.papermc.paper.registry.RegistryAccess;
@@ -56,17 +58,19 @@ public final class UpgradeService {
   private final JavaPlugin plugin;
   private final ServiceLogger logger;
   private final ShopYamlRegistry shopRegistry;
+  private final CustomXpService customXpService;
   private static final String INVENTORY_UPGRADE_PREFIX = "inv_upgrade_";
   private static final int INVENTORY_EFFECT_MIN_TICKS = 40;
   private final Map<UUID, Map<String, Long>> onDamagedCooldowns = new HashMap<>();
 
   public UpgradeService(JavaPlugin plugin, EffectsEngine engine, EffectsBindings bindings, UpgradeYamlRegistry registry,
-      ShopYamlRegistry shopRegistry, ServiceLogger logger) {
+      ShopYamlRegistry shopRegistry, CustomXpService customXpService, ServiceLogger logger) {
     this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.engine = Objects.requireNonNull(engine, "engine");
     this.bindings = Objects.requireNonNull(bindings, "bindings");
     this.registry = Objects.requireNonNull(registry, "registry");
     this.shopRegistry = shopRegistry;
+    this.customXpService = customXpService;
     this.logger = Objects.requireNonNull(logger, "logger");
   }
 
@@ -136,8 +140,8 @@ public final class UpgradeService {
         for (UpgradeEnchantSpec enchantSpec : spec.enchants()) {
           meta.removeEnchant(enchantSpec.enchantment());
         }
-        if (spec.spell() != null) {
-          removeSpellBinding(updated, spec.spell());
+        for (UpgradeSpellSpec spell : spec.spells()) {
+          removeSpellBinding(updated, spell);
         }
       } else if (record != null && record.startsWith("vanilla:")) {
         Map<String, Integer> vanilla = parseVanillaRecord(record);
@@ -535,7 +539,13 @@ public final class UpgradeService {
     if (error != null) {
       return fail(error, dryRun, player, target, upgradeItem, "price");
     }
-    boolean activationConflict = spec.spell() != null && hasActivationConflict(player, target, spec.spell().activator());
+    boolean activationConflict = false;
+    for (UpgradeSpellSpec spell : spec.spells()) {
+      if (hasActivationConflict(player, target, spell.activator())) {
+        activationConflict = true;
+        break;
+      }
+    }
     String enchantError = validateEnchants(target, spec);
     if (enchantError != null) {
       return fail(enchantError, dryRun, player, target, upgradeItem, "enchant");
@@ -555,12 +565,20 @@ public final class UpgradeService {
     updated.setItemMeta(meta);
 
     List<String> records = new ArrayList<>(ItemMarkers.getUpgradeRecords(updated));
-    if (spec.spell() != null) {
-      List<String> removed = removeUpgradeSpellBindings(updated, spec.spell().activator());
+    if (!spec.spells().isEmpty()) {
+      Set<String> removed = new HashSet<>();
+      Set<UpgradeActivator> seen = new HashSet<>();
+      for (UpgradeSpellSpec spell : spec.spells()) {
+        if (seen.add(spell.activator())) {
+          removed.addAll(removeUpgradeSpellBindings(updated, spell.activator()));
+        }
+      }
       if (!removed.isEmpty()) {
         records.removeAll(removed);
       }
-      applySpellBinding(updated, spec.spell());
+      for (UpgradeSpellSpec spell : spec.spells()) {
+        applySpellBinding(updated, spell);
+      }
     }
     records = removeConflictingRecords(records, spec);
     records.add(resolved.recordId());
@@ -573,9 +591,14 @@ public final class UpgradeService {
     if (!dryRun) {
       consumeRequirements(player, spec.requirements());
       consumePrice(player, spec.price());
-      if (activationConflict) {
+      if (activationConflict && !spec.spells().isEmpty()) {
+        String activators = spec.spells().stream()
+            .map(spell -> spell.activator().name())
+            .distinct()
+            .sorted()
+            .collect(java.util.stream.Collectors.joining(","));
         logger.warn("[Upgrades] apply warning: overlapping activation slot "
-            + spec.spell().activator().name() + " player=" + player.getName()
+            + activators + " player=" + player.getName()
             + " target=" + describeItem(target) + " upgrade=" + resolved.recordId());
       }
       logApply(player, target, updated, resolved.recordId());
@@ -665,7 +688,7 @@ public final class UpgradeService {
     }
     UpgradeSpec spec = new UpgradeSpec("vanilla_enchanted_book", "Vanilla Enchanted Book", "",
         UpgradeRequirements.none(), UpgradePriceSpec.none(), UpgradeTargetSpec.none(), UpgradeCompatibilitySpec.none(),
-        UpgradeLimitsSpec.none(), UpgradeBehaviorSpec.none(), allowUnsafeVanilla, List.of(), List.of(), enchants, null);
+        UpgradeLimitsSpec.none(), UpgradeBehaviorSpec.none(), allowUnsafeVanilla, List.of(), List.of(), enchants, List.of());
     return new ResolvedUpgrade(spec, encodeVanillaRecord(enchants));
   }
 
@@ -676,7 +699,7 @@ public final class UpgradeService {
     boolean xpGatingEnabled = plugin.getConfig().getBoolean("upgrades.xpGating.enabled", true);
     String bypassPermission = plugin.getConfig().getString("upgrades.xpGating.bypassPermission", "");
     boolean bypass = !bypassPermission.isBlank() && player.hasPermission(bypassPermission);
-    int level = player.getLevel();
+    int level = resolveXpLevel(player);
     if (xpGatingEnabled && !bypass) {
       if (requirements.minXp() > 0 && level < requirements.minXp()) {
         return Locales.text(player, "labels.upgrades.requirements.xpLevelMin",
@@ -686,7 +709,7 @@ public final class UpgradeService {
         return Locales.text(player, "labels.upgrades.requirements.xpLevelConsume",
             Locales.placeholders("level", requirements.consumeXp()));
       }
-      int totalXp = player.getTotalExperience();
+      int totalXp = resolveTotalXp(player);
       if (requirements.minTotalXp() > 0 && totalXp < requirements.minTotalXp()) {
         return Locales.text(player, "labels.upgrades.requirements.totalXpMin",
             Locales.placeholders("xp", requirements.minTotalXp()));
@@ -695,7 +718,7 @@ public final class UpgradeService {
         return Locales.text(player, "labels.upgrades.requirements.totalXpConsume",
             Locales.placeholders("xp", requirements.consumeTotalXp()));
       }
-      double progress = player.getExp();
+      double progress = resolveXpProgress(player);
       if (requirements.minProgress() > 0.0 && progress + 1e-9 < requirements.minProgress()) {
         return Locales.text(player, "labels.upgrades.requirements.xpProgressMin",
             Locales.placeholders("percent", formatPercent(requirements.minProgress())));
@@ -863,6 +886,30 @@ public final class UpgradeService {
       return;
     }
     double consumeProgress = requirements.consumeProgress();
+    if (customXpService != null) {
+      UUID uuid = player.getUniqueId();
+      if (consumeProgress > 0.0) {
+        int points = customXpService.pointsForProgress(uuid, consumeProgress);
+        if (points > 0) {
+          customXpService.removeXp(player, points);
+        }
+      }
+      int consumeTotalXp = requirements.consumeTotalXp();
+      if (consumeTotalXp > 0) {
+        customXpService.removeXp(player, consumeTotalXp);
+      }
+      int consume = requirements.consumeXp();
+      if (consume > 0) {
+        CustomXpProfile profile = customXpService.getOrCreate(uuid);
+        int targetLevel = Math.max(1, profile.level() - consume);
+        int targetTotal = customXpService.totalForLevel(targetLevel);
+        long diff = profile.points() - targetTotal;
+        if (diff > 0L) {
+          customXpService.removeXp(player, (int) Math.min(Integer.MAX_VALUE, diff));
+        }
+      }
+      return;
+    }
     if (consumeProgress > 0.0) {
       int points = Math.round((float) (consumeProgress * player.getExpToLevel()));
       if (points > 0) {
@@ -877,6 +924,30 @@ public final class UpgradeService {
     if (consume > 0) {
       player.giveExpLevels(-consume);
     }
+  }
+
+  private int resolveXpLevel(Player player) {
+    if (customXpService == null || player == null) {
+      return player == null ? 1 : player.getLevel();
+    }
+    CustomXpProfile profile = customXpService.getOrCreate(player.getUniqueId());
+    return profile == null ? player.getLevel() : profile.level();
+  }
+
+  private int resolveTotalXp(Player player) {
+    if (customXpService == null || player == null) {
+      return player == null ? 0 : player.getTotalExperience();
+    }
+    CustomXpProfile profile = customXpService.getOrCreate(player.getUniqueId());
+    long points = profile == null ? 0L : profile.points();
+    return (int) Math.min(Integer.MAX_VALUE, points);
+  }
+
+  private double resolveXpProgress(Player player) {
+    if (customXpService == null || player == null) {
+      return player == null ? 0.0 : player.getExp();
+    }
+    return customXpService.progress(player.getUniqueId());
   }
 
   private void consumePrice(Player player, UpgradePriceSpec price) {
@@ -1097,10 +1168,22 @@ public final class UpgradeService {
         continue;
       }
       UpgradeSpec spec = registry.upgradeSpec(record);
-      if (spec == null || spec.spell() == null || spec.spell().activator() != activator) {
+      if (spec == null || spec.spells().isEmpty()) {
         continue;
       }
-      removeSpellBinding(item, spec.spell());
+      boolean matches = false;
+      for (UpgradeSpellSpec spell : spec.spells()) {
+        if (spell.activator() == activator) {
+          matches = true;
+          break;
+        }
+      }
+      if (!matches) {
+        continue;
+      }
+      for (UpgradeSpellSpec spell : spec.spells()) {
+        removeSpellBinding(item, spell);
+      }
       removed.add(record);
     }
     return removed;
@@ -1181,10 +1264,12 @@ public final class UpgradeService {
         continue;
       }
       UpgradeSpec spec = registry.upgradeSpec(record);
-      if (spec == null || spec.spell() == null) {
+      if (spec == null || spec.spells().isEmpty()) {
         continue;
       }
-      out.add(spec.spell().abilityId());
+      for (UpgradeSpellSpec spell : spec.spells()) {
+        out.add(spell.abilityId());
+      }
     }
     return out;
   }
@@ -1242,7 +1327,7 @@ public final class UpgradeService {
     if (incoming == null) {
       return false;
     }
-    if (incoming.spell() != null) {
+    if (incoming != null && !incoming.spells().isEmpty()) {
       // Spell activators can overlap; do not treat as a hard conflict.
     }
     if (!incoming.enchants().isEmpty()) {

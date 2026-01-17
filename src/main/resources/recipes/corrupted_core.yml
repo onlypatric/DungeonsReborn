@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: corrupted_core
+name: corrupted_core
+description: Ricetta per creare corrupted_core.
+inputs: []
+output:
+  itemId: corrupted_core
+  amount: 1

@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: WHEAT
+  amount: 1
+  meta:
+    display-name: Fascio di Erbe
+    lore:
+    - Erbe pressate per rituali e cure.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

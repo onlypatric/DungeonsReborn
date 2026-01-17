@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: COBBLESTONE
+  amount: 1
+  meta:
+    display-name: "Nucleo di Terra"
+    lore:
+      - "Un nucleo ruvido."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

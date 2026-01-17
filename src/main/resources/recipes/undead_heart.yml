@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: undead_heart
+name: undead_heart
+description: Ricetta per creare undead_heart.
+inputs: []
+output:
+  itemId: undead_heart
+  amount: 1

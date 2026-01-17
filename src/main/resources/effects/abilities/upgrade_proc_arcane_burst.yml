@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_arcane_burst:
+    name: "<light_purple>Proc: Scoppio Arcano</light_purple>"
+    description: "<dark_gray>Esplosione magica leggera.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.sphere_shell particle=DUST radius=1.6 points=32 count=1 offset=0.03 color="#b35cff" size=0.9
+          for_each_target type=sphere radius=2.5 filter=mobs originAt=origin {
+            damage amount=2
+          }
+        }

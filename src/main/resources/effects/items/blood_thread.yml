@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: REDSTONE
+  amount: 1
+  meta:
+    display-name: "Filo di Sangue"
+    lore:
+      - "Un filo macchiato di sangue."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

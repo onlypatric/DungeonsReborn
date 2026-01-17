@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_trident_turbine_ii
+name: <yellow>Trama del Turbine II</yellow>
+description: Ricetta per creare <yellow>Trama del Turbine II</yellow>.
+inputs: []
+output:
+  itemId: basic_trident_turbine_ii
+  amount: 1

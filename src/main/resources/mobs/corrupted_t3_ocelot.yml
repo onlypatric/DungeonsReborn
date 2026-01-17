@@ -24,10 +24,14 @@ mobs:
             \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=120 amplifier=0\n\
             \  }\n}"
     xpGating:
-      minLevel: 500
+      minLevel: 8000
     progression:
-      minXp: 18665
-      maxXp: 25252
+      minXp: 22
+      maxXp: 32
+      maxPlayerXp: 1200000
+    loot:
+      pool: corrupted_t3
+      merge: true
 spawnerBlocks:
   corrupted_t3_ocelot_spawner:
     mob: corrupted_t3_ocelot

@@ -34,10 +34,14 @@ mobs:
             \    potion effect=WEAKNESS durationTicks=90 amplifier=0\n    knockback\
             \ horizontal=0.6 vertical=0.15\n  }\n}"
     xpGating:
-      minLevel: 8000
+      minLevel: 15000
     progression:
-      minXp: 916158
-      maxXp: 1239508
+      minXp: 45
+      maxXp: 65
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_earth
+      merge: true
 spawnerBlocks:
   earth_t2_enderman_terrastalker_spawner:
     mob: earth_t2_enderman_terrastalker

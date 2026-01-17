@@ -30,6 +30,7 @@ import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.progression.ProgressionService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import net.kyori.adventure.text.Component;
 
@@ -51,6 +52,7 @@ public final class QuestService {
   private final QuestYamlRegistry registry;
   private final QuestRepository repository;
   private final ProgressionService progression;
+  private final CustomXpService customXpService;
   private final ShopYamlRegistry shopRegistry;
   private final Function<String, ItemStack> itemResolver;
   private final Predicate<World> worldAllowed;
@@ -59,12 +61,14 @@ public final class QuestService {
   public QuestService(QuestYamlRegistry registry,
                       QuestRepository repository,
                       ProgressionService progression,
+                      CustomXpService customXpService,
                       ShopYamlRegistry shopRegistry,
                       Function<String, ItemStack> itemResolver,
                       Predicate<World> worldAllowed) {
     this.registry = Objects.requireNonNull(registry, "registry");
     this.repository = Objects.requireNonNull(repository, "repository");
     this.progression = Objects.requireNonNull(progression, "progression");
+    this.customXpService = customXpService;
     this.shopRegistry = shopRegistry;
     this.itemResolver = itemResolver;
     this.worldAllowed = worldAllowed;
@@ -387,7 +391,11 @@ public final class QuestService {
       return;
     }
     if (rewards.xp() > 0) {
-      progression.awardForQuest(player, rewards.xp(), spec.id());
+      if (customXpService != null) {
+        customXpService.awardXp(player, rewards.xp());
+      } else {
+        progression.awardForQuest(player, rewards.xp(), spec.id());
+      }
     }
     giveTokens(player, rewards.tokens(), rewards.compressed(), rewards.pallet());
     for (QuestRewardItem reward : rewards.items()) {

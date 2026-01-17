@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: blood_thread
+name: blood_thread
+description: Ricetta per creare blood_thread.
+inputs: []
+output:
+  itemId: blood_thread
+  amount: 1

@@ -17,6 +17,7 @@ import dev.patric.dungeonsreborn.dungeons.menu.DungeonAdminMenu;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.editor.menu.EditorAbilityListMenu;
 import dev.patric.dungeonsreborn.effects.editor.menu.EditorItemListMenu;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeService;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.GuiSounds;
@@ -45,6 +46,7 @@ public final class AdminHubMenu extends Window {
   private final CraftingYamlRegistry crafting;
   private final CraftingGuiSessionManager craftingSessions;
   private final ClassYamlRegistry classes;
+  private final UpgradeService upgrades;
   private final DungeonYamlRegistry dungeons;
   private final DungeonQueueService dungeonQueue;
   private final DungeonSessionManager dungeonSessions;
@@ -57,6 +59,7 @@ public final class AdminHubMenu extends Window {
       CraftingYamlRegistry crafting,
       CraftingGuiSessionManager craftingSessions,
       ClassYamlRegistry classes,
+      UpgradeService upgrades,
       DungeonYamlRegistry dungeons,
       DungeonQueueService dungeonQueue,
       DungeonSessionManager dungeonSessions) {
@@ -69,6 +72,7 @@ public final class AdminHubMenu extends Window {
     this.crafting = crafting;
     this.craftingSessions = craftingSessions;
     this.classes = classes;
+    this.upgrades = upgrades;
     this.dungeons = dungeons;
     this.dungeonQueue = dungeonQueue;
     this.dungeonSessions = dungeonSessions;
@@ -96,6 +100,15 @@ public final class AdminHubMenu extends Window {
             return;
           }
           new EditorItemListMenu(this.editor).open(player);
+        }));
+    setFixed(21, button(Material.ENCHANTED_BOOK, "gui.adminHub.upgrades.title",
+        "gui.adminHub.upgrades.hint",
+        player -> {
+          if (this.upgrades == null) {
+            sendUnavailable(player, "labels.system.upgrades");
+            return;
+          }
+          new UpgradeAdminListMenu(this.upgrades).open(player);
         }));
     setFixed(22, button(Material.ZOMBIE_HEAD, "gui.adminHub.mobEditor.title",
         "gui.adminHub.mobEditor.hint",

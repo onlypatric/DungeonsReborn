@@ -33,31 +33,12 @@ mobs:
             \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=40 amplifier=0\n\
             \  }\n}"
     loot:
-      clearVanilla: true
-      rolls: 1
-      drops:
-      - token: token
-        min: 1
-        max: 2
-      - material: WOODEN_SWORD
-        chance: 25
-      - material: WOODEN_AXE
-        chance: 25
-      - material: LEATHER_CHESTPLATE
-        chance: 20
-      - material: LEATHER_BOOTS
-        chance: 20
-      - material: CARROT
-        chance: 40
-        min: 1
-        max: 2
-      - material: MELON_SLICE
-        chance: 40
-        min: 1
-        max: 2
+      pool: undead_t1
+      merge: true
     progression:
-      minXp: 175
-      maxXp: 238
+      minXp: 6
+      maxXp: 9
+      maxPlayerXp: 250000
 spawnerBlocks:
   undead_t1_gravetouched_spawner:
     mob: undead_t1_gravetouched

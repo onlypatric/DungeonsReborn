@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: ENDER_EYE
+  amount: 1
+  meta:
+    display-name: "Nucleo Arcano"
+    lore:
+      - "Pulsante di energia."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

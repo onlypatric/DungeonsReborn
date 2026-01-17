@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_elytra_durata_i
+name: "<yellow>Trama di Durata I</yellow>"
+description: |-
+  Riduce l'usura dell'elytra durante l'uso.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:elytra
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_elytra_durata_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_elytra_durata_i
+  activator: PASSIVE

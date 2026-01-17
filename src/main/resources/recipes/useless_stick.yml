@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: useless_stick
+name: useless_stick
+description: Ricetta per creare useless_stick.
+inputs: []
+output:
+  itemId: useless_stick
+  amount: 1

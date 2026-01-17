@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_bleed:
+    name: "<red>Proc: Sanguinamento</red>"
+    description: "<dark_gray>Danni nel tempo al bersaglio vicino.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.2 points=20 count=1 offset=0.04 color="#ff3333" size=0.9
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            damage_over_time amount=1 periodTicks=20 times=3
+          }
+        }

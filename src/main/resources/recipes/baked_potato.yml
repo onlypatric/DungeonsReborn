@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: baked_potato
+name: baked_potato
+description: Ricetta per creare baked_potato.
+inputs: []
+output:
+  itemId: baked_potato
+  amount: 1

@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: MAGMA_CREAM
+  amount: 1
+  meta:
+    display-name: "Nucleo di Fuoco"
+    lore:
+      - "Un nucleo fuso."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

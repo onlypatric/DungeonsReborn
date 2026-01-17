@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_visione_i
+name: <yellow>Sigillo della Visione I</yellow>
+description: Ricetta per creare <yellow>Sigillo della Visione I</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_visione_i
+  amount: 1

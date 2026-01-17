@@ -18,14 +18,14 @@ public final class ShopMerchantBuilder {
   }
 
   public static Merchant buildMerchant(ShopSpec spec, ShopTokenSpec tokenSpec, Function<String, ItemStack> itemResolver,
-      ShopStockManager stockManager) {
+      ShopStockManager stockManager, boolean allowExperienceReward) {
     if (spec == null) {
       throw new IllegalArgumentException("spec is required");
     }
     Merchant merchant = Bukkit.createMerchant();
     List<MerchantRecipe> recipes = new ArrayList<>();
     for (ShopTradeSpec trade : spec.trades()) {
-      MerchantRecipe recipe = buildRecipe(trade, tokenSpec, itemResolver, spec, stockManager);
+      MerchantRecipe recipe = buildRecipe(trade, tokenSpec, itemResolver, spec, stockManager, allowExperienceReward);
       if (recipe != null) {
         recipes.add(recipe);
       }
@@ -35,7 +35,8 @@ public final class ShopMerchantBuilder {
   }
 
   public static MerchantRecipe buildRecipe(ShopTradeSpec trade, ShopTokenSpec tokenSpec,
-      Function<String, ItemStack> itemResolver, ShopSpec spec, ShopStockManager stockManager) {
+      Function<String, ItemStack> itemResolver, ShopSpec spec, ShopStockManager stockManager,
+      boolean allowExperienceReward) {
     if (trade == null) {
       return null;
     }
@@ -46,7 +47,7 @@ public final class ShopMerchantBuilder {
     ItemStack previewResult = applyPreviewLore(result, trade.previewLore(), trade, spec, tokenSpec, stockManager);
     int maxUses = trade.maxUses();
     MerchantRecipe recipe = new MerchantRecipe(previewResult, maxUses <= 0 ? Integer.MAX_VALUE : maxUses);
-    recipe.setExperienceReward(trade.experienceReward());
+    recipe.setExperienceReward(allowExperienceReward && trade.experienceReward());
     recipe.setPriceMultiplier(resolvePriceMultiplier(trade, spec, stockManager));
     ShopIngredientSpec buyA = trade.buyA();
     ShopIngredientSpec buyB = trade.buyB();

@@ -20,15 +20,20 @@ import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpec;
 import dev.patric.dungeonsreborn.party.Party;
 import dev.patric.dungeonsreborn.party.PartyService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 
 public final class ProgressionMobKillListener implements Listener {
   private final ProgressionService service;
+  private final CustomXpService customXpService;
   private final MobRegistry mobRegistry;
   private final PartyService parties;
   private final double assistRadius;
 
-  public ProgressionMobKillListener(ProgressionService service, MobRegistry mobRegistry, PartyService parties, double assistRadius) {
+  public ProgressionMobKillListener(ProgressionService service, CustomXpService customXpService, MobRegistry mobRegistry,
+      PartyService parties, double assistRadius) {
     this.service = service;
+    this.customXpService = customXpService;
     this.mobRegistry = mobRegistry;
     this.parties = parties;
     this.assistRadius = Math.max(0.0, assistRadius);
@@ -65,11 +70,26 @@ public final class ProgressionMobKillListener implements Listener {
     }
     Location loc = entity.getLocation();
     for (Player recipient : resolveRecipients(killer, loc)) {
-      if (cap > 0 && recipient.getTotalExperience() >= cap) {
+      if (cap > 0 && getRecipientXp(recipient) >= cap) {
         continue;
       }
-      service.awardXp(recipient, award, ProgressionAwardSource.MOB_KILL, mobId);
+      if (customXpService != null) {
+        customXpService.awardXp(recipient, award);
+      } else {
+        service.awardXp(recipient, award, ProgressionAwardSource.MOB_KILL, mobId);
+      }
     }
+  }
+
+  private long getRecipientXp(Player recipient) {
+    if (recipient == null) {
+      return 0L;
+    }
+    if (customXpService == null) {
+      return recipient.getTotalExperience();
+    }
+    CustomXpProfile profile = customXpService.getOrCreate(recipient.getUniqueId());
+    return profile == null ? 0L : profile.points();
   }
 
   private Set<Player> resolveRecipients(Player killer, Location loc) {

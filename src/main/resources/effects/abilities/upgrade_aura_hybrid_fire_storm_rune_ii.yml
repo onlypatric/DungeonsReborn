@@ -1,0 +1,22 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_hybrid_fire_storm_rune_ii:
+    name: "<gray>Aura Ibrida Fuoco/Tempesta</gray>"
+    description: "<dark_gray>Indebolisce con scintille.</dark_gray>"
+    costs:
+      - type: mana
+        amount: 6
+    cooldown:
+      ticks: 80
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=24 count=1 offset=0.04 color="#ff7b5a" size=1.05
+          for_each_target type=sphere radius=3 filter=mobs originAt=origin {
+            lightning effectOnly=false
+            particles.point particle=ELECTRIC_SPARK count=2 offset=0.08
+            potion effect=WEAKNESS durationTicks=40 amplifier=0
+          }
+        }

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: undead_core
+name: undead_core
+description: Ricetta per creare undead_core.
+inputs: []
+output:
+  itemId: undead_core
+  amount: 1

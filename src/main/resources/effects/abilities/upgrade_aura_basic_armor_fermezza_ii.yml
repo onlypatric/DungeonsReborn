@@ -1,0 +1,16 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_armor_fermezza_ii:
+    name: "<gray>Aura basic_armor_fermezza_ii</gray>"
+    description: "<dark_gray>Effetto visivo base.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=22 count=1 offset=0.04 color="#c0c0c0" size=0.95
+          particles.point particle=END_ROD count=1 offset=0.03
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=RESISTANCE durationTicks=40 amplifier=0
+          }
+        }

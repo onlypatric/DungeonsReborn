@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_crossbow_carica_ii
+name: <yellow>Ingranaggio di Carica II</yellow>
+description: Ricetta per creare <yellow>Ingranaggio di Carica II</yellow>.
+inputs: []
+output:
+  itemId: basic_crossbow_carica_ii
+  amount: 1

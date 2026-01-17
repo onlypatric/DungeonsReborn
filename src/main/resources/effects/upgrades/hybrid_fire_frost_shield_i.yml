@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: hybrid_fire_frost_shield_i
+name: "<light_purple>Scudo del Gelo Fiammeggiante</light_purple>"
+description: |-
+  Bloccare un colpo sprigiona fuoco e gelo in un'esplosione di particelle.
+limits:
+  category: hybrid
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:shield
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_fire_frost_shield_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_fire_frost_shield_i
+  activator: SHIFT_RIGHT_CLICK

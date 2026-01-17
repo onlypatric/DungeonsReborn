@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: crossbow
+name: crossbow
+description: Ricetta per creare crossbow.
+inputs: []
+output:
+  itemId: crossbow
+  amount: 1

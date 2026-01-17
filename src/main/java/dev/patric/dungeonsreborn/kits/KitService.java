@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.shops.ShopTokenTierSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 
@@ -29,16 +30,18 @@ public final class KitService {
   private final ShopYamlRegistry shopRegistry;
   private final Function<String, ItemStack> itemResolver;
   private final AdvancementService advancements;
+  private final CustomXpService customXpService;
   private final Logger logger;
 
   public KitService(KitYamlRegistry registry, KitClaimRepository claims,
       ShopYamlRegistry shopRegistry, Function<String, ItemStack> itemResolver,
-      AdvancementService advancements, Logger logger) {
+      AdvancementService advancements, CustomXpService customXpService, Logger logger) {
     this.registry = Objects.requireNonNull(registry, "registry");
     this.claims = Objects.requireNonNull(claims, "claims");
     this.shopRegistry = shopRegistry;
     this.itemResolver = itemResolver;
     this.advancements = advancements;
+    this.customXpService = customXpService;
     this.logger = Objects.requireNonNull(logger, "logger");
   }
 
@@ -143,7 +146,11 @@ public final class KitService {
       return;
     }
     if (rewards.xp() > 0) {
-      player.giveExp(rewards.xp());
+      if (customXpService != null) {
+        customXpService.awardXp(player, rewards.xp());
+      } else {
+        player.giveExp(rewards.xp());
+      }
     }
     if (shopRegistry == null || shopRegistry.tokenSpec() == null || shopRegistry.tokenSpec().item() == null) {
       if (rewards.tokens() > 0 || rewards.compressed() > 0 || rewards.pallet() > 0) {

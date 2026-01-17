@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: IRON_NUGGET
+  amount: 1
+  meta:
+    display-name: "Rottame Inutile"
+    lore:
+      - "Solo ferraglia."

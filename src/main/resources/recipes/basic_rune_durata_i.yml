@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_rune_durata_i
+name: <yellow>Runa della Durata I</yellow>
+description: Ricetta per creare <yellow>Runa della Durata I</yellow>.
+inputs: []
+output:
+  itemId: basic_rune_durata_i
+  amount: 1

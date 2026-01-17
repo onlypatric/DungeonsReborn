@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_armor_sprint_ii
+name: "<yellow>Sigillo della Corsa II</yellow>"
+description: |-
+  Aumenta notevolmente la velocita di corsa mentre indossi gli stivali.
+limits:
+  category: basic
+  tier: 3
+compatibility:
+  allowMaterials:
+    - minecraft:chainmail_boots
+    - minecraft:diamond_boots
+    - minecraft:golden_boots
+    - minecraft:iron_boots
+    - minecraft:leather_boots
+    - minecraft:netherite_boots
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_armor_sprint_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_armor_sprint_ii
+  activator: PASSIVE

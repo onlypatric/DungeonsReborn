@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: chainmail_boots
+name: chainmail_boots
+description: Ricetta per creare chainmail_boots.
+inputs: []
+output:
+  itemId: chainmail_boots
+  amount: 1

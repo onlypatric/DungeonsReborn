@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_pick_frattura_i
+name: <yellow>Sigillo di Frattura I</yellow>
+description: Ricetta per creare <yellow>Sigillo di Frattura I</yellow>.
+inputs: []
+output:
+  itemId: basic_pick_frattura_i
+  amount: 1

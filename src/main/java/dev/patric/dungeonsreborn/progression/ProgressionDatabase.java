@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ProgressionDatabase implements AutoCloseable {
-  private static final int TARGET_SCHEMA_VERSION = 7;
+  private static final int TARGET_SCHEMA_VERSION = 8;
 
   private final File file;
   private final Logger logger;
@@ -95,6 +95,7 @@ public final class ProgressionDatabase implements AutoCloseable {
       case 5 -> migrateV5();
       case 6 -> migrateV6();
       case 7 -> migrateV7();
+      case 8 -> migrateV8();
       default -> throw new SQLException("Unknown migration version " + version);
     }
   }
@@ -194,6 +195,19 @@ public final class ProgressionDatabase implements AutoCloseable {
             max_level INTEGER NOT NULL,
             last_update INTEGER NOT NULL,
             PRIMARY KEY (uuid, dungeon_id)
+          )
+          """);
+    }
+  }
+
+  private void migrateV8() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS player_custom_xp (
+            uuid TEXT PRIMARY KEY,
+            points INTEGER NOT NULL,
+            level INTEGER NOT NULL,
+            last_update INTEGER NOT NULL
           )
           """);
     }

@@ -24,8 +24,12 @@ mobs:
             \ originAt=origin {\n    potion effect=MINING_FATIGUE durationTicks=80\
             \ amplifier=0\n  }\n}"
     progression:
-      minXp: 175
-      maxXp: 238
+      minXp: 6
+      maxXp: 9
+      maxPlayerXp: 250000
+    loot:
+      pool: hostile_t1
+      merge: true
 spawnerBlocks:
   hostile_t1_river_guard_spawner:
     mob: hostile_t1_river_guard

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: elemental_frost_shield_signature
+name: "<aqua>Scudo del Gelo Profondo</aqua>"
+description: |-
+  Un colpo bloccato congela pesantemente l'attaccante (12s di ricarica).
+limits:
+  category: elemental
+  tier: 3
+compatibility:
+  allowMaterials:
+    - minecraft:shield
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_frost_shield_signature
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_frost_shield_signature
+  activator: SHIFT_RIGHT_CLICK

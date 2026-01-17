@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: cooked_porkchop
+name: cooked_porkchop
+description: Ricetta per creare cooked_porkchop.
+inputs: []
+output:
+  itemId: cooked_porkchop
+  amount: 1

@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: BONE_BLOCK
+  amount: 1
+  meta:
+    display-name: "Nucleo Non Morto"
+    lore:
+      - "Un nucleo denso e gelido."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: fire_ember
+name: fire_ember
+description: Ricetta per creare fire_ember.
+inputs: []
+output:
+  itemId: fire_ember
+  amount: 1

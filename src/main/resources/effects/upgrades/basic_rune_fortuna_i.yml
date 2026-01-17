@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: basic_rune_fortuna_i
+name: "<yellow>Runa della Fortuna I</yellow>"
+description: |-
+  Aumenta leggermente la qualita dei bottini ottenuti.
+limits:
+  category: basic
+  tier: 1
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_rune_fortuna_i
+  secondaryDescriptions:
+    - "<dark_gray>Piccolo bonus fortuna.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_rune_fortuna_i
+  activator: SHIFT_RIGHT_CLICK

@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: HEART_OF_THE_SEA
+  amount: 1
+  meta:
+    display-name: "Cuore di Tempesta"
+    lore:
+      - "Un cuore di tempeste."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: elemental_fire_elytra_i
+name: "<aqua>Trama delle Correnti Calde I</aqua>"
+description: |-
+  Le correnti calde aumentano la planata e riducono i danni da fuoco.
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:elytra
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_fire_elytra_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_fire_elytra_i
+  activator: PASSIVE

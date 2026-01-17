@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_scoppio_i
+name: "<yellow>Dardo a Impatto I</yellow>"
+description: |-
+  I dardi applicano un piccolo respingimento (6s di ricarica).
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_scoppio_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_scoppio_i
+  activator: RIGHT_CLICK

@@ -1,0 +1,16 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_rune_fortuna_i:
+    name: "<gold>Aura Fortuna I</gold>"
+    description: "<dark_gray>Piccolo bonus fortuna.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.2 points=24 count=1 offset=0.04 color="#f4d35e" size=0.95
+          particles.point particle=TOTEM_OF_UNDYING count=1 offset=0.08
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=LUCK durationTicks=40 amplifier=0
+          }
+        }

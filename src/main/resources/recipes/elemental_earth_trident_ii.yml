@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_earth_trident_ii
+name: <aqua>Trama del Macigno II</aqua>
+description: Ricetta per creare <aqua>Trama del Macigno II</aqua>.
+inputs: []
+output:
+  itemId: elemental_earth_trident_ii
+  amount: 1

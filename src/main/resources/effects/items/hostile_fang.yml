@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: BONE
+  amount: 1
+  meta:
+    display-name: Zanna Ostile
+    lore:
+    - Una zanna affilata di creatura ostile.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_proiettili_i
+name: <yellow>Sigillo Antiproiettile I</yellow>
+description: Ricetta per creare <yellow>Sigillo Antiproiettile I</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_proiettili_i
+  amount: 1

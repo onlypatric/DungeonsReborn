@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_frost_blade_ii
+name: <aqua>Lama Gelida II</aqua>
+description: Ricetta per creare <aqua>Lama Gelida II</aqua>.
+inputs: []
+output:
+  itemId: elemental_frost_blade_ii
+  amount: 1

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_crossbow_tiro_i
+name: <yellow>Ingranaggio Serrato I</yellow>
+description: Ricetta per creare <yellow>Ingranaggio Serrato I</yellow>.
+inputs: []
+output:
+  itemId: basic_crossbow_tiro_i
+  amount: 1

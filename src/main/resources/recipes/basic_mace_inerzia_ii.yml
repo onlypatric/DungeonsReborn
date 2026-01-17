@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_mace_inerzia_ii
+name: <yellow>Mazza d'Inerzia II</yellow>
+description: Ricetta per creare <yellow>Mazza d'Inerzia II</yellow>.
+inputs: []
+output:
+  itemId: basic_mace_inerzia_ii
+  amount: 1

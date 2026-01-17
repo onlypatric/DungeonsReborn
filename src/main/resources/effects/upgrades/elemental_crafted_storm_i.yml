@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: elemental_crafted_storm_i
+name: "<aqua>Catalizzatore di Tuono</aqua>"
+description: |-
+  Potenzia la durata delle scosse elettriche.
+limits:
+  category: elemental
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_crafted_storm_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_crafted_storm_i
+  activator: PASSIVE

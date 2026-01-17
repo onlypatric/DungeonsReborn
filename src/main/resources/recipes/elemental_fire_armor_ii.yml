@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_fire_armor_ii
+name: <aqua>Corazza Ardente II</aqua>
+description: Ricetta per creare <aqua>Corazza Ardente II</aqua>.
+inputs: []
+output:
+  itemId: elemental_fire_armor_ii
+  amount: 1

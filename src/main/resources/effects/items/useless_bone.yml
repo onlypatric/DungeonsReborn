@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: BONE
+  amount: 1
+  meta:
+    display-name: "Osso Inutile"
+    lore:
+      - "Vecchio e fragile."

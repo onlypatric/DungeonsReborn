@@ -32,10 +32,11 @@ mobs:
             \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=80 amplifier=0\n\
             \    knockback horizontal=0.8 vertical=0.18\n  }\n}"
     xpGating:
-      minLevel: 500
+      minLevel: 5000
     progression:
-      minXp: 7738
-      maxXp: 10470
+      minXp: 16
+      maxXp: 24
+      maxPlayerXp: 900000
 spawnerBlocks:
   pack_bruiser_iron_golem_stonemaul_spawner:
     mob: pack_bruiser_iron_golem_stonemaul

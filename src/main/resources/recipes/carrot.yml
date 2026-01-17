@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: carrot
+name: carrot
+description: Ricetta per creare carrot.
+inputs: []
+output:
+  itemId: carrot
+  amount: 1

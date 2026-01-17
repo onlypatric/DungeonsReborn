@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_sword_forza_ii
+name: <yellow>Tomo della Forza II</yellow>
+description: Ricetta per creare <yellow>Tomo della Forza II</yellow>.
+inputs: []
+output:
+  itemId: basic_sword_forza_ii
+  amount: 1

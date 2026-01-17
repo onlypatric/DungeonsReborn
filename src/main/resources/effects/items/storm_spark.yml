@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: GLOWSTONE_DUST
+  amount: 1
+  meta:
+    display-name: "Scintilla di Tempesta"
+    lore:
+      - "Crepita di energia."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: basic_rune_esperienza_ii
+name: "<yellow>Runa dell'Esperienza II</yellow>"
+description: |-
+  Aumenta l'esperienza ottenuta dalle uccisioni in modo visibile.
+limits:
+  category: basic
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_rune_esperienza_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_rune_esperienza_ii
+  activator: SHIFT_RIGHT_CLICK

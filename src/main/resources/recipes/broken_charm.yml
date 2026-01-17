@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: broken_charm
+name: broken_charm
+description: Ricetta per creare broken_charm.
+inputs: []
+output:
+  itemId: broken_charm
+  amount: 1

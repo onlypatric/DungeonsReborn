@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_bow_longshot_i
+name: <yellow>Corda del Lungo Tiro I</yellow>
+description: Ricetta per creare <yellow>Corda del Lungo Tiro I</yellow>.
+inputs: []
+output:
+  itemId: basic_bow_longshot_i
+  amount: 1

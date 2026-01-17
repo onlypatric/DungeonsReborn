@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_rune_ripresa_ii
+name: <yellow>Runa della Ripresa II</yellow>
+description: Ricetta per creare <yellow>Runa della Ripresa II</yellow>.
+inputs: []
+output:
+  itemId: basic_rune_ripresa_ii
+  amount: 1

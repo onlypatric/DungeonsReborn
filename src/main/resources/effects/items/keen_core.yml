@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: QUARTZ
+  amount: 1
+  meta:
+    display-name: Nucleo Affilato
+    lore:
+    - Un nucleo che amplifica la precisione.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

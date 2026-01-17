@@ -1,13 +1,33 @@
 gui:
   common:
-    none: (none)
-    unnamed: (unnamed)
+    line:
+      id: <gray>ID:</gray> <white>{value}</white>
+      status: <gray>Status:</gray> {value}
+      permission: <gray>Permission:</gray> <white>{value}</white>
+      detail: <gray>Detail:</gray> <white>{value}</white>
+      source: <gray>Source:</gray> <white>{value}</white>
+      lastReload: <gray>Last reload:</gray> <white>{value}</white>
+      subsystem: <gray>Subsystem:</gray> <white>{value}</white>
+    status:
+      enabled: <green>Enabled</green>
+      disabled: <red>Disabled</red>
+    errors:
+      none: <green>No errors.</green>
+      clickView: <red>Click to view errors.</red>
+      count: <red>Errors:</red> <white>{count}</white>
+    action:
+      leftClickEdit: <green>Left click to edit.</green>
+      rightClickDelete: <red>Right click to delete.</red>
+    none: <gray>(none)</gray>
+    unknown: <gray>(unknown)</gray>
+    unset: Unset
+    unnamed: Unnamed
   controls:
     header: <gray><bold>Controls</bold></gray>
     bullet: <dark_gray>-</dark_gray>
-    separator: <dark_gray> • </dark_gray>
+    separator: "<dark_gray> \u2022 </dark_gray>"
     continuation: <dark_gray>...</dark_gray>
-    blank_line: "<gray> </gray>"
+    blank_line: <gray> </gray>
   button:
     back: Back
     close: Close
@@ -19,7 +39,7 @@ gui:
     shift_right: Shift-right-click
     right: Right-click
   search:
-    prompt: "Type search (or 'cancel'):"
+    prompt: 'Type search (or ''cancel''):'
     hint: <gray>Search by id or name.</gray>
     none: <gray>No results.</gray>
     current: <gray>Search:</gray> <white>{query}</white>
@@ -42,677 +62,271 @@ gui:
     title: Select item
   effects:
     editor:
+      abilityPicker:
+        title: <white><bold>Select Ability</bold></white>
+        header:
+          title: <gold><bold>Abilities</bold></gold>
+          hint: <gray>Select an ability to bind.</gray>
+        entry:
+          select: <green>Click to select.</green>
+          more: <gray>...</gray>
+          unnamed: <gray>(unnamed)</gray>
       actionDetail:
-        error:
-          valueRequired: Value required.
-          invalidNumber: Invalid number.
-  showcase:
-    settings:
-      tryThis: Try this
-    action: Pick an item
-    status:
-      picking: <yellow>Picking...</yellow>
-      selected: '<gray>Selected:</gray> '
-  numericInput:
-    label: Value
-    prompt: 'Type a number (or ''cancel''):'
-    min: 'Min: {min}'
-    max: 'Max: {max}'
-    value: 'Value: {value}'
-    clickToType: Click to type
-    stepMinus: -{step}
-    stepPlus: +{step}
-    minus: '-'
-    plus: +
-  cycle:
-    next: Next
-    previous: Previous
-  dropdown:
-    selected: 'Selected: '
-    open: Open
-  list:
-    prev:
-      title: Prev page
-      action: Previous page
-      disabled: No previous page
-    next:
-      title: Next page
-      action: Next page
-      disabled: No next page
-    page: Page {current}/{total}
-    items: 'Items: {count}'
-    truncated: List truncated. Refine search.
-    filter: 'Filter: {query}'
-  common:
-    line:
-      id: <gray>ID:</gray> <white>{value}</white>
-      status: <gray>Status:</gray> {value}
-      permission: <gray>Permission:</gray> <white>{value}</white>
-      detail: <gray>Detail:</gray> <white>{value}</white>
-      source: <gray>Source:</gray> <white>{value}</white>
-      lastReload: <gray>Last reload:</gray> <white>{value}</white>
-      subsystem: <gray>Subsystem:</gray> <white>{value}</white>
-    status:
-      enabled: <green>Enabled</green>
-      disabled: <red>Disabled</red>
-    errors:
-      none: <green>No errors.</green>
-      clickView: <red>Click to view errors.</red>
-      count: <red>Errors:</red> <white>{count}</white>
-    action:
-      leftClickEdit: <green>Left click to edit.</green>
-      rightClickDelete: <red>Right click to delete.</red>
-    none: <gray>(none)</gray>
-    unknown: <gray>(unknown)</gray>
-  classes:
-    requirements:
-      level: <gray>Level:</gray> <white>{current}/{required}</white>
-      tokens: <gray>Tokens:</gray> <white>{current}/{required}</white>
-      quests: <red>Requires quests:</red> <white>{quests}</white>
-      world: <red>Unavailable in this world.</red>
-    select:
-      title: <white><bold>Choose Class</bold></white>
-      header:
-        title: <gold><bold>Classes</bold></gold>
-        hint1: <gray>Select a class to unlock.</gray>
-        hint2: <gray>Only one class can be active.</gray>
-      refresh:
-        title: <yellow><bold>Refresh</bold></yellow>
-        hint: <gray>Reload the list.</gray>
-      entry:
-        selected: <green>Selected</green>
-      confirm:
-        title: <gold><bold>Confirm Class</bold></gold>
-      stat:
-        strength: <gray>Strength:</gray> <white>+{value}</white>
-        dexterity: <gray>Dexterity:</gray> <white>+{value}</white>
-        intelligence: <gray>Intelligence:</gray> <white>+{value}</white>
-        vitality: <gray>Vitality:</gray> <white>+{value}</white>
-        manaMax: <gray>Mana Max:</gray> <white>+{value}</white>
-        manaRegen: <gray>Mana Regen:</gray> <white>+{value}</white>
-    skillTree:
-      title: <white><bold>Skill Tree</bold></white>
-      header:
-        title: <gold><bold>Skill Tree</bold></gold>
-        class: <gray>Class:</gray> {value}
-        points:
-          unspent: <gray>Unspent points:</gray> <white>{value}</white>
-          total: <gray>Points total:</gray> <white>{value} (spent {spent})</white>
-        unlocked: <gray>Unlocked nodes:</gray> <white>{unlocked}/{total}</white>
-        respecCost: <gray>Respec cost:</gray> <white>{tokens} tokens, {points} points</white>
-        hint:
-          unlock: <gray>Left-click to unlock.</gray>
-          respec: <gray>Right-click to respec.</gray>
-      node:
-        type: <gray>Type:</gray> <white>{value}</white>
-        cost: <gray>Cost:</gray> <white>{value}</white>
-        requires: <gray>Requires:</gray> <white>{value}</white>
-        status:
-          unlocked: <green>Unlocked</green>
-          locked: <red>Locked</red>
-      respec:
-        title: <gold><bold>Respec Skill</bold></gold>
-        cost: <gray>Respec cost:</gray> <white>{tokens} tokens, {points} points</white>
-  quests:
-    editor:
-      detail:
-        title: <white><bold>Quest Editor</bold></white>
-        header:
-          title: <gold><bold>Quest:</bold> <white>{id}</white></gold>
-          hint: <gray>Configure the quest settings.</gray>
-        enabled:
-          title: <yellow><bold>Enabled</bold></yellow>
-          state:
-            line: <gray>Status:</gray> {value}
-            enabled: <green>Enabled</green>
-            disabled: <red>Disabled</red>
-          hint: <gray>Click to toggle.</gray>
-        name:
-          title: <yellow><bold>Name</bold></yellow>
+        param:
+          current:
+            label: <gray>Current:</gray>
+            value: <gray>Current:</gray> <white>{value}</white>
+          number:
+            prompt: <gray>Enter value</gray>
+          text:
+            label: <aqua><bold>Text</bold></aqua>
+            prompt: <gray>Enter text</gray>
+          sound:
+            label: <aqua><bold>Sound</bold></aqua>
+            prompt: <gray>Enter sound</gray>
+          particle:
+            label: <aqua><bold>Particle</bold></aqua>
+            prompt: <gray>Enter particle</gray>
+          volume:
+            label: <aqua><bold>Volume</bold></aqua>
+          pitch:
+            label: <aqua><bold>Pitch</bold></aqua>
+          count:
+            label: <aqua><bold>Count</bold></aqua>
+          offset:
+            label: <aqua><bold>Offset</bold></aqua>
+          extra:
+            label: <aqua><bold>Extra</bold></aqua>
+          amount:
+            label: <aqua><bold>Amount</bold></aqua>
+          ticks:
+            label: <aqua><bold>Ticks</bold></aqua>
+          delay:
+            label: <aqua><bold>Delay</bold></aqua>
+          period:
+            label: <aqua><bold>Period</bold></aqua>
+          times:
+            label: <aqua><bold>Times</bold></aqua>
+          maxTargets:
+            label: <aqua><bold>Max Targets</bold></aqua>
+          title:
+            label: <aqua><bold>Title</bold></aqua>
+            prompt: <gray>Enter title</gray>
+          subtitle:
+            label: <aqua><bold>Subtitle</bold></aqua>
+            prompt: <gray>Enter subtitle</gray>
+          fadeIn:
+            label: <aqua><bold>Fade In</bold></aqua>
+          stay:
+            label: <aqua><bold>Stay</bold></aqua>
+          fadeOut:
+            label: <aqua><bold>Fade Out</bold></aqua>
+        policy:
+          title: <aqua><bold>Policy</bold></aqua>
           current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <yellow>Type quest name</yellow>
-        description:
-          title: <yellow><bold>Description</bold></yellow>
-          lines: <gray>Lines:</gray> <white>{value}</white>
-          hint: <gray>Use \n for new lines.</gray>
-          prompt: <yellow>Enter description (use \n)</yellow>
-        cooldown:
-          title: <yellow><bold>Cooldown</bold></yellow>
-          seconds: <gray>Seconds:</gray> <white>{value}</white>
-          prompt: <yellow>Enter cooldown seconds</yellow>
-        rotation:
-          title: <yellow><bold>Rotation</bold></yellow>
-          current: <gray>Current:</gray> <white>{value}</white>
-          hint: <gray>Click to cycle.</gray>
-        objectives:
-          title: <yellow><bold>Objectives</bold></yellow>
-          hint: <gray>Manage objectives.</gray>
-        delete:
-          title: <red><bold>Delete</bold></red>
-          hint: <gray>Remove this quest.</gray>
-          prompt: <red>Type <white>delete</white> to confirm</red>
-          error: <red>Type delete to confirm.</red>
-        summary:
-          title: <gold><bold>Quest Summary</bold></gold>
-          objectives: <gray>Objectives:</gray> <white>{count}</white>
-          objective: <gray>- {value}</gray>
-          more: <dark_gray>... +{count} more</dark_gray>
-          rewards: <gray>Rewards:</gray> <white>{value}</white>
-  mobs:
-    editor:
-      list:
-        title: <white><bold>Mob Editor</bold></white>
-        header:
-          title: <gold><bold>Mobs</bold></gold>
-          hint1: <gray>Select a mob to edit.</gray>
-          hint2: <gray>Red entries are not loaded.</gray>
-        status:
-          loaded: <green>Loaded</green>
-          missing: <red>Missing</red>
+        condition:
+          title: <aqua><bold>Condition</bold></aqua>
+          type: <gray>Type:</gray> <white>{value}</white>
+          none: <gray>No extra parameters.</gray>
+          permission:
+            label: <aqua><bold>Permission</bold></aqua>
+            prompt: <gray>Enter permission</gray>
+          chance:
+            label: <aqua><bold>Chance</bold></aqua>
+        targeter:
+          title: <aqua><bold>Targeter</bold></aqua>
+          type: <gray>Type:</gray> <white>{value}</white>
+          filter:
+            title: <aqua><bold>Filter</bold></aqua>
+            current: <gray>Current:</gray> <white>{value}</white>
+          mode:
+            title: <aqua><bold>Mode</bold></aqua>
+            current: <gray>Current:</gray> <white>{value}</white>
+          origin:
+            title: <aqua><bold>Origin</bold></aqua>
+            current: <gray>Current:</gray> <white>{value}</white>
+          param:
+            radius: <aqua><bold>Radius</bold></aqua>
+            xRadius: <aqua><bold>X Radius</bold></aqua>
+            yRadius: <aqua><bold>Y Radius</bold></aqua>
+            zRadius: <aqua><bold>Z Radius</bold></aqua>
+            angle: <aqua><bold>Angle</bold></aqua>
+            height: <aqua><bold>Height</bold></aqua>
+      actions:
+        add: Add
+        clear: Clear
         entry:
-          title: <white><bold>{id}</bold></white>
-          name: <gray>Name:</gray> <white>{name}</white>
-        refresh:
-          title: <yellow><bold>Refresh</bold></yellow>
-          hint: <gray>Reload the list.</gray>
-        errors:
-          title: <red><bold>Errors</bold></red>
-          hint: <gray>View last reload errors.</gray>
-          allowlist: <gray>Allowlist:</gray> <white>{value}</white>
-          allowlist:
-            all: all worlds
-          reward:
-            xp: "{value} xp"
-            tokens: "{value} tokens"
-            compressed: "{value} compressed"
-            pallets: "{value} pallets"
-            items: "{value} items"
-        audit:
-          title: <gray><bold>Audit</bold></gray>
-          editor: <gray>Last editor:</gray> <white>{value}</white>
-          when: <gray>Last change:</gray> <white>{value}</white>
-  mobs:
-    editor:
-      list:
-        title: <white><bold>Mob Editor</bold></white>
+          title: Title
+          type: Type
         header:
-          title: <gold><bold>Mobs</bold></gold>
-          hint1: <gray>Select a mob to edit.</gray>
-          hint2: <gray>Use search to filter the list.</gray>
-        refresh:
-          title: <yellow><bold>Refresh</bold></yellow>
-          hint: <gray>Reload the mob list.</gray>
-        errors:
-          title: <red><bold>Errors</bold></red>
-          hint: <gray>View YAML load errors.</gray>
-        entry:
-          title: <gold><bold>Mob:</bold> <white>{id}</white></gold>
-          name: <gray>Name:</gray> <white>{name}</white>
-        status:
-          loaded: <green>Loaded</green>
-          missing: <red>Missing</red>
-          unknown: unknown
+          hint: Hint
+          title: Title
+        script:
+          clear: Clear
+          hint: Hint
+          prompt: Prompt
+          status: Status
+          title: Title
+        title: Title
+      binding:
+        click:
+          current: Current
+          title: Title
+        delete: Delete
+        header:
+          title: Title
+        id:
+          auto: Auto
+          current: Current
+          prompt: Prompt
+          title: Title
+        match:
+          status: Status
+          title: Title
+        matcher:
+          any_non_air:
+            label: Any Non-Air
+            hint: Matches any non-air item.
+          material:
+            label: Material
+            hint: Matches a specific material.
+          custom_model_data:
+            label: Custom Model Data
+            hint: Matches a specific custom model data value.
+          pdc_tag:
+            label: PDC Tag
+            hint: Matches an item marker tag (NamespacedKey).
+          lore_contains:
+            label: Lore Contains
+            hint: Matches if lore contains a string.
+        permission:
+          current: Current
+          prompt: Prompt
+          title: Title
+        preview:
+          none: None
+        sneaking:
+          status: Status
+          title: Title
+        title: Title
         validation:
-          nonNegative: <red>Value must be >= 0.</red>
-          integer: <red>Enter a whole number.</red>
-    objectives:
-      title: <white><bold>Quest Objectives</bold></white>
-      header:
-        title: <gold><bold>Objectives</bold></gold>
-        hint: <gray>Click to edit.</gray>
-      refresh:
-        title: <yellow><bold>Refresh</bold></yellow>
-        hint: <gray>Reload objectives.</gray>
-      add:
-        kill: <green><bold>Add kill objective</bold></green>
-        use: <green><bold>Add use item objective</bold></green>
-        visit: <green><bold>Add visit region objective</bold></green>
-        craft: <green><bold>Add craft objective</bold></green>
-      entry:
-        title: <white><bold>{type}</bold></white>
-        summary: <gray>{summary}</gray>
-    objective:
-      edit:
-        title: <white><bold>Edit Objective</bold></white>
-        header:
-          title: <gold><bold>Objective</bold></gold>
-          index: <gray>Index:</gray> <white>{value}</white>
-        type:
-          title: <aqua><bold>Type</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          hint: <gray>Click to cycle.</gray>
-        count:
-          title: <aqua><bold>Count</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter count</gray>
-        mob:
-          title: <aqua><bold>Mob Id</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter mob id (blank to clear)</gray>
-        entity:
-          title: <aqua><bold>Entity Type</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter entity type (blank to clear)</gray>
-        itemId:
-          title: <aqua><bold>Item Id</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter item id (blank to clear)</gray>
-        material:
-          title: <aqua><bold>Material</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter material (blank to clear)</gray>
-        recipe:
-          title: <aqua><bold>Recipe Id</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-          prompt: <gray>Enter recipe id (blank to clear)</gray>
-        region:
-          title: <aqua><bold>Region</bold></aqua>
-          world: <gray>World:</gray> <white>{value}</white>
-          xyz: <gray>XYZ:</gray> <white>{x},{y},{z}</white>
-          radius: <gray>Radius:</gray> <white>{value}</white>
-          format: <gray>Format:</gray> <white>world,x,y,z,radius</white>
-          prompt: <gray>Enter region (world,x,y,z,radius)</gray>
-        delete:
-          title: <red><bold>Delete</bold></red>
-          hint: <gray>Remove this objective.</gray>
-    batch:
-      title: <white><bold>Quest Batch Tools</bold></white>
-      header:
-        title: <gold><bold>Batch Tools</bold></gold>
-        hint: <gray>Apply changes to all quests.</gray>
-        count: <gray>Quests found:</gray> <white>{count}</white>
-      nameTemplate:
-        title: <aqua><bold>Name Template</bold></aqua>
-        hint1: <gray>Use {id} for quest id.</gray>
-        hint2: '<gray>Example:</gray> <white>Quest: {id}</white>'
-        prompt: <yellow>Enter name template</yellow>
-        error:
-          required: <red>Template is required.</red>
-          apply: <red>Failed to apply template.</red>
-        success: <green>Quest names updated.</green>
-      enable:
-        title: <green><bold>Enable All</bold></green>
-        hint: <gray>Set enabled=true for all quests.</gray>
-        error: <red>Failed to enable quests.</red>
-        success: <green>All quests enabled.</green>
-      disable:
-        title: <red><bold>Disable All</bold></red>
-        hint: <gray>Set enabled=false for all quests.</gray>
-        error: <red>Failed to disable quests.</red>
-        success: <green>All quests disabled.</green>
-      delete:
-        title: <red><bold>Delete All</bold></red>
-        hint: <gray>Type '{word}' to confirm.</gray>
-        prompt: <red>Type {word} to delete all quests</red>
-        cancel: <gray>Delete cancelled.</gray>
-        error: <red>Failed to delete quests.</red>
-        success: <green>All quests deleted.</green>
-    description:
-      line: <gray>{line}</gray>
-    log:
-      title: <white><bold>Quest Log</bold></white>
-      header:
-        title: <gold><bold>Quest Log</bold></gold>
-        hint1: <gray>Click an available quest to accept it.</gray>
-        hint2: <gray>Active quests track progress automatically.</gray>
-      entry:
-        title: <white><bold>{name}</bold></white>
-      action:
-        accept: <gray>Click to accept.</gray>
-      badge:
-        label: <gray>Badge:</gray> {badge}
-        active: <green>ACTIVE</green>
-        available: <aqua>AVAILABLE</aqua>
-        completed: <gray>COMPLETED</gray>
-        cooldown: <yellow>COOLDOWN</yellow>
-        locked: <red>LOCKED</red>
-      progress: <gray>Progress:</gray> <white>{bar} {percent}%</white>
-    giver:
-      title: <white><bold>Quest Giver</bold></white>
-      header:
-        title: <gold><bold>{name}</bold></gold>
-      order:
-        label: '<dark_gray>Quest order: {order}</dark_gray>'
-        random: Random pool
-        ordered: Ordered list
-      partyLocked: <red>Party quests require random-pool givers.</red>
-  systemStatus:
-    title: <white><bold>System Status</bold></white>
-    header:
-      title: <gold><bold>Status</bold></gold>
-      hint: <gray>Reload summaries + validation errors.</gray>
-    overview:
-      title: <gray>Overview</gray>
-      subsystems: <gray>Subsystems:</gray> <white>{count}</white>
-      errors: <gray>Errors:</gray> <white>{count}</white>
-    entry:
-      title: <yellow>{label}</yellow>
-    errors:
-      title: <red><bold>Error Report</bold></red>
-      hint: <gray>View all validation errors.</gray>
-      allSystems: All Systems
-      windowTitle: <white><bold>{title}</bold></white>
-      header:
-        title: <red><bold>Errors</bold></red>
-        hint: <gray>Validation + reload issues.</gray>
-      entry:
-        title: <red>Validation error</red>
-        message: <red>{message}</red>
-  shop:
-    editor:
-      list:
-        title: <white><bold>Shop Editor</bold></white>
-        header:
-          title: <gold><bold>Shops</bold></gold>
-          hint1: <gray>Left click to edit.</gray>
-          hint2: <gray>Right click to delete.</gray>
-        status:
-          title: <gray>Status</gray>
-          count: <gray>Shops:</gray> <white>{count}</white>
-          reloadHint: <dark_gray>/dr shop reload</dark_gray>
-        create:
-          title: <green><bold>Create Shop</bold></green>
-          hint: <gray>Create a new shop entry.</gray>
-          prompt: <yellow>Type new shop id</yellow>
-          missingId: <red>Shop id is required.</red>
-          exists: <red>Shop already exists.</red>
-        batch:
-          title: <aqua><bold>Batch Tools</bold></aqua>
-          hint: <gray>Mass rename, toggle, delete.</gray>
-        error:
-          notFound: <red>Shop not found.</red>
+          integer: Integer
+          material: Material
+          required: Required
+      bindings:
+        add:
+          hint: Hint
         entry:
-          title: <yellow>{title}</yellow>
-          trades: <gray>Trades:</gray> <white>{count}</white>
-        delete:
-          word: delete
-          prompt: <red>Type <white>{word}</white> to delete <yellow>{id}</yellow>.</red>
-          cancelled: <gray>Delete cancelled.</gray>
-          failed: <red>Failed to delete shop.</red>
-          success: <green>Shop deleted.</green>
-    tradeEditor:
-      title: <white><bold>Edit Trade</bold></white>
-      buyA:
-        title: <yellow><bold>Buy A</bold></yellow>
-        hint: <gray>Drop the first cost here.</gray>
-      buyB:
-        title: <yellow><bold>Buy B</bold></yellow>
-        hint: <gray>Optional secondary cost.</gray>
-      sell:
-        title: <green><bold>Sell</bold></green>
-        hint: <gray>Result item.</gray>
-      maxUses:
-        title: <yellow><bold>Max Uses</bold></yellow>
-        value: <gray>{value}</gray>
-        hint: <dark_gray>0 = unlimited.</dark_gray>
-        prompt: <yellow>Type max uses</yellow>
-        invalid: <red>Enter a whole number.</red>
-      rewardXp:
-        title: <yellow><bold>Reward XP</bold></yellow>
-        value: <gray>{value}</gray>
-        hint: <dark_gray>Toggle villager XP reward.</dark_gray>
-      priceMult:
-        title: <yellow><bold>Price Mult</bold></yellow>
-        value: <gray>{value}</gray>
-        hint: <dark_gray>0 = none.</dark_gray>
-        prompt: <yellow>Type price multiplier</yellow>
-        invalid: <red>Enter a number.</red>
-      tokens:
-        title: <gold><bold>Give Tokens</bold></gold>
-        hint: <gray>Get a stack of tokens.</gray>
-      done:
-        title: <green><bold>Done</bold></green>
-        hint: <gray>Return to shop editor.</gray>
-  upgrades:
-    inspect:
-      title: <white><bold>Upgrade Inspector</bold></white>
-      header:
-        title: <gold><bold>Upgrades</bold></gold>
-        hint: <gray>Inspect and clear upgrades.</gray>
-      clear:
-        title: <red><bold>Clear Upgrades</bold></red>
-        hint: <gray>Remove all applied upgrades.</gray>
-        missingItem: <red>Hold an item to clear upgrades.</red>
-      noItem:
-        title: <dark_gray><bold>No Item</bold></dark_gray>
-        hint: <gray>Hold an item in your main hand.</gray>
-      noUpgrades:
-        title: <dark_gray><bold>No Upgrades</bold></dark_gray>
-        hint: <gray>Hold an item first.</gray>
-      noneApplied:
-        title: <dark_gray><bold>No Upgrades</bold></dark_gray>
-        hint: <gray>This item has no upgrades.</gray>
-      applied:
-        title: <aqua><bold>Applied Upgrades</bold></aqua>
-      vanillaBook: <gray>• Enchanted Book</gray>
-    merge:
-      title: <white><bold>Spell Upgrades</bold></white>
-      header:
-        title: <gold><bold>Upgrade Merge</bold></gold>
-        hint1: <gray>Drop a target item and an upgrade book.</gray>
-        hint2: <dark_gray>Preview the result before applying.</dark_gray>
-      clear:
-        title: <red><bold>Clear Inputs</bold></red>
-        hint: <gray>Return items to your inventory.</gray>
-      preview:
-        waiting:
-          title: <dark_gray><bold>Waiting for Items</bold></dark_gray>
-          hint: <gray>Place an item and an upgrade book.</gray>
-        missing:
-          title: <red><bold>Upgrade System Missing</bold></red>
-          hint: <gray>Try again later.</gray>
-        error:
-          title: <red><bold>Cannot Apply</bold></red>
-      diff:
-        title: <aqua><bold>Preview Changes</bold></aqua>
-        waiting:
-          title: <dark_gray><bold>Preview Changes</bold></dark_gray>
-          hint: <gray>Place a target item and upgrade.</gray>
-        missing:
-          title: <red><bold>Upgrade System Missing</bold></red>
-          hint: <gray>Try again later.</gray>
-        error:
-          title: <red><bold>No Changes</bold></red>
-        none:
-          hint: <gray>No changes detected.</gray>
-      section:
-        modifiers: <gold><bold>Modifiers</bold></gold>
-        enchants: <gold><bold>Enchantments</bold></gold>
-        attributes: <gold><bold>Attributes</bold></gold>
-        status: <gold><bold>Status Effects</bold></gold>
-        bindings: <gold><bold>Spell Binds</bold></gold>
-        secondary: <gold><bold>Secondary Abilities</bold></gold>
-      error:
-        line: <red>{error}</red>
-      cost:
-        title: <gold>Cost</gold>
-        pallet: <gray>- {amount} pallet</gray>
-        compressed: <gray>- {amount} compressed</gray>
-        tokens: <gray>- {amount} tokens</gray>
+          click: Click
+          conflict: Conflict
+          matcher: Matcher
+          permission: Permission
+          sneaking: Sneaking
+          title: Title
+        header:
+          hint: Hint
+          title: Title
+        title: Title
+      costs:
+        clear: Clear
+        consume:
+          current: Current
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        durability:
+          current: Current
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        header:
+          title: Title
+        mana:
+          current: Current
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        title: Title
+      detail:
+        actions:
+          summary:
+            empty: Empty
+            nodes: Nodes
+            root: Root
+          title: Title
+        audit:
+          by: By
+          title: Title
+        bindings:
+          hint: Hint
+          title: Title
+        cooldown:
+          prompt: Prompt
+          title: Title
+        costs:
+          hint: Hint
+          title: Title
+        description:
+          current: Current
+          prompt: Prompt
+          title: Title
+        dirty:
+          hint: Hint
+          title: Title
+        header:
+          hint: Hint
+          title: Title
+        name:
+          current: Current
+          prompt: Prompt
+          title: Title
+        publish:
+          hint1: Hint1
+          hint2: Hint2
+          title: Title
+        published:
+          hint: Hint
+          title: Title
+        requirements:
+          hint: Hint
+          title: Title
+        title: Title
+        validation:
+          issues: Issues
+          ok: Ok
+          title: Title
+      list:
+        entry:
+          activation: Activation
+          id: Id
+          locked: Locked
+          status:
+            code: Code
+            draft: Draft
+            published: Published
+        header:
+          line1: Line1
+          line2: Line2
+          title: Title
+        items: Items
+        new:
+          prompt: Prompt
+        refresh: Refresh
+        title: Title
       requirements:
-        title: <gold>Requirements</gold>
-        minXp: '<gray>- Requires: {value} XP levels</gray>'
-        consumeXp: '<gray>- Consumes: {value} XP levels</gray>'
-        minTotalXp: '<gray>- Requires: {value} total XP</gray>'
-        consumeTotalXp: '<gray>- Consumes: {value} total XP</gray>'
-        minProgress: '<gray>- Requires: {value} XP progress</gray>'
-        consumeProgress: '<gray>- Consumes: {value} XP progress</gray>'
-        minMaxMana: '<gray>- Requires: {value} max mana</gray>'
-      tip:
-        bindingSlot: '<dark_gray>Tip: remove the existing bind for that slot.</dark_gray>'
-        enchantConflict: '<dark_gray>Tip: remove conflicting enchants or allow unsafe.</dark_gray>'
-        compatibility: '<dark_gray>Tip: check upgrade compatibility filters.</dark_gray>'
-        manaProvider: '<dark_gray>Tip: enable the mana provider.</dark_gray>'
-        maxMana: '<dark_gray>Tip: increase max mana before applying.</dark_gray>'
-        xp: '<dark_gray>Tip: earn more XP before applying.</dark_gray>'
-        tokens: '<dark_gray>Tip: earn tokens before applying.</dark_gray>'
-      slot:
-        contains: <dark_gray>Slot contains:</dark_gray>
-        line: <gray>- {value}</gray>
-        more: <gray>- ...</gray>
-        occupied: <dark_gray>Slot is occupied by an item binding.</dark_gray>
-      warning:
-        binding: '<yellow>Warning: existing {binding} binding.</yellow>'
-        overwrite: <dark_gray>This upgrade will replace the previous upgrade for that slot.</dark_gray>
-      activator:
-        left: Left Click
-        right: Right Click
-        shiftLeft: Shift+Left
-        shiftRight: Shift+Right
-        passive: Passive
-      conflicts:
-        title: <dark_gray>Conflicts:</dark_gray>
-        line: <gray>- {value}</gray>
-        more: <gray>- ...</gray>
-      apply:
-        title: <green><bold>Apply Upgrade</bold></green>
-        waiting:
-          title: <dark_gray><bold>Apply Upgrade</bold></dark_gray>
-          hint: <gray>Place a target item and upgrade.</gray>
-        missing:
-          title: <red><bold>Upgrade System Missing</bold></red>
-          hint: <gray>Try again later.</gray>
-        error:
-          title: <red><bold>Apply Upgrade</bold></red>
-        consume: <gray>Consume the upgrade book.</gray>
-      quick:
-        title: <green><bold>Quick Apply</bold></green>
-        waiting:
-          title: <dark_gray><bold>Quick Apply</bold></dark_gray>
-          hint: <gray>Place a target item and upgrade.</gray>
-        missing:
-          title: <red><bold>Quick Apply</bold></red>
-          hint: <gray>Upgrade system missing.</gray>
-        error:
-          title: <red><bold>Quick Apply</bold></red>
-        hint: <gray>Apply and close.</gray>
-  userHub:
-    title: <white><bold>Adventurer Hub</bold></white>
-    header:
-      title: <gold><bold>Adventurer Hub</bold></gold>
-      subtitle: <gray>Quick access to player systems.</gray>
-    dungeonQueue:
-      title: <aqua><bold>Dungeon Queue</bold></aqua>
-      hint: <gray>Join a dungeon level.</gray>
-    dungeonStatus:
-      title: <yellow><bold>Dungeon Status</bold></yellow>
-      hint: <gray>View the active run.</gray>
-    questLog:
-      title: <green><bold>Quest Log</bold></green>
-      hint: <gray>See your quests.</gray>
-    classes:
-      title: <gold><bold>Classes</bold></gold>
-      hint: <gray>Select your class.</gray>
-    skills:
-      title: <light_purple><bold>Skills</bold></light_purple>
-      hint: <gray>View your skill path.</gray>
-      selectClass: <red>Select a class first.</red>
-      missingClass: <red>Class not found:</red> <white>{id}</white>
-    party:
-      title: <white><bold>Party</bold></white>
-      hint: <gray>Manage your party.</gray>
-    crafting:
-      title: <aqua><bold>Crafting</bold></aqua>
-      hint: <gray>Open custom crafting.</gray>
-    upgrades:
-      title: <red><bold>Upgrades</bold></red>
-      hint: <gray>Merge spell upgrades.</gray>
-    kits:
-      title: <gold><bold>Kits</bold></gold>
-      hint: <gray>Claim starter rewards.</gray>
-  adminHub:
-    title: <white><bold>Admin Hub</bold></white>
-    header:
-      title: <gold><bold>Admin Hub</bold></gold>
-      subtitle: <gray>Quick access to admin tools.</gray>
-    effectsEditor:
-      title: <aqua><bold>Effects Editor</bold></aqua>
-      hint: <gray>Edit abilities and actions.</gray>
-    itemsEditor:
-      title: <yellow><bold>Items Editor</bold></yellow>
-      hint: <gray>Edit custom items and bindings.</gray>
-    mobEditor:
-      title: <green><bold>Mob Editor</bold></green>
-      hint: <gray>Edit custom mobs.</gray>
-    systemStatus:
-      title: <yellow><bold>System Status</bold></yellow>
-      hint: <gray>Reload summaries + errors.</gray>
-    questEditor:
-      title: <gold><bold>Quest Editor</bold></gold>
-      hint: <gray>Edit quests and objectives.</gray>
-    shopEditor:
-      title: <green><bold>Shop Editor</bold></green>
-      hint: <gray>Edit shop trades.</gray>
-    craftingEditor:
-      title: <aqua><bold>Crafting Editor</bold></aqua>
-      hint: <gray>Edit custom recipes.</gray>
-    classEditor:
-      title: <light_purple><bold>Class Editor</bold></light_purple>
-      hint: <gray>Edit classes and skill paths.</gray>
-    dungeonAdmin:
-      title: <red><bold>Dungeon Admin</bold></red>
-      hint: <gray>Queue + live session tools.</gray>
-  kits:
-    title: <white><bold>Kits</bold></white>
-    header:
-      title: <gold><bold>Kits</bold></gold>
-      subtitle: <gray>Claim starter rewards.</gray>
-      note: <dark_gray>One-time and cooldown rules apply.</dark_gray>
-    lore:
-      id: <gray>ID:</gray> <white>{id}</white>
-      permission: <gray>Permission:</gray> <white>{permission}</white>
-      status: <gray>Status:</gray> <white>{message}</white>
-      oneTime: <gray>One-time:</gray> <white>{value}</white>
-      cooldown: <gray>Cooldown:</gray> <white>{seconds}s</white>
-      action:
-        claim: <green>Click to claim.</green>
-        unavailable: <red>Not available.</red>
-    status:
-      available: <green>Available</green>
-      unavailable: <red>Unavailable</red>
-    itemTitle: <yellow>{title}</yellow>
-    rewards:
-      itemsTitle: <gold>Items</gold>
-      itemEntry: <gray>- {amount}x {name}</gray>
-      more: <gray>- ...</gray>
-      rewardsTitle: <gold>Rewards</gold>
-      xp: <gray>- {amount} XP</gray>
-      tokens: <gray>- {amount} tokens</gray>
-      compressed: <gray>- {amount} compressed tokens</gray>
-      pallet: <gray>- {amount} pallets</gray>
-  party:
-    title: <white><bold>Party</bold></white>
-    header:
-      title: <gold><bold>Party</bold></gold>
-      empty: <gray>You are not in a party.</gray>
-      emptyHint: <gray>Use /dr party create.</gray>
-      world: <gray>World:</gray> <white>{world}</white>
-      members: <gray>Members:</gray> <white>{count}</white>
-      chat: <gray>Party Chat:</gray> {status}
-      worldMismatch: <red>World mismatch:</red> <gray>{world}</gray>
-    refresh:
-      title: <yellow><bold>Refresh</bold></yellow>
-      hint: <gray>Reload the party list.</gray>
-    leave:
-      title: <red><bold>Leave</bold></red>
-      hint: <gray>Leave your party.</gray>
-    error:
-      notInParty: <red>You are not in a party.</red>
-    chat:
-      titleOn: <green><bold>Party Chat</bold></green>
-      titleOff: <red><bold>Party Chat</bold></red>
-      status: <gray>Status:</gray> {status}
-      hint: <gray>Click to toggle.</gray>
-      true: <green>On</green>
-      false: <red>Off</red>
-    member:
-      title: <white><bold>{name}</bold></white>
-      status: <gray>Status:</gray> {status}
-      role: <gray>Role:</gray> {role}
-      online: <green>Online</green>
-      offline: <red>Offline</red>
-      leader: <gold>Leader</gold>
-      member: <white>Member</white>
+        clear: Clear
+        header:
+          title: Title
+        permission:
+          current: Current
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        sneaking:
+          hint: Hint
+          status: Status
+          title: Title
+        title: Title
   showcase:
     title: <gradient:#5fa8ff:#2ee59d><bold>DungeonsReborn GUI</bold></gradient>
     about:
@@ -849,10 +463,11 @@ gui:
       help:
         title: <white><bold>Try clicking the slots</bold></white>
         summary: <gray>These are DraggableSlot components, not normal buttons.</gray>
-        diamonds: '<dark_gray>• Diamonds Only: accepts diamonds</dark_gray>'
-        vanilla: '<dark_gray>• Vanilla Slot: behaves like a free chest slot</dark_gray>'
-        deposit: '<dark_gray>• Deposit Only: you can put items, but not take</dark_gray>'
-        withdraw: '<dark_gray>• Withdraw Only: starts with items, but you can''t put</dark_gray>'
+        diamonds: "<dark_gray>\u2022 Diamonds Only: accepts diamonds</dark_gray>"
+        vanilla: "<dark_gray>\u2022 Vanilla Slot: behaves like a free chest slot</dark_gray>"
+        deposit: "<dark_gray>\u2022 Deposit Only: you can put items, but not take</dark_gray>"
+        withdraw: "<dark_gray>\u2022 Withdraw Only: starts with items, but you can't\
+          \ put</dark_gray>"
       stats:
         title: <yellow><bold>Slot Contents</bold></yellow>
         empty: <gray>{label}:</gray> <dark_gray>(empty)</dark_gray>
@@ -900,6 +515,895 @@ gui:
         title: <gold><bold>{name}</bold></gold>
         line: <gray>{text}</gray>
         select: <dark_gray>Left-click to select</dark_gray>
+  numericInput:
+    label: Value
+    prompt: 'Type a number (or ''cancel''):'
+    min: 'Min: {min}'
+    max: 'Max: {max}'
+    value: 'Value: {value}'
+    clickToType: Click to type
+    stepMinus: -{step}
+    stepPlus: +{step}
+    minus: '-'
+    plus: +
+  cycle:
+    next: Next
+    previous: Previous
+  dropdown:
+    selected: 'Selected: '
+    open: Open
+  list:
+    prev:
+      title: Prev page
+      action: Previous page
+      disabled: No previous page
+    next:
+      title: Next page
+      action: Next page
+      disabled: No next page
+    page: Page {current}/{total}
+    items: 'Items: {count}'
+    truncated: List truncated. Refine search.
+    filter: 'Filter: {query}'
+    empty:
+      hint: Hint
+      title: Title
+  classes:
+    requirements:
+      level: <gray>Level:</gray> <white>{current}/{required}</white>
+      tokens: <gray>Tokens:</gray> <white>{current}/{required}</white>
+      quests: <red>Requires quests:</red> <white>{quests}</white>
+      world: <red>Unavailable in this world.</red>
+    select:
+      title: <white><bold>Choose Class</bold></white>
+      header:
+        title: <gold><bold>Classes</bold></gold>
+        hint1: <gray>Select a class to unlock.</gray>
+        hint2: <gray>Only one class can be active.</gray>
+      refresh:
+        title: <yellow><bold>Refresh</bold></yellow>
+        hint: <gray>Reload the list.</gray>
+      entry:
+        selected: <green>Selected</green>
+      confirm:
+        title: <gold><bold>Confirm Class</bold></gold>
+      stat:
+        strength: <gray>Strength:</gray> <white>+{value}</white>
+        dexterity: <gray>Dexterity:</gray> <white>+{value}</white>
+        intelligence: <gray>Intelligence:</gray> <white>+{value}</white>
+        vitality: <gray>Vitality:</gray> <white>+{value}</white>
+        manaMax: <gray>Mana Max:</gray> <white>+{value}</white>
+        manaRegen: <gray>Mana Regen:</gray> <white>+{value}</white>
+    skillTree:
+      title: <white><bold>Skill Tree</bold></white>
+      header:
+        title: <gold><bold>Skill Tree</bold></gold>
+        class: <gray>Class:</gray> {value}
+        points:
+          unspent: <gray>Unspent points:</gray> <white>{value}</white>
+          total: <gray>Points total:</gray> <white>{value} (spent {spent})</white>
+        unlocked: <gray>Unlocked nodes:</gray> <white>{unlocked}/{total}</white>
+        respecCost: <gray>Respec cost:</gray> <white>{tokens} tokens, {points} points</white>
+        hint:
+          unlock: <gray>Left-click to unlock.</gray>
+          respec: <gray>Right-click to respec.</gray>
+      node:
+        type: <gray>Type:</gray> <white>{value}</white>
+        cost: <gray>Cost:</gray> <white>{value}</white>
+        requires: <gray>Requires:</gray> <white>{value}</white>
+        status:
+          unlocked: <green>Unlocked</green>
+          locked: <red>Locked</red>
+      respec:
+        title: <gold><bold>Respec Skill</bold></gold>
+        cost: <gray>Respec cost:</gray> <white>{tokens} tokens, {points} points</white>
+    editor:
+      batch:
+        delete:
+          cancelled: Cancelled
+          error: Error
+          hint: Hint
+          prompt: Prompt
+          success: Success
+          title: Title
+        disable:
+          error: Error
+          hint: Hint
+          success: Success
+          title: Title
+        enable:
+          error: Error
+          hint: Hint
+          success: Success
+          title: Title
+        header:
+          count: Count
+          hint: Hint
+          title: Title
+        template:
+          error:
+            failed: Failed
+            required: Required
+          example: Example
+          hint: Hint
+          prompt: Prompt
+          success: Success
+          title: Title
+        title: Title
+      detail:
+        audit:
+          change: Change
+          editor: Editor
+          title: Title
+        description:
+          hint: Hint
+          lines: Lines
+          title: Title
+        enabled:
+          hint: Hint
+          state:
+            disabled: Disabled
+            enabled: Enabled
+          title: Title
+        header:
+          hint: Hint
+          title: Title
+        icon:
+          hint: Hint
+          none: None
+          title: Title
+        name:
+          current: Current
+          title: Title
+        reload:
+          hint: Hint
+          title: Title
+        stats:
+          attributes: Attributes
+          dex: Dex
+          int: Int
+          mana: Mana
+          potions: Potions
+          regen: Regen
+          resists: Resists
+          str: Str
+          vit: Vit
+        summary:
+          respec: Respec
+          stats: Stats
+          title: Title
+          unlock: Unlock
+        title: Title
+        validation:
+          integer: Integer
+      list:
+        batch:
+          hint: Hint
+          title: Title
+        create:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        entry:
+          enabled: Enabled
+          name: Name
+          title: Title
+        errors:
+          hint: Hint
+          title: Title
+        header:
+          hint1: Hint1
+          title: Title
+        refresh:
+          hint: Hint
+          title: Title
+        title: Title
+  quests:
+    editor:
+      detail:
+        title: <white><bold>Quest Editor</bold></white>
+        header:
+          title: <gold><bold>Quest:</bold> <white>{id}</white></gold>
+          hint: <gray>Configure the quest settings.</gray>
+        enabled:
+          title: <yellow><bold>Enabled</bold></yellow>
+          state:
+            line: <gray>Status:</gray> {value}
+            enabled: <green>Enabled</green>
+            disabled: <red>Disabled</red>
+          hint: <gray>Click to toggle.</gray>
+        name:
+          title: <yellow><bold>Name</bold></yellow>
+          current: <gray>Current:</gray> <white>{value}</white>
+          prompt: <yellow>Type quest name</yellow>
+        description:
+          title: <yellow><bold>Description</bold></yellow>
+          lines: <gray>Lines:</gray> <white>{value}</white>
+          hint: <gray>Use \n for new lines.</gray>
+          prompt: <yellow>Enter description (use \n)</yellow>
+        cooldown:
+          title: <yellow><bold>Cooldown</bold></yellow>
+          seconds: <gray>Seconds:</gray> <white>{value}</white>
+          prompt: <yellow>Enter cooldown seconds</yellow>
+        rotation:
+          title: <yellow><bold>Rotation</bold></yellow>
+          current: <gray>Current:</gray> <white>{value}</white>
+          hint: <gray>Click to cycle.</gray>
+        objectives:
+          title: <yellow><bold>Objectives</bold></yellow>
+          hint: <gray>Manage objectives.</gray>
+        delete:
+          title: <red><bold>Delete</bold></red>
+          hint: <gray>Remove this quest.</gray>
+          prompt: <red>Type <white>delete</white> to confirm</red>
+          error: <red>Type delete to confirm.</red>
+        summary:
+          title: <gold><bold>Quest Summary</bold></gold>
+          objectives: <gray>Objectives:</gray> <white>{count}</white>
+          objective: <gray>- {value}</gray>
+          more: <dark_gray>... +{count} more</dark_gray>
+          rewards: <gray>Rewards:</gray> <white>{value}</white>
+          allowlist:
+            all: All
+          reward:
+            compressed: Compressed
+            items: Items
+            pallets: Pallets
+            tokens: Tokens
+            xp: Xp
+        audit:
+          editor: Editor
+          title: Title
+          unknown: Unknown
+          when: When
+        validation:
+          integer: Integer
+      list:
+        batch:
+          hint: Hint
+          title: Title
+        create:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+        entry:
+          enabled: Enabled
+          name: Name
+          title: Title
+        errors:
+          hint: Hint
+          title: Title
+        header:
+          hint1: Hint1
+          hint2: Hint2
+          title: Title
+        title: Title
+    batch:
+      delete:
+        cancel: Cancel
+        error: Error
+        hint: Hint
+        prompt: Prompt
+        success: Success
+        title: Title
+      disable:
+        error: Error
+        hint: Hint
+        success: Success
+        title: Title
+      enable:
+        error: Error
+        hint: Hint
+        success: Success
+        title: Title
+      header:
+        count: Count
+        hint: Hint
+        title: Title
+      title: Title
+    description:
+      line: Line
+    giver:
+      header:
+        title: Title
+      order:
+        label: Label
+        ordered: Ordered
+        random: Random
+      title: Title
+    log:
+      action:
+        accept: Accept
+      badge:
+        active: Active
+        available: Available
+        completed: Completed
+        cooldown: Cooldown
+        label: Label
+        locked: Locked
+      entry:
+        title: Title
+      header:
+        hint1: Hint1
+        hint2: Hint2
+        title: Title
+      progress: Progress
+      title: Title
+    objective:
+      edit:
+        count:
+          current: Current
+          prompt: Prompt
+          title: Title
+        delete:
+          hint: Hint
+          title: Title
+        entity:
+          current: Current
+          prompt: Prompt
+          title: Title
+        header:
+          index: Index
+          title: Title
+        material:
+          current: Current
+          prompt: Prompt
+          title: Title
+        mob:
+          current: Current
+          prompt: Prompt
+          title: Title
+        recipe:
+          current: Current
+          prompt: Prompt
+          title: Title
+        region:
+          format: Format
+          prompt: Prompt
+          radius: Radius
+          title: Title
+          world: World
+          xyz: Xyz
+        title: Title
+        type:
+          current: Current
+          hint: Hint
+          title: Title
+    objectives:
+      entry:
+        summary: Summary
+        title: Title
+      header:
+        hint: Hint
+        title: Title
+      refresh:
+        hint: Hint
+        title: Title
+      title: Title
+  mobs:
+    editor:
+      list:
+        title: <white><bold>Mob Editor</bold></white>
+        header:
+          title: <gold><bold>Mobs</bold></gold>
+          hint1: <gray>Select a mob to edit.</gray>
+          hint2: <gray>Use search to filter.</gray>
+        status:
+          loaded: <green>Loaded</green>
+          missing: <red>Missing</red>
+        entry:
+          title: <white>{id}</white>
+          name: <gray>Name:</gray> <white>{value}</white>
+        refresh:
+          title: <yellow><bold>Refresh</bold></yellow>
+          hint: <gray>Reload the list.</gray>
+        errors:
+          title: <red><bold>Errors</bold></red>
+          hint: <gray>Click to view reload errors.</gray>
+          confirm:
+            title: <red><bold>Delete Item</bold></red>
+            header: <red>Delete {id}?</red>
+            detail: <gray>This cannot be undone.</gray>
+        audit:
+          title: <yellow><bold>Audit</bold></yellow>
+          none: <gray>Last edit:</gray> <white>never</white>
+          when: <gray>Last edit:</gray> <white>{value}</white>
+          by: <gray>By:</gray> <white>{value}</white>
+        dirty:
+          title: <yellow><bold>Unsaved Changes</bold></yellow>
+          hint: <gray>Apply to reload bindings.</gray>
+        clean:
+          title: <green><bold>Applied</bold></green>
+          hint: <gray>No pending changes.</gray>
+      bindings:
+        title: <white><bold>Item Bindings</bold></white>
+        header:
+          title: <gold><bold>Bindings</bold></gold>
+          hint: <gray>Bind this item to abilities.</gray>
+        entry:
+          title: '<yellow><bold>Binding #{index}</bold></yellow>'
+          click: <gray>Click:</gray> <white>{value}</white>
+          ability: <gray>Ability:</gray> <white>{value}</white>
+          sneak: <gray>Sneak:</gray> {value}
+          cancel: <gray>Cancel:</gray> {value}
+        add:
+          title: Add Binding
+        clear:
+          title: Clear
+      bindingDetail:
+        title: <white><bold>Binding</bold></white>
+        header:
+          title: '<gold><bold>Binding #{index}</bold></gold>'
+        click:
+          title: <aqua><bold>Click</bold></aqua>
+          current: <gray>Current:</gray> <white>{value}</white>
+        ability:
+          title: <aqua><bold>Ability</bold></aqua>
+          current: <gray>Current:</gray> {value}
+          name: <gray>Name:</gray> <white>{value}</white>
+          select: Select ability
+          clear: Clear ability
+        permission:
+          title: <aqua><bold>Permission</bold></aqua>
+          current: <gray>Current:</gray> {value}
+          prompt: <gray>Enter permission (blank to clear)</gray>
+        id:
+          title: <aqua><bold>Binding Id</bold></aqua>
+          current: <gray>Current:</gray> {value}
+          prompt: <gray>Enter binding id (blank for auto)</gray>
+          auto: <gray>(auto)</gray>
+        sneak:
+          title: <aqua><bold>Sneaking</bold></aqua>
+        cancel:
+          title: <aqua><bold>Cancel Event</bold></aqua>
+        delete:
+          title: Delete
+  systemStatus:
+    title: <white><bold>System Status</bold></white>
+    header:
+      title: <gold><bold>Status</bold></gold>
+      hint: <gray>Reload summaries + validation errors.</gray>
+    overview:
+      title: <gray>Overview</gray>
+      subsystems: <gray>Subsystems:</gray> <white>{count}</white>
+      errors: <gray>Errors:</gray> <white>{count}</white>
+    entry:
+      title: <yellow>{label}</yellow>
+    errors:
+      title: <red><bold>Error Report</bold></red>
+      hint: <gray>View all validation errors.</gray>
+      allSystems: All Systems
+      windowTitle: <white><bold>{title}</bold></white>
+      header:
+        title: <red><bold>Errors</bold></red>
+        hint: <gray>Validation + reload issues.</gray>
+      entry:
+        title: <red>Validation error</red>
+        message: <red>{message}</red>
+  shop:
+    editor:
+      list:
+        title: <white><bold>Shop Editor</bold></white>
+        header:
+          title: <gold><bold>Shops</bold></gold>
+          hint1: <gray>Left click to edit.</gray>
+          hint2: <gray>Right click to delete.</gray>
+        status:
+          title: <gray>Status</gray>
+          count: <gray>Shops:</gray> <white>{count}</white>
+          reloadHint: <dark_gray>/dr shop reload</dark_gray>
+        create:
+          title: <green><bold>Create Shop</bold></green>
+          hint: <gray>Create a new shop entry.</gray>
+          prompt: <yellow>Type new shop id</yellow>
+          missingId: <red>Shop id is required.</red>
+          exists: <red>Shop already exists.</red>
+        batch:
+          title: <aqua><bold>Batch Tools</bold></aqua>
+          hint: <gray>Mass rename, toggle, delete.</gray>
+        error:
+          notFound: <red>Shop not found.</red>
+        entry:
+          title: <yellow>{title}</yellow>
+          trades: <gray>Trades:</gray> <white>{count}</white>
+        delete:
+          word: delete
+          prompt: <red>Type <white>{word}</white> to delete <yellow>{id}</yellow>.</red>
+          cancelled: <gray>Delete cancelled.</gray>
+          failed: <red>Failed to delete shop.</red>
+          success: <green>Shop deleted.</green>
+      batch:
+        delete:
+          cancelled: Cancelled
+          error: Error
+          hint: Hint
+          prompt: Prompt
+          success: Success
+          title: Title
+        disable:
+          error: Error
+          hint: Hint
+          success: Success
+          title: Title
+        enable:
+          error: Error
+          hint: Hint
+          success: Success
+          title: Title
+        header:
+          count: Count
+          hint: Hint
+          title: Title
+        template:
+          error:
+            failed: Failed
+            required: Required
+          example: Example
+          hint: Hint
+          prompt: Prompt
+          success: Success
+          title: Title
+        title: Title
+      detail:
+        audit:
+          title: Title
+        cooldown:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+        enabled:
+          hint: Hint
+          title: Title
+        header:
+          hint: Hint
+          title: Title
+        id:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+        permission:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+        restock:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+        save:
+          hint: Hint
+          title: Title
+        summary:
+          dynamic: Dynamic
+          multiplier: Multiplier
+          period: Period
+          restock: Restock
+          stock: Stock
+          token: Token
+        title:
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+        trade:
+          title: Title
+        trades:
+          hint1: Hint1
+          hint2: Hint2
+          title: Title
+        worlds:
+          all: All
+          hint: Hint
+          prompt: Prompt
+          title: Title
+          value: Value
+    tradeEditor:
+      title: <white><bold>Edit Trade</bold></white>
+      buyA:
+        title: <yellow><bold>Buy A</bold></yellow>
+        hint: <gray>Drop the first cost here.</gray>
+      buyB:
+        title: <yellow><bold>Buy B</bold></yellow>
+        hint: <gray>Optional secondary cost.</gray>
+      sell:
+        title: <green><bold>Sell</bold></green>
+        hint: <gray>Result item.</gray>
+      maxUses:
+        title: <yellow><bold>Max Uses</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>0 = unlimited.</dark_gray>
+        prompt: <yellow>Type max uses</yellow>
+        invalid: <red>Enter a whole number.</red>
+      rewardXp:
+        title: <yellow><bold>Reward XP</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>Toggle villager XP reward.</dark_gray>
+      priceMult:
+        title: <yellow><bold>Price Mult</bold></yellow>
+        value: <gray>{value}</gray>
+        hint: <dark_gray>0 = none.</dark_gray>
+        prompt: <yellow>Type price multiplier</yellow>
+        invalid: <red>Enter a number.</red>
+      tokens:
+        title: <gold><bold>Give Tokens</bold></gold>
+        hint: <gray>Get a stack of tokens.</gray>
+      done:
+        title: <green><bold>Done</bold></green>
+        hint: <gray>Return to shop editor.</gray>
+  upgrades:
+    lore:
+      conflicts: <yellow>This item may conflict with {binding}.</yellow>
+    admin:
+      title: <white><bold>Upgrades</bold></white>
+      header:
+        title: <gold><bold>Upgrade Catalog</bold></gold>
+        hint: <gray>Loaded upgrades:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Refresh</bold></yellow>
+        hint: <gray>Reload list view.</gray>
+      entry:
+        id: <gray>ID:</gray> <white><id></white>
+        activator: <gray>Activator:</gray> <white><value></white>
+        ability: <gray>Ability:</gray> <white><id></white>
+        hint: <dark_gray>Click to receive a copy.</dark_gray>
+    inspect:
+      title: <white><bold>Upgrade Inspector</bold></white>
+      header:
+        title: <gold><bold>Upgrades</bold></gold>
+        hint: <gray>Inspect and clear upgrades.</gray>
+      clear:
+        title: <red><bold>Clear Upgrades</bold></red>
+        hint: <gray>Remove all applied upgrades.</gray>
+        missingItem: <red>Hold an item to clear upgrades.</red>
+      noItem:
+        title: <dark_gray><bold>No Item</bold></dark_gray>
+        hint: <gray>Hold an item in your main hand.</gray>
+      noUpgrades:
+        title: <dark_gray><bold>No Upgrades</bold></dark_gray>
+        hint: <gray>Hold an item first.</gray>
+      noneApplied:
+        title: <dark_gray><bold>No Upgrades</bold></dark_gray>
+        hint: <gray>This item has no upgrades.</gray>
+      applied:
+        title: <aqua><bold>Applied Upgrades</bold></aqua>
+      vanillaBook: "<gray>\u2022 Enchanted Book</gray>"
+    merge:
+      title: <white><bold>Spell Upgrades</bold></white>
+      header:
+        title: <gold><bold>Upgrade Merge</bold></gold>
+        hint1: <gray>Drop a target item and an upgrade book.</gray>
+        hint2: <dark_gray>Preview the result before applying.</dark_gray>
+      clear:
+        title: <red><bold>Clear Inputs</bold></red>
+        hint: <gray>Return items to your inventory.</gray>
+      preview:
+        waiting:
+          title: <dark_gray><bold>Waiting for Items</bold></dark_gray>
+          hint: <gray>Place an item and an upgrade book.</gray>
+        missing:
+          title: <red><bold>Upgrade System Missing</bold></red>
+          hint: <gray>Try again later.</gray>
+        error:
+          title: <red><bold>Cannot Apply</bold></red>
+      diff:
+        title: <aqua><bold>Preview Changes</bold></aqua>
+        waiting:
+          title: <dark_gray><bold>Preview Changes</bold></dark_gray>
+          hint: <gray>Place a target item and upgrade.</gray>
+        missing:
+          title: <red><bold>Upgrade System Missing</bold></red>
+          hint: <gray>Try again later.</gray>
+        error:
+          title: <red><bold>No Changes</bold></red>
+        none:
+          hint: <gray>No changes detected.</gray>
+      section:
+        modifiers: <gold><bold>Modifiers</bold></gold>
+        enchants: <gold><bold>Enchantments</bold></gold>
+        attributes: <gold><bold>Attributes</bold></gold>
+        status: <gold><bold>Status Effects</bold></gold>
+        bindings: <gold><bold>Spell Binds</bold></gold>
+        secondary: <gold><bold>Secondary Abilities</bold></gold>
+      error:
+        line: <red>{error}</red>
+      cost:
+        title: <gold>Cost</gold>
+        pallet: <gray>- {amount} pallet</gray>
+        compressed: <gray>- {amount} compressed</gray>
+        tokens: <gray>- {amount} tokens</gray>
+      requirements:
+        title: <gold>Requirements</gold>
+        minXp: '<gray>- Requires: {value} XP levels</gray>'
+        consumeXp: '<gray>- Consumes: {value} XP levels</gray>'
+        minTotalXp: '<gray>- Requires: {value} total XP</gray>'
+        consumeTotalXp: '<gray>- Consumes: {value} total XP</gray>'
+        minProgress: '<gray>- Requires: {value} XP progress</gray>'
+        consumeProgress: '<gray>- Consumes: {value} XP progress</gray>'
+        minMaxMana: '<gray>- Requires: {value} max mana</gray>'
+      tip:
+        bindingSlot: '<dark_gray>Tip: remove the existing bind for that slot.</dark_gray>'
+        enchantConflict: '<dark_gray>Tip: remove conflicting enchants or allow unsafe.</dark_gray>'
+        compatibility: '<dark_gray>Tip: check upgrade compatibility filters.</dark_gray>'
+        manaProvider: '<dark_gray>Tip: enable the mana provider.</dark_gray>'
+        maxMana: '<dark_gray>Tip: increase max mana before applying.</dark_gray>'
+        xp: '<dark_gray>Tip: earn more XP before applying.</dark_gray>'
+        tokens: '<dark_gray>Tip: earn tokens before applying.</dark_gray>'
+      slot:
+        contains: <dark_gray>Slot contains:</dark_gray>
+        line: <gray>- {value}</gray>
+        more: <gray>- ...</gray>
+        occupied: <dark_gray>Slot is occupied by an item binding.</dark_gray>
+      warning:
+        binding: '<yellow>Warning: existing {binding} binding.</yellow>'
+        overwrite: <dark_gray>This upgrade will replace the previous upgrade for that
+          slot.</dark_gray>
+      activator:
+        left: Left Click
+        right: Right Click
+        shiftLeft: Shift+Left
+        shiftRight: Shift+Right
+        passive: Passive
+      conflicts:
+        title: <dark_gray>Conflicts:</dark_gray>
+        line: <gray>- {value}</gray>
+        more: <gray>- ...</gray>
+      apply:
+        title: <green><bold>Apply Upgrade</bold></green>
+        waiting:
+          title: <dark_gray><bold>Apply Upgrade</bold></dark_gray>
+          hint: <gray>Place a target item and upgrade.</gray>
+        missing:
+          title: <red><bold>Upgrade System Missing</bold></red>
+          hint: <gray>Try again later.</gray>
+        error:
+          title: <red><bold>Apply Upgrade</bold></red>
+        consume: <gray>Consume the upgrade book.</gray>
+      quick:
+        title: <green><bold>Quick Apply</bold></green>
+        waiting:
+          title: <dark_gray><bold>Quick Apply</bold></dark_gray>
+          hint: <gray>Place a target item and upgrade.</gray>
+        missing:
+          title: <red><bold>Quick Apply</bold></red>
+          hint: <gray>Upgrade system missing.</gray>
+        error:
+          title: <red><bold>Quick Apply</bold></red>
+        hint: <gray>Apply and close.</gray>
+  userHub:
+    title: <white><bold>Adventurer Hub</bold></white>
+    header:
+      title: <gold><bold>Adventurer Hub</bold></gold>
+      subtitle: <gray>Quick access to player systems.</gray>
+    dungeonQueue:
+      title: <aqua><bold>Dungeon Queue</bold></aqua>
+      hint: <gray>Join a dungeon level.</gray>
+    dungeonStatus:
+      title: <yellow><bold>Dungeon Status</bold></yellow>
+      hint: <gray>View the active run.</gray>
+    questLog:
+      title: <green><bold>Quest Log</bold></green>
+      hint: <gray>See your quests.</gray>
+    classes:
+      title: <gold><bold>Classes</bold></gold>
+      hint: <gray>Select your class.</gray>
+    skills:
+      title: <light_purple><bold>Skills</bold></light_purple>
+      hint: <gray>View your skill path.</gray>
+      selectClass: <red>Select a class first.</red>
+      missingClass: <red>Class not found:</red> <white>{id}</white>
+    party:
+      title: <white><bold>Party</bold></white>
+      hint: <gray>Manage your party.</gray>
+    crafting:
+      title: <aqua><bold>Crafting</bold></aqua>
+      hint: <gray>Open custom crafting.</gray>
+    upgrades:
+      title: <red><bold>Upgrades</bold></red>
+      hint: <gray>Merge spell upgrades.</gray>
+    kits:
+      title: <gold><bold>Kits</bold></gold>
+      hint: <gray>Claim starter rewards.</gray>
+  adminHub:
+    title: <white><bold>Admin Hub</bold></white>
+    header:
+      title: <gold><bold>Admin Hub</bold></gold>
+      subtitle: <gray>Quick access to admin tools.</gray>
+    effectsEditor:
+      title: <aqua><bold>Effects Editor</bold></aqua>
+      hint: <gray>Edit abilities and actions.</gray>
+    itemsEditor:
+      title: <yellow><bold>Items Editor</bold></yellow>
+      hint: <gray>Edit custom items and bindings.</gray>
+    upgrades:
+      title: <light_purple><bold>Upgrades</bold></light_purple>
+      hint: <gray>Browse upgrade definitions.</gray>
+    mobEditor:
+      title: <green><bold>Mob Editor</bold></green>
+      hint: <gray>Edit custom mobs.</gray>
+    systemStatus:
+      title: <yellow><bold>System Status</bold></yellow>
+      hint: <gray>Reload summaries + errors.</gray>
+    questEditor:
+      title: <gold><bold>Quest Editor</bold></gold>
+      hint: <gray>Edit quests and objectives.</gray>
+    shopEditor:
+      title: <green><bold>Shop Editor</bold></green>
+      hint: <gray>Edit shop trades.</gray>
+    craftingEditor:
+      title: <aqua><bold>Crafting Editor</bold></aqua>
+      hint: <gray>Edit custom recipes.</gray>
+    classEditor:
+      title: <light_purple><bold>Class Editor</bold></light_purple>
+      hint: <gray>Edit classes and skill paths.</gray>
+    dungeonAdmin:
+      title: <red><bold>Dungeon Admin</bold></red>
+      hint: <gray>Queue + live session tools.</gray>
+  kits:
+    title: <white><bold>Kits</bold></white>
+    header:
+      title: <gold><bold>Kits</bold></gold>
+      subtitle: <gray>Claim starter rewards.</gray>
+      note: <dark_gray>One-time and cooldown rules apply.</dark_gray>
+    lore:
+      id: <gray>ID:</gray> <white>{id}</white>
+      permission: <gray>Permission:</gray> <white>{permission}</white>
+      status: <gray>Status:</gray> <white>{message}</white>
+      oneTime: <gray>One-time:</gray> <white>{value}</white>
+      cooldown: <gray>Cooldown:</gray> <white>{seconds}s</white>
+      action:
+        claim: <green>Click to claim.</green>
+        unavailable: <red>Not available.</red>
+    status:
+      available: <green>Available</green>
+      unavailable: <red>Unavailable</red>
+    itemTitle: <yellow>{title}</yellow>
+    rewards:
+      itemsTitle: <gold>Items</gold>
+      itemEntry: <gray>- {amount}x {name}</gray>
+      more: <gray>- ...</gray>
+      rewardsTitle: <gold>Rewards</gold>
+      xp: <gray>- {amount} XP</gray>
+      tokens: <gray>- {amount} tokens</gray>
+      compressed: <gray>- {amount} compressed tokens</gray>
+      pallet: <gray>- {amount} pallets</gray>
+  party:
+    title: <white><bold>Party</bold></white>
+    header:
+      title: <gold><bold>Party</bold></gold>
+      empty: <gray>You are not in a party.</gray>
+      emptyHint: <gray>Use /dr party create.</gray>
+      world: <gray>World:</gray> <white>{world}</white>
+      members: <gray>Members:</gray> <white>{count}</white>
+      chat: <gray>Party Chat:</gray> {status}
+      worldMismatch: <red>World mismatch:</red> <gray>{world}</gray>
+    refresh:
+      title: <yellow><bold>Refresh</bold></yellow>
+      hint: <gray>Reload the party list.</gray>
+    leave:
+      title: <red><bold>Leave</bold></red>
+      hint: <gray>Leave your party.</gray>
+    error:
+      notInParty: <red>You are not in a party.</red>
+    chat:
+      titleOn: <green><bold>Party Chat</bold></green>
+      titleOff: <red><bold>Party Chat</bold></red>
+      status: <gray>Status:</gray> {status}
+      hint: <gray>Click to toggle.</gray>
+      true: <green>On</green>
+      false: <red>Off</red>
+      'off': 'Off'
+      'on': 'On'
+    member:
+      title: <white><bold>{name}</bold></white>
+      status: <gray>Status:</gray> {status}
+      role: <gray>Role:</gray> {role}
+      online: <green>Online</green>
+      offline: <red>Offline</red>
+      leader: <gold>Leader</gold>
+      member: <white>Member</white>
   crafting:
     test:
       title: <white><bold>Custom Crafting (Test)</bold></white>
@@ -981,98 +1485,59 @@ gui:
         cancelled: <gray>Delete cancelled.</gray>
         failed: <red>Failed to delete recipe.</red>
         success: <green>Recipe deleted.</green>
-  effects:
     editor:
-      abilityPicker:
-        title: <white><bold>Select Ability</bold></white>
-        header:
-          title: <gold><bold>Abilities</bold></gold>
-          hint: <gray>Select an ability to bind.</gray>
-        entry:
-          select: <green>Click to select.</green>
-          more: <gray>...</gray>
-          unnamed: <gray>(unnamed)</gray>
-      actionDetail:
-        param:
-          current:
-            label: <gray>Current:</gray>
-            value: <gray>Current:</gray> <white>{value}</white>
-          number:
-            prompt: <gray>Enter value</gray>
-          text:
-            label: <aqua><bold>Text</bold></aqua>
-            prompt: <gray>Enter text</gray>
-          sound:
-            label: <aqua><bold>Sound</bold></aqua>
-            prompt: <gray>Enter sound</gray>
-          particle:
-            label: <aqua><bold>Particle</bold></aqua>
-            prompt: <gray>Enter particle</gray>
-          volume:
-            label: <aqua><bold>Volume</bold></aqua>
-          pitch:
-            label: <aqua><bold>Pitch</bold></aqua>
-          count:
-            label: <aqua><bold>Count</bold></aqua>
-          offset:
-            label: <aqua><bold>Offset</bold></aqua>
-          extra:
-            label: <aqua><bold>Extra</bold></aqua>
-          amount:
-            label: <aqua><bold>Amount</bold></aqua>
-          ticks:
-            label: <aqua><bold>Ticks</bold></aqua>
-          delay:
-            label: <aqua><bold>Delay</bold></aqua>
-          period:
-            label: <aqua><bold>Period</bold></aqua>
-          times:
-            label: <aqua><bold>Times</bold></aqua>
-          maxTargets:
-            label: <aqua><bold>Max Targets</bold></aqua>
-          title:
-            label: <aqua><bold>Title</bold></aqua>
-            prompt: <gray>Enter title</gray>
-          subtitle:
-            label: <aqua><bold>Subtitle</bold></aqua>
-            prompt: <gray>Enter subtitle</gray>
-          fadeIn:
-            label: <aqua><bold>Fade In</bold></aqua>
-          stay:
-            label: <aqua><bold>Stay</bold></aqua>
-          fadeOut:
-            label: <aqua><bold>Fade Out</bold></aqua>
-        policy:
-          title: <aqua><bold>Policy</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-        condition:
-          title: <aqua><bold>Condition</bold></aqua>
-          type: <gray>Type:</gray> <white>{value}</white>
-          none: <gray>No extra parameters.</gray>
-          permission:
-            label: <aqua><bold>Permission</bold></aqua>
-            prompt: <gray>Enter permission</gray>
-          chance:
-            label: <aqua><bold>Chance</bold></aqua>
-        targeter:
-          title: <aqua><bold>Targeter</bold></aqua>
-          type: <gray>Type:</gray> <white>{value}</white>
-          filter:
-            title: <aqua><bold>Filter</bold></aqua>
-            current: <gray>Current:</gray> <white>{value}</white>
-          mode:
-            title: <aqua><bold>Mode</bold></aqua>
-            current: <gray>Current:</gray> <white>{value}</white>
-          origin:
-            title: <aqua><bold>Origin</bold></aqua>
-            current: <gray>Current:</gray> <white>{value}</white>
-          param:
-            radius: <aqua><bold>Radius</bold></aqua>
-            xRadius: <aqua><bold>X Radius</bold></aqua>
-            yRadius: <aqua><bold>Y Radius</bold></aqua>
-            zRadius: <aqua><bold>Z Radius</bold></aqua>
-            angle: <aqua><bold>Angle</bold></aqua>
-            height: <aqua><bold>Height</bold></aqua>
+      apply:
+        hint: Hint
+        title: Title
+      audit:
+        by: By
+        title: Title
+      clear:
+        hint: Hint
+        title: Title
+      description:
+        hint: Hint
+        prompt: Prompt
+        title: Title
+      dirty:
+        saved:
+          hint: Hint
+          title: Title
+        unsaved:
+          hint: Hint
+          title: Title
+      field:
+        current: Current
+      header:
+        hint1: Hint1
+        hint2: Hint2
+        title: Title
+      id:
+        hint: Hint
+        prompt: Prompt
+        title: Title
+      load:
+        hint1: Hint1
+        hint2: Hint2
+        title: Title
+      name:
+        hint: Hint
+        prompt: Prompt
+        title: Title
+      output:
+        hint: Hint
+        title: Title
+      summary:
+        entry: Entry
+        ingredients:
+          count: Count
+          none: None
+        more: More
+        output:
+          none: None
+          value: Value
+        title: Title
+      title: Title
   items:
     editor:
       list:
@@ -1137,81 +1602,40 @@ gui:
           title: Reload YAML
         delete:
           title: Delete
-  mobs:
-    editor:
-      list:
-        title: <white><bold>Mob Editor</bold></white>
-        header:
-          title: <gold><bold>Mobs</bold></gold>
-          hint1: <gray>Select a mob to edit.</gray>
-          hint2: <gray>Use search to filter.</gray>
-        status:
-          loaded: <green>Loaded</green>
-          missing: <red>Missing</red>
-        entry:
-          title: <white>{id}</white>
-          name: <gray>Name:</gray> <white>{value}</white>
-        refresh:
-          title: <yellow><bold>Refresh</bold></yellow>
-          hint: <gray>Reload the list.</gray>
-        errors:
-          title: <red><bold>Errors</bold></red>
-          hint: <gray>Click to view reload errors.</gray>
           confirm:
-            title: <red><bold>Delete Item</bold></red>
-            header: <red>Delete {id}?</red>
-            detail: <gray>This cannot be undone.</gray>
+            detail: Detail
+            header: Header
+            title: Title
         audit:
-          title: <yellow><bold>Audit</bold></yellow>
-          none: <gray>Last edit:</gray> <white>never</white>
-          when: <gray>Last edit:</gray> <white>{value}</white>
-          by: <gray>By:</gray> <white>{value}</white>
-        dirty:
-          title: <yellow><bold>Unsaved Changes</bold></yellow>
-          hint: <gray>Apply to reload bindings.</gray>
+          by: By
+          none: None
+          title: Title
+          when: When
         clean:
-          title: <green><bold>Applied</bold></green>
-          hint: <gray>No pending changes.</gray>
+          hint: Hint
+          title: Title
+        dirty:
+          hint: Hint
+          title: Title
       bindings:
-        title: <white><bold>Item Bindings</bold></white>
-        header:
-          title: <gold><bold>Bindings</bold></gold>
-          hint: <gray>Bind this item to abilities.</gray>
-        entry:
-          title: '<yellow><bold>Binding #{index}</bold></yellow>'
-          click: <gray>Click:</gray> <white>{value}</white>
-          ability: <gray>Ability:</gray> <white>{value}</white>
-          sneak: <gray>Sneak:</gray> {value}
-          cancel: <gray>Cancel:</gray> {value}
         add:
-          title: Add Binding
+          title: Title
         clear:
-          title: Clear
-      bindingDetail:
-        title: <white><bold>Binding</bold></white>
+          title: Title
+        entry:
+          ability: Ability
+          cancel: Cancel
+          click: Click
+          sneak: Sneak
+          title: Title
         header:
-          title: '<gold><bold>Binding #{index}</bold></gold>'
-        click:
-          title: <aqua><bold>Click</bold></aqua>
-          current: <gray>Current:</gray> <white>{value}</white>
-        ability:
-          title: <aqua><bold>Ability</bold></aqua>
-          current: <gray>Current:</gray> {value}
-          name: <gray>Name:</gray> <white>{value}</white>
-          select: Select ability
-          clear: Clear ability
-        permission:
-          title: <aqua><bold>Permission</bold></aqua>
-          current: <gray>Current:</gray> {value}
-          prompt: <gray>Enter permission (blank to clear)</gray>
-        id:
-          title: <aqua><bold>Binding Id</bold></aqua>
-          current: <gray>Current:</gray> {value}
-          prompt: <gray>Enter binding id (blank for auto)</gray>
-          auto: <gray>(auto)</gray>
-        sneak:
-          title: <aqua><bold>Sneaking</bold></aqua>
-        cancel:
-          title: <aqua><bold>Cancel Event</bold></aqua>
-        delete:
-          title: Delete
+          title: Title
+        title: Title
+  loading:
+    hint: Hint
+    title: Title
+  validation:
+    integer: Integer
+    number: Number
+bindings:
+  close: Close

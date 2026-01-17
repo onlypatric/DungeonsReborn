@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_vita_ii
+name: <yellow>Tomo di Vitalita II</yellow>
+description: Ricetta per creare <yellow>Tomo di Vitalita II</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_vita_ii
+  amount: 1

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_recupero_i
+name: "<yellow>Dardo di Recupero I</yellow>"
+description: |-
+  Hai una probabilita di recuperare i dardi della balestra.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_recupero_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_recupero_i
+  activator: RIGHT_CLICK

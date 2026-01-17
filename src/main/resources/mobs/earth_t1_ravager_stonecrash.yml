@@ -34,10 +34,14 @@ mobs:
             \    potion effect=WEAKNESS durationTicks=60 amplifier=0\n    knockback\
             \ horizontal=0.6 vertical=0.15\n  }\n}"
     xpGating:
-      minLevel: 5000
+      minLevel: 10000
     progression:
-      minXp: 991738
-      maxXp: 1341762
+      minXp: 30
+      maxXp: 45
+      maxPlayerXp: 1400000
+    loot:
+      pool: elemental_earth
+      merge: true
 spawnerBlocks:
   earth_t1_ravager_stonecrash_spawner:
     mob: earth_t1_ravager_stonecrash

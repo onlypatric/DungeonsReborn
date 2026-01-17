@@ -52,10 +52,14 @@ mobs:
           source: "on_cast {\n  particles.ring particle=SNOWFLAKE radius=2.6 points=30\
             \ count=2\n}"
     xpGating:
-      minLevel: 1500
+      minLevel: 15000
     progression:
-      minXp: 44165
-      maxXp: 59752
+      minXp: 45
+      maxXp: 65
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_frost
+      merge: true
 spawnerBlocks:
   frost_t2_wolf_icefang_alpha_spawner:
     mob: frost_t2_wolf_icefang_alpha

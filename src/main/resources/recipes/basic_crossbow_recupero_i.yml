@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_crossbow_recupero_i
+name: <yellow>Dardo di Recupero I</yellow>
+description: Ricetta per creare <yellow>Dardo di Recupero I</yellow>.
+inputs: []
+output:
+  itemId: basic_crossbow_recupero_i
+  amount: 1

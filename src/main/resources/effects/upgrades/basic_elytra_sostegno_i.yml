@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_elytra_sostegno_i
+name: "<yellow>Trama del Sostegno I</yellow>"
+description: |-
+  Riduce la fatica in volo, permettendo planate piu lunghe.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:elytra
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_elytra_sostegno_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_elytra_sostegno_i
+  activator: PASSIVE

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_multi_taglio_ii
+name: <yellow>Lama Comune II</yellow>
+description: Ricetta per creare <yellow>Lama Comune II</yellow>.
+inputs: []
+output:
+  itemId: basic_multi_taglio_ii
+  amount: 1

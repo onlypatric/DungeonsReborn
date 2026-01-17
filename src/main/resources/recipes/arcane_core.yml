@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: arcane_core
+name: arcane_core
+description: Ricetta per creare arcane_core.
+inputs: []
+output:
+  itemId: arcane_core
+  amount: 1

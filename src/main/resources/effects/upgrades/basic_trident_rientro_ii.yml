@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_trident_rientro_ii
+name: "<yellow>Trama del Rientro II</yellow>"
+description: |-
+  Aumenta la probabilita che il tridente ritorni dopo il lancio.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:trident
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_trident_rientro_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_trident_rientro_ii
+  activator: RIGHT_CLICK

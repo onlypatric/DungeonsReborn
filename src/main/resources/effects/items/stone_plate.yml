@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: SMOOTH_STONE
+  amount: 1
+  meta:
+    display-name: Lastra di Pietra
+    lore:
+    - Una lastra ruvida, utile per forgiare.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

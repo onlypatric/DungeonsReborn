@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: FLINT
+  amount: 1
+  meta:
+    display-name: "Ciottolo Inutile"
+    lore:
+      - "Un sassolino qualunque."

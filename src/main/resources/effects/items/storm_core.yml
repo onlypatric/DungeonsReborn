@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: LIGHTNING_ROD
+  amount: 1
+  meta:
+    display-name: "Nucleo di Tempesta"
+    lore:
+      - "Risuona di tuono."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

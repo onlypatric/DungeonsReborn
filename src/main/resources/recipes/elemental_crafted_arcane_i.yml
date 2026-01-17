@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_crafted_arcane_i
+name: <aqua>Catalizzatore del Vuoto</aqua>
+description: Ricetta per creare <aqua>Catalizzatore del Vuoto</aqua>.
+inputs: []
+output:
+  itemId: elemental_crafted_arcane_i
+  amount: 1

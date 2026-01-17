@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_armor_vita_ii:
+    name: "<pink>Aura Vita II</pink>"
+    description: "<dark_gray>Rigenerazione moderata.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.2 points=22 count=1 offset=0.04 color="#ff88cc" size=1.05
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=REGENERATION durationTicks=60 amplifier=0
+          }
+        }

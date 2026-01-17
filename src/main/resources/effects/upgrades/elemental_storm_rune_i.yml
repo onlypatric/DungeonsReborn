@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: elemental_storm_rune_i
+name: "<aqua>Runa del Fulmine I</aqua>"
+description: |-
+  Aumenta i danni delle scariche a catena.
+limits:
+  category: elemental
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_storm_rune_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_storm_rune_i
+  activator: SHIFT_RIGHT_CLICK

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_arcane_armor_ii
+name: <aqua>Corazza Mistica II</aqua>
+description: Ricetta per creare <aqua>Corazza Mistica II</aqua>.
+inputs: []
+output:
+  itemId: elemental_arcane_armor_ii
+  amount: 1

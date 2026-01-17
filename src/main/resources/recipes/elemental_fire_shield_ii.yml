@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_fire_shield_ii
+name: <aqua>Scudo dei Carboni II</aqua>
+description: Ricetta per creare <aqua>Scudo dei Carboni II</aqua>.
+inputs: []
+output:
+  itemId: elemental_fire_shield_ii
+  amount: 1

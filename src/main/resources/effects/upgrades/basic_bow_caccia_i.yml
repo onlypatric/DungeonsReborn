@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_bow_caccia_i
+name: "<yellow>Corda del Cacciatore I</yellow>"
+description: |-
+  Aumenta i danni contro le bestie.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_bow_caccia_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_bow_caccia_i
+  activator: RIGHT_CLICK

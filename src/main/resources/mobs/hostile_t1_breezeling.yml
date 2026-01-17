@@ -23,8 +23,12 @@ mobs:
           source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
             \ originAt=origin {\n    knockback horizontal=0.6 vertical=0.1\n  }\n}"
     progression:
-      minXp: 175
-      maxXp: 238
+      minXp: 6
+      maxXp: 9
+      maxPlayerXp: 250000
+    loot:
+      pool: hostile_t1
+      merge: true
 spawnerBlocks:
   hostile_t1_breezeling_spawner:
     mob: hostile_t1_breezeling

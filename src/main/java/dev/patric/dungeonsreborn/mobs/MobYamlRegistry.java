@@ -30,6 +30,7 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.actions.Action;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
@@ -82,11 +83,14 @@ public final class MobYamlRegistry {
   }
   private record YamlSource(String source, YamlConfiguration cfg) {
   }
+  private record LootSource(String source, YamlConfiguration cfg, String poolId) {
+  }
 
   private final JavaPlugin plugin;
   private final EffectsEngine engine;
   private final EffectsYamlAbilities yamlAbilities;
   private final ShopYamlRegistry shopRegistry;
+  private UpgradeYamlRegistry upgradeRegistry;
   private final MobRegistry registry;
   private final MobSpawnManager spawns;
   private final ServiceLogger logger;
@@ -94,6 +98,7 @@ public final class MobYamlRegistry {
   private final Set<String> loadedScriptAbilityIds = new HashSet<>();
   private final Map<String, MobEggSpec> eggSpecs = new HashMap<>();
   private final Map<String, MobSpawnerBlockSpec> spawnerBlocks = new HashMap<>();
+  private final Map<String, MobLootSpec> lootPools = new HashMap<>();
   private List<String> lastErrors = List.of();
 
   public MobYamlRegistry(JavaPlugin plugin, EffectsEngine engine, EffectsYamlAbilities yamlAbilities,
@@ -102,9 +107,14 @@ public final class MobYamlRegistry {
     this.engine = Objects.requireNonNull(engine, "engine");
     this.yamlAbilities = Objects.requireNonNull(yamlAbilities, "yamlAbilities");
     this.shopRegistry = shopRegistry;
+    this.upgradeRegistry = null;
     this.registry = Objects.requireNonNull(registry, "registry");
     this.spawns = Objects.requireNonNull(spawns, "spawns");
     this.logger = Objects.requireNonNull(logger, "logger");
+  }
+
+  public void setUpgradeRegistry(UpgradeYamlRegistry upgradeRegistry) {
+    this.upgradeRegistry = upgradeRegistry;
   }
 
   public File file() {
@@ -113,6 +123,10 @@ public final class MobYamlRegistry {
 
   public File folder() {
     return new File(plugin.getDataFolder(), "mobs");
+  }
+
+  public File lootFolder() {
+    return new File(plugin.getDataFolder(), "loot");
   }
 
   public List<String> lastErrors() {
@@ -242,6 +256,18 @@ public final class MobYamlRegistry {
       YamlConfiguration extraCfg = YamlConfiguration.loadConfiguration(extra);
       sources.add(new YamlSource(extra.getPath(), extraCfg));
     }
+    File lootFolder = lootFolder();
+    if (!lootFolder.exists()) {
+      lootFolder.mkdirs();
+    }
+    if (listYamlFiles(lootFolder).isEmpty()) {
+      saveDefaultLootFiles(lootFolder);
+    }
+    List<LootSource> lootSources = new ArrayList<>();
+    for (File extra : listYamlFiles(lootFolder)) {
+      YamlConfiguration extraCfg = YamlConfiguration.loadConfiguration(extra);
+      lootSources.add(new LootSource(extra.getPath(), extraCfg, poolIdFromFile(extra)));
+    }
 
     Set<String> previousLoadedIds = new HashSet<>(loadedIds);
     Map<String, MobSpec> previousSpecs = new LinkedHashMap<>();
@@ -266,6 +292,16 @@ public final class MobYamlRegistry {
       engine.unregisterAbility(abilityId);
     }
     loadedScriptAbilityIds.clear();
+
+    Map<String, MobLootSpec> nextLootPools = new HashMap<>();
+    for (YamlSource source : sources) {
+      parseLootPools(source.cfg(), nextLootPools, errors, source.source(), null);
+    }
+    for (LootSource source : lootSources) {
+      parseLootPools(source.cfg(), nextLootPools, errors, source.source(), source.poolId());
+    }
+    lootPools.clear();
+    lootPools.putAll(nextLootPools);
 
     Map<String, MobSpec> specs = new HashMap<>();
     for (YamlSource source : sources) {
@@ -887,21 +923,36 @@ public final class MobYamlRegistry {
     }
 
     ConfigurationSection loot = node.getConfigurationSection("loot");
+    String poolId = null;
+    boolean mergePool = true;
     if (loot != null) {
-      boolean clearVanilla = loot.getBoolean("clearVanilla", false);
-      int rolls = loot.getInt("rolls", 1);
-      int bonusRolls = loot.getInt("bonusRolls", 0);
-      double luckMultiplier = loot.getDouble("luckMultiplier", 0.0);
-      List<String> announceTiers = loot.getStringList("announceTiers");
-      String announceTemplate = loot.getString("announceTemplate", null);
-      List<Map<?, ?>> rawGuaranteed = loot.getMapList("guaranteed");
-      if (rawGuaranteed.isEmpty()) {
-        rawGuaranteed = loot.getMapList("guaranteedDrops");
+      poolId = loot.getString("pool", loot.getString("lootPool", null));
+      mergePool = loot.getBoolean("merge", true);
+    }
+    if (poolId == null && node.contains("lootPool")) {
+      poolId = node.getString("lootPool");
+    }
+    MobLootSpec poolSpec = null;
+    if (poolId != null && !poolId.isBlank()) {
+      poolSpec = lootPools.get(Ids.normalize(poolId));
+      if (poolSpec == null) {
+        errors.add(base + ".lootPool: unknown loot pool id: " + poolId);
       }
-      List<MobDropSpec> guaranteed = parseDrops(rawGuaranteed, base + ".loot.guaranteed", true);
-      List<MobDropSpec> drops = parseDrops(loot.getMapList("drops"), base + ".loot.drops", false);
-      builder.loot(new MobLootSpec(clearVanilla, guaranteed, drops, rolls, bonusRolls,
-          luckMultiplier, new java.util.LinkedHashSet<>(announceTiers), announceTemplate));
+    }
+    MobLootSpec localSpec = null;
+    if (loot != null && hasLootData(loot)) {
+      localSpec = parseLootSpec(loot, base + ".loot");
+    }
+    if (poolSpec != null) {
+      if (localSpec != null && mergePool) {
+        builder.loot(mergeLootSpec(poolSpec, localSpec, loot));
+      } else if (localSpec != null && !mergePool) {
+        builder.loot(localSpec);
+      } else {
+        builder.loot(poolSpec);
+      }
+    } else if (localSpec != null) {
+      builder.loot(localSpec);
     }
 
     ConfigurationSection progression = node.getConfigurationSection("progression");
@@ -1429,6 +1480,55 @@ public final class MobYamlRegistry {
     }
   }
 
+  private void parseLootPools(YamlConfiguration cfg, Map<String, MobLootSpec> pools, List<String> errors,
+      String source, String fallbackPoolId) {
+    ConfigurationSection poolsSec = cfg.getConfigurationSection("lootPools");
+    if (poolsSec != null) {
+      for (String rawId : poolsSec.getKeys(false)) {
+        String base = prefix(source) + "lootPools." + rawId;
+        try {
+          String id = Ids.normalize(rawId);
+          if (pools.containsKey(id)) {
+            errors.add(base + ": duplicate loot pool id");
+            continue;
+          }
+          ConfigurationSection node = poolsSec.getConfigurationSection(rawId);
+          if (node == null) {
+            errors.add(base + ": must be an object");
+            continue;
+          }
+          MobLootSpec spec = parseLootSpec(node, base);
+          pools.put(id, spec);
+        } catch (Exception ex) {
+          errors.add(base + ": " + ex.getMessage());
+        }
+      }
+    }
+    if (fallbackPoolId != null && poolsSec == null) {
+      ConfigurationSection node = cfg.getConfigurationSection("loot");
+      if (node != null) {
+        String base = prefix(source) + "loot";
+        try {
+          String id = Ids.normalize(fallbackPoolId);
+          if (pools.containsKey(id)) {
+            errors.add(base + ": duplicate loot pool id");
+            return;
+          }
+          MobLootSpec spec = parseLootSpec(node, base);
+          pools.put(id, spec);
+        } catch (Exception ex) {
+          errors.add(base + ": " + ex.getMessage());
+        }
+      }
+    }
+  }
+
+  private static String poolIdFromFile(File file) {
+    String name = file.getName();
+    int dot = name.lastIndexOf('.');
+    return dot > 0 ? name.substring(0, dot) : name;
+  }
+
   private static String prefix(String source) {
     if (source == null || source.isBlank()) {
       return "";
@@ -1467,6 +1567,20 @@ public final class MobYamlRegistry {
       }
       try {
         plugin.saveResource("mobs/" + file, false);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+  }
+
+  private void saveDefaultLootFiles(File folder) {
+    List<String> bundled = listBundledLootFiles();
+    for (String file : bundled) {
+      File target = new File(folder, file);
+      if (target.exists()) {
+        continue;
+      }
+      try {
+        plugin.saveResource("loot/" + file, false);
       } catch (IllegalArgumentException ignored) {
       }
     }
@@ -1523,6 +1637,60 @@ public final class MobYamlRegistry {
     } catch (Exception ignored) {
     }
     return List.of();
+  }
+
+  private List<String> listBundledLootFiles() {
+    try {
+      java.net.URL url = plugin.getClass().getClassLoader().getResource("loot");
+      if (url == null) {
+        return List.of();
+      }
+      String protocol = url.getProtocol();
+      if ("file".equalsIgnoreCase(protocol)) {
+        File dir = new File(url.toURI());
+        List<String> names = new ArrayList<>();
+        File[] entries = dir.listFiles();
+        if (entries == null) {
+          return List.of();
+        }
+        for (File entry : entries) {
+          if (!entry.isFile()) {
+            continue;
+          }
+          String name = entry.getName();
+          String lower = name.toLowerCase(Locale.ROOT);
+          if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+            names.add(name);
+          }
+        }
+        names.sort(String.CASE_INSENSITIVE_ORDER);
+        return names;
+      }
+      if ("jar".equalsIgnoreCase(protocol)) {
+        java.net.JarURLConnection conn = (java.net.JarURLConnection) url.openConnection();
+        try (java.util.jar.JarFile jar = conn.getJarFile()) {
+          List<String> names = new ArrayList<>();
+          java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+          while (entries.hasMoreElements()) {
+            java.util.jar.JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (!name.startsWith("loot/") || entry.isDirectory()) {
+              continue;
+            }
+            String base = name.substring("loot/".length());
+            String lower = base.toLowerCase(Locale.ROOT);
+            if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+              names.add(base);
+            }
+          }
+          names.sort(String.CASE_INSENSITIVE_ORDER);
+          return names;
+        }
+      }
+      return List.of();
+    } catch (Exception ignored) {
+      return List.of();
+    }
   }
 
   private int parseEggs(YamlConfiguration cfg, Map<String, MobSpec> specs, Map<String, MobEggSpec> out,
@@ -1691,6 +1859,17 @@ public final class MobYamlRegistry {
       }
       return template;
     }
+    String upgradeId = YamlValues.string(map, "upgradeId", YamlValues.string(map, "upgrade", null));
+    if (upgradeId != null && !upgradeId.isBlank()) {
+      if (upgradeRegistry == null) {
+        throw new IllegalArgumentException(path + ".upgradeId: upgrades not available");
+      }
+      ItemStack upgradeItem = upgradeRegistry.upgradeItem(upgradeId);
+      if (upgradeItem == null || upgradeItem.getType() == Material.AIR) {
+        throw new IllegalArgumentException(path + ".upgradeId: unknown upgrade id " + upgradeId);
+      }
+      return upgradeItem;
+    }
     String tokenId = YamlValues.string(map, "token", YamlValues.string(map, "tokenTier", null));
     if (tokenId != null && !tokenId.isBlank()) {
       if (shopRegistry == null) {
@@ -1711,6 +1890,54 @@ public final class MobYamlRegistry {
       return new ItemStack(material);
     }
     return null;
+  }
+
+  private MobLootSpec parseLootSpec(ConfigurationSection loot, String base) {
+    boolean clearVanilla = loot.getBoolean("clearVanilla", false);
+    int rolls = loot.getInt("rolls", 1);
+    int bonusRolls = loot.getInt("bonusRolls", 0);
+    double luckMultiplier = loot.getDouble("luckMultiplier", 0.0);
+    List<String> announceTiers = loot.getStringList("announceTiers");
+    String announceTemplate = loot.getString("announceTemplate", null);
+    List<Map<?, ?>> rawGuaranteed = loot.getMapList("guaranteed");
+    if (rawGuaranteed.isEmpty()) {
+      rawGuaranteed = loot.getMapList("guaranteedDrops");
+    }
+    List<MobDropSpec> guaranteed = parseDrops(rawGuaranteed, base + ".guaranteed", true);
+    List<MobDropSpec> drops = parseDrops(loot.getMapList("drops"), base + ".drops", false);
+    return new MobLootSpec(clearVanilla, guaranteed, drops, rolls, bonusRolls,
+        luckMultiplier, new java.util.LinkedHashSet<>(announceTiers), announceTemplate);
+  }
+
+  private static boolean hasLootData(ConfigurationSection loot) {
+    return loot.contains("drops")
+        || loot.contains("guaranteed")
+        || loot.contains("guaranteedDrops")
+        || loot.contains("rolls")
+        || loot.contains("bonusRolls")
+        || loot.contains("luckMultiplier")
+        || loot.contains("clearVanilla")
+        || loot.contains("announceTiers")
+        || loot.contains("announceTemplate");
+  }
+
+  private static MobLootSpec mergeLootSpec(MobLootSpec pool, MobLootSpec local, ConfigurationSection loot) {
+    boolean clearVanilla = loot.contains("clearVanilla") ? local.clearVanilla() : pool.clearVanilla();
+    int rolls = loot.contains("rolls") ? local.rolls() : pool.rolls();
+    int bonusRolls = loot.contains("bonusRolls") ? local.bonusRolls() : pool.bonusRolls();
+    double luckMultiplier = loot.contains("luckMultiplier") ? local.luckMultiplier() : pool.luckMultiplier();
+    String announceTemplate = loot.contains("announceTemplate") ? local.announceTemplate() : pool.announceTemplate();
+    java.util.LinkedHashSet<String> announceTiers = new java.util.LinkedHashSet<>(pool.announceTiers());
+    if (loot.contains("announceTiers")) {
+      announceTiers.clear();
+      announceTiers.addAll(local.announceTiers());
+    }
+    List<MobDropSpec> guaranteed = new ArrayList<>(pool.guaranteed());
+    guaranteed.addAll(local.guaranteed());
+    List<MobDropSpec> drops = new ArrayList<>(pool.drops());
+    drops.addAll(local.drops());
+    return new MobLootSpec(clearVanilla, guaranteed, drops, rolls, bonusRolls, luckMultiplier, announceTiers,
+        announceTemplate);
   }
 
   private List<MobDropSpec> parseDrops(List<Map<?, ?>> rawDrops, String basePath, boolean guaranteed) {

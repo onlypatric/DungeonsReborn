@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: bread
+name: bread
+description: Ricetta per creare bread.
+inputs: []
+output:
+  itemId: bread
+  amount: 1

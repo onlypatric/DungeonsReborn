@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: chainmail_helmet
+name: chainmail_helmet
+description: Ricetta per creare chainmail_helmet.
+inputs: []
+output:
+  itemId: chainmail_helmet
+  amount: 1

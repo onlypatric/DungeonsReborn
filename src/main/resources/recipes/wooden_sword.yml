@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: wooden_sword
+name: wooden_sword
+description: Ricetta per creare wooden_sword.
+inputs: []
+output:
+  itemId: wooden_sword
+  amount: 1

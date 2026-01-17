@@ -36,8 +36,12 @@ mobs:
     xpGating:
       minLevel: 15000
     progression:
-      minXp: 4457896
-      maxXp: 6031271
+      minXp: 50
+      maxXp: 75
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_arcane
+      merge: true
 spawnerBlocks:
   arcane_t2_illusioner_spectral_spawner:
     mob: arcane_t2_illusioner_spectral

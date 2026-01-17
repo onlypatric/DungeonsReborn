@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: basic_rune_magnete_ii
+name: "<yellow>Runa del Richiamo II</yellow>"
+description: |-
+  Attira gli oggetti verso di te entro un raggio maggiore.
+limits:
+  category: basic
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_rune_magnete_ii
+  secondaryDescriptions:
+    - "<dark_gray>Vortice visivo intenso.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_rune_magnete_ii
+  activator: SHIFT_RIGHT_CLICK

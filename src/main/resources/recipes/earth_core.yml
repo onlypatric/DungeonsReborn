@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: earth_core
+name: earth_core
+description: Ricetta per creare earth_core.
+inputs: []
+output:
+  itemId: earth_core
+  amount: 1

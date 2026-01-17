@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: GOLD_INGOT
+  amount: 1
+  meta:
+    display-name: Nucleo Fortunato
+    lore:
+    - Un nucleo che richiama la fortuna.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

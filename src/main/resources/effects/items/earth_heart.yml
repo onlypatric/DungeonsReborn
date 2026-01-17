@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: EMERALD
+  amount: 1
+  meta:
+    display-name: "Cuore di Terra"
+    lore:
+      - "Un cuore della terra."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

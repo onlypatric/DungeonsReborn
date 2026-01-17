@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: REDSTONE
+  amount: 1
+  meta:
+    display-name: Nucleo di Sangue
+    lore:
+    - Un nucleo intriso di sangue.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

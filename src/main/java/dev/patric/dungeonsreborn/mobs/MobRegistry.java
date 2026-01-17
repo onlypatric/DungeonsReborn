@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import org.bukkit.Location;
@@ -36,6 +37,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Hanging;
@@ -51,6 +53,8 @@ import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.minions.MinionMode;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
@@ -76,6 +80,7 @@ public final class MobRegistry implements Listener {
   private MobSpawnManager spawnManager;
   private ShopYamlRegistry shopRegistry;
   private AdvancementService advancementService;
+  private CustomXpService customXpService;
   private int maxActivePerTick;
   private boolean xpGatingEnabled = true;
   private String xpGatingBypassPermission = "";
@@ -117,6 +122,10 @@ public final class MobRegistry implements Listener {
 
   public void setShopRegistry(ShopYamlRegistry shopRegistry) {
     this.shopRegistry = shopRegistry;
+  }
+
+  public void setCustomXpService(CustomXpService customXpService) {
+    this.customXpService = customXpService;
   }
 
   public void setAdvancementService(AdvancementService advancementService) {
@@ -481,7 +490,14 @@ public final class MobRegistry implements Listener {
     if (!xpGatingBypassPermission.isBlank() && player.hasPermission(xpGatingBypassPermission)) {
       return false;
     }
-    if (player.getLevel() >= minLevel) {
+    int playerLevel = player.getLevel();
+    if (customXpService != null) {
+      CustomXpProfile profile = customXpService.getOrCreate(player.getUniqueId());
+      if (profile != null) {
+        playerLevel = profile.level();
+      }
+    }
+    if (playerLevel >= minLevel) {
       return false;
     }
     maybeWarnXpGate(player, minLevel);
@@ -1013,8 +1029,22 @@ public final class MobRegistry implements Listener {
       return;
     }
     item.setAmount(amount);
+    applyRandomDurability(item);
     loc.getWorld().dropItemNaturally(loc, item);
     maybeAnnounceDrop(loot, spec, killer, drop, amount, item);
+  }
+
+  private static void applyRandomDurability(ItemStack item) {
+    int maxDurability = item.getType().getMaxDurability();
+    if (maxDurability <= 0) {
+      return;
+    }
+    if (!(item.getItemMeta() instanceof Damageable damageable)) {
+      return;
+    }
+    int damage = ThreadLocalRandom.current().nextInt(maxDurability);
+    damageable.setDamage(damage);
+    item.setItemMeta(damageable);
   }
 
   private void dropTokenBundle(Location loc, int amount) {

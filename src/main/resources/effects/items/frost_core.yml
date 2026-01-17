@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: PACKED_ICE
+  amount: 1
+  meta:
+    display-name: "Nucleo di Gelo"
+    lore:
+      - "Un nucleo di ghiaccio."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,13 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_rune_precisione_i:
+    name: "<gold>Aura Precisione I</gold>"
+    description: "<dark_gray>Segnale visivo di precisione.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.2 points=22 count=1 offset=0.04 color="#ffd166" size=0.9
+          particles.line particle=DUST length=1.6 step=0.2 count=1 offset=0.01 color="#ffd166" size=0.9
+        }

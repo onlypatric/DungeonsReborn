@@ -16,12 +16,15 @@ public final class ShopSessionManager {
   private final ShopYamlRegistry registry;
   private final ServiceLogger logger;
   private final ShopStockManager stockManager;
+  private final boolean allowExperienceReward;
   private final Map<UUID, ShopSession> openSessions = new ConcurrentHashMap<>();
   private final Map<UUID, Map<String, Long>> lastTrades = new ConcurrentHashMap<>();
 
-  public ShopSessionManager(ShopYamlRegistry registry, ShopStockManager stockManager, ServiceLogger logger) {
+  public ShopSessionManager(ShopYamlRegistry registry, ShopStockManager stockManager, boolean allowExperienceReward,
+      ServiceLogger logger) {
     this.registry = Objects.requireNonNull(registry, "registry");
     this.stockManager = stockManager;
+    this.allowExperienceReward = allowExperienceReward;
     this.logger = Objects.requireNonNull(logger, "logger");
   }
 
@@ -59,7 +62,8 @@ public final class ShopSessionManager {
       player.sendMessage(Locales.component(player, "messages.shops.open.worldDenied"));
       return false;
     }
-    var merchant = ShopMerchantBuilder.buildMerchant(spec, registry.tokenSpec(), registry.itemResolver(), stockManager);
+    var merchant = ShopMerchantBuilder.buildMerchant(spec, registry.tokenSpec(), registry.itemResolver(), stockManager,
+        allowExperienceReward);
     var view = MenuType.MERCHANT.builder()
         .merchant(merchant)
         .title(GuiMini.mm(spec.title()))

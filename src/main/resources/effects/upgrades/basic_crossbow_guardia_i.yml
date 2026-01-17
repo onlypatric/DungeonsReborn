@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_guardia_i
+name: "<yellow>Dardo di Guardia I</yellow>"
+description: |-
+  I dardi applicano Debolezza per 3s (8s di ricarica).
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_guardia_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_guardia_i
+  activator: RIGHT_CLICK

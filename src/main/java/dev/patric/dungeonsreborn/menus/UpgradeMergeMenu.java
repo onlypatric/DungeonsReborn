@@ -26,6 +26,7 @@ import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeActivator;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradePriceSpec;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeSpellSpec;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
@@ -39,6 +40,7 @@ import dev.patric.dungeonsreborn.gui.components.storage.StorageArea;
 import dev.patric.dungeonsreborn.gui.components.storage.StorageSlot;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
@@ -506,26 +508,28 @@ public final class UpgradeMergeMenu extends Window {
       return;
     }
     var spec = upgrades.registry().upgradeSpec(upgradeId);
-    if (spec == null || spec.spell() == null) {
+    if (spec == null || spec.spells().isEmpty()) {
       return;
     }
-    List<String> abilities = switch (spec.spell().activator()) {
-      case RIGHT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.RIGHT_CLICK_ABILITIES);
-      case LEFT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.LEFT_CLICK_ABILITIES);
-      case SHIFT_RIGHT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.SHIFT_RIGHT_CLICK_ABILITIES);
-      case SHIFT_LEFT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.SHIFT_LEFT_CLICK_ABILITIES);
-      case PASSIVE -> ItemMarkers.getStringList(target, ItemMarkers.PASSIVE_ABILITIES);
-    };
-    if (!abilities.isEmpty()) {
-      lore.add(tr(player, "gui.upgrades.merge.slot.contains"));
-      for (String ability : limitList(abilities, 3)) {
-        lore.add(tr(player, "gui.upgrades.merge.slot.line", Placeholder.unparsed("value", ability)));
+    List<UpgradeActivator> activators = spec.spells().stream()
+        .map(UpgradeSpellSpec::activator)
+        .distinct()
+        .toList();
+    for (UpgradeActivator activator : activators) {
+      List<String> abilities = abilitiesForActivator(target, activator);
+      lore.add(tr(player, "gui.upgrades.merge.warning.binding",
+          Placeholder.component("binding", activatorLabel(player, activator))));
+      if (!abilities.isEmpty()) {
+        lore.add(tr(player, "gui.upgrades.merge.slot.contains"));
+        for (String ability : limitList(abilities, 3)) {
+          lore.add(tr(player, "gui.upgrades.merge.slot.line", Placeholder.unparsed("value", ability)));
+        }
+        if (abilities.size() > 3) {
+          lore.add(tr(player, "gui.upgrades.merge.slot.more"));
+        }
+      } else {
+        lore.add(tr(player, "gui.upgrades.merge.slot.occupied"));
       }
-      if (abilities.size() > 3) {
-        lore.add(tr(player, "gui.upgrades.merge.slot.more"));
-      }
-    } else {
-      lore.add(tr(player, "gui.upgrades.merge.slot.occupied"));
     }
   }
 
@@ -538,15 +542,21 @@ public final class UpgradeMergeMenu extends Window {
       return List.of();
     }
     var spec = upgrades.registry().upgradeSpec(upgradeId);
-    if (spec == null || spec.spell() == null) {
+    if (spec == null || spec.spells().isEmpty()) {
       return List.of();
     }
-    if (!upgrades.hasActivationConflict(player, target, spec.spell().activator())) {
+    List<UpgradeActivator> conflicts = spec.spells().stream()
+        .map(UpgradeSpellSpec::activator)
+        .distinct()
+        .filter(activator -> upgrades.hasActivationConflict(player, target, activator))
+        .toList();
+    if (conflicts.isEmpty()) {
       return List.of();
     }
     List<Component> lore = new ArrayList<>();
-    Component binding = activatorLabel(player, spec.spell().activator());
-    lore.add(tr(player, "gui.upgrades.merge.warning.binding", Placeholder.component("binding", binding)));
+    Component binding = joinActivatorLabels(player, conflicts);
+    lore.add(tr(player, "gui.upgrades.merge.warning.binding",
+        Placeholder.component("binding", binding)));
     lore.add(tr(player, "gui.upgrades.merge.warning.overwrite"));
     appendSlotDetails(player, lore, target, upgrade);
     return lore;
@@ -559,6 +569,27 @@ public final class UpgradeMergeMenu extends Window {
       case SHIFT_LEFT_CLICK -> tr(player, "gui.upgrades.merge.activator.shiftLeft");
       case SHIFT_RIGHT_CLICK -> tr(player, "gui.upgrades.merge.activator.shiftRight");
       case PASSIVE -> tr(player, "gui.upgrades.merge.activator.passive");
+    };
+  }
+
+  private static Component joinActivatorLabels(Player player, List<UpgradeActivator> activators) {
+    Component out = Component.empty();
+    for (int i = 0; i < activators.size(); i++) {
+      if (i > 0) {
+        out = out.append(Component.text(", ", NamedTextColor.DARK_GRAY));
+      }
+      out = out.append(activatorLabel(player, activators.get(i)));
+    }
+    return out;
+  }
+
+  private static List<String> abilitiesForActivator(ItemStack target, UpgradeActivator activator) {
+    return switch (activator) {
+      case RIGHT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.RIGHT_CLICK_ABILITIES);
+      case LEFT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.LEFT_CLICK_ABILITIES);
+      case SHIFT_RIGHT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.SHIFT_RIGHT_CLICK_ABILITIES);
+      case SHIFT_LEFT_CLICK -> ItemMarkers.getStringList(target, ItemMarkers.SHIFT_LEFT_CLICK_ABILITIES);
+      case PASSIVE -> ItemMarkers.getStringList(target, ItemMarkers.PASSIVE_ABILITIES);
     };
   }
 

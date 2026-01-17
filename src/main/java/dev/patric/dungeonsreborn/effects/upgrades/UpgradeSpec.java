@@ -17,7 +17,7 @@ public record UpgradeSpec(
     List<UpgradeModifierSpec> modifiers,
     List<UpgradeAttributeSpec> attributes,
     List<UpgradeEnchantSpec> enchants,
-    UpgradeSpellSpec spell
+    List<UpgradeSpellSpec> spells
 ) {
   public UpgradeSpec {
     Objects.requireNonNull(id, "id");
@@ -30,5 +30,10 @@ public record UpgradeSpec(
     Objects.requireNonNull(modifiers, "modifiers");
     Objects.requireNonNull(attributes, "attributes");
     Objects.requireNonNull(enchants, "enchants");
+    Objects.requireNonNull(spells, "spells");
+  }
+
+  public UpgradeSpellSpec primarySpell() {
+    return spells.isEmpty() ? null : spells.get(0);
   }
 }

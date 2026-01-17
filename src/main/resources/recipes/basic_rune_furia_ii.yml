@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_rune_furia_ii
+name: <yellow>Runa della Furia II</yellow>
+description: Ricetta per creare <yellow>Runa della Furia II</yellow>.
+inputs: []
+output:
+  itemId: basic_rune_furia_ii
+  amount: 1

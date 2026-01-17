@@ -25,10 +25,11 @@ mobs:
             \ originAt=origin {\n    potion effect=WEAKNESS durationTicks=80 amplifier=0\n\
             \  }\n}"
     xpGating:
-      minLevel: 600
+      minLevel: 3000
     progression:
-      minXp: 6956
-      maxXp: 9411
+      minXp: 4
+      maxXp: 6
+      maxPlayerXp: 600000
 spawnerBlocks:
   nuisance_t4_tadpole_thunderfin_spawner:
     mob: nuisance_t4_tadpole_thunderfin

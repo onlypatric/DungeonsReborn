@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: stone_axe
+name: stone_axe
+description: Ricetta per creare stone_axe.
+inputs: []
+output:
+  itemId: stone_axe
+  amount: 1

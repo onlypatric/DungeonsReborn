@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: SAND
+  amount: 1
+  meta:
+    display-name: "Polvere Inutile"
+    lore:
+      - "Polvere senza valore."

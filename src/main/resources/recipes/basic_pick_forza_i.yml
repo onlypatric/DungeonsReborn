@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_pick_forza_i
+name: <yellow>Sigillo da Battaglia I</yellow>
+description: Ricetta per creare <yellow>Sigillo da Battaglia I</yellow>.
+inputs: []
+output:
+  itemId: basic_pick_forza_i
+  amount: 1

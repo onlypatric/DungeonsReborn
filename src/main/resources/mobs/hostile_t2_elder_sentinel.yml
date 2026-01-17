@@ -24,10 +24,14 @@ mobs:
             \ originAt=origin {\n    potion effect=MINING_FATIGUE durationTicks=120\
             \ amplifier=1\n  }\n}"
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
+    loot:
+      pool: hostile_t2
+      merge: true
 spawnerBlocks:
   hostile_t2_elder_sentinel_spawner:
     mob: hostile_t2_elder_sentinel

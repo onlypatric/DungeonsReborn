@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_vita_iii
+name: basic_armor_vita_iii
+description: Ricetta per creare basic_armor_vita_iii.
+inputs: []
+output:
+  itemId: basic_armor_vita_iii
+  amount: 1

@@ -301,13 +301,13 @@ public final class AdvancementService {
       AdvancementFrameType frameType = level >= 50000 ? AdvancementFrameType.CHALLENGE : AdvancementFrameType.TASK;
       AdvancementDisplay display = new AdvancementDisplay(
           Material.EXPERIENCE_BOTTLE,
-          "Level " + level,
+          "Aether Level " + level,
           frameType,
           true,
           true,
           x,
           y,
-          "Reach XP level " + level + "."
+          "Reach Aether level " + level + "."
       );
       BaseAdvancement advancement = new BaseAdvancement(
           AdvancementIds.key("xp_level_" + level),
@@ -336,13 +336,13 @@ public final class AdvancementService {
       AdvancementFrameType frameType = total >= 50000 ? AdvancementFrameType.CHALLENGE : AdvancementFrameType.TASK;
       AdvancementDisplay display = new AdvancementDisplay(
           Material.EXPERIENCE_BOTTLE,
-          "Total XP " + total,
+          "Total Aether XP " + total,
           frameType,
           true,
           true,
           x,
           y,
-          "Earn " + total + " total XP."
+          "Earn " + total + " total Aether XP."
       );
       BaseAdvancement advancement = new BaseAdvancement(
           AdvancementIds.key("xp_total_" + total),

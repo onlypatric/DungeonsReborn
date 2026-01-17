@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: AMETHYST_SHARD
+  amount: 1
+  meta:
+    display-name: "Frammento di Saggezza"
+    lore:
+      - "Crepita di intuizione."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -10,6 +10,7 @@ public final class ShopTradeDraft {
   private ItemStack buyB;
   private ItemStack sell;
   private int maxUses;
+  private int minLevel;
   private boolean experienceReward;
   private float priceMultiplier;
   private List<String> previewLore = new ArrayList<>();
@@ -45,6 +46,14 @@ public final class ShopTradeDraft {
 
   public void maxUses(int maxUses) {
     this.maxUses = maxUses;
+  }
+
+  public int minLevel() {
+    return minLevel;
+  }
+
+  public void minLevel(int minLevel) {
+    this.minLevel = Math.max(0, minLevel);
   }
 
   public boolean experienceReward() {

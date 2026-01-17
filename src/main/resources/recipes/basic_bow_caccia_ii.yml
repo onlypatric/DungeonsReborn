@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_bow_caccia_ii
+name: <yellow>Corda del Cacciatore II</yellow>
+description: Ricetta per creare <yellow>Corda del Cacciatore II</yellow>.
+inputs: []
+output:
+  itemId: basic_bow_caccia_ii
+  amount: 1

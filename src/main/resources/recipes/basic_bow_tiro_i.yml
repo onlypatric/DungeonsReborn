@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_bow_tiro_i
+name: <yellow>Corda Tesa I</yellow>
+description: Ricetta per creare <yellow>Corda Tesa I</yellow>.
+inputs: []
+output:
+  itemId: basic_bow_tiro_i
+  amount: 1

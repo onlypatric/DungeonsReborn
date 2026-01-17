@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_earth_blade_i
+name: <aqua>Lama del Fronte I</aqua>
+description: Ricetta per creare <aqua>Lama del Fronte I</aqua>.
+inputs: []
+output:
+  itemId: elemental_earth_blade_i
+  amount: 1

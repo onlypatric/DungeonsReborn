@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: lucky_charm
+name: lucky_charm
+description: Ricetta per creare lucky_charm.
+inputs: []
+output:
+  itemId: lucky_charm
+  amount: 1

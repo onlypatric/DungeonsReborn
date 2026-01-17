@@ -28,10 +28,11 @@ mobs:
           source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
             \ originAt=origin {\n    knockback horizontal=0.5 vertical=0.1\n  }\n}"
     xpGating:
-      minLevel: 1000
+      minLevel: 3500
     progression:
-      minXp: 31414
-      maxXp: 42502
+      minXp: 14
+      maxXp: 22
+      maxPlayerXp: 700000
 spawnerBlocks:
   bandit_brawler_spawner:
     mob: bandit_brawler

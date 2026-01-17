@@ -1,6 +1,12 @@
 package dev.patric.dungeonsreborn;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.SQLException;
 import java.time.Duration;
 
@@ -65,6 +71,10 @@ import dev.patric.dungeonsreborn.progression.ProgressionMobKillListener;
 import dev.patric.dungeonsreborn.progression.ProgressionRepository;
 import dev.patric.dungeonsreborn.progression.ProgressionService;
 import dev.patric.dungeonsreborn.progression.ProgressionStatService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpJdbcRepository;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpListener;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpRepository;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.style.GuiStyles;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
@@ -121,6 +131,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private WorldAllowlist worldAllowlist;
     private ProgressionDatabase progressionDatabase;
     private ProgressionService progressionService;
+    private CustomXpService customXpService;
     private ProgressionStatService progressionStats;
     private ProgressionHudService progressionHud;
     private KitYamlRegistry kitRegistry;
@@ -167,10 +178,13 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         sharedTicks.start();
         worldAllowlist = WorldAllowlist.fromConfig(getConfig());
         logStartupSummary();
+        boolean customXpEnabled = getConfig().getBoolean("progression.customXp.enabled", true);
         if (advancementService != null && advancementService.isEnabled()) {
             Bukkit.getPluginManager().registerEvents(
                 new AdvancementWorldListener(advancementService, worldAllowlist), this);
-            Bukkit.getPluginManager().registerEvents(new AdvancementXpListener(advancementService), this);
+            if (!customXpEnabled) {
+                Bukkit.getPluginManager().registerEvents(new AdvancementXpListener(advancementService), this);
+            }
         }
         getLogger().info("DungeonsReborn enabled");
         initProgression();
@@ -195,6 +209,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DamageMechanicsListener(effectsEngine), this);
         mobRegistry = new MobRegistry(effectsEngine);
         mobRegistry.setMaxActivePerTick(getConfig().getInt("mobs.performance.maxTickMobs", 0));
+        mobRegistry.setCustomXpService(customXpService);
         mobRegistry.configureXpGating(
             getConfig().getBoolean("mobs.xpGating.enabled", true),
             getConfig().getString("mobs.xpGating.bypassPermission", ""),
@@ -229,19 +244,24 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         editorServices = new EditorServices(effectsEngine, yamlAbilities, editorDraftStore, editorAccessController, editorLockManager, editorAuditLogger);
         Bukkit.getPluginManager().registerEvents(new EditorLockListener(editorLockManager), this);
 
-        shopRegistry = new ShopYamlRegistry(this, serviceLog.shops(), yamlAbilities::itemTemplate);
+        shopRegistry = new ShopYamlRegistry(this, serviceLog.shops(), this::resolveShopItem);
         shopRegistry.reload();
         if (advancementService != null && advancementService.isEnabled()) {
             advancementService.setShopRegistry(shopRegistry);
         }
         mobRegistry.setShopRegistry(shopRegistry);
+        boolean customXpActive = customXpEnabled && customXpService != null;
+        int shopTradeXpReward = customXpActive
+            ? getConfig().getInt("progression.customXp.gain.shopTradeReward", 1)
+            : 0;
         shopStocks = new ShopStockManager(serviceLog.shops());
-        shopSessions = new ShopSessionManager(shopRegistry, shopStocks, serviceLog.shops());
+        shopSessions = new ShopSessionManager(shopRegistry, shopStocks, !customXpActive, serviceLog.shops());
         shopMetrics = new ShopTradeMetrics(this, serviceLog.shops());
         shopMetrics.load();
         Bukkit.getPluginManager().registerEvents(new ShopOpenListener(shopSessions), this);
         Bukkit.getPluginManager().registerEvents(
-            new ShopTradeListener(shopRegistry, shopSessions, shopStocks, shopMetrics, advancementService, serviceLog.shops()), this);
+            new ShopTradeListener(shopRegistry, shopSessions, shopStocks, shopMetrics, advancementService,
+                customXpService, shopTradeXpReward, serviceLog.shops()), this);
 
         questRegistry = new QuestYamlRegistry(this, getLogger(), yamlAbilities::itemTemplate);
         questRegistry.reload();
@@ -252,6 +272,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 questRegistry,
                 new QuestJdbcRepository(progressionDatabase, getLogger()),
                 progressionService,
+                customXpService,
                 shopRegistry,
                 yamlAbilities::itemTemplate,
                 this::isWorldAllowed);
@@ -281,7 +302,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         kitRegistry.reload();
         if (progressionDatabase != null) {
             kitService = new KitService(kitRegistry, new KitJdbcRepository(progressionDatabase, getLogger()),
-                shopRegistry, yamlAbilities::itemTemplate, advancementService, getLogger());
+                shopRegistry, yamlAbilities::itemTemplate, advancementService, customXpService, getLogger());
         }
 
         classRegistry = new ClassYamlRegistry(this, getLogger());
@@ -335,7 +356,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         upgradeRegistry = new UpgradeYamlRegistry(this, effectsEngine, serviceLog.effects());
         upgradeRegistry.reload();
         upgradeService = new UpgradeService(this, effectsEngine, effectsBindings, upgradeRegistry, shopRegistry,
-            serviceLog.upgrades());
+            customXpService, serviceLog.upgrades());
+        if (mobYamlRegistry != null) {
+            mobYamlRegistry.setUpgradeRegistry(upgradeRegistry);
+        }
         upgradeService.migrateOnlinePlayers();
         if (sharedTicks != null) {
             sharedTicks.schedule("upgradeAuras", 20L, upgradeService::tickInventoryAuras);
@@ -454,6 +478,28 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 return token;
             }
         }
+        if (upgradeRegistry != null) {
+            ItemStack upgrade = upgradeRegistry.upgradeItem(id);
+            if (upgrade != null) {
+                return upgrade;
+            }
+        }
+        return yamlAbilities == null ? null : yamlAbilities.itemTemplate(id);
+    }
+
+    private ItemStack resolveShopItem(String id) {
+        if (shopRegistry != null) {
+            ItemStack token = shopRegistry.resolveTokenItem(id);
+            if (token != null) {
+                return token;
+            }
+        }
+        if (upgradeRegistry != null) {
+            ItemStack upgrade = upgradeRegistry.upgradeItem(id);
+            if (upgrade != null) {
+                return upgrade;
+            }
+        }
         return yamlAbilities == null ? null : yamlAbilities.itemTemplate(id);
     }
 
@@ -462,10 +508,24 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        saveRecipeIfMissing("recipes/token_compress.yml");
-        saveRecipeIfMissing("recipes/token_decompress.yml");
-        saveRecipeIfMissing("recipes/token_pallet.yml");
-        saveRecipeIfMissing("recipes/token_unpallet.yml");
+        List<String> entries = readResourceIndex("recipes/index.txt");
+        if (entries.isEmpty()) {
+            saveRecipeIfMissing("recipes/token_compress.yml");
+            saveRecipeIfMissing("recipes/token_decompress.yml");
+            saveRecipeIfMissing("recipes/token_pallet.yml");
+            saveRecipeIfMissing("recipes/token_unpallet.yml");
+            return;
+        }
+        for (String entry : entries) {
+            String trimmed = entry.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                continue;
+            }
+            if (!trimmed.endsWith(".yml") && !trimmed.endsWith(".yaml")) {
+                continue;
+            }
+            saveRecipeIfMissing("recipes/" + trimmed);
+        }
     }
 
     private void saveRecipeIfMissing(String resourcePath) {
@@ -474,6 +534,25 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             return;
         }
         saveResource(resourcePath, false);
+    }
+
+    private List<String> readResourceIndex(String path) {
+        try (InputStream stream = getResource(path)) {
+            if (stream == null) {
+                return List.of();
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+                List<String> lines = new ArrayList<>();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+                return lines;
+            }
+        } catch (Exception ex) {
+            getLogger().warning("[Crafting] Unable to read " + path + ": " + ex.getMessage());
+            return List.of();
+        }
     }
 
     @Override
@@ -494,6 +573,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (progressionService != null) {
             progressionService.shutdown();
             progressionService = null;
+        }
+        if (customXpService != null) {
+            customXpService.shutdown();
+            customXpService = null;
         }
         if (progressionDatabase != null) {
             progressionDatabase.close();
@@ -571,6 +654,24 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             progressionService.load(player);
         }
+
+        boolean customXpEnabled = getConfig().getBoolean("progression.customXp.enabled", true);
+        if (customXpEnabled) {
+            CustomXpRepository customRepository = new CustomXpJdbcRepository(progressionDatabase, getLogger());
+            var customCurveSection = getConfig().getConfigurationSection("progression.customXp.levelCurve");
+            ProgressionCurve customCurve = customCurveSection == null ? curve : ProgressionCurve.fromConfig(customCurveSection);
+            customXpService = new CustomXpService(this, customRepository, customCurve, this::isWorldAllowed, getLogger());
+            if (advancementService != null && advancementService.isEnabled()) {
+                customXpService.setAdvancementService(advancementService);
+            }
+            customXpService.startAutoSave(sharedTicks);
+            Bukkit.getPluginManager().registerEvents(new CustomXpListener(customXpService), this);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                customXpService.load(player);
+            }
+        } else {
+            customXpService = null;
+        }
     }
 
     private void registerProgressionHooks() {
@@ -584,12 +685,13 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             }
         }
         if (progressionHud == null && effectsEngine != null) {
-            progressionHud = new ProgressionHudService(this, progressionService, progressionStats, effectsEngine, this::isWorldAllowed);
+            progressionHud = new ProgressionHudService(this, progressionService, customXpService,
+                progressionStats, effectsEngine, this::isWorldAllowed);
             progressionHud.start(sharedTicks);
             Bukkit.getPluginManager().registerEvents(new ProgressionHudListener(progressionHud), this);
         }
         Bukkit.getPluginManager().registerEvents(
-            new ProgressionMobKillListener(progressionService, mobRegistry, partyService, partyAssistRadius), this);
+            new ProgressionMobKillListener(progressionService, customXpService, mobRegistry, partyService, partyAssistRadius), this);
     }
 
     public MobRegistry mobRegistry() {
@@ -614,6 +716,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public ProgressionService progressionService() {
         return progressionService;
+    }
+
+    public CustomXpService customXpService() {
+        return customXpService;
     }
 
     public boolean isWorldAllowed(org.bukkit.World world) {

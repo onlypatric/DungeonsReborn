@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: STRING
+  amount: 1
+  meta:
+    display-name: "Filo Corrotto"
+    lore:
+      - "Un filo intriso di corruzione."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_sword_esecuzione_ii
+name: <yellow>Lama dell'Esecuzione II</yellow>
+description: Ricetta per creare <yellow>Lama dell'Esecuzione II</yellow>.
+inputs: []
+output:
+  itemId: basic_sword_esecuzione_ii
+  amount: 1

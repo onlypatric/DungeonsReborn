@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: RABBIT_FOOT
+  amount: 1
+  meta:
+    display-name: "Amuleto della Fortuna"
+    lore:
+      - "Un amuleto che porta fortuna."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

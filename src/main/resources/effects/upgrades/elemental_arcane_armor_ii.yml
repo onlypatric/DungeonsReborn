@@ -1,0 +1,45 @@
+schemaVersion: 1
+id: elemental_arcane_armor_ii
+name: "<aqua>Corazza Mistica II</aqua>"
+description: |-
+  Riduce sensibilmente i danni magici subiti.
+limits:
+  category: elemental
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:chainmail_boots
+    - minecraft:chainmail_chestplate
+    - minecraft:chainmail_helmet
+    - minecraft:chainmail_leggings
+    - minecraft:diamond_boots
+    - minecraft:diamond_chestplate
+    - minecraft:diamond_helmet
+    - minecraft:diamond_leggings
+    - minecraft:golden_boots
+    - minecraft:golden_chestplate
+    - minecraft:golden_helmet
+    - minecraft:golden_leggings
+    - minecraft:iron_boots
+    - minecraft:iron_chestplate
+    - minecraft:iron_helmet
+    - minecraft:iron_leggings
+    - minecraft:leather_boots
+    - minecraft:leather_chestplate
+    - minecraft:leather_helmet
+    - minecraft:leather_leggings
+    - minecraft:netherite_boots
+    - minecraft:netherite_chestplate
+    - minecraft:netherite_helmet
+    - minecraft:netherite_leggings
+    - minecraft:turtle_helmet
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_arcane_armor_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_arcane_armor_ii
+  activator: PASSIVE

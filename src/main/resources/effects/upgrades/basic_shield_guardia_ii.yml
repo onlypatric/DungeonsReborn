@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: basic_shield_guardia_ii
+name: "<yellow>Runa di Guardia II</yellow>"
+description: |-
+  Riduce ulteriormente i danni mentre stai parando con lo scudo.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:shield
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_shield_guardia_ii
+    - upgrade_proc_guard_burst
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+    - "<dark_gray>Riduce i danni per un breve istante.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_shield_guardia_ii
+  activator: SHIFT_RIGHT_CLICK

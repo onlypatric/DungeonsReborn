@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: arrow
+name: arrow
+description: Ricetta per creare arrow.
+inputs: []
+output:
+  itemId: arrow
+  amount: 1

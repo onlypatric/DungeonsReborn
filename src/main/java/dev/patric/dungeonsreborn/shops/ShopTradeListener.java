@@ -13,6 +13,7 @@ import org.bukkit.inventory.MerchantInventory;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import io.papermc.paper.event.player.PlayerTradeEvent;
 
 public final class ShopTradeListener implements Listener {
@@ -21,15 +22,20 @@ public final class ShopTradeListener implements Listener {
   private final ShopStockManager stockManager;
   private final ShopTradeMetrics metrics;
   private final AdvancementService advancements;
+  private final CustomXpService customXpService;
+  private final int customXpReward;
   private final ServiceLogger logger;
 
   public ShopTradeListener(ShopYamlRegistry registry, ShopSessionManager sessions, ShopStockManager stockManager,
-      ShopTradeMetrics metrics, AdvancementService advancements, ServiceLogger logger) {
+      ShopTradeMetrics metrics, AdvancementService advancements, CustomXpService customXpService,
+      int customXpReward, ServiceLogger logger) {
     this.registry = registry;
     this.sessions = sessions;
     this.stockManager = stockManager;
     this.metrics = metrics;
     this.advancements = advancements;
+    this.customXpService = customXpService;
+    this.customXpReward = Math.max(0, customXpReward);
     this.logger = logger;
   }
 
@@ -84,6 +90,22 @@ public final class ShopTradeListener implements Listener {
     if (tradeIndex < 0 || tradeIndex >= spec.trades().size()) {
       tradeIndex = -1;
     }
+    ShopTradeSpec trade = tradeIndex >= 0 && tradeIndex < spec.trades().size() ? spec.trades().get(tradeIndex) : null;
+    if (trade != null && trade.minLevel() > 0) {
+      if (customXpService == null) {
+        logger.warning("[Shops] trade gating skipped (custom XP unavailable): shop=" + shopId + " trade="
+            + tradeIndex);
+      } else {
+        int level = customXpService.getOrCreate(player.getUniqueId()).level();
+        if (level < trade.minLevel()) {
+          event.setCancelled(true);
+          player.sendMessage(Locales.component(player, "messages.shops.trade.requiresLevel",
+              Locales.placeholders("level", String.valueOf(trade.minLevel()))));
+          auditDenied(player, shopId, tradeIndex, "min_level");
+          return;
+        }
+      }
+    }
     long remainingMs = sessions.cooldownRemainingMillis(player, shopId, tradeIndex, spec.cooldownTicks());
     if (remainingMs > 0) {
       event.setCancelled(true);
@@ -110,6 +132,9 @@ public final class ShopTradeListener implements Listener {
     if (advancements != null && event.getTrade() != null) {
       ItemStack result = event.getTrade().getResult();
       advancements.recordTokensFromItem(player, result);
+    }
+    if (trade != null && trade.experienceReward() && customXpService != null && customXpReward > 0) {
+      customXpService.awardXp(player, customXpReward);
     }
   }
 

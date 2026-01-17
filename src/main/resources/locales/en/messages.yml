@@ -16,6 +16,8 @@ messages:
     playersOnly: <red>This command is for players only.</red>
     invalidId: <red>Invalid id:</red> <white>{id}</white>
     notFound: <red>Not found:</red> <white>{id}</white>
+    'no': 'No'
+    'yes': 'Yes'
   command:
     help:
       header: <gold><bold>DungeonsReborn</bold></gold> <gray>Commands</gray>
@@ -31,33 +33,99 @@ messages:
       classesSkills: <gray>/{root} classes skills</gray> <dark_gray>- open skill path</dark_gray>
       dungeon: <gray>/{root} dungeon</gray> <dark_gray>- open dungeon queue</dark_gray>
       dungeonStatus: <gray>/{root} dungeon status</gray> <dark_gray>- dungeon status</dark_gray>
-      dungeonJoin: <gray>/{root} dungeon queue join &lt;level&gt;</gray> <dark_gray>- queue level</dark_gray>
+      dungeonJoin: <gray>/{root} dungeon queue join &lt;level&gt;</gray> <dark_gray>-
+        queue level</dark_gray>
       dungeonLeave: <gray>/{root} dungeon queue leave</gray> <dark_gray>- leave queue</dark_gray>
-      dungeonReload: <gray>/{root} dungeon reload</gray> <dark_gray>- reload dungeon config</dark_gray>
+      dungeonReload: <gray>/{root} dungeon reload</gray> <dark_gray>- reload dungeon
+        config</dark_gray>
       localeReload: <gray>/{root} locale reload</gray> <dark_gray>- reload locales</dark_gray>
-      dungeonValidate: <gray>/{root} dungeon validate</gray> <dark_gray>- validate config</dark_gray>
-      dungeonDebugStart: <gray>/{root} dungeon debug start &lt;level&gt;</gray> <dark_gray>- start debug run</dark_gray>
-      dungeonDebugSkip: <gray>/{root} dungeon debug skip</gray> <dark_gray>- skip wave</dark_gray>
-      dungeonDebugEnd: <gray>/{root} dungeon debug end [win|fail]</gray> <dark_gray>- end debug run</dark_gray>
-      advancementsReload: <gray>/{root} advancements reload</gray> <dark_gray>- reload advancement config</dark_gray>
+      dungeonValidate: <gray>/{root} dungeon validate</gray> <dark_gray>- validate
+        config</dark_gray>
+      dungeonDebugStart: <gray>/{root} dungeon debug start &lt;level&gt;</gray> <dark_gray>-
+        start debug run</dark_gray>
+      dungeonDebugSkip: <gray>/{root} dungeon debug skip</gray> <dark_gray>- skip
+        wave</dark_gray>
+      dungeonDebugEnd: <gray>/{root} dungeon debug end [win|fail]</gray> <dark_gray>-
+        end debug run</dark_gray>
+      advancementsReload: <gray>/{root} advancements reload</gray> <dark_gray>- reload
+        advancement config</dark_gray>
       quests: <gray>/{root} quests</gray> <dark_gray>- quest log</dark_gray>
-      questsGiver: <gray>/{root} quests giver &lt;id&gt;</gray> <dark_gray>- open quest giver</dark_gray>
+      questsGiver: <gray>/{root} quests giver &lt;id&gt;</gray> <dark_gray>- open
+        quest giver</dark_gray>
       questsEditor: <gray>/{root} quests editor</gray> <dark_gray>- open quest editor</dark_gray>
       party: <gray>/{root} party</gray> <dark_gray>- party menu</dark_gray>
       partyGui: <gray>/{root} party gui</gray> <dark_gray>- party menu</dark_gray>
-      partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- toggle party chat</dark_gray>
-      partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- party chat message</dark_gray>
+      partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- toggle party
+        chat</dark_gray>
+      partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- party chat
+        message</dark_gray>
       upgrades: <gray>/{root} upgrades</gray> <dark_gray>- upgrade merge</dark_gray>
-      upgradesInspect: <gray>/{root} upgrades inspect</gray> <dark_gray>- inspect upgrade data</dark_gray>
-      upgradesGive: <gray>/{root} upgrades give &lt;id&gt; [player]</gray> <dark_gray>- give upgrade</dark_gray>
+      upgradesInspect: <gray>/{root} upgrades inspect</gray> <dark_gray>- inspect
+        upgrade data</dark_gray>
+      upgradesGive: <gray>/{root} upgrades give &lt;id&gt; [player]</gray> <dark_gray>-
+        give upgrade</dark_gray>
       crafting: <gray>/{root} crafting</gray> <dark_gray>- open crafting GUI</dark_gray>
-      craftingEditor: <gray>/{root} crafting editor</gray> <dark_gray>- open recipe editor</dark_gray>
+      craftingEditor: <gray>/{root} crafting editor</gray> <dark_gray>- open recipe
+        editor</dark_gray>
       craftingReload: <gray>/{root} crafting reload</gray> <dark_gray>- reload recipes</dark_gray>
       reloadAll: <gray>/{root} reload</gray> <dark_gray>- reload all plugin data</dark_gray>
     missingPermission: <red>Missing permission:</red> <white>{permission}</white>
     reload:
       allOk: <green>Reloaded all systems.</green>
       allErrors: <red>Reload completed with {errors} errors. Check logs.</red>
+      dir: Dir
+      file: File
+    dungeons:
+      active: Active
+      queued: Queued
+      validate:
+        entry: Entry
+        errors: Errors
+        ok: Ok
+    kits:
+      list:
+        entry: Entry
+        header: Header
+    mobs:
+      help:
+        dump: Dump
+        editor: Editor
+        egg: Egg
+        header: Header
+        list: List
+        reload: Reload
+        spawn: Spawn
+        spawners: Spawners
+      snapshot:
+        header: Header
+        hp: Hp
+        owner: Owner
+        pos: Pos
+        variant: Variant
+        world: World
+      spawned: Spawned
+    result:
+      error: Error
+    shops:
+      give: Give
+      help:
+        editor: Editor
+        give: Give
+        info: Info
+        list: List
+        open: Open
+        reload: Reload
+        token: Token
+      info:
+        header: Header
+        permission: Permission
+        stock: Stock
+        title: Title
+        trades: Trades
+      list:
+        entry: Entry
+        header: Header
+      unknown: Unknown
   shop:
     tokens:
       missing: <red>Token item not configured.</red>
@@ -72,15 +140,20 @@ messages:
     reload:
       dir: <gray>Dir:</gray> <white>{path}</white>
       file: <gray>File:</gray> <white>{path}</white>
-      upgradesSummary: <green>Reloaded upgrades:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white><gray>,
-        migrated items:</gray> <white>{migrated}</white>
-      craftingSummary: <green>Reloaded crafting recipes:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
-      kitsSummary: <green>Reloaded kits:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
-      classesSummary: <green>Reloaded classes:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
-      questsSummary: <green>Reloaded quests:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white><gray>,
-        givers:</gray> <white>{givers}</white><gray>, giver errors:</gray> <white>{giverErrors}</white>
+      upgradesSummary: <green>Reloaded upgrades:</green> <white>{loaded}</white><gray>,
+        errors:</gray> <white>{errors}</white><gray>, migrated items:</gray> <white>{migrated}</white>
+      craftingSummary: <green>Reloaded crafting recipes:</green> <white>{loaded}</white><gray>,
+        errors:</gray> <white>{errors}</white>
+      kitsSummary: <green>Reloaded kits:</green> <white>{loaded}</white><gray>, errors:</gray>
+        <white>{errors}</white>
+      classesSummary: <green>Reloaded classes:</green> <white>{loaded}</white><gray>,
+        errors:</gray> <white>{errors}</white>
+      questsSummary: <green>Reloaded quests:</green> <white>{loaded}</white><gray>,
+        errors:</gray> <white>{errors}</white><gray>, givers:</gray> <white>{givers}</white><gray>,
+        giver errors:</gray> <white>{giverErrors}</white>
       questsGiversFile: <gray>Givers file:</gray> <white>{path}</white>
-      dungeonsSummary: <green>Dungeon config reloaded:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
+      dungeonsSummary: <green>Dungeon config reloaded:</green> <white>{loaded}</white><gray>,
+        errors:</gray> <white>{errors}</white>
     kits:
       list:
         header: <gold><bold>DungeonsReborn</bold></gold> <gray>Kits</gray>
@@ -94,7 +167,8 @@ messages:
     party:
       inviteSelf: <red>You cannot invite yourself.</red>
       inviteReceived: <yellow>You were invited to a party by</yellow> <white>{leader}</white><yellow>.</yellow>
-      inviteHint: <yellow>Use</yellow> <white>/dr party accept {leader}</white> <yellow>to join.</yellow>
+      inviteHint: <yellow>Use</yellow> <white>/dr party accept {leader}</white> <yellow>to
+        join.</yellow>
     dungeons:
       active: <green>Dungeon active:</green> <white>level {level}</white>
       notQueued: <yellow>You are not queued.</yellow>
@@ -116,19 +190,30 @@ messages:
         editor: <gray>/dr mobs editor</gray> <dark_gray>- open mob editor</dark_gray>
         list: <gray>/dr mobs list</gray> <dark_gray>- list active mobs</dark_gray>
         spawners: <gray>/dr mobs spawners</gray> <dark_gray>- list spawner state</dark_gray>
-        spawnerGive: <gray>/dr mobs spawner give &lt;mob&gt; [id]</gray> <dark_gray>- give spawner block</dark_gray>
-        spawnerGiveBlock: <gray>/dr mobs spawner give-block &lt;id&gt;</gray> <dark_gray>- give spawner block from YAML</dark_gray>
-        spawnerGiveId: <gray>/dr mobs spawner give-id &lt;id&gt;</gray> <dark_gray>- give spawner block for spawn id</dark_gray>
-        spawnerCreate: <gray>/dr mobs spawner create &lt;id&gt; &lt;mob&gt;</gray> <dark_gray>- create spawner at your location</dark_gray>
-        spawnerRemove: <gray>/dr mobs spawner remove &lt;id&gt;</gray> <dark_gray>- remove spawner by id</dark_gray>
-        spawnerPause: <gray>/dr mobs spawner pause &lt;id&gt;</gray> <dark_gray>- pause spawner</dark_gray>
-        spawnerResume: <gray>/dr mobs spawner resume &lt;id&gt;</gray> <dark_gray>- resume spawner</dark_gray>
-        spawnerSpawn: <gray>/dr mobs spawner spawn &lt;id&gt;</gray> <dark_gray>- force spawn once</dark_gray>
-        dump: <gray>/dr mobs dump &lt;uuid&gt;</gray> <dark_gray>- show mob state snapshot</dark_gray>
-        spawn: <gray>/dr mobs spawn &lt;id&gt;</gray> <dark_gray>- spawn a mob at your location</dark_gray>
-        egg: <gray>/dr mobs egg &lt;id&gt;</gray> <dark_gray>- give yourself a mob egg</dark_gray>
-      reloadSummary: <green>Reloaded mobs:</green> <white>{mobs}</white><gray>, spawns:</gray> <white>{spawns}</white><gray>,
-        errors:</gray> <white>{errors}</white>
+        spawnerGive: <gray>/dr mobs spawner give &lt;mob&gt; [id]</gray> <dark_gray>-
+          give spawner block</dark_gray>
+        spawnerGiveBlock: <gray>/dr mobs spawner give-block &lt;id&gt;</gray> <dark_gray>-
+          give spawner block from YAML</dark_gray>
+        spawnerGiveId: <gray>/dr mobs spawner give-id &lt;id&gt;</gray> <dark_gray>-
+          give spawner block for spawn id</dark_gray>
+        spawnerCreate: <gray>/dr mobs spawner create &lt;id&gt; &lt;mob&gt;</gray>
+          <dark_gray>- create spawner at your location</dark_gray>
+        spawnerRemove: <gray>/dr mobs spawner remove &lt;id&gt;</gray> <dark_gray>-
+          remove spawner by id</dark_gray>
+        spawnerPause: <gray>/dr mobs spawner pause &lt;id&gt;</gray> <dark_gray>-
+          pause spawner</dark_gray>
+        spawnerResume: <gray>/dr mobs spawner resume &lt;id&gt;</gray> <dark_gray>-
+          resume spawner</dark_gray>
+        spawnerSpawn: <gray>/dr mobs spawner spawn &lt;id&gt;</gray> <dark_gray>-
+          force spawn once</dark_gray>
+        dump: <gray>/dr mobs dump &lt;uuid&gt;</gray> <dark_gray>- show mob state
+          snapshot</dark_gray>
+        spawn: <gray>/dr mobs spawn &lt;id&gt;</gray> <dark_gray>- spawn a mob at
+          your location</dark_gray>
+        egg: <gray>/dr mobs egg &lt;id&gt;</gray> <dark_gray>- give yourself a mob
+          egg</dark_gray>
+      reloadSummary: <green>Reloaded mobs:</green> <white>{mobs}</white><gray>, spawns:</gray>
+        <white>{spawns}</white><gray>, errors:</gray> <white>{errors}</white>
       spawned: <green>Spawned mob:</green> <white>{id}</white>
       spawnFailed: <red>Failed to spawn:</red> <white>{error}</white>
       activeHeader: <gold><bold>Mobs</bold></gold> <gray>Active mobs:</gray> <white>{count}</white>
@@ -136,17 +221,20 @@ messages:
       activeEntry: <gray>-</gray> <white>{id}</white> <dark_gray>x{count}</dark_gray>
       spawnersHeader: <gold><bold>Mobs</bold></gold> <gray>Spawners:</gray> <white>{count}</white>
       spawnersNone: <gray>(no spawners loaded)</gray>
-      spawnersEntry: <gray>-</gray> <white>{id}</white> <dark_gray>mob=</dark_gray><white>{mob}</white> <dark_gray>alive=</dark_gray><white>{alive}/{cap}</white>
-        <dark_gray>next=</dark_gray><white>{next}</white> <dark_gray>world=</dark_gray><white>{world}</white>{status}
+      spawnersEntry: <gray>-</gray> <white>{id}</white> <dark_gray>mob=</dark_gray><white>{mob}</white>
+        <dark_gray>alive=</dark_gray><white>{alive}/{cap}</white> <dark_gray>next=</dark_gray><white>{next}</white>
+        <dark_gray>world=</dark_gray><white>{world}</white>{status}
       spawnerGiveMob: <green>Spawner block given for mob:</green> <white>{id}</white>
       spawnerGiveBlock: <green>Spawner block given:</green> <white>{id}</white>
       spawnerGiveId: <green>Spawner block given for id:</green> <white>{id}</white>
       spawnerCreated: <green>Spawner created:</green> <white>{id}</white>
       spawnerCreateFailed: <red>Failed to create spawner:</red> <white>{error}</white>
-      spawnerRemoved: <green>Spawner removed:</green> <white>{id}</white> <dark_gray>(despawned {removed})</dark_gray>
+      spawnerRemoved: <green>Spawner removed:</green> <white>{id}</white> <dark_gray>(despawned
+        {removed})</dark_gray>
       spawnerResumed: <green>Spawner resumed:</green> <white>{id}</white>
       spawnerPaused: <yellow>Spawner paused:</yellow> <white>{id}</white>
-      spawnerSpawnFailed: <red>Spawner did not spawn (id missing or cap reached):</red> <white>{id}</white>
+      spawnerSpawnFailed: <red>Spawner did not spawn (id missing or cap reached):</red>
+        <white>{id}</white>
       spawnerForced: <green>Spawner forced spawn:</green> <white>{id}</white>
       unknownMob: <red>Unknown mob id:</red> <white>{id}</white>
       spawnerBlockUnknown: <red>Unknown spawner block id:</red> <white>{id}</white>
@@ -163,6 +251,9 @@ messages:
         world: <gray>world:</gray> <white>{value}</white>
         pos: <gray>pos:</gray> <white>{value}</white>
         hp: <gray>hp:</gray> <white>{value}</white>
+    editor:
+      exists: Exists
+      saved: Saved
   input:
     prompt: <gray>Type your input, or</gray> <yellow>{cancel}</yellow> <gray>to cancel.</gray>
     cancelled: <gray>Input cancelled.</gray>
@@ -185,12 +276,18 @@ messages:
   hud:
     title: <gold><bold>DungeonsReborn</bold></gold>
     level: <gray>Level:</gray> <white>{level}</white>
-    xp: <gray>XP:</gray> <white>{xp}</white>
+    xp: <gray>Custom XP:</gray> <white>{xp}</white>
     skillPoints: <gray>Skill Points:</gray> <white>{points}</white>
     mana: <gray>Mana:</gray> <white>{mana}</white>
   effects:
     editor:
       unableOpenDraft: <red>Unable to open draft for this ability.</red>
+      dsl:
+        none: None
+      locked: Locked
+      publish:
+        failure: Failure
+        success: Success
     reload:
       ok: <green>Effects loaded:</green> <white>{count}</white>
       errors: <red>Effects reload had {errors} errors. Check logs.</red>
@@ -229,7 +326,8 @@ messages:
       reloaded: <green>Items reloaded.</green>
       yamlMissing: <red>YAML loader is not available.</red>
       yamlReload:
-        ok: <green>Reloaded YAML. Abilities:</green> <white>{abilities}</white> <gray>Item bindings:</gray> <white>{bindings}</white>
+        ok: <green>Reloaded YAML. Abilities:</green> <white>{abilities}</white> <gray>Item
+          bindings:</gray> <white>{bindings}</white>
         errors: <yellow>Reloaded with {count} errors. Check server logs.</yellow>
       setItemFirst: <red>Set an item first.</red>
   mobs:
@@ -249,35 +347,28 @@ messages:
       created: <green>Spawner created:</green> <white>{id}</white>
       removed: <green>Spawner removed:</green> <white>{id}</white>
       entryNotFound: '<red>Spawner entry not found: {id}</red>'
+    yaml:
+      entry: Entry
+      header: Header
+      none: None
   shops:
-    open:
-      missingId: <red>Missing shop id.</red>
-      unknown: <red>Unknown shop:</red> <white>{id}</white>
-      disabled: <red>This shop is currently disabled.</red>
-      missingPermission: <red>Missing permission:</red> <white>{perm}</white>
-      worldDenied: <red>This shop is not available in this world.</red>
-    trade:
-      missingShop: <red>Shop is no longer available.</red>
-      disabled: <red>This shop is currently disabled.</red>
-      missingPermission: <red>Missing permission:</red> <white>{perm}</white>
-      worldDenied: <red>This shop is not available in this world.</red>
-      cooldown: <red>Trade cooldown:</red> <white>{seconds}s</white> <gray>remaining.</gray>
-      missingItems: <red>Missing required items for this trade.</red>
-      outOfStock: <red>This shop is out of stock.</red>
     reload:
-      ok: <green>Mobs loaded:</green> <white>{count}</white>
-      errors: <red>Mobs reload had {errors} errors. Check logs.</red>
-    spawn:
-      ok: <green>Spawned mob:</green> <white>{mob}</white>
-      denied: <red>You cannot spawn this mob.</red>
-    egg:
-      give: <green>Spawn egg given:</green> <white>{mob}</white>
-    spawner:
-      give: <green>Spawner block given:</green> <white>{mob}</white>
-      placed: <green>Spawner placed.</green>
-      broken: <gray>Spawner removed.</gray>
-    boss:
-      slain: <gold>{player}</gold> <gray>has slain</gray> <red>{boss}</red><gray>!</gray>
+      ok: <green>Shops loaded:</green> <white>{count}</white>
+      errors: <red>Shop reload had {errors} errors. Check logs.</red>
+    open:
+      ok: <gray>Opening shop...</gray>
+      denied: <red>You cannot access this shop.</red>
+      disabled: Disabled
+      unknown: Unknown
+    trade:
+      ok: <green>Trade completed.</green>
+      invalid: <red>Trade invalid.</red>
+      noFunds: <red>Not enough items or tokens.</red>
+      cooldown: Cooldown
+      requiresLevel: <red>Requires level {level}.</red>
+      disabled: Disabled
+    token:
+      give: <green>Tokens given:</green> <white>{amount}</white>
   crafting:
     reload:
       ok: <green>Recipes loaded:</green> <white>{count}</white>
@@ -287,32 +378,31 @@ messages:
       invalid: <red>Recipe invalid.</red>
     result:
       taken: <green>Crafted:</green> <white>{item}</white>
-  shops:
-    reload:
-      ok: <green>Shops loaded:</green> <white>{count}</white>
-      errors: <red>Shop reload had {errors} errors. Check logs.</red>
-    open:
-      ok: <gray>Opening shop...</gray>
-      denied: <red>You cannot access this shop.</red>
-    trade:
-      ok: <green>Trade completed.</green>
-      invalid: <red>Trade invalid.</red>
-      noFunds: <red>Not enough items or tokens.</red>
-    token:
-      give: <green>Tokens given:</green> <white>{amount}</white>
+    editor:
+      reloaded: Reloaded
+      saved: Saved
   kits:
+    claim:
+      playersOnly: Only players can claim kits.
+      missingId: Missing kit id.
+      unknown: 'Unknown kit: {id}'
+      missingPermission: 'Missing permission: {permission}'
+      alreadyClaimed: You have already claimed this kit.
+      cooldown: Kit available in {time}.
+      success: 'Claimed kit: {title}'
+    summary:
+      claimedSimple: <green>Claimed kit:</green> <white>{title}</white>
+      header: <gold><bold>Kit Rewards</bold></gold>
+      kit: <gray>Kit:</gray> <white>{title}</white>
+      items: <gray>Items:</gray> <white>{count}</white>
+      xp: <gray>Custom XP:</gray> <white>{amount}</white>
+      tokens: <gray>Tokens:</gray> <white>{amount}</white>
+      compressed: <gray>Compressed:</gray> <white>{amount}</white>
+      pallets: <gray>Pallets:</gray> <white>{amount}</white>
     status:
       available: Available
+      cooldown: Cooldown
       unavailable: Unavailable
-      alreadyClaimed: Already claimed
-      cooldown: Available in {time}.
-    reload:
-      ok: <green>Kits loaded:</green> <white>{count}</white>
-      errors: <red>Kits reload had {errors} errors. Check logs.</red>
-    claim:
-      ok: <green>Kit claimed:</green> <white>{kit}</white>
-      already: <yellow>Kit already claimed.</yellow>
-      denied: <red>You cannot claim this kit.</red>
   classes:
     reload:
       ok: <green>Classes loaded:</green> <white>{count}</white>
@@ -345,24 +435,13 @@ messages:
         notEnoughPoints: <red>Not enough skill points to respec.</red>
         notEnoughTokens: <red>Not enough tokens to respec.</red>
         ok: <green>Respecced</green> <white>{id}</white>
-  kits:
-    claim:
-      playersOnly: Only players can claim kits.
-      missingId: Missing kit id.
-      unknown: 'Unknown kit: {id}'
-      missingPermission: 'Missing permission: {permission}'
-      alreadyClaimed: You have already claimed this kit.
-      cooldown: 'Kit available in {time}.'
-      success: 'Claimed kit: {title}'
-    summary:
-      claimedSimple: <green>Claimed kit:</green> <white>{title}</white>
-      header: <gold><bold>Kit Rewards</bold></gold>
-      kit: <gray>Kit:</gray> <white>{title}</white>
-      items: <gray>Items:</gray> <white>{count}</white>
-      xp: <gray>XP:</gray> <white>{amount}</white>
-      tokens: <gray>Tokens:</gray> <white>{amount}</white>
-      compressed: <gray>Compressed:</gray> <white>{amount}</white>
-      pallets: <gray>Pallets:</gray> <white>{amount}</white>
+    editor:
+      icon:
+        missing: Missing
+    yaml:
+      entry: Entry
+      header: Header
+      none: None
   quests:
     reload:
       ok: <green>Quests loaded:</green> <white>{count}</white>
@@ -387,17 +466,21 @@ messages:
       completed: <gray>Completed</gray>
       cooldown: <yellow>Cooldown:</yellow> <white>{time}</white>
     objective:
-      kill: 'Kill {target} ({current}/{required})'
-      use: 'Use {target} ({current}/{required})'
-      visit: 'Visit region ({current}/{required})'
-      craft: 'Craft {target} ({current}/{required})'
+      kill: Kill {target} ({current}/{required})
+      use: Use {target} ({current}/{required})
+      visit: Visit region ({current}/{required})
+      craft: Craft {target} ({current}/{required})
       target: target
       item: item
-      recipe: 'recipe {id}'
+      recipe: recipe {id}
     progress: <yellow>Quest:</yellow> <white>{quest}</white> <gray>{objective}</gray>
     require:
       level: <red>Requires level {level}.</red>
       quests: '<red>Requires quests: {quests}</red>'
+    yaml:
+      entry: Entry
+      header: Header
+      none: None
   party:
     create: <green>Party created.</green>
     invite: <yellow>{player}</yellow> <gray>invited you to a party.</gray>
@@ -408,6 +491,8 @@ messages:
     chat:
       true: <green>Party chat enabled.</green>
       false: <gray>Party chat disabled.</gray>
+      'false': 'False'
+      'true': 'True'
     kicked: <red>You were kicked from the party.</red>
     error:
       playersOnly: Only players can use party commands.
@@ -477,7 +562,8 @@ messages:
       end:
         win: <green><bold>Dungeon Complete</bold></green>
         lose: <red><bold>Dungeon Failed</bold></red>
-        subtitle: <gray>Result:</gray> <white>{result}</white> <dark_gray>|</dark_gray> <white>{dungeon}</white>
+        subtitle: <gray>Result:</gray> <white>{result}</white> <dark_gray>|</dark_gray>
+          <white>{dungeon}</white>
     action:
       wave: <yellow>Wave {wave} started</yellow>{affixSuffix}
       boss: <red>Boss wave!</red>{affixSuffix}

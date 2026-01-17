@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_armor_passo_i:
+    name: "<aqua>Aura Passo I</aqua>"
+    description: "<dark_gray>Velocita leggera.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.2 points=22 count=1 offset=0.04 color="#7fffd4" size=1.0
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=SPEED durationTicks=40 amplifier=0
+          }
+        }

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: frost_core
+name: frost_core
+description: Ricetta per creare frost_core.
+inputs: []
+output:
+  itemId: frost_core
+  amount: 1

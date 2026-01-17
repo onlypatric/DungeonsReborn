@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_elytra_durata_i
+name: <yellow>Trama di Durata I</yellow>
+description: Ricetta per creare <yellow>Trama di Durata I</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 3
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 48
+output:
+  itemId: basic_elytra_durata_i
+  amount: 1

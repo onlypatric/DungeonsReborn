@@ -25,8 +25,9 @@ mobs:
             \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=60 amplifier=0\n\
             \  }\n}"
     progression:
-      minXp: 849
-      maxXp: 1148
+      minXp: 1
+      maxXp: 2
+      maxPlayerXp: 100000
 spawnerBlocks:
   nuisance_t1_tadpole_wiggler_spawner:
     mob: nuisance_t1_tadpole_wiggler

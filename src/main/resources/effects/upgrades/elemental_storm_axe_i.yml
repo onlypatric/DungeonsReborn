@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: elemental_storm_axe_i
+name: "<aqua>Ascia del Tuono I</aqua>"
+description: |-
+  I colpi possono scaricare una scossa per 2s (9s di ricarica).
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_axe
+    - minecraft:golden_axe
+    - minecraft:iron_axe
+    - minecraft:netherite_axe
+    - minecraft:stone_axe
+    - minecraft:wooden_axe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_storm_axe_i
+    - upgrade_proc_shock
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Fulmine e lieve danno.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_storm_axe_i
+  activator: LEFT_CLICK

@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: hybrid_frost_arcane_rune_i
+name: "<light_purple>Runa del Silenzio Freddo I</light_purple>"
+description: |-
+  Un gelo arcano ammutolisce con molte particelle.
+limits:
+  category: hybrid
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_frost_arcane_rune_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_frost_arcane_rune_i
+  activator: SHIFT_RIGHT_CLICK

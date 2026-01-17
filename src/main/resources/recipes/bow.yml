@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: bow
+name: bow
+description: Ricetta per creare bow.
+inputs: []
+output:
+  itemId: bow
+  amount: 1

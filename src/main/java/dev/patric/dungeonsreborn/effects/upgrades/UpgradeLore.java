@@ -1,17 +1,24 @@
 package dev.patric.dungeonsreborn.effects.upgrades;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.effects.AbilitySpec;
+import dev.patric.dungeonsreborn.effects.EffectsEngine;
+import dev.patric.dungeonsreborn.effects.Ids;
+import dev.patric.dungeonsreborn.locale.Locales;
 
 public final class UpgradeLore {
   private static final MiniMessage MINI = MiniMessage.miniMessage();
@@ -21,9 +28,32 @@ public final class UpgradeLore {
   private static final String MARKER_END = "[/dr:upgrade]";
   private static final String APPLIED_START = "[dr:upgrades]";
   private static final String APPLIED_END = "[/dr:upgrades]";
-  private static final String DEFAULT_BOOK_NAME = "<gold>Spell Upgrade</gold>";
+  private static final String DEFAULT_BOOK_NAME =
+      "<gradient:#ff9f1a:#ffd166><bold>Upgrade Tome</bold></gradient>";
+  private static final Map<String, String> ABILITY_NAMES = new HashMap<>();
+  private static int targetLineLimit = 10;
+  private static String targetMoreFormat = "... {remaining} more";
 
   private UpgradeLore() {
+  }
+
+  public static void configure(org.bukkit.configuration.ConfigurationSection section, EffectsEngine engine) {
+    if (section == null) {
+      ABILITY_NAMES.clear();
+    } else {
+      targetLineLimit = Math.max(0, section.getInt("maxTargetLines", targetLineLimit));
+      String format = section.getString("moreFormat", targetMoreFormat);
+      if (format != null && !format.isBlank()) {
+        targetMoreFormat = format;
+      }
+    }
+    ABILITY_NAMES.clear();
+    if (engine == null) {
+      return;
+    }
+    for (AbilitySpec spec : engine.abilitySpecs().values()) {
+      ABILITY_NAMES.put(spec.id(), abilityLabel(spec));
+    }
   }
 
   public static Component parseRichText(String raw) {
@@ -40,6 +70,10 @@ public final class UpgradeLore {
     }
   }
 
+  private static String loreText(String key, Object... pairs) {
+    return Locales.text(null, key, Locales.placeholders(pairs));
+  }
+
   public static ItemStack applyUpgradeBookLore(ItemStack item, UpgradeSpec spec) {
     if (item == null || spec == null) {
       return item;
@@ -48,128 +82,143 @@ public final class UpgradeLore {
     if (meta == null) {
       return item;
     }
-    meta.displayName(parseRichText(DEFAULT_BOOK_NAME));
+    String bookName = loreText("labels.upgrades.lore.bookName");
+    if (bookName.isBlank() || bookName.equals("labels.upgrades.lore.bookName")) {
+      bookName = DEFAULT_BOOK_NAME;
+    }
+    meta.displayName(parseRichText(bookName));
     List<Component> lore = new ArrayList<>();
     if (spec.name() != null && !spec.name().isBlank()) {
-      lore.add(parseRichText(spec.name()));
+      lore.add(noItalic(parseRichText(spec.name())));
     }
-    if (spec.spell() != null) {
-      lore.add(Component.text("Activator: " + label(spec.spell().activator()), NamedTextColor.DARK_GRAY));
-    }
-    if (spec.target() != null && !spec.target().isEmpty()) {
-      String targetLine = formatTarget(spec.target());
-      if (!targetLine.isBlank()) {
-        lore.add(Component.text("Target: " + targetLine, NamedTextColor.DARK_GRAY));
-      }
+    if (!spec.spells().isEmpty()) {
+      String activators = spec.spells().stream()
+          .map(spell -> label(spell.activator()))
+          .distinct()
+          .sorted()
+          .collect(java.util.stream.Collectors.joining(", "));
+      lore.add(mmLine(loreText("labels.upgrades.lore.activation", "binding", activators)));
     }
     if (spec.limits() != null && spec.limits().category() != null && !spec.limits().category().isBlank()) {
-      StringBuilder line = new StringBuilder("Category: ").append(spec.limits().category());
+      StringBuilder line = new StringBuilder(spec.limits().category());
       if (spec.limits().tier() > 0) {
-        line.append(" (Tier ").append(spec.limits().tier()).append(')');
+        line.append(" (")
+            .append(loreText("labels.upgrades.lore.categoryTier", "tier", spec.limits().tier()))
+            .append(')');
       }
-      lore.add(Component.text(line.toString(), NamedTextColor.DARK_GRAY));
+      lore.add(mmLine(loreText("labels.upgrades.lore.category", "category", line)));
     }
     if (spec.limits() != null) {
       if (spec.limits().exclusive()) {
-        String label = spec.limits().category() == null ? "Exclusive" : ("Exclusive: " + spec.limits().category());
-        lore.add(Component.text(label, NamedTextColor.DARK_GRAY));
+        String label = spec.limits().category() == null
+            ? loreText("labels.upgrades.lore.exclusive")
+            : loreText("labels.upgrades.lore.exclusiveCategory", "category", spec.limits().category());
+        lore.add(mmLine(label));
       }
       if (spec.limits().maxPerItem() > 0) {
-        lore.add(Component.text("Limit: " + spec.limits().maxPerItem() + " per item", NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.limitPerItem", "count", spec.limits().maxPerItem())));
       }
       if (spec.limits().maxTier() > 0) {
-        lore.add(Component.text("Max Tier: " + spec.limits().maxTier(), NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.maxTier", "tier", spec.limits().maxTier())));
       }
     }
     if (spec.requirements() != null) {
       if (spec.requirements().minXp() > 0) {
-        lore.add(Component.text("Requires: " + spec.requirements().minXp() + " Levels", NamedTextColor.GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.requiresLevels", "level", spec.requirements().minXp())));
       }
       if (spec.requirements().consumeXp() > 0) {
-        lore.add(Component.text("Consumes: " + spec.requirements().consumeXp() + " Levels", NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.consumesLevels", "level", spec.requirements().consumeXp())));
       }
       if (spec.requirements().minTotalXp() > 0) {
-        lore.add(Component.text("Requires: " + spec.requirements().minTotalXp() + " Total XP", NamedTextColor.GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.requiresTotalXp", "xp", spec.requirements().minTotalXp())));
       }
       if (spec.requirements().consumeTotalXp() > 0) {
-        lore.add(Component.text("Consumes: " + spec.requirements().consumeTotalXp() + " Total XP",
-            NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.consumesTotalXp", "xp", spec.requirements().consumeTotalXp())));
       }
       if (spec.requirements().minProgress() > 0.0) {
-        lore.add(Component.text("Requires: " + formatPercent(spec.requirements().minProgress()) + " XP Progress",
-            NamedTextColor.GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.requiresProgress",
+            "percent", formatPercent(spec.requirements().minProgress()))));
       }
       if (spec.requirements().consumeProgress() > 0.0) {
-        lore.add(Component.text("Consumes: " + formatPercent(spec.requirements().consumeProgress()) + " XP Progress",
-            NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.consumesProgress",
+            "percent", formatPercent(spec.requirements().consumeProgress()))));
       }
       if (spec.requirements().minMaxMana() > 0.0) {
-        lore.add(Component.text("Requires: " + format(spec.requirements().minMaxMana()) + " Max Mana",
-            NamedTextColor.GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.requiresMaxMana",
+            "mana", format(spec.requirements().minMaxMana()))));
       }
     }
     if (spec.price() != null && !spec.price().isEmpty()) {
-      lore.add(Component.text("Cost: " + formatPrice(spec.price()), NamedTextColor.GOLD));
+      lore.add(mmLine(loreText("labels.upgrades.lore.cost", "price", formatPrice(spec.price()))));
     }
     for (UpgradeModifierSpec modifier : spec.modifiers()) {
       String line = formatModifier(modifier);
       if (!line.isBlank()) {
-        lore.add(Component.text(line, NamedTextColor.GRAY));
+        lore.add(mmLine("<gray>" + line + "</gray>"));
       }
     }
     if (spec.behaviors() != null && !spec.behaviors().isEmpty()) {
       if (spec.behaviors().inventoryActive()) {
-        lore.add(Component.text("Inventory Active", NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.inventoryActive")));
       }
-      for (String ability : spec.behaviors().secondaryAbilities()) {
-        lore.add(Component.text("Secondary: " + ability, NamedTextColor.DARK_GRAY));
+      List<String> secondaryAbilities = spec.behaviors().secondaryAbilities();
+      List<String> secondaryDescriptions = spec.behaviors().secondaryDescriptions();
+      int secondaryCount = Math.max(secondaryAbilities.size(), secondaryDescriptions.size());
+      for (int i = 0; i < secondaryCount; i++) {
+        String description = i < secondaryDescriptions.size() ? secondaryDescriptions.get(i) : "";
+        String abilityName = i < secondaryAbilities.size() ? resolveAbilityName(secondaryAbilities.get(i)) : "";
+        String label = !description.isBlank() ? description : abilityName;
+        if (label.isBlank()) {
+          continue;
+        }
+        lore.add(mmLine(loreText("labels.upgrades.lore.secondary", "value", label)));
       }
       for (String preset : spec.behaviors().particlePresets()) {
-        lore.add(Component.text("Particle Preset: " + preset, NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.particlePreset", "preset", preset)));
       }
       for (UpgradeStatusEffectSpec effect : spec.behaviors().statusEffects()) {
-        lore.add(Component.text(formatStatusEffect(effect, "On hit"), NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
+            formatStatusEffect(effect, "labels.upgrades.lore.prefix.onHit"))));
       }
       for (UpgradeStatusEffectSpec effect : spec.behaviors().inventoryEffects()) {
-        lore.add(Component.text(formatStatusEffect(effect, "While in inventory"), NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
+            formatStatusEffect(effect, "labels.upgrades.lore.prefix.inInventory"))));
       }
       for (UpgradeOnDamagedSpec effect : spec.behaviors().onDamagedEffects()) {
         String line = formatOnDamagedEffect(effect);
         if (!line.isBlank()) {
-          lore.add(Component.text(line, NamedTextColor.DARK_GRAY));
+          lore.add(mmLine(loreText("labels.upgrades.lore.onDamagedLine", "value", line)));
         }
       }
     }
     if (spec.compatibility() != null && !spec.compatibility().isEmpty()) {
-      if (!spec.compatibility().allowItemIds().isEmpty()) {
-        lore.add(Component.text("Only Items: " + String.join(", ", spec.compatibility().allowItemIds()),
-            NamedTextColor.DARK_GRAY));
-      }
-      if (!spec.compatibility().allowMaterials().isEmpty()) {
-        lore.add(Component.text("Only Materials: " + joinMaterials(spec.compatibility().allowMaterials()),
-            NamedTextColor.DARK_GRAY));
-      }
       if (!spec.compatibility().denyItemIds().isEmpty()) {
-        lore.add(Component.text("Blocked Items: " + String.join(", ", spec.compatibility().denyItemIds()),
-            NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.blockedItems",
+            "items", String.join(", ", spec.compatibility().denyItemIds()))));
       }
       if (!spec.compatibility().denyMaterials().isEmpty()) {
-        lore.add(Component.text("Blocked Materials: " + joinMaterials(spec.compatibility().denyMaterials()),
-            NamedTextColor.DARK_GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.blockedMaterials",
+            "materials", joinMaterials(spec.compatibility().denyMaterials()))));
       }
     }
-    if (spec.spell() != null) {
-      lore.add(Component.text("Conflicts: existing " + label(spec.spell().activator()) + " binding",
-          NamedTextColor.DARK_GRAY));
+    if (!spec.spells().isEmpty()) {
+      String bindings = spec.spells().stream()
+          .map(spell -> label(spell.activator()))
+          .distinct()
+          .sorted()
+          .collect(java.util.stream.Collectors.joining(", "));
+      String conflict = Locales.text(null, "labels.upgrades.lore.conflicts",
+          Locales.placeholders("binding", bindings));
+      lore.add(mmLine(conflict));
     }
     for (UpgradeAttributeSpec attr : spec.attributes()) {
       String line = formatAttribute(attr);
       if (!line.isBlank()) {
-        lore.add(Component.text(line, NamedTextColor.GRAY));
+        lore.add(mmLine(loreText("labels.upgrades.lore.attribute", "value", line)));
       }
     }
     for (UpgradeEnchantSpec enchant : spec.enchants()) {
-      lore.add(Component.text(formatEnchant(enchant), NamedTextColor.DARK_GRAY));
+      lore.add(mmLine(loreText("labels.upgrades.lore.enchant", "value", formatEnchant(enchant))));
     }
     if (spec.description() != null && !spec.description().isBlank()) {
       String[] lines = spec.description().replace("\\n", "\n").split("\n", -1);
@@ -177,15 +226,15 @@ public final class UpgradeLore {
         if (line.isBlank()) {
           continue;
         }
-        lore.add(parseRichText(line));
+        lore.add(noItalic(parseRichText(line)));
       }
     }
-    lore.add(Component.text("Use in /dr upgrades", NamedTextColor.DARK_GRAY));
+    lore.add(mmLine(loreText("labels.upgrades.lore.hintApply")));
     if (!lore.isEmpty()) {
       List<Component> merged = new ArrayList<>();
-      merged.add(Component.text(MARKER_START, NamedTextColor.BLACK));
+      merged.add(noItalic(Component.text(MARKER_START, NamedTextColor.BLACK)));
       merged.addAll(lore);
-      merged.add(Component.text(MARKER_END, NamedTextColor.BLACK));
+      merged.add(noItalic(Component.text(MARKER_END, NamedTextColor.BLACK)));
       meta.lore(merged);
     }
     item.setItemMeta(meta);
@@ -294,7 +343,7 @@ public final class UpgradeLore {
       }
     }
     List<Component> out = new ArrayList<>();
-    out.add(Component.text("Applied Upgrades (" + count + ")", NamedTextColor.DARK_GRAY));
+    out.add(parseRichText(loreText("labels.upgrades.lore.appliedHeader", "count", count)));
     boolean compact = item != null && ItemMarkers.isUpgradeLoreCompact(item);
     if (!compact) {
       appendUpgradeDetails(out, records, registry);
@@ -309,7 +358,7 @@ public final class UpgradeLore {
         continue;
       }
       if (record.startsWith("vanilla:")) {
-        out.add(Component.text("• Enchanted Book", NamedTextColor.GRAY));
+        out.add(parseRichText(loreText("labels.upgrades.lore.appliedVanilla")));
         String raw = record.substring("vanilla:".length());
         if (!raw.isBlank()) {
           for (String part : raw.split(":")) {
@@ -333,12 +382,17 @@ public final class UpgradeLore {
       }
       String name = spec.name() != null && !spec.name().isBlank() ? spec.name() : record;
       Component line = Component.text("• ", NamedTextColor.GRAY).append(parseRichText(name));
-      if (spec.spell() != null) {
-        line = line.append(Component.text(" [" + label(spec.spell().activator()) + "]", NamedTextColor.DARK_GRAY));
+      if (!spec.spells().isEmpty()) {
+        String activators = spec.spells().stream()
+            .map(spell -> label(spell.activator()))
+            .distinct()
+            .sorted()
+            .collect(java.util.stream.Collectors.joining(", "));
+        line = line.append(Component.text(" [" + activators + "]", NamedTextColor.DARK_GRAY));
       }
       out.add(line);
       if (spec.behaviors() != null && spec.behaviors().inventoryActive()) {
-        out.add(Component.text("  Inventory Active", NamedTextColor.DARK_GRAY));
+        out.add(parseRichText(loreText("labels.upgrades.lore.inventoryActiveApplied")));
       }
       if (spec.behaviors() != null && !spec.behaviors().onDamagedEffects().isEmpty()) {
         for (UpgradeOnDamagedSpec effect : spec.behaviors().onDamagedEffects()) {
@@ -369,7 +423,7 @@ public final class UpgradeLore {
     if (modifiers.isEmpty()) {
       return;
     }
-    out.add(Component.text("Totals", NamedTextColor.DARK_GRAY));
+    out.add(parseRichText(loreText("labels.upgrades.lore.appliedTotals")));
     for (UpgradeModifierType type : UpgradeModifierType.values()) {
       Double value = modifiers.get(type.key());
       if (value == null || !Double.isFinite(value)) {
@@ -384,11 +438,11 @@ public final class UpgradeLore {
 
   private static String label(UpgradeActivator activator) {
     return switch (activator) {
-      case LEFT_CLICK -> "Left Click";
-      case RIGHT_CLICK -> "Right Click";
-      case SHIFT_LEFT_CLICK -> "Shift+Left";
-      case SHIFT_RIGHT_CLICK -> "Shift+Right";
-      case PASSIVE -> "Passive";
+      case LEFT_CLICK -> loreText("labels.upgrades.lore.activator.left");
+      case RIGHT_CLICK -> loreText("labels.upgrades.lore.activator.right");
+      case SHIFT_LEFT_CLICK -> loreText("labels.upgrades.lore.activator.shiftLeft");
+      case SHIFT_RIGHT_CLICK -> loreText("labels.upgrades.lore.activator.shiftRight");
+      case PASSIVE -> loreText("labels.upgrades.lore.activator.passive");
     };
   }
 
@@ -396,13 +450,13 @@ public final class UpgradeLore {
     String name = attr.attribute().getKey().getKey().toLowerCase(java.util.Locale.ROOT).replace('_', ' ');
     String amount = format(attr.amount());
     String sign = attr.amount() >= 0 ? "+" : "";
-    return sign + amount + " " + name;
+    return loreText("labels.upgrades.lore.attributeValue", "sign", sign, "amount", amount, "name", name);
   }
 
   private static String formatEnchant(UpgradeEnchantSpec spec) {
     String key = spec.enchantment().getKey().toString();
     String name = key.replace("minecraft:", "").replace('_', ' ');
-    return "Enchant: " + name + " " + spec.level();
+    return loreText("labels.upgrades.lore.enchantValue", "name", name, "level", spec.level());
   }
 
   private static String formatModifier(UpgradeModifierSpec modifier) {
@@ -423,44 +477,32 @@ public final class UpgradeLore {
     return type.label() + " " + sign + format(value);
   }
 
-  private static String formatStatusEffect(UpgradeStatusEffectSpec effect, String prefix) {
+  private static String formatStatusEffect(UpgradeStatusEffectSpec effect, String prefixKey) {
     if (effect == null) {
       return "";
     }
     String name = effect.type().getKey().getKey().replace('_', ' ');
     int seconds = Math.max(1, Math.round(effect.durationTicks() / 20.0f));
     int level = effect.amplifier() + 1;
-    return prefix + ": " + name + " " + level + " (" + seconds + "s)";
+    String prefix = loreText(prefixKey);
+    return loreText("labels.upgrades.lore.statusEffectValue",
+        "prefix", prefix,
+        "effect", name,
+        "level", level,
+        "seconds", seconds);
   }
 
   private static String formatOnDamagedEffect(UpgradeOnDamagedSpec effect) {
     if (effect == null) {
       return "";
     }
-    String base = formatStatusEffect(effect.effect(), "On damaged");
+    String base = formatStatusEffect(effect.effect(), "labels.upgrades.lore.prefix.onDamaged");
     long cooldownTicks = effect.cooldownTicks();
     if (cooldownTicks <= 0L) {
       return base;
     }
     int seconds = Math.max(1, Math.round(cooldownTicks / 20.0f));
-    return base + " (cd " + seconds + "s)";
-  }
-
-  private static String formatTarget(UpgradeTargetSpec target) {
-    if (target == null || target.isEmpty()) {
-      return "";
-    }
-    if (!target.abilityIds().isEmpty()) {
-      return String.join(", ", target.abilityIds());
-    }
-    if (!target.abilityTags().isEmpty()) {
-      List<String> tags = new ArrayList<>();
-      for (String tag : target.abilityTags()) {
-        tags.add("tag:" + tag);
-      }
-      return String.join(", ", tags);
-    }
-    return "";
+    return loreText("labels.upgrades.lore.statusEffectCooldown", "base", base, "seconds", seconds);
   }
 
   private static String format(double value) {
@@ -484,16 +526,16 @@ public final class UpgradeLore {
   private static String formatPrice(UpgradePriceSpec price) {
     List<String> parts = new ArrayList<>();
     if (price.pallet() > 0) {
-      parts.add(price.pallet() + " Pallet");
+      parts.add(loreText("labels.upgrades.lore.pricePallet", "count", price.pallet()));
     }
     if (price.compressed() > 0) {
-      parts.add(price.compressed() + " Compressed");
+      parts.add(loreText("labels.upgrades.lore.priceCompressed", "count", price.compressed()));
     }
     if (price.normal() > 0) {
-      parts.add(price.normal() + " Tokens");
+      parts.add(loreText("labels.upgrades.lore.priceTokens", "count", price.normal()));
     }
     if (parts.isEmpty()) {
-      return "Free";
+      return loreText("labels.upgrades.lore.priceFree");
     }
     return String.join(", ", parts);
   }
@@ -507,5 +549,117 @@ public final class UpgradeLore {
       names.add(material.name().toLowerCase(java.util.Locale.ROOT));
     }
     return String.join(", ", names);
+  }
+
+  private static void appendBindTargets(List<Component> lore, UpgradeCompatibilitySpec compatibility) {
+    if (compatibility == null) {
+      return;
+    }
+    lore.add(mmLine(loreText("labels.upgrades.lore.bindsSeparator")));
+    List<String> targets = new ArrayList<>();
+    if (!compatibility.allowItemIds().isEmpty()) {
+      targets.addAll(compatibility.allowItemIds());
+    }
+    if (!compatibility.allowMaterials().isEmpty()) {
+      for (org.bukkit.Material material : compatibility.allowMaterials()) {
+        targets.add(material.name().toLowerCase(java.util.Locale.ROOT));
+      }
+    }
+    if (targets.isEmpty()) {
+      lore.add(mmLine(loreText("labels.upgrades.lore.bindsAny")));
+      return;
+    }
+    lore.add(mmLine(loreText("labels.upgrades.lore.bindsHeader")));
+    int limit = targetLineLimit;
+    int shown = 0;
+    for (String entry : targets) {
+      if (limit > 0 && shown >= limit) {
+        break;
+      }
+      lore.add(mmLine(loreText("labels.upgrades.lore.bindsEntry", "entry", entry)));
+      shown++;
+    }
+    int remaining = targets.size() - shown;
+    if (limit > 0 && remaining > 0) {
+      lore.add(mmLine(loreText("labels.upgrades.lore.bindsMore", "remaining", remaining)));
+    }
+  }
+
+  private static String resolveAbilityName(String id) {
+    if (id == null || id.isBlank()) {
+      return "";
+    }
+    String normalized;
+    try {
+      normalized = Ids.normalize(id);
+    } catch (Exception ex) {
+      normalized = id.trim().toLowerCase(java.util.Locale.ROOT);
+    }
+    String name = ABILITY_NAMES.get(normalized);
+    if (name == null || name.isBlank()) {
+      return prettifyId(id);
+    }
+    if (name.equalsIgnoreCase(normalized) || name.equalsIgnoreCase(id)) {
+      return prettifyId(name);
+    }
+    return name;
+  }
+
+  private static String abilityLabel(AbilitySpec spec) {
+    if (spec == null) {
+      return "";
+    }
+    String name = spec.name();
+    if (name != null && !name.isBlank()) {
+      return PLAIN.serialize(parseRichText(name));
+    }
+    String description = spec.description();
+    if (description != null && !description.isBlank()) {
+      String[] lines = description.replace("\\n", "\n").split("\n", -1);
+      for (String line : lines) {
+        if (line.isBlank()) {
+          continue;
+        }
+        return PLAIN.serialize(parseRichText(line));
+      }
+    }
+    return spec.id();
+  }
+
+  private static String prettifyId(String raw) {
+    if (raw == null) {
+      return "";
+    }
+    String value = raw.replace(':', ' ').replace('_', ' ').replace('.', ' ').trim();
+    if (value.isEmpty()) {
+      return raw;
+    }
+    String[] parts = value.split("\\s+");
+    StringBuilder out = new StringBuilder();
+    for (String part : parts) {
+      if (part.isEmpty()) {
+        continue;
+      }
+      if (out.length() > 0) {
+        out.append(' ');
+      }
+      out.append(Character.toUpperCase(part.charAt(0)));
+      if (part.length() > 1) {
+        out.append(part.substring(1));
+      }
+    }
+    return out.toString();
+  }
+
+  private static Component noItalic(Component component) {
+    return component.decoration(TextDecoration.ITALIC, false);
+  }
+
+  private static Component line(String text, NamedTextColor color) {
+    return Component.text(text, color).decoration(TextDecoration.ITALIC, false);
+  }
+
+  private static Component mmLine(String mm) {
+    return noItalic(parseRichText(mm));
   }
 }

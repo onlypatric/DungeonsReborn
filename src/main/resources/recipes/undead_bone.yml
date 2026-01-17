@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: undead_bone
+name: undead_bone
+description: Ricetta per creare undead_bone.
+inputs: []
+output:
+  itemId: undead_bone
+  amount: 1

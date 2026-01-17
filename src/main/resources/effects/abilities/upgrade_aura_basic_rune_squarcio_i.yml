@@ -1,0 +1,13 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_rune_squarcio_i:
+    name: "<gray>Aura basic_rune_squarcio_i</gray>"
+    description: "<dark_gray>Effetto visivo base.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=22 count=1 offset=0.04 color="#f4d35e" size=0.95
+          particles.point particle=END_ROD count=1 offset=0.03
+        }

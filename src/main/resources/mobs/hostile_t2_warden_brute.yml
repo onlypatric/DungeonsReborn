@@ -24,10 +24,14 @@ mobs:
             \ originAt=origin {\n    knockback horizontal=1.2 vertical=0.35\n    potion\
             \ effect=BLINDNESS durationTicks=100 amplifier=0\n  }\n}"
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
+    loot:
+      pool: hostile_t2
+      merge: true
 spawnerBlocks:
   hostile_t2_warden_brute_spawner:
     mob: hostile_t2_warden_brute

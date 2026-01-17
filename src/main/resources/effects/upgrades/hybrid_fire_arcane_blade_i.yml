@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: hybrid_fire_arcane_blade_i
+name: "<light_purple>Lama dell'Eclissi</light_purple>"
+description: |-
+  I colpi bruciano e consumano mana con scie luminose.
+limits:
+  category: hybrid
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_fire_arcane_blade_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_fire_arcane_blade_i
+  activator: PASSIVE

@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: COAL
+  amount: 1
+  meta:
+    display-name: Nucleo Ostile
+    lore:
+    - Un nucleo oscuro e aggressivo.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

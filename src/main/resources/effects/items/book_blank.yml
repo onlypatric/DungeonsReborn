@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: BOOK
+  amount: 1
+  meta:
+    display-name: "Tomo Vuoto"
+    lore:
+      - "Un tomo pronto per un upgrade."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

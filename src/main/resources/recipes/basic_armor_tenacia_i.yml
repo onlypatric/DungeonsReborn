@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_tenacia_i
+name: <yellow>Runa di Tenacia I</yellow>
+description: Ricetta per creare <yellow>Runa di Tenacia I</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_tenacia_i
+  amount: 1

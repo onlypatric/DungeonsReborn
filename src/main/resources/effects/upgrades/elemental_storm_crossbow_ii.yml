@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: elemental_storm_crossbow_ii
+name: "<aqua>Dardo del Lampo II</aqua>"
+description: |-
+  I dardi possono scaricare una scossa per 3s (10s di ricarica).
+limits:
+  category: elemental
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_storm_crossbow_ii
+    - upgrade_proc_shock
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Fulmine e lieve danno.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_storm_crossbow_ii
+  activator: RIGHT_CLICK

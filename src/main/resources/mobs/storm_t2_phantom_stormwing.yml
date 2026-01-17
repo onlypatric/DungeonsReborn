@@ -34,10 +34,14 @@ mobs:
             \    potion effect=WEAKNESS durationTicks=90 amplifier=0\n    knockback\
             \ horizontal=0.7 vertical=0.12\n  }\n}"
     xpGating:
-      minLevel: 3500
+      minLevel: 15000
     progression:
-      minXp: 323744
-      maxXp: 438006
+      minXp: 45
+      maxXp: 65
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_storm
+      merge: true
 spawnerBlocks:
   storm_t2_phantom_stormwing_spawner:
     mob: storm_t2_phantom_stormwing

@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: elemental_storm_blade_ii
+name: "<aqua>Lama Folgorante II</aqua>"
+description: |-
+  I colpi possono scaricare una scossa per 3s (10s di ricarica).
+limits:
+  category: elemental
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_storm_blade_ii
+  secondaryDescriptions:
+    - "<dark_gray>Indebolisce i nemici vicini.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_storm_blade_ii
+  activator: PASSIVE

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_crossbow_ritmo_i
+name: <yellow>Ingranaggio Serrato II</yellow>
+description: Ricetta per creare <yellow>Ingranaggio Serrato II</yellow>.
+inputs: []
+output:
+  itemId: basic_crossbow_ritmo_i
+  amount: 1

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: cooked_mutton
+name: cooked_mutton
+description: Ricetta per creare cooked_mutton.
+inputs: []
+output:
+  itemId: cooked_mutton
+  amount: 1

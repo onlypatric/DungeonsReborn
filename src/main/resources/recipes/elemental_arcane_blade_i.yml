@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_arcane_blade_i
+name: <aqua>Lama Arcana I</aqua>
+description: Ricetta per creare <aqua>Lama Arcana I</aqua>.
+inputs: []
+output:
+  itemId: elemental_arcane_blade_i
+  amount: 1

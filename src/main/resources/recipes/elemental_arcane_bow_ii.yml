@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_arcane_bow_ii
+name: <aqua>Corda Eterea II</aqua>
+description: Ricetta per creare <aqua>Corda Eterea II</aqua>.
+inputs: []
+output:
+  itemId: elemental_arcane_bow_ii
+  amount: 1

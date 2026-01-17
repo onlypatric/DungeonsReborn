@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: fire_heart
+name: fire_heart
+description: Ricetta per creare fire_heart.
+inputs: []
+output:
+  itemId: fire_heart
+  amount: 1

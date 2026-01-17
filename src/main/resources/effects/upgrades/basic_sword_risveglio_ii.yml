@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_sword_risveglio_ii
+name: "<yellow>Lama del Risveglio II</yellow>"
+description: |-
+  I colpi curano di 1 cuore (10s di ricarica).
+limits:
+  category: basic
+  tier: 3
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_sword_risveglio_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_sword_risveglio_ii
+  activator: LEFT_CLICK

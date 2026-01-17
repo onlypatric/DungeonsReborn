@@ -22,9 +22,64 @@ labels:
     requirements:
       xpLevelMin: Richiede livello {level} per applicare questo potenziamento.
       xpLevelConsume: Richiede livello {level} per consumare XP per questo potenziamento.
-      totalXpMin: Richiede {xp} XP totali per applicare questo potenziamento.
-      totalXpConsume: Richiede {xp} XP totali da consumare per questo potenziamento.
-      xpProgressMin: Richiede {percent} progressione XP per applicare questo potenziamento.
-      xpProgressConsume: Richiede {percent} progressione XP da consumare per questo potenziamento.
+      totalXpMin: Richiede {xp} XP personalizzati per applicare questo potenziamento.
+      totalXpConsume: Richiede {xp} XP personalizzati da consumare per questo potenziamento.
+      xpProgressMin: Richiede {percent} progressione XP personalizzata per applicare questo potenziamento.
+      xpProgressConsume: Richiede {percent} progressione XP personalizzata da consumare per questo potenziamento.
       manaMin: Richiede {mana} mana massima per applicare questo potenziamento.
       manaMissing: Sistema mana non disponibile.
+    lore:
+      bookName: "<gradient:#ff9f1a:#ffd166><bold>Tomo di Potenziamento</bold></gradient>"
+      activation: "<gold><bold>Attivazione</bold></gold> <dark_gray>-</dark_gray> <yellow>{binding}</yellow>"
+      category: "<dark_gray>Categoria: <gray>{category}</gray></dark_gray>"
+      categoryTier: "Tier {tier}"
+      exclusive: "<dark_gray>Esclusivo</dark_gray>"
+      exclusiveCategory: "<dark_gray>Esclusivo: <gray>{category}</gray></dark_gray>"
+      limitPerItem: "<dark_gray>Limite:</dark_gray> <gray>{count} per oggetto</gray>"
+      maxTier: "<dark_gray>Tier massimo:</dark_gray> <gray>{tier}</gray>"
+      requiresLevels: "<gray>Richiede:</gray> <white>{level}</white> <gray>Livelli</gray>"
+      consumesLevels: "<dark_gray>Consuma:</dark_gray> <gray>{level}</gray> <dark_gray>Livelli</dark_gray>"
+      requiresTotalXp: "<gray>Richiede:</gray> <white>{xp}</white> <gray>XP personalizzati</gray>"
+      consumesTotalXp: "<dark_gray>Consuma:</dark_gray> <gray>{xp}</gray> <dark_gray>XP personalizzati</dark_gray>"
+      requiresProgress: "<gray>Richiede:</gray> <white>{percent}</white> <gray>Progressione XP personalizzata</gray>"
+      consumesProgress: "<dark_gray>Consuma:</dark_gray> <gray>{percent}</gray> <dark_gray>Progressione XP personalizzata</dark_gray>"
+      requiresMaxMana: "<gray>Richiede:</gray> <white>{mana}</white> <gray>Mana massima</gray>"
+      cost: "<gold><bold>Costo</bold></gold> <dark_gray>-</dark_gray> <yellow>{price}</yellow>"
+      inventoryActive: "<dark_gray>Attivo in inventario</dark_gray>"
+      secondary: "<aqua>Secondario:</aqua> <gray>{value}</gray>"
+      particlePreset: "<dark_gray>Preset particelle:</dark_gray> <gray>{preset}</gray>"
+      statusEffect: "<dark_gray>{value}</dark_gray>"
+      onDamagedLine: "<dark_gray>{value}</dark_gray>"
+      blockedItems: "<dark_gray>Oggetti bloccati:</dark_gray> <gray>{items}</gray>"
+      blockedMaterials: "<dark_gray>Materiali bloccati:</dark_gray> <gray>{materials}</gray>"
+      conflicts: "<dark_gray>Questo oggetto potrebbe entrare in conflitto con {binding}</dark_gray>"
+      attribute: "<gray>{value}</gray>"
+      enchant: "<dark_gray>{value}</dark_gray>"
+      hintApply: "<green><bold>Usa /dr upgrades per applicare</bold></green>"
+      appliedHeader: "<dark_gray>Potenziamenti applicati ({count})</dark_gray>"
+      appliedVanilla: "<gray>• Libro incantato</gray>"
+      inventoryActiveApplied: "<dark_gray>  Attivo in inventario</dark_gray>"
+      appliedTotals: "<dark_gray>Totali</dark_gray>"
+      activator:
+        left: "Click sinistro"
+        right: "Click destro"
+        shiftLeft: "Shift+sinistro"
+        shiftRight: "Shift+destro"
+        passive: "Passivo"
+      attributeValue: "{sign}{amount} {name}"
+      enchantValue: "Incanto: {name} {level}"
+      statusEffectValue: "{prefix}: {effect} {level} ({seconds}s)"
+      statusEffectCooldown: "{base} (cd {seconds}s)"
+      pricePallet: "{count} Bancale"
+      priceCompressed: "{count} Compresso"
+      priceTokens: "{count} Token"
+      priceFree: "Gratis"
+      bindsSeparator: "<dark_gray>--------------------</dark_gray>"
+      bindsAny: "<gold><bold>Compatibile con</bold></gold> <dark_gray>-</dark_gray> <gray>Qualsiasi oggetto</gray>"
+      bindsHeader: "<gold><bold>Compatibile con</bold></gold>"
+      bindsEntry: "<gray>• {entry}</gray>"
+      bindsMore: "<dark_gray>... {remaining} in piu</dark_gray>"
+      prefix:
+        onHit: "All'impatto"
+        inInventory: "In inventario"
+        onDamaged: "Quando subisci danno"

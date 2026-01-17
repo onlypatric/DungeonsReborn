@@ -1,0 +1,13 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_rune_magnete_ii:
+    name: "<gray>Aura Magnete II</gray>"
+    description: "<dark_gray>Vortice visivo intenso.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.5 points=24 count=1 offset=0.05 color="#f9e79f" size=0.95
+          particles.orbit particle=END_ROD radius=1.2 durationTicks=30 periodTicks=3 copies=2 count=1
+        }

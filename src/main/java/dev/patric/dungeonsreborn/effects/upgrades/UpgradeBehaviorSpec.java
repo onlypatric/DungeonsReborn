@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public record UpgradeBehaviorSpec(
     List<String> secondaryAbilities,
+    List<String> secondaryDescriptions,
     List<String> particlePresets,
     List<UpgradeStatusEffectSpec> statusEffects,
     List<UpgradeStatusEffectSpec> inventoryEffects,
@@ -13,6 +14,7 @@ public record UpgradeBehaviorSpec(
 ) {
   public UpgradeBehaviorSpec {
     Objects.requireNonNull(secondaryAbilities, "secondaryAbilities");
+    Objects.requireNonNull(secondaryDescriptions, "secondaryDescriptions");
     Objects.requireNonNull(particlePresets, "particlePresets");
     Objects.requireNonNull(statusEffects, "statusEffects");
     Objects.requireNonNull(inventoryEffects, "inventoryEffects");
@@ -20,11 +22,11 @@ public record UpgradeBehaviorSpec(
   }
 
   public static UpgradeBehaviorSpec none() {
-    return new UpgradeBehaviorSpec(List.of(), List.of(), List.of(), List.of(), false, List.of());
+    return new UpgradeBehaviorSpec(List.of(), List.of(), List.of(), List.of(), List.of(), false, List.of());
   }
 
   public boolean isEmpty() {
-    return secondaryAbilities.isEmpty() && particlePresets.isEmpty() && statusEffects.isEmpty()
-        && inventoryEffects.isEmpty() && !inventoryActive && onDamagedEffects.isEmpty();
+    return secondaryAbilities.isEmpty() && secondaryDescriptions.isEmpty() && particlePresets.isEmpty()
+        && statusEffects.isEmpty() && inventoryEffects.isEmpty() && !inventoryActive && onDamagedEffects.isEmpty();
   }
 }

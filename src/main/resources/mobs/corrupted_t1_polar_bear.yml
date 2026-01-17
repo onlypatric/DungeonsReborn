@@ -24,8 +24,12 @@ mobs:
             \ originAt=origin {\n    knockback horizontal=1.0 vertical=0.3\n    potion\
             \ effect=SLOWNESS durationTicks=80 amplifier=0\n  }\n}"
     progression:
-      minXp: 175
-      maxXp: 238
+      minXp: 6
+      maxXp: 9
+      maxPlayerXp: 250000
+    loot:
+      pool: corrupted_t1
+      merge: true
 spawnerBlocks:
   corrupted_t1_polar_bear_spawner:
     mob: corrupted_t1_polar_bear

@@ -64,6 +64,7 @@ public final class ShopEditorStore {
       tradeDraft.buyB(resolveTradeItem(trade.buyB()));
       tradeDraft.sell(resolveTradeItem(trade.sell()));
       tradeDraft.maxUses(trade.maxUses());
+      tradeDraft.minLevel(trade.minLevel());
       tradeDraft.experienceReward(trade.experienceReward());
       tradeDraft.priceMultiplier(trade.priceMultiplier());
       tradeDraft.previewLore(trade.previewLore());
@@ -131,6 +132,9 @@ public final class ShopEditorStore {
       entry.put("sell", ingredientMap(trade.sell(), true));
       if (trade.maxUses() > 0) {
         entry.put("maxUses", trade.maxUses());
+      }
+      if (trade.minLevel() > 0) {
+        entry.put("minLevel", trade.minLevel());
       }
       if (trade.experienceReward()) {
         entry.put("experienceReward", true);

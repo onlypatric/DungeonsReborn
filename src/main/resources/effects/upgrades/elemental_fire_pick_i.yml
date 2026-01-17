@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: elemental_fire_pick_i
+name: "<aqua>Sigillo della Fornace I</aqua>"
+description: |-
+  I colpi applicano una bruciatura lieve per 3s (10s di ricarica).
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_pickaxe
+    - minecraft:golden_pickaxe
+    - minecraft:iron_pickaxe
+    - minecraft:netherite_pickaxe
+    - minecraft:stone_pickaxe
+    - minecraft:wooden_pickaxe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_fire_pick_i
+    - upgrade_proc_ignite
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Brucia il bersaglio per breve tempo.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_fire_pick_i
+  activator: LEFT_CLICK

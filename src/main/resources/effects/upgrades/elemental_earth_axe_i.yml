@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: elemental_earth_axe_i
+name: "<aqua>Ascia del Macigno I</aqua>"
+description: |-
+  I colpi indeboliscono il bersaglio per 2s (9s di ricarica).
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_axe
+    - minecraft:golden_axe
+    - minecraft:iron_axe
+    - minecraft:netherite_axe
+    - minecraft:stone_axe
+    - minecraft:wooden_axe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_earth_axe_i
+    - upgrade_proc_knockback
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Piccolo knockback con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_earth_axe_i
+  activator: LEFT_CLICK

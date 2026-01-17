@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: SHULKER_SHELL
+  amount: 1
+  meta:
+    display-name: "Cuore Arcano"
+    lore:
+      - "Un cuore di pura magia."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

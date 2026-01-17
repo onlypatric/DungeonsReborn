@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_armor_passo_ii
+name: "<yellow>Passo Leggero II</yellow>"
+description: |-
+  Aumenta la velocita di movimento in modo visibile mentre indossi gli stivali.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:chainmail_boots
+    - minecraft:diamond_boots
+    - minecraft:golden_boots
+    - minecraft:iron_boots
+    - minecraft:leather_boots
+    - minecraft:netherite_boots
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_armor_passo_ii
+  secondaryDescriptions:
+    - "<dark_gray>Velocita moderata.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_armor_passo_ii
+  activator: PASSIVE

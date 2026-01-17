@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: basic_rune_durata_i
+name: "<yellow>Runa della Durata I</yellow>"
+description: |-
+  Riduce l'usura dell'equipaggiamento su cui e applicata.
+limits:
+  category: basic
+  tier: 1
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_rune_durata_i
+  secondaryDescriptions:
+    - "<dark_gray>Segnale visivo di durata.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_rune_durata_i
+  activator: SHIFT_RIGHT_CLICK

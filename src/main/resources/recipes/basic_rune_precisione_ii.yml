@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_rune_precisione_ii
+name: <yellow>Runa della Precisione II</yellow>
+description: Ricetta per creare <yellow>Runa della Precisione II</yellow>.
+inputs: []
+output:
+  itemId: basic_rune_precisione_ii
+  amount: 1

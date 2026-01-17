@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_mace_inerzia_ii
+name: "<yellow>Mazza d'Inerzia II</yellow>"
+description: |-
+  Aumenta ulteriormente i danni contro i mostri con la mazza.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:mace
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_mace_inerzia_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_mace_inerzia_ii
+  activator: LEFT_CLICK

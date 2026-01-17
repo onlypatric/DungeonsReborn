@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: elemental_earth_pick_ii
+name: "<aqua>Sigillo della Crepa II</aqua>"
+description: |-
+  I colpi aprono una crepa profonda nell'armatura per 4s (12s di ricarica).
+limits:
+  category: elemental
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_pickaxe
+    - minecraft:golden_pickaxe
+    - minecraft:iron_pickaxe
+    - minecraft:netherite_pickaxe
+    - minecraft:stone_pickaxe
+    - minecraft:wooden_pickaxe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_earth_pick_ii
+    - upgrade_proc_knockback
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Piccolo knockback con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_earth_pick_ii
+  activator: LEFT_CLICK

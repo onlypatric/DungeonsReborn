@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: OBSIDIAN
+  amount: 1
+  meta:
+    display-name: "Nucleo Corrotto"
+    lore:
+      - "Un nucleo pesante e oscuro."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

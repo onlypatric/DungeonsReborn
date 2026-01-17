@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: elemental_earth_mace_i
+name: "<aqua>Mazza di Basalto I</aqua>"
+description: |-
+  I colpi possono stordire per 1s (12s di ricarica).
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:mace
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_earth_mace_i
+    - upgrade_proc_knockback
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Piccolo knockback con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_earth_mace_i
+  activator: LEFT_CLICK

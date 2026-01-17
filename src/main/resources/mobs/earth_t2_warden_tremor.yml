@@ -55,10 +55,14 @@ mobs:
             \ radius=2.8 points=26 count=2 offset=-1\n  particles.ring particle=CLOUD\
             \ radius=2.2 points=20 count=1\n}"
     xpGating:
-      minLevel: 8000
+      minLevel: 15000
     progression:
-      minXp: 916158
-      maxXp: 1239508
+      minXp: 45
+      maxXp: 65
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_earth
+      merge: true
 spawnerBlocks:
   earth_t2_warden_tremor_spawner:
     mob: earth_t2_warden_tremor

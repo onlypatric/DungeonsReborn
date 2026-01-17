@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_mace_assalto_i
+name: "<yellow>Mazza d'Assalto I</yellow>"
+description: |-
+  Aumenta la velocita di attacco della mazza.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:mace
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_mace_assalto_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_mace_assalto_i
+  activator: LEFT_CLICK

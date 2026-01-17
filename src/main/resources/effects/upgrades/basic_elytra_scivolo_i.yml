@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_elytra_scivolo_i
+name: "<yellow>Trama del Vento I</yellow>"
+description: |-
+  Aumenta la velocita di planata.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:elytra
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_elytra_scivolo_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_elytra_scivolo_i
+  activator: PASSIVE

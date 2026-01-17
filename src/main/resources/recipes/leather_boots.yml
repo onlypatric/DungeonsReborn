@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: leather_boots
+name: leather_boots
+description: Ricetta per creare leather_boots.
+inputs: []
+output:
+  itemId: leather_boots
+  amount: 1

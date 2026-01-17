@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: hybrid_storm_arcane_rune_ii
+name: <light_purple>Runa del Vortice II</light_purple>
+description: Ricetta per creare <light_purple>Runa del Vortice II</light_purple>.
+inputs: []
+output:
+  itemId: hybrid_storm_arcane_rune_ii
+  amount: 1

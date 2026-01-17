@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: frost_shard
+name: frost_shard
+description: Ricetta per creare frost_shard.
+inputs: []
+output:
+  itemId: frost_shard
+  amount: 1

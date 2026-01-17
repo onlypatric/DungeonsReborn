@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_vampiric:
+    name: "<red>Proc: Risucchio</red>"
+    description: "<dark_gray>Piccolo rubavita sul colpo.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.point particle=HEART count=2 offset=0.06
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            damage_lifesteal amount=4 ratio=0.2
+          }
+        }

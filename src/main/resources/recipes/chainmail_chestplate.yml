@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: chainmail_chestplate
+name: chainmail_chestplate
+description: Ricetta per creare chainmail_chestplate.
+inputs: []
+output:
+  itemId: chainmail_chestplate
+  amount: 1

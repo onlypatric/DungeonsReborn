@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_crit_flash:
+    name: "<gold>Proc: Lampo Critico</gold>"
+    description: "<dark_gray>Lampo accecante con danno lieve.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.point particle=CRIT count=8 offset=0.08
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            damage amount=2
+          }
+        }

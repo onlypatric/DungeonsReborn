@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_trident_corrente_i
+name: "<yellow>Trama della Corrente I</yellow>"
+description: |-
+  Aumenta la velocita del lancio del tridente.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:trident
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_trident_corrente_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_trident_corrente_i
+  activator: RIGHT_CLICK

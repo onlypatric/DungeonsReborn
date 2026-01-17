@@ -32,10 +32,14 @@ mobs:
             \ originAt=origin {\n    potion effect=SLOWNESS durationTicks=90 amplifier=0\n\
             \    freeze durationTicks=90\n  }\n}"
     xpGating:
-      minLevel: 500
+      minLevel: 10000
     progression:
-      minXp: 50079
-      maxXp: 67754
+      minXp: 30
+      maxXp: 45
+      maxPlayerXp: 1400000
+    loot:
+      pool: elemental_frost
+      merge: true
 spawnerBlocks:
   frost_t1_polar_bear_sleetmaw_spawner:
     mob: frost_t1_polar_bear_sleetmaw

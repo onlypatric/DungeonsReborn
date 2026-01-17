@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: hybrid_frost_arcane_shield_i
+name: "<light_purple>Scudo della Neve Arcana</light_purple>"
+description: |-
+  Bloccare un colpo libera un'esplosione di brina arcana.
+limits:
+  category: hybrid
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:shield
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_frost_arcane_shield_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_frost_arcane_shield_i
+  activator: SHIFT_RIGHT_CLICK

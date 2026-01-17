@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_multi_tiro_i
+name: <yellow>Mirino Comune I</yellow>
+description: Ricetta per creare <yellow>Mirino Comune I</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 1
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 36
+output:
+  itemId: basic_multi_tiro_i
+  amount: 1

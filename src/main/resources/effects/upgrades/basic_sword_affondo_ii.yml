@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_sword_affondo_ii
+name: "<yellow>Lama d'Affondo II</yellow>"
+description: |-
+  I colpi applicano Rallentamento per 3 secondi (6s di ricarica).
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_sword_affondo_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_sword_affondo_ii
+  activator: LEFT_CLICK

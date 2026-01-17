@@ -36,8 +36,12 @@ mobs:
     xpGating:
       minLevel: 10000
     progression:
-      minXp: 3182896
-      maxXp: 4306271
+      minXp: 28
+      maxXp: 42
+      maxPlayerXp: 1400000
+    loot:
+      pool: elemental_arcane
+      merge: true
 spawnerBlocks:
   arcane_t1_illusioner_mirage_spawner:
     mob: arcane_t1_illusioner_mirage

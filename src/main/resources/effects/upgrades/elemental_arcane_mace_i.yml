@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: elemental_arcane_mace_i
+name: "<aqua>Mazza dell'Oblio I</aqua>"
+description: |-
+  I colpi drenano 4 mana al bersaglio (9s di ricarica).
+limits:
+  category: elemental
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:mace
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_arcane_mace_i
+    - upgrade_proc_arcane_burst
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Esplosione magica leggera.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_arcane_mace_i
+  activator: LEFT_CLICK

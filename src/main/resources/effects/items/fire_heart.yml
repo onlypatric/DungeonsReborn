@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: FIRE_CHARGE
+  amount: 1
+  meta:
+    display-name: "Cuore di Fuoco"
+    lore:
+      - "Un cuore di fiamma viva."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

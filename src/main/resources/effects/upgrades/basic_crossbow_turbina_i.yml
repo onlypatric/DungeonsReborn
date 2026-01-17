@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_turbina_i
+name: "<yellow>Dardo Turbina I</yellow>"
+description: |-
+  Hai una probabilita di scoccare un dardo extra.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_turbina_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_turbina_i
+  activator: RIGHT_CLICK

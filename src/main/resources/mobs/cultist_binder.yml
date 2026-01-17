@@ -53,8 +53,9 @@ mobs:
     xpGating:
       minLevel: 15000
     progression:
-      minXp: 4457896
-      maxXp: 6031271
+      minXp: 60
+      maxXp: 85
+      maxPlayerXp: 2200000
 spawnerBlocks:
   cultist_binder_spawner:
     mob: cultist_binder

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: earth_heart
+name: earth_heart
+description: Ricetta per creare earth_heart.
+inputs: []
+output:
+  itemId: earth_heart
+  amount: 1

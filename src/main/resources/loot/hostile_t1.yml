@@ -1,0 +1,169 @@
+loot:
+  rolls: 1
+  bonusRolls: 0
+  clearVanilla: false
+  drops:
+  - upgradeId: basic_armor_passo_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_axe_forza_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_axe_lacerazione_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_trident_forza_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_crossbow_tiro_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_mace_forza_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_magnete_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_multi_taglio_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_bow_precisione_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_bow_cadenza_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - upgradeId: basic_crossbow_recupero_i
+    chance: 0.00091
+    min: 1
+    max: 1
+  - itemId: book_blank
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: keen_shard
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: wisdom_fragment
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: lucky_charm
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: tattered_cloth
+    chance: 0.0683
+    min: 1
+    max: 1
+  - itemId: broken_charm
+    chance: 0.0683
+    min: 1
+    max: 1
+  - itemId: ash_pile
+    chance: 0.0683
+    min: 1
+    max: 1
+  - itemId: cracked_fang
+    chance: 0.0683
+    min: 1
+    max: 1
+  - itemId: dull_shard
+    chance: 0.0683
+    min: 1
+    max: 1
+  - itemId: hostile_fang
+    chance: 0.02
+    min: 1
+    max: 1
+  - itemId: iron_fragment
+    chance: 0.02
+    min: 1
+    max: 1
+  - itemId: stone_plate
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: ARROW
+    chance: 0.0683
+    min: 1
+    max: 1
+  - material: LEATHER_HELMET
+    chance: 0.025
+    min: 1
+    max: 1
+  - material: LEATHER_CHESTPLATE
+    chance: 0.025
+    min: 1
+    max: 1
+  - material: LEATHER_LEGGINGS
+    chance: 0.025
+    min: 1
+    max: 1
+  - material: LEATHER_BOOTS
+    chance: 0.025
+    min: 1
+    max: 1
+  - material: WOODEN_SWORD
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: WOODEN_AXE
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: BOW
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: ARROW
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: CARROT
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: BREAD
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: MELON_SLICE
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: BAKED_POTATO
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: useless_rag
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_scrap
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_pebble
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_dust
+    chance: 0.005
+    min: 1
+    max: 1
+  - token: token
+    chance: 0.001
+    min: 1
+    max: 1

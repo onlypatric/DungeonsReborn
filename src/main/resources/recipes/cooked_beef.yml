@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: cooked_beef
+name: cooked_beef
+description: Ricetta per creare cooked_beef.
+inputs: []
+output:
+  itemId: cooked_beef
+  amount: 1

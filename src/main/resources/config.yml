@@ -16,7 +16,7 @@ logging:
 # Locale settings.
 locales:
   # Default locale code used for all players unless overridden.
-  default: en
+  default: it
   # Enabled locales that will be loaded.
   enabled:
     - en
@@ -57,22 +57,49 @@ upgrades:
     enabled: true
     # Permission that bypasses XP gating (leave blank to disable bypass).
     bypassPermission: dungeonsreborn.bypass.xp.upgrades
+  lore:
+    # Maximum number of lines for bind targets in upgrade book lore (0 = unlimited).
+    maxTargetLines: 10
+    # Text for truncated lines. {remaining} is replaced with the number of hidden entries.
+    moreFormat: "... {remaining} more"
 
 # Progression settings (vanilla XP is used as the point system).
 progression:
   levelCurve:
-    # Curve type: VANILLA or CUSTOM_THRESHOLDS.
+    # Curve type: VANILLA, CUSTOM_THRESHOLDS, or LINEAR.
     # - VANILLA uses the Minecraft XP level curve.
     # - CUSTOM_THRESHOLDS uses the thresholds list below (total XP per level).
+    # - LINEAR uses pointsPerLevel as the fixed XP per level.
     type: VANILLA
     # Total XP required for each level when using CUSTOM_THRESHOLDS.
     # Example: [0, 100, 250] means level 1 at 0 XP, level 2 at 100 XP, level 3 at 250 XP.
     thresholds: []
+    # Fixed XP per level when using LINEAR.
+    pointsPerLevel: 100
     # Optional soft cap applied to XP awards once a player reaches this total XP.
     # Use 0 to disable.
     softCapStart: 0
     # Multiplier applied to awards after softCapStart (1.0 = no change).
     softCapMultiplier: 1.0
+  customXp:
+    # Enable the custom XP system (rewards/gating will be migrated in phases).
+    enabled: true
+    # Optional curve overrides for custom XP.
+    levelCurve:
+      # Curve type: VANILLA, CUSTOM_THRESHOLDS, or LINEAR.
+      # - VANILLA uses the Minecraft XP level curve.
+      # - CUSTOM_THRESHOLDS uses the thresholds list below (total XP per level).
+      # - LINEAR uses pointsPerLevel as the fixed XP per level.
+      type: LINEAR
+      thresholds: []
+      pointsPerLevel: 100
+      softCapStart: 0
+      softCapMultiplier: 1.0
+    gain:
+      # Multiplier applied to custom XP awards.
+      multiplier: 1.0
+      # Log custom XP awards when true.
+      debug: false
   skillPoints:
     # How many total XP are required per skill point (0 disables skill points).
     perXp: 100

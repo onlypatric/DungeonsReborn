@@ -1,6 +1,10 @@
 package dev.patric.dungeonsreborn.effects.config;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -280,6 +284,10 @@ public final class EffectsYamlAbilities {
     sources.add(java.util.Map.entry(file().getPath(), YamlConfiguration.loadConfiguration(file())));
 
     File dir = abilitiesDir();
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+    ensureDefaultAbilities(dir);
     File[] extra = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml") || name.toLowerCase(Locale.ROOT).endsWith(".yaml"));
     if (extra != null) {
       java.util.Arrays.sort(extra, java.util.Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
@@ -395,6 +403,7 @@ public final class EffectsYamlAbilities {
     if (!itemsDir.exists()) {
       itemsDir.mkdirs();
     }
+    saveDefaultItemFiles(itemsDir);
     File[] itemFiles = itemsDir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml") || name.toLowerCase(Locale.ROOT).endsWith(".yaml"));
     if (itemFiles == null) {
       itemFiles = new File[0];
@@ -430,38 +439,6 @@ public final class EffectsYamlAbilities {
     }
 
     if (!errors.isEmpty()) {
-      // Roll back to previous YAML state on error.
-      for (String id : loadedAbilityIds) {
-        engine.unregisterAbility(id);
-      }
-      if (bindings != null) {
-        for (String id : loadedBindingIds) {
-          bindings.unregister(id);
-          bindings.unregisterPassive(id);
-        }
-        for (InteractBinding binding : previousInteractBindings) {
-          bindings.register(binding);
-        }
-        for (PassiveBinding binding : previousPassiveBindings) {
-          bindings.registerPassive(binding);
-        }
-      }
-      loadedBindingIds.clear();
-      loadedBindingIds.addAll(previousLoadedBindingIds);
-      for (Map.Entry<String, AbilitySpec> entry : previousYamlAbilities.entrySet()) {
-        engine.unregisterAbility(entry.getKey());
-        engine.registerAbility(entry.getValue());
-      }
-      loadedAbilityIds.clear();
-      loadedAbilityIds.addAll(previousLoadedAbilityIds);
-      overriddenCodeAbilities.clear();
-      overriddenCodeAbilities.putAll(previousOverridden);
-      itemTemplates.clear();
-      itemTemplates.putAll(previousTemplates);
-      yamlActionGraphs.clear();
-      yamlActionGraphs.putAll(previousYamlGraphs);
-      macros = previousMacros;
-
       effectsLog.warn("[Effects] YAML reload had " + errors.size() + " errors (some abilities/bindings may be missing)");
       for (String e : errors) {
         if (isBindingError(e)) {
@@ -470,27 +447,64 @@ public final class EffectsYamlAbilities {
           effectsLog.warn("[Effects] YAML: " + e);
         }
       }
-      effectsLog.warn("[Effects] YAML reload failed; previous configuration kept");
-    } else {
-      effectsLog.info("[Effects] YAML loaded " + loaded + " abilities");
-      bindingsLog.info("[Bindings] YAML loaded " + loadedItemBindings + " item bindings");
     }
+    effectsLog.info("[Effects] YAML loaded " + loaded + " abilities");
+    bindingsLog.info("[Bindings] YAML loaded " + loadedItemBindings + " item bindings");
     SystemStatusStore.get().record(
         "effects",
         "Effects",
         file().getPath(),
-        "abilities=" + (errors.isEmpty() ? loaded : previousLoadedAbilityIds.size()),
+        "abilities=" + loaded,
         errors);
     SystemStatusStore.get().record(
         "bindings",
         "Bindings",
         itemsDir.getPath(),
-        "itemBindings=" + (errors.isEmpty() ? loadedItemBindings : previousLoadedBindingIds.size()),
+        "itemBindings=" + loadedItemBindings,
         errors);
     return new ReloadResult(
-        errors.isEmpty() ? loaded : previousLoadedAbilityIds.size(),
-        errors.isEmpty() ? loadedItemBindings : previousLoadedBindingIds.size(),
+        loaded,
+        loadedItemBindings,
         errors);
+  }
+
+  private void ensureDefaultAbilities(File dir) {
+    List<String> entries = readResourceIndex("effects/abilities/index.txt");
+    if (entries.isEmpty()) {
+      return;
+    }
+    for (String entry : entries) {
+      String trimmed = entry.trim();
+      if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+        continue;
+      }
+      if (!trimmed.endsWith(".yml") && !trimmed.endsWith(".yaml")) {
+        continue;
+      }
+      File out = new File(dir, trimmed);
+      if (out.exists()) {
+        continue;
+      }
+      plugin.saveResource("effects/abilities/" + trimmed, false);
+    }
+  }
+
+  private List<String> readResourceIndex(String path) {
+    InputStream stream = plugin.getResource(path);
+    if (stream == null) {
+      return List.of();
+    }
+    List<String> lines = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        lines.add(line);
+      }
+    } catch (Exception ex) {
+      effectsLog.warn("[Effects] Unable to read " + path + ": " + ex.getMessage());
+      return List.of();
+    }
+    return lines;
   }
 
   public int syncOnlineItems() {
@@ -4237,6 +4251,19 @@ public final class EffectsYamlAbilities {
               cast.state().put(YAML_LAST_ENTITY, prev);
             }
           }).execute(ctx, target);
+        };
+      }
+      if ("lightning".equalsIgnoreCase(name) || "strike_lightning".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        boolean effectOnly = boolAttr(attrs, "effectOnly", true, stmtToken);
+        String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
+        EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          EntityActions.strikeLightning(effectOnly, policy).execute(ctx, target);
         };
       }
 
@@ -8312,5 +8339,92 @@ public final class EffectsYamlAbilities {
         || lower.contains("effects/items")
         || lower.contains("/items/")
         || lower.contains("\\items\\");
+  }
+
+  private static List<File> listYamlFiles(File folder) {
+    List<File> out = new ArrayList<>();
+    File[] entries = folder.listFiles();
+    if (entries == null) {
+      return out;
+    }
+    for (File entry : entries) {
+      if (entry.isDirectory()) {
+        continue;
+      }
+      String name = entry.getName().toLowerCase(Locale.ROOT);
+      if (name.endsWith(".yml") || name.endsWith(".yaml")) {
+        out.add(entry);
+      }
+    }
+    out.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+    return out;
+  }
+
+  private void saveDefaultItemFiles(File folder) {
+    List<String> bundled = listBundledItemFiles();
+    for (String file : bundled) {
+      File target = new File(folder, file);
+      if (target.exists()) {
+        continue;
+      }
+      try {
+        plugin.saveResource("effects/items/" + file, false);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+  }
+
+  private List<String> listBundledItemFiles() {
+    try {
+      java.net.URL url = plugin.getClass().getClassLoader().getResource("effects/items");
+      if (url == null) {
+        return List.of();
+      }
+      String protocol = url.getProtocol();
+      if ("file".equalsIgnoreCase(protocol)) {
+        File dir = new File(url.toURI());
+        List<String> names = new ArrayList<>();
+        File[] entries = dir.listFiles();
+        if (entries == null) {
+          return List.of();
+        }
+        for (File entry : entries) {
+          if (!entry.isFile()) {
+            continue;
+          }
+          String name = entry.getName();
+          String lower = name.toLowerCase(Locale.ROOT);
+          if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+            names.add(name);
+          }
+        }
+        names.sort(String.CASE_INSENSITIVE_ORDER);
+        return names;
+      }
+      if ("jar".equalsIgnoreCase(protocol)) {
+        java.net.JarURLConnection conn = (java.net.JarURLConnection) url.openConnection();
+        try (java.util.jar.JarFile jar = conn.getJarFile()) {
+          List<String> names = new ArrayList<>();
+          java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+          while (entries.hasMoreElements()) {
+            java.util.jar.JarEntry entry = entries.nextElement();
+            String name = entry.getName();
+            if (!name.startsWith("effects/items/") || entry.isDirectory()) {
+              continue;
+            }
+            String base = name.substring("effects/items/".length());
+            String lower = base.toLowerCase(Locale.ROOT);
+            if (lower.endsWith(".yml") || lower.endsWith(".yaml")) {
+              names.add(base);
+            }
+          }
+          names.sort(String.CASE_INSENSITIVE_ORDER);
+          return names;
+        }
+      }
+      return List.of();
+    } catch (Exception ignored) {
+      return List.of();
+    }
   }
 }

@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_axe_sfondamento_ii
+name: "<yellow>Incisione da Assedio II</yellow>"
+description: |-
+  Aumenta notevolmente il danno contro bersagli in parata con lo scudo.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_axe
+    - minecraft:golden_axe
+    - minecraft:iron_axe
+    - minecraft:netherite_axe
+    - minecraft:stone_axe
+    - minecraft:wooden_axe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_axe_sfondamento_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_axe_sfondamento_ii
+  activator: LEFT_CLICK

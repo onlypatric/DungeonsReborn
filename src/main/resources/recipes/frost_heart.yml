@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: frost_heart
+name: frost_heart
+description: Ricetta per creare frost_heart.
+inputs: []
+output:
+  itemId: frost_heart
+  amount: 1

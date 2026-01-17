@@ -1,0 +1,193 @@
+loot:
+  rolls: 1
+  bonusRolls: 0
+  clearVanilla: false
+  drops:
+  - upgradeId: basic_shield_riflesso_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_furia_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_ripresa_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_squarcio_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_precisione_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - upgradeId: basic_rune_esperienza_ii
+    chance: 0.00167
+    min: 1
+    max: 1
+  - itemId: book_blank
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: corrupted_thread
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: corrupted_core
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: mirror_shard
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: blood_thread
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: keen_shard
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: wisdom_fragment
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: lucky_charm
+    chance: 0.04
+    min: 1
+    max: 1
+  - itemId: useless_stick
+    chance: 0.07
+    min: 1
+    max: 1
+  - itemId: useless_rotten_meat
+    chance: 0.06
+    min: 1
+    max: 1
+  - itemId: useless_bone
+    chance: 0.05
+    min: 1
+    max: 1
+  - itemId: tattered_cloth
+    chance: 0.03
+    min: 1
+    max: 1
+  - itemId: broken_charm
+    chance: 0.03
+    min: 1
+    max: 1
+  - itemId: ash_pile
+    chance: 0.02
+    min: 1
+    max: 1
+  - itemId: cracked_fang
+    chance: 0.01
+    min: 1
+    max: 1
+  - itemId: dull_shard
+    chance: 0.01
+    min: 1
+    max: 1
+  - itemId: corrupted_heart
+    chance: 0.03
+    min: 1
+    max: 1
+  - itemId: wisdom_core
+    chance: 0.03
+    min: 1
+    max: 1
+  - itemId: lucky_core
+    chance: 0.03
+    min: 1
+    max: 1
+  - material: CHAINMAIL_HELMET
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: CHAINMAIL_CHESTPLATE
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: CHAINMAIL_LEGGINGS
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: CHAINMAIL_BOOTS
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: STONE_SWORD
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: STONE_AXE
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: BOW
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: CROSSBOW
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: ARROW
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: COOKED_BEEF
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: COOKED_PORKCHOP
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: COOKED_MUTTON
+    chance: 0.03
+    min: 1
+    max: 1
+  - material: BAKED_POTATO
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: BREAD
+    chance: 0.02
+    min: 1
+    max: 1
+  - material: CARROT
+    chance: 0.04
+    min: 1
+    max: 1
+  - material: GOLDEN_APPLE
+    chance: 0.0199
+    min: 1
+    max: 1
+  - material: ENCHANTED_GOLDEN_APPLE
+    chance: 0.0001
+    min: 1
+    max: 1
+  - itemId: useless_rag
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_scrap
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_pebble
+    chance: 0.005
+    min: 1
+    max: 1
+  - itemId: useless_dust
+    chance: 0.005
+    min: 1
+    max: 1
+  - token: token
+    chance: 0.003
+    min: 1
+    max: 1

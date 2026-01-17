@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_elemental_arcane_blade_ii:
+    name: "<light_purple>Aura Lama Arcana II</light_purple>"
+    description: "<dark_gray>Indebolisce i nemici vicini.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=24 count=1 offset=0.04 color="#b35cff" size=1.05
+          for_each_target type=sphere radius=3 filter=mobs originAt=origin {
+            potion effect=WEAKNESS durationTicks=40 amplifier=0
+          }
+        }

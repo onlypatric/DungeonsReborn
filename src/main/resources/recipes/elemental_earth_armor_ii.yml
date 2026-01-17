@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_earth_armor_ii
+name: <aqua>Corazza di Pietra II</aqua>
+description: Ricetta per creare <aqua>Corazza di Pietra II</aqua>.
+inputs: []
+output:
+  itemId: elemental_earth_armor_ii
+  amount: 1

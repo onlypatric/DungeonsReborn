@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: ENDER_PEARL
+  amount: 1
+  meta:
+    display-name: "Bagliore Arcano"
+    lore:
+      - "Brilla di magia."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

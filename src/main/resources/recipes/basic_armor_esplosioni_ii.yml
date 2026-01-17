@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_esplosioni_ii
+name: <yellow>Sigillo Antiesplosione II</yellow>
+description: Ricetta per creare <yellow>Sigillo Antiesplosione II</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_esplosioni_ii
+  amount: 1

@@ -1,0 +1,13 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_aura_basic_crossbow_tiro_i:
+    name: "<gray>Aura basic_crossbow_tiro_i</gray>"
+    description: "<dark_gray>Effetto visivo base.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.4 points=22 count=1 offset=0.04 color="#8fc1e3" size=0.95
+          particles.point particle=END_ROD count=1 offset=0.03
+        }

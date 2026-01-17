@@ -1,0 +1,8 @@
+schemaVersion: 1
+item:
+  type: ROTTEN_FLESH
+  amount: 1
+  meta:
+    display-name: "Carne Marcia Inutile"
+    lore:
+      - "Marcia e senza valore."

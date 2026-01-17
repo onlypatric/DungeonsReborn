@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_shield_contrasto_i
+name: <yellow>Scudo del Contrasto I</yellow>
+description: Ricetta per creare <yellow>Scudo del Contrasto I</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 2
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 52
+output:
+  itemId: basic_shield_contrasto_i
+  amount: 1

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: arcane_glimmer
+name: arcane_glimmer
+description: Ricetta per creare arcane_glimmer.
+inputs: []
+output:
+  itemId: arcane_glimmer
+  amount: 1

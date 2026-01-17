@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_windstep:
+    name: "<aqua>Proc: Scatto del Vento</aqua>"
+    description: "<dark_gray>Breve scatto e velocita.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=CLOUD radius=1.2 points=20 count=1 offset=0.04
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=SPEED durationTicks=40 amplifier=0
+          }
+        }

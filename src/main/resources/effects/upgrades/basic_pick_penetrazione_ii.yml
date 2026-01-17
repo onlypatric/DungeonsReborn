@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_pick_penetrazione_ii
+name: "<yellow>Sigillo di Penetrazione II</yellow>"
+description: |-
+  Ignora una parte maggiore dell'armatura del bersaglio.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_pickaxe
+    - minecraft:golden_pickaxe
+    - minecraft:iron_pickaxe
+    - minecraft:netherite_pickaxe
+    - minecraft:stone_pickaxe
+    - minecraft:wooden_pickaxe
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_pick_penetrazione_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_pick_penetrazione_ii
+  activator: LEFT_CLICK

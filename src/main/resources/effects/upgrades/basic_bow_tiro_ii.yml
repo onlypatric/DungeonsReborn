@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_bow_tiro_ii
+name: "<yellow>Corda Tesa II</yellow>"
+description: |-
+  Aumenta notevolmente i danni delle frecce scoccate con l'arco.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_bow_tiro_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_bow_tiro_ii
+  activator: RIGHT_CLICK

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_elytra_controllo_i
+name: "<yellow>Trama di Controllo I</yellow>"
+description: |-
+  Migliora il controllo e la stabilita durante la planata.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:elytra
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_elytra_controllo_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_elytra_controllo_i
+  activator: PASSIVE

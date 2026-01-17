@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: QUARTZ
+  amount: 1
+  meta:
+    display-name: "Scheggia Affilata"
+    lore:
+      - "Una scheggia che affina l'intento."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

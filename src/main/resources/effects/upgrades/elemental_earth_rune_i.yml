@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: elemental_earth_rune_i
+name: "<aqua>Runa della Terra I</aqua>"
+description: |-
+  Aumenta la probabilita di stordire brevemente il bersaglio.
+limits:
+  category: elemental
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_earth_rune_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_earth_rune_i
+  activator: SHIFT_RIGHT_CLICK

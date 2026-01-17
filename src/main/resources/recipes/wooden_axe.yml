@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: wooden_axe
+name: wooden_axe
+description: Ricetta per creare wooden_axe.
+inputs: []
+output:
+  itemId: wooden_axe
+  amount: 1

@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_axe_sfondamento_ii
+name: <yellow>Incisione da Assedio II</yellow>
+description: Ricetta per creare <yellow>Incisione da Assedio II</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 3
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 28
+output:
+  itemId: basic_axe_sfondamento_ii
+  amount: 1

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_crossbow_tiro_i
+name: "<yellow>Ingranaggio Serrato I</yellow>"
+description: |-
+  Aumenta i danni dei dardi della balestra.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:crossbow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_crossbow_tiro_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_crossbow_tiro_i
+  activator: RIGHT_CLICK

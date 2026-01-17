@@ -101,7 +101,7 @@ public final class DungeonsRebornCommand {
             advancements, upgrades, kits)))
         .then(Commands.literal("status").executes(DungeonsRebornCommand::status))
         .then(Commands.literal("admin").executes(ctx -> openAdmin(ctx, editor, mobsYaml, mobsRegistry, quests, shops,
-            crafting, craftingSessions, classRegistry, dungeonRegistry, dungeonQueue, dungeonSessions)))
+            crafting, craftingSessions, classRegistry, upgrades, dungeonRegistry, dungeonQueue, dungeonSessions)))
         .then(EffectsCommand.createCommand(engine, yaml, bindings, editor, minions))
         .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore))
         .then(GuiCommand.createCommand())
@@ -340,6 +340,7 @@ public final class DungeonsRebornCommand {
       CraftingYamlRegistry crafting,
       CraftingGuiSessionManager craftingSessions,
       ClassYamlRegistry classes,
+      UpgradeService upgrades,
       DungeonYamlRegistry dungeons,
       DungeonQueueService dungeonQueue,
       DungeonSessionManager dungeonSessions) {
@@ -355,7 +356,7 @@ public final class DungeonsRebornCommand {
       return Command.SINGLE_SUCCESS;
     }
     QuestYamlRegistry questYaml = quests == null ? null : quests.registry();
-    new AdminHubMenu(editor, mobsYaml, mobsRegistry, questYaml, shops, crafting, craftingSessions, classes,
+    new AdminHubMenu(editor, mobsYaml, mobsRegistry, questYaml, shops, crafting, craftingSessions, classes, upgrades,
         dungeons, dungeonQueue, dungeonSessions).open(player);
     return Command.SINGLE_SUCCESS;
   }

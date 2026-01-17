@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: storm_core
+name: storm_core
+description: Ricetta per creare storm_core.
+inputs: []
+output:
+  itemId: storm_core
+  amount: 1

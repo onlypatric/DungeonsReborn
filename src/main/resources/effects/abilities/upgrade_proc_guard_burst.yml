@@ -1,0 +1,15 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_guard_burst:
+    name: "<gray>Proc: Guardia</gray>"
+    description: "<dark_gray>Riduce i danni per un breve istante.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.ring particle=DUST radius=1.3 points=22 count=1 offset=0.04 color="#b0b0b0" size=0.9
+          for_each_target type=self filter=players originAt=origin {
+            potion effect=RESISTANCE durationTicks=40 amplifier=0
+          }
+        }

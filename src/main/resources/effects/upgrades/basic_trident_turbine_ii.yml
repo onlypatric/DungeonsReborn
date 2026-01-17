@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_trident_turbine_ii
+name: "<yellow>Trama del Turbine II</yellow>"
+description: |-
+  Aumenta notevolmente i danni della rotazione quando lanci il tridente.
+limits:
+  category: basic
+  tier: 3
+compatibility:
+  allowMaterials:
+    - minecraft:trident
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_trident_turbine_ii
+  secondaryDescriptions:
+    - "<dark_gray>Rallenta i nemici vicini.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_trident_turbine_ii
+  activator: RIGHT_CLICK

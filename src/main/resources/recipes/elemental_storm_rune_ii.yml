@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_storm_rune_ii
+name: <aqua>Runa del Fulmine II</aqua>
+description: Ricetta per creare <aqua>Runa del Fulmine II</aqua>.
+inputs: []
+output:
+  itemId: elemental_storm_rune_ii
+  amount: 1

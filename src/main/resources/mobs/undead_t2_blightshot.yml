@@ -36,35 +36,14 @@ mobs:
           source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
             \ originAt=origin {\n    knockback horizontal=0.7 vertical=0.2\n  }\n}"
     loot:
-      clearVanilla: true
-      rolls: 1
-      drops:
-      - token: token
-        min: 2
-        max: 4
-      - material: STONE_SWORD
-        chance: 25
-      - material: STONE_AXE
-        chance: 25
-      - material: BOW
-        chance: 20
-      - material: LEATHER_CHESTPLATE
-        chance: 20
-      - material: CHAINMAIL_CHESTPLATE
-        chance: 15
-      - material: CARROT
-        chance: 40
-        min: 1
-        max: 2
-      - material: MELON_SLICE
-        chance: 40
-        min: 1
-        max: 2
+      pool: undead_t2
+      merge: true
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
 spawnerBlocks:
   undead_t2_blightshot_spawner:
     mob: undead_t2_blightshot

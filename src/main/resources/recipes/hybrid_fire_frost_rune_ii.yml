@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: hybrid_fire_frost_rune_ii
+name: <light_purple>Runa della Brina Ardente II</light_purple>
+description: Ricetta per creare <light_purple>Runa della Brina Ardente II</light_purple>.
+inputs: []
+output:
+  itemId: hybrid_fire_frost_rune_ii
+  amount: 1

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_axe_lacerazione_ii
+name: <yellow>Incisione Lacerante II</yellow>
+description: Ricetta per creare <yellow>Incisione Lacerante II</yellow>.
+inputs: []
+output:
+  itemId: basic_axe_lacerazione_ii
+  amount: 1

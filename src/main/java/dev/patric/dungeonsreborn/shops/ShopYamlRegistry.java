@@ -507,11 +507,13 @@ public final class ShopYamlRegistry {
       throw new IllegalArgumentException(path + ".sell: missing ingredient");
     }
     int maxUses = YamlValues.intValue(trade.get("maxUses"), 0);
+    int minLevel = Math.max(0, YamlValues.intValue(trade.get("minLevel"), 0));
     boolean experienceReward = YamlValues.bool(trade.get("experienceReward"), false);
     float priceMultiplier = (float) YamlValues.doubleValue(trade.get("priceMultiplier"), 0.0);
     List<String> previewLore = parsePreviewLore(trade.get("previewLore"), path + ".previewLore", errors);
     ShopDynamicPriceSpec dynamicPrice = parseDynamicPrice(trade.get("dynamicPrice"), path + ".dynamicPrice", errors);
-    return new ShopTradeSpec(buyA, buyB, sell, maxUses, experienceReward, priceMultiplier, previewLore, dynamicPrice);
+    return new ShopTradeSpec(buyA, buyB, sell, maxUses, minLevel, experienceReward, priceMultiplier, previewLore,
+        dynamicPrice);
   }
 
   private List<String> parsePreviewLore(Object raw, String path, List<String> errors) {

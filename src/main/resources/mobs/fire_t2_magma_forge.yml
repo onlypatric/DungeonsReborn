@@ -29,10 +29,14 @@ mobs:
           source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
             \ originAt=origin {\n    ignite durationTicks=80\n  }\n}"
     xpGating:
-      minLevel: 1500
+      minLevel: 15000
     progression:
-      minXp: 44165
-      maxXp: 59752
+      minXp: 45
+      maxXp: 65
+      maxPlayerXp: 2000000
+    loot:
+      pool: elemental_fire
+      merge: true
 spawnerBlocks:
   fire_t2_magma_forge_spawner:
     mob: fire_t2_magma_forge

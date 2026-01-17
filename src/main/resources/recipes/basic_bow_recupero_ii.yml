@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: basic_bow_recupero_ii
+name: <yellow>Corda del Recupero II</yellow>
+description: Ricetta per creare <yellow>Corda del Recupero II</yellow>.
+inputs:
+- type: tag
+  tag: dungeonsreborn:shop_token_compressed
+  amount: 2
+- type: tag
+  tag: dungeonsreborn:shop_token
+  amount: 52
+output:
+  itemId: basic_bow_recupero_ii
+  amount: 1

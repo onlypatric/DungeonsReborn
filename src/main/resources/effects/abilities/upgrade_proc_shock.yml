@@ -1,0 +1,16 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_shock:
+    name: "<blue>Proc: Scossa</blue>"
+    description: "<dark_gray>Fulmine e lieve danno.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.point particle=ELECTRIC_SPARK count=6 offset=0.1
+          sound minecraft:entity.lightning_bolt.thunder volume=0.6 pitch=1.4
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            damage amount=2
+          }
+        }

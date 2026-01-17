@@ -1,0 +1,25 @@
+schemaVersion: 1
+id: hybrid_frost_earth_bow_i
+name: "<light_purple>Corda del Ghiaccio Roccioso</light_purple>"
+description: |-
+  Le frecce rilasciano frammenti di ghiaccio e polvere.
+limits:
+  category: hybrid
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_hybrid_frost_earth_bow_i
+    - upgrade_proc_frostbite
+    - upgrade_proc_knockback
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+    - "<dark_gray>Rallenta e infligge danni nel tempo.</dark_gray>"
+    - "<dark_gray>Piccolo knockback con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_hybrid_frost_earth_bow_i
+  activator: RIGHT_CLICK

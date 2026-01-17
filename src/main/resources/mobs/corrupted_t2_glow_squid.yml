@@ -24,10 +24,14 @@ mobs:
             \ originAt=origin {\n    potion effect=BLINDNESS durationTicks=80 amplifier=0\n\
             \    potion effect=NAUSEA durationTicks=80 amplifier=0\n  }\n}"
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
+    loot:
+      pool: corrupted_t2
+      merge: true
 spawnerBlocks:
   corrupted_t2_glow_squid_spawner:
     mob: corrupted_t2_glow_squid

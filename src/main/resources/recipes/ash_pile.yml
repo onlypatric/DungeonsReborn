@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: ash_pile
+name: ash_pile
+description: Ricetta per creare ash_pile.
+inputs: []
+output:
+  itemId: ash_pile
+  amount: 1

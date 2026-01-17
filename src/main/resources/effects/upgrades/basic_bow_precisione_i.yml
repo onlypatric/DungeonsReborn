@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: basic_bow_precisione_i
+name: "<yellow>Mirino di Cuoio I</yellow>"
+description: |-
+  Riduce la dispersione e rende i tiri piu precisi.
+limits:
+  category: basic
+  tier: 1
+compatibility:
+  allowMaterials:
+    - minecraft:bow
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_bow_precisione_i
+    - upgrade_proc_crit_flash
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+    - "<dark_gray>Lampo accecante con danno lieve.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_bow_precisione_i
+  activator: RIGHT_CLICK

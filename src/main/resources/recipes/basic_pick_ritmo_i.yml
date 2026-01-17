@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_pick_ritmo_i
+name: <yellow>Piccone da Battaglia I</yellow>
+description: Ricetta per creare <yellow>Piccone da Battaglia I</yellow>.
+inputs: []
+output:
+  itemId: basic_pick_ritmo_i
+  amount: 1

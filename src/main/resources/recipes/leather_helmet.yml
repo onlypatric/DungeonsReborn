@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: leather_helmet
+name: leather_helmet
+description: Ricetta per creare leather_helmet.
+inputs: []
+output:
+  itemId: leather_helmet
+  amount: 1

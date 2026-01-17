@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_sword_esecuzione_ii
+name: "<yellow>Lama dell'Esecuzione II</yellow>"
+description: |-
+  Dopo un'uccisione, ti cura di 2 cuori (8s di ricarica).
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_sword
+    - minecraft:golden_sword
+    - minecraft:iron_sword
+    - minecraft:netherite_sword
+    - minecraft:stone_sword
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_sword_esecuzione_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_sword_esecuzione_ii
+  activator: LEFT_CLICK

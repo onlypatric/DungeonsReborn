@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: IRON_INGOT
+  amount: 1
+  meta:
+    display-name: Nucleo di Ferro
+    lore:
+    - Un nucleo resistente e pesante.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

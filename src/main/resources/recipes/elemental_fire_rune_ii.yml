@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_fire_rune_ii
+name: <aqua>Runa della Fiamma II</aqua>
+description: Ricetta per creare <aqua>Runa della Fiamma II</aqua>.
+inputs: []
+output:
+  itemId: elemental_fire_rune_ii
+  amount: 1

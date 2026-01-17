@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: LAPIS_LAZULI
+  amount: 1
+  meta:
+    display-name: Nucleo di Saggezza
+    lore:
+    - Un nucleo colmo di conoscenza.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_crafted_storm_i
+name: <aqua>Catalizzatore di Tuono</aqua>
+description: Ricetta per creare <aqua>Catalizzatore di Tuono</aqua>.
+inputs: []
+output:
+  itemId: elemental_crafted_storm_i
+  amount: 1

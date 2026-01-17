@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: basic_trident_ritmo_i
+name: "<yellow>Trama Abissale II</yellow>"
+description: |-
+  Aumenta la velocita di attacco del tridente.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:trident
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_trident_ritmo_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_trident_ritmo_i
+  activator: RIGHT_CLICK

@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: wisdom_fragment
+name: wisdom_fragment
+description: Ricetta per creare wisdom_fragment.
+inputs: []
+output:
+  itemId: wisdom_fragment
+  amount: 1

@@ -34,33 +34,14 @@ mobs:
             \ originAt=origin {\n    knockback horizontal=0.9 vertical=0.3\n    potion\
             \ effect=WEAKNESS durationTicks=40 amplifier=0\n  }\n}"
     loot:
-      clearVanilla: true
-      rolls: 1
-      drops:
-      - token: token
-        min: 2
-        max: 4
-      - material: STONE_SWORD
-        chance: 25
-      - material: STONE_AXE
-        chance: 25
-      - material: CHAINMAIL_LEGGINGS
-        chance: 20
-      - material: LEATHER_CHESTPLATE
-        chance: 15
-      - material: CARROT
-        chance: 40
-        min: 1
-        max: 2
-      - material: MELON_SLICE
-        chance: 40
-        min: 1
-        max: 2
+      pool: undead_t2
+      merge: true
     xpGating:
-      minLevel: 100
+      minLevel: 3000
     progression:
-      minXp: 5752
-      maxXp: 7782
+      minXp: 12
+      maxXp: 18
+      maxPlayerXp: 600000
 spawnerBlocks:
   undead_t2_dreadmonger_spawner:
     mob: undead_t2_dreadmonger

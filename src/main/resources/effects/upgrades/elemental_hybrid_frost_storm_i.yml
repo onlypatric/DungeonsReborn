@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: elemental_hybrid_frost_storm_i
+name: "<light_purple>Runa della Tempesta Gelida</light_purple>"
+description: |-
+  Unisce gelo e fulmini per effetti piu persistenti.
+limits:
+  category: hybrid
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_hybrid_frost_storm_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_hybrid_frost_storm_i
+  activator: PASSIVE

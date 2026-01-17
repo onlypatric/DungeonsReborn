@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: useless_rotten_meat
+name: useless_rotten_meat
+description: Ricetta per creare useless_rotten_meat.
+inputs: []
+output:
+  itemId: useless_rotten_meat
+  amount: 1

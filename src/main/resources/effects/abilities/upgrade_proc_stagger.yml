@@ -1,0 +1,16 @@
+schemaVersion: 1
+
+abilities:
+  upgrade_proc_stagger:
+    name: "<gray>Proc: Stordimento</gray>"
+    description: "<dark_gray>Indebolisce e rallenta brevemente.</dark_gray>"
+    script:
+      language: "dsl-v1"
+      source: |-
+        on_cast {
+          particles.point particle=ASH count=6 offset=0.1
+          for_each_target type=nearest radius=3 filter=mobs originAt=origin {
+            potion effect=WEAKNESS durationTicks=60 amplifier=0
+            potion effect=SLOWNESS durationTicks=60 amplifier=0
+          }
+        }

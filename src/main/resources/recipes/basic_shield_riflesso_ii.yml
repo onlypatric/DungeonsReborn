@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_shield_riflesso_ii
+name: <yellow>Scudo Riflesso II</yellow>
+description: Ricetta per creare <yellow>Scudo Riflesso II</yellow>.
+inputs: []
+output:
+  itemId: basic_shield_riflesso_ii
+  amount: 1

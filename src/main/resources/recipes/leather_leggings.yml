@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: leather_leggings
+name: leather_leggings
+description: Ricetta per creare leather_leggings.
+inputs: []
+output:
+  itemId: leather_leggings
+  amount: 1

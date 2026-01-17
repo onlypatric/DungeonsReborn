@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: WITHER_SKELETON_SKULL
+  amount: 1
+  meta:
+    display-name: "Cuore Non Morto"
+    lore:
+      - "Un cuore maledetto dei defunti."
+    enchants:
+      DURABILITY: 1
+    flags:
+      - HIDE_ENCHANTS

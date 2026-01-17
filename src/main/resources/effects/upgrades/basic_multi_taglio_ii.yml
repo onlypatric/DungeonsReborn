@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: basic_multi_taglio_ii
+name: "<yellow>Lama Comune II</yellow>"
+description: |-
+  Aumenta in modo visibile il danno delle armi da taglio (spade e asce).
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:diamond_axe
+    - minecraft:diamond_sword
+    - minecraft:golden_axe
+    - minecraft:golden_sword
+    - minecraft:iron_axe
+    - minecraft:iron_sword
+    - minecraft:netherite_axe
+    - minecraft:netherite_sword
+    - minecraft:stone_axe
+    - minecraft:stone_sword
+    - minecraft:wooden_axe
+    - minecraft:wooden_sword
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_multi_taglio_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_multi_taglio_ii
+  activator: PASSIVE

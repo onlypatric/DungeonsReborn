@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: arrows_basic
+name: arrows_basic
+description: Ricetta per creare arrows_basic.
+inputs: []
+output:
+  itemId: arrows_basic
+  amount: 1

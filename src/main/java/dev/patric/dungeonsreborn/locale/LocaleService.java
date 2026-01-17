@@ -1,6 +1,8 @@
 package dev.patric.dungeonsreborn.locale;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,6 +42,7 @@ public final class LocaleService {
       "meta.yml",
       "tokens.yml"
   );
+  private static final Pattern EMPTY_KEY_LINE = Pattern.compile("^\\s*(?:''|\"\"|):\\s*.*$");
   private String defaultLocale = "en";
   private Set<String> enabledLocales = Set.of("en");
   private Map<UUID, String> playerOverrides = new HashMap<>();
@@ -105,8 +109,12 @@ public final class LocaleService {
           continue;
         }
         for (File localeFile : localeFiles) {
-          YamlConfiguration yaml = YamlConfiguration.loadConfiguration(localeFile);
-          flatten(yaml, "", entries, errors, "locales/" + locale + "/" + relativePath(localeDir, localeFile));
+          String source = "locales/" + locale + "/" + relativePath(localeDir, localeFile);
+          YamlConfiguration yaml = loadYaml(localeFile, errors, source);
+          if (yaml == null) {
+            continue;
+          }
+          flatten(yaml, "", entries, errors, source);
         }
       } else {
         File file = new File(folder, locale + ".yml");
@@ -114,9 +122,14 @@ public final class LocaleService {
           errors.add("locales/" + locale + ".yml: missing locale file");
           continue;
         }
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        flatten(yaml, "", entries, errors, "locales/" + locale + ".yml");
+        String source = "locales/" + locale + ".yml";
+        YamlConfiguration yaml = loadYaml(file, errors, source);
+        if (yaml == null) {
+          continue;
+        }
+        flatten(yaml, "", entries, errors, source);
       }
+      fillEmptyStrings(entries, errors, "locales/" + locale);
       bundles.put(locale, entries);
     }
     if (!bundles.containsKey(defaultLocale)) {
@@ -244,11 +257,21 @@ public final class LocaleService {
       if (value instanceof ConfigurationSection child) {
         flatten(child, path, out, errors, source);
       } else if (value instanceof String text) {
-        if (out.put(path, text) != null) {
+        String resolved = text == null ? "" : text;
+        if (resolved.isBlank()) {
+          resolved = humanizeKey(path);
+          errors.add(source + ": empty value at " + path + " (filled)");
+        }
+        if (out.put(path, resolved) != null) {
           errors.add(source + ": duplicate key " + path);
         }
       } else if (value instanceof List<?> list) {
-        if (out.put(path, joinLines(list)) != null) {
+        String resolved = joinLines(list);
+        if (resolved.isBlank()) {
+          resolved = humanizeKey(path);
+          errors.add(source + ": empty value at " + path + " (filled)");
+        }
+        if (out.put(path, resolved) != null) {
           errors.add(source + ": duplicate key " + path);
         }
       }
@@ -311,6 +334,76 @@ public final class LocaleService {
         out.append('\n');
       }
       out.append(entry == null ? "" : entry.toString());
+    }
+    return out.toString();
+  }
+
+  private static YamlConfiguration loadYaml(File file, List<String> errors, String source) {
+    try {
+      String raw = Files.readString(file.toPath());
+      String sanitized = sanitizeLocaleYaml(raw);
+      if (!sanitized.equals(raw)) {
+        errors.add(source + ": removed empty keys");
+      }
+      YamlConfiguration yaml = new YamlConfiguration();
+      yaml.loadFromString(sanitized);
+      return yaml;
+    } catch (IOException ex) {
+      errors.add(source + ": failed to read (" + ex.getMessage() + ")");
+      return null;
+    } catch (Exception ex) {
+      errors.add(source + ": failed to parse (" + ex.getMessage() + ")");
+      return null;
+    }
+  }
+
+  private static String sanitizeLocaleYaml(String raw) {
+    if (raw == null || raw.isEmpty()) {
+      return "";
+    }
+    String[] lines = raw.split("\\R", -1);
+    StringBuilder out = new StringBuilder(raw.length());
+    for (String line : lines) {
+      if (EMPTY_KEY_LINE.matcher(line).matches()) {
+        continue;
+      }
+      out.append(line).append('\n');
+    }
+    if (out.length() > 0) {
+      out.setLength(out.length() - 1);
+    }
+    return out.toString();
+  }
+
+  private static void fillEmptyStrings(Map<String, String> entries, List<String> errors, String source) {
+    for (Map.Entry<String, String> entry : entries.entrySet()) {
+      String value = entry.getValue();
+      if (value != null && !value.isBlank()) {
+        continue;
+      }
+      entry.setValue(humanizeKey(entry.getKey()));
+      errors.add(source + ": empty value at " + entry.getKey() + " (filled)");
+    }
+  }
+
+  private static String humanizeKey(String key) {
+    if (key == null || key.isBlank()) {
+      return "Missing text";
+    }
+    String spaced = key.replace('.', ' ').replace('_', ' ').replace('-', ' ');
+    String[] parts = spaced.split("\\s+");
+    StringBuilder out = new StringBuilder();
+    for (String part : parts) {
+      if (part.isBlank()) {
+        continue;
+      }
+      if (out.length() > 0) {
+        out.append(' ');
+      }
+      out.append(Character.toUpperCase(part.charAt(0)));
+      if (part.length() > 1) {
+        out.append(part.substring(1));
+      }
     }
     return out.toString();
   }

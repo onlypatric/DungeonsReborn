@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: basic_armor_salto_i
+name: <yellow>Sigillo del Balzo I</yellow>
+description: Ricetta per creare <yellow>Sigillo del Balzo I</yellow>.
+inputs: []
+output:
+  itemId: basic_armor_salto_i
+  amount: 1

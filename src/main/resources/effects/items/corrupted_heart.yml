@@ -1,0 +1,12 @@
+schemaVersion: 1
+item:
+  type: NETHER_WART
+  amount: 1
+  meta:
+    display-name: Cuore Corrotto
+    lore:
+    - Un cuore deformato dalla corruzione.
+    enchants:
+      DURABILITY: 1
+    flags:
+    - HIDE_ENCHANTS

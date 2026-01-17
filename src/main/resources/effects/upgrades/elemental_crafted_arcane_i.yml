@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: elemental_crafted_arcane_i
+name: "<aqua>Catalizzatore del Vuoto</aqua>"
+description: |-
+  Potenzia la durata dei silenzi applicati.
+limits:
+  category: elemental
+  tier: 2
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_elemental_crafted_arcane_i
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo elementale.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_elemental_crafted_arcane_i
+  activator: PASSIVE

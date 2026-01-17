@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: basic_armor_salto_ii
+name: "<yellow>Sigillo del Balzo II</yellow>"
+description: |-
+  Aumenta notevolmente l'altezza del salto mentre indossi gli stivali.
+limits:
+  category: basic
+  tier: 2
+compatibility:
+  allowMaterials:
+    - minecraft:chainmail_boots
+    - minecraft:diamond_boots
+    - minecraft:golden_boots
+    - minecraft:iron_boots
+    - minecraft:leather_boots
+    - minecraft:netherite_boots
+
+behaviors:
+  secondaryAbilities:
+    - upgrade_aura_basic_armor_salto_ii
+  secondaryDescriptions:
+    - "<dark_gray>Effetto visivo base.</dark_gray>"
+
+spell:
+  ability: upgrade_aura_basic_armor_salto_ii
+  activator: PASSIVE

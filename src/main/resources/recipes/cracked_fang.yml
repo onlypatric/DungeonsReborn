@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: cracked_fang
+name: cracked_fang
+description: Ricetta per creare cracked_fang.
+inputs: []
+output:
+  itemId: cracked_fang
+  amount: 1

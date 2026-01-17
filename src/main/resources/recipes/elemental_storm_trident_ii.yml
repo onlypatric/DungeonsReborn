@@ -1,0 +1,8 @@
+schemaVersion: 1
+id: elemental_storm_trident_ii
+name: <aqua>Trama del Fulmine II</aqua>
+description: Ricetta per creare <aqua>Trama del Fulmine II</aqua>.
+inputs: []
+output:
+  itemId: elemental_storm_trident_ii
+  amount: 1
