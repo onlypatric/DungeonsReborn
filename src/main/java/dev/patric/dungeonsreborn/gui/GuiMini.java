@@ -6,6 +6,7 @@ import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import dev.patric.dungeonsreborn.util.TextStyles;
 
 /**
  * Small MiniMessage helpers for GUI styling.
@@ -22,12 +23,12 @@ public final class GuiMini {
 
   public static Component mm(String template) {
     Objects.requireNonNull(template, "template");
-    return MM.deserialize(template);
+    return TextStyles.noItalic(MM.deserialize(template));
   }
 
   public static Component mm(String template, TagResolver... resolvers) {
     Objects.requireNonNull(template, "template");
-    return MM.deserialize(template, resolvers);
+    return TextStyles.noItalic(MM.deserialize(template, resolvers));
   }
 
   public static List<Component> loreMm(List<String> linesMm, TagResolver... resolvers) {
@@ -35,4 +36,3 @@ public final class GuiMini {
     return linesMm.stream().map(line -> mm(line, resolvers)).toList();
   }
 }
-

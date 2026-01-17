@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_rune_durata_i
 name: <yellow>Runa della Durata I</yellow>
 description: Ricetta per creare <yellow>Runa della Durata I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_rune_durata_i
   amount: 1

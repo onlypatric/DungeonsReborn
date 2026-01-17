@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: COAL
+  type: material
+  material: COAL
   amount: 1
   meta:
     display-name: Nucleo Ostile

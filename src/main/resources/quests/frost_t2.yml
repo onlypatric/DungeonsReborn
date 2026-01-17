@@ -1,0 +1,127 @@
+quests:
+  quest_frost_t2_frost_t2_goat_frosthorn:
+    name: "<gold><bold>Caccia Epica: Goat Frosthorn</bold></gold>"
+    description:
+      - "<gray>Elimina Goat Frosthorn e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t2_goat_frosthorn
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_frost_t2_polar_bear_frostmaw:
+    name: "<gold><bold>Caccia Epica: Polar Bear Frostmaw</bold></gold>"
+    description:
+      - "<gray>Elimina Polar Bear Frostmaw e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t2_polar_bear_frostmaw
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_frost_t2_snow_golem_hailguard:
+    name: "<gold><bold>Caccia Epica: Snow Golem Hailguard</bold></gold>"
+    description:
+      - "<gray>Elimina Snow Golem Hailguard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t2_snow_golem_hailguard
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_frost_t2_stray_icecaller:
+    name: "<gold><bold>Caccia Epica: Stray Icecaller</bold></gold>"
+    description:
+      - "<gray>Elimina Stray Icecaller e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t2_stray_icecaller
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_frost_t2_wolf_icefang_alpha:
+    name: "<gold><bold>Caccia Epica: Wolf Icefang Alpha</bold></gold>"
+    description:
+      - "<gray>Elimina Wolf Icefang Alpha e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t2_wolf_icefang_alpha
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_use_itemId_broken_charm:
+    name: "<gold><bold>Prova di Uso: Broken Charm</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: broken_charm
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t2_craft_hybrid_fire_frost_rune_i:
+    name: "<gold><bold>Forgiatura Mistica: Hybrid Rune I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: hybrid_fire_frost_rune_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

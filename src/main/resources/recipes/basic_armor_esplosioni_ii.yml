@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_armor_esplosioni_ii
 name: <yellow>Sigillo Antiesplosione II</yellow>
 description: Ricetta per creare <yellow>Sigillo Antiesplosione II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_armor_esplosioni_ii
   amount: 1

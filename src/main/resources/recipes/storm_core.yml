@@ -2,7 +2,10 @@ schemaVersion: 1
 id: storm_core
 name: storm_core
 description: Ricetta per creare storm_core.
-inputs: []
-output:
-  itemId: storm_core
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: storm_core

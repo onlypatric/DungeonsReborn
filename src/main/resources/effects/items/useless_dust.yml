@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: SAND
+  type: material
+  material: SAND
   amount: 1
   meta:
     display-name: "Polvere Inutile"

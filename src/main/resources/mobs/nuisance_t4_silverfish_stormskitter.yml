@@ -5,6 +5,8 @@ mobs:
     name: <blue>Stormskitter</blue>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 30
       movementSpeed: 0.36
     ai:
@@ -27,8 +29,8 @@ mobs:
     xpGating:
       minLevel: 3000
     progression:
-      minXp: 4
-      maxXp: 6
+      minXp: 36
+      maxXp: 54
       maxPlayerXp: 600000
 spawnerBlocks:
   nuisance_t4_silverfish_stormskitter_spawner:

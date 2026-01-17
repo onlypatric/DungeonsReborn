@@ -2,7 +2,10 @@ schemaVersion: 1
 id: melon_slice
 name: melon_slice
 description: Ricetta per creare melon_slice.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: melon_slice
+  material: MELON_SLICE
   amount: 1

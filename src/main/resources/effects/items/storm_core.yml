@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: LIGHTNING_ROD
+  type: material
+  material: LIGHTNING_ROD
   amount: 1
   meta:
-    display-name: "Nucleo di Tempesta"
+    display-name: "<gradient:#37c9ff:#7a5cff><bold>Nucleo di Tempesta</bold></gradient>"
     lore:
-      - "Risuona di tuono."
+      - "Un fulcro carico di elettricita."
+      - "Vibra al ritmo dei fulmini."
     enchants:
       DURABILITY: 1
     flags:

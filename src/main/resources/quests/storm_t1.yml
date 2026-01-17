@@ -1,0 +1,127 @@
+quests:
+  quest_storm_t1_storm_t1_breeze_spark:
+    name: "<green><bold>Caccia Epica: Breeze Spark</bold></green>"
+    description:
+      - "<gray>Elimina Breeze Spark e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t1_breeze_spark
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_storm_t1_guardian_surge:
+    name: "<green><bold>Caccia Epica: Guardian Surge</bold></green>"
+    description:
+      - "<gray>Elimina Guardian Surge e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t1_guardian_surge
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_storm_t1_phantom_shockwing:
+    name: "<green><bold>Caccia Epica: Phantom Shockwing</bold></green>"
+    description:
+      - "<gray>Elimina Phantom Shockwing e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t1_phantom_shockwing
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_storm_t1_shulker_static:
+    name: "<green><bold>Caccia Epica: Shulker Static</bold></green>"
+    description:
+      - "<gray>Elimina Shulker Static e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t1_shulker_static
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_storm_t1_vex_arc:
+    name: "<green><bold>Caccia Epica: Vex Arc</bold></green>"
+    description:
+      - "<gray>Elimina Vex Arc e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t1_vex_arc
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_use_material_GOLDEN_APPLE:
+    name: "<green><bold>Prova di Uso: Golden Apple</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: GOLDEN_APPLE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t1_craft_hybrid_storm_earth_rune_ii:
+    name: "<green><bold>Forgiatura Mistica: Hybrid Rune Ii</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: hybrid_storm_earth_rune_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

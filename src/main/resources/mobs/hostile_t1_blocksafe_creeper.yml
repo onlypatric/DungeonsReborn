@@ -5,6 +5,8 @@ mobs:
     name: <green>Blocksafe Creeper</green>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 14
     ai:
       enabled: true
@@ -23,8 +25,8 @@ mobs:
           source: "on_cast {\n  for_each_target type=nearest radius=3 filter=players\
             \ originAt=origin {\n    knockback horizontal=0.8 vertical=0.2\n  }\n}"
     progression:
-      minXp: 6
-      maxXp: 9
+      minXp: 54
+      maxXp: 81
       maxPlayerXp: 250000
     loot:
       pool: hostile_t1

@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_armor_passo_i
 name: <yellow>Passo Leggero I</yellow>
 description: Ricetta per creare <yellow>Passo Leggero I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_armor_passo_i
   amount: 1

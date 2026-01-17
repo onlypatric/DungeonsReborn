@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: FIRE_CHARGE
+  type: material
+  material: FIRE_CHARGE
   amount: 1
   meta:
-    display-name: "Cuore di Fuoco"
+    display-name: "<gradient:#ff5a2f:#ff9b3d><bold>Cuore di Fuoco</bold></gradient>"
     lore:
       - "Un cuore di fiamma viva."
+      - "Scalda l'aria con un alito rovente."
     enchants:
       DURABILITY: 1
     flags:

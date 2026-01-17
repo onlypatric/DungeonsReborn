@@ -2,7 +2,10 @@ schemaVersion: 1
 id: storm_heart
 name: storm_heart
 description: Ricetta per creare storm_heart.
-inputs: []
-output:
-  itemId: storm_heart
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: storm_heart

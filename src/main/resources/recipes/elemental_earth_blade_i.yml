@@ -2,7 +2,10 @@ schemaVersion: 1
 id: elemental_earth_blade_i
 name: <aqua>Lama del Fronte I</aqua>
 description: Ricetta per creare <aqua>Lama del Fronte I</aqua>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: elemental_earth_blade_i
   amount: 1

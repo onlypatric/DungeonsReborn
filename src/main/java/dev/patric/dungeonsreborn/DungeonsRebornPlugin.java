@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.sql.SQLException;
 import java.time.Duration;
 
@@ -76,11 +77,13 @@ import dev.patric.dungeonsreborn.progression.custom.CustomXpListener;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpRepository;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.gui.GuiManager;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.style.GuiStyles;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
 import dev.patric.dungeonsreborn.util.WorldAllowlist;
 import dev.patric.dungeonsreborn.classes.ClassJdbcRepository;
 import dev.patric.dungeonsreborn.classes.ClassBonusService;
+import dev.patric.dungeonsreborn.classes.ClassAbilityBindings;
 import dev.patric.dungeonsreborn.classes.ClassService;
 import dev.patric.dungeonsreborn.classes.ClassYamlRegistry;
 import dev.patric.dungeonsreborn.classes.skills.ClassSkillJdbcRepository;
@@ -140,6 +143,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private ClassService classService;
     private ClassSkillService classSkillService;
     private ClassBonusService classBonusService;
+    private ClassAbilityBindings classAbilityBindings;
     private AdvancementService advancementService;
     private PartyService partyService;
     private double partyAssistRadius;
@@ -173,6 +177,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         localeService = new LocaleService(this, serviceLog.locales());
         localeService.reload();
         Locales.install(localeService);
+        GuiI18n.setDefaultLocale(Locale.forLanguageTag(localeService.defaultLocale()));
         advancementService = initAdvancements();
         sharedTicks = new SharedTickScheduler(this, getLogger());
         sharedTicks.start();
@@ -280,7 +285,13 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(new QuestListener(questService, partyService, partyAssistRadius), this);
         }
 
+        if (upgradeRegistry == null) {
+            upgradeRegistry = new UpgradeYamlRegistry(this, effectsEngine, serviceLog.effects());
+            upgradeRegistry.reload();
+        }
+
         mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, shopRegistry, mobRegistry, mobSpawnManager, serviceLog.mobs());
+        mobYamlRegistry.setUpgradeRegistry(upgradeRegistry);
         mobYamlRegistry.reload();
         if (advancementService != null && advancementService.isEnabled()) {
             Bukkit.getPluginManager().registerEvents(new BossAdvancementListener(mobRegistry, advancementService), this);
@@ -291,12 +302,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
         Bukkit.getPluginManager().registerEvents(
             new MobSpawnerBlockListener(mobYamlRegistry, mobRegistry, mobSpawnManager, spawnerBlockStore, serviceLog.mobs()), this);
-
-        craftingRecipes = new CraftingYamlRegistry(this, serviceLog.effects(), this::resolveCraftingItem);
-        ensureDefaultCraftingRecipes();
-        craftingRecipes.reload();
-        craftingSessions = new CraftingGuiSessionManager();
-        Bukkit.getPluginManager().registerEvents(craftingSessions, this);
 
         kitRegistry = new KitYamlRegistry(this, getLogger());
         kitRegistry.reload();
@@ -332,6 +337,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 progressionHud.setClassBonuses(classBonusService);
             }
         }
+        if (classRegistry != null && classService != null && classSkillService != null && effectsBindings != null) {
+            classAbilityBindings = new ClassAbilityBindings(classRegistry, classService, classSkillService, effectsBindings);
+            classAbilityBindings.reload();
+        }
 
         dungeonRegistry = new DungeonYamlRegistry(this, serviceLog.dungeons(), worldAllowlist);
         dungeonRegistry.reload();
@@ -353,8 +362,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DungeonSessionListener(dungeonSessions), this);
         applyDebugFlags();
 
-        upgradeRegistry = new UpgradeYamlRegistry(this, effectsEngine, serviceLog.effects());
-        upgradeRegistry.reload();
         upgradeService = new UpgradeService(this, effectsEngine, effectsBindings, upgradeRegistry, shopRegistry,
             customXpService, serviceLog.upgrades());
         if (mobYamlRegistry != null) {
@@ -367,6 +374,12 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             Bukkit.getScheduler().runTaskTimer(this, upgradeService::tickInventoryAuras, 20L, 20L);
         }
         Bukkit.getPluginManager().registerEvents(new UpgradeOnDamagedListener(upgradeService), this);
+
+        craftingRecipes = new CraftingYamlRegistry(this, serviceLog.effects(), this::resolveCraftingItem);
+        ensureDefaultCraftingRecipes();
+        craftingRecipes.reload();
+        craftingSessions = new CraftingGuiSessionManager();
+        Bukkit.getPluginManager().registerEvents(craftingSessions, this);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(
@@ -392,6 +405,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     classRegistry,
                     classService,
                     classSkillService,
+                    classAbilityBindings,
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,
@@ -425,6 +439,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     classRegistry,
                     classService,
                     classSkillService,
+                    classAbilityBindings,
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,
@@ -458,6 +473,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     classRegistry,
                     classService,
                     classSkillService,
+                    classAbilityBindings,
                     dungeonRegistry,
                     dungeonQueue,
                     dungeonSessions,

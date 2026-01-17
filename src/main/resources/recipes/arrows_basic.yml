@@ -2,7 +2,10 @@ schemaVersion: 1
 id: arrows_basic
 name: arrows_basic
 description: Ricetta per creare arrows_basic.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: arrows_basic
+  material: ARROW
   amount: 1

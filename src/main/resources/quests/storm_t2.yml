@@ -1,0 +1,127 @@
+quests:
+  quest_storm_t2_storm_t2_breeze_thunderclap:
+    name: "<gold><bold>Caccia Epica: Breeze Thunderclap</bold></gold>"
+    description:
+      - "<gray>Elimina Breeze Thunderclap e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t2_breeze_thunderclap
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_storm_t2_guardian_tempest:
+    name: "<gold><bold>Caccia Epica: Guardian Tempest</bold></gold>"
+    description:
+      - "<gray>Elimina Guardian Tempest e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t2_guardian_tempest
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_storm_t2_phantom_stormwing:
+    name: "<gold><bold>Caccia Epica: Phantom Stormwing</bold></gold>"
+    description:
+      - "<gray>Elimina Phantom Stormwing e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t2_phantom_stormwing
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_storm_t2_shulker_lightning_core:
+    name: "<gold><bold>Caccia Epica: Shulker Lightning Core</bold></gold>"
+    description:
+      - "<gray>Elimina Shulker Lightning Core e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t2_shulker_lightning_core
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_storm_t2_vex_stormripper:
+    name: "<gold><bold>Caccia Epica: Vex Stormripper</bold></gold>"
+    description:
+      - "<gray>Elimina Vex Stormripper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: storm_t2_vex_stormripper
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_use_material_ENCHANTED_GOLDEN_APPLE:
+    name: "<gold><bold>Prova di Uso: Enchanted Golden Apple</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: ENCHANTED_GOLDEN_APPLE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_storm_t2_craft_elemental_resist_storm_i:
+    name: "<gold><bold>Forgiatura Mistica: Elemental Resist I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_resist_storm_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

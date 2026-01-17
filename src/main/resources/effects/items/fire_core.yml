@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: MAGMA_CREAM
+  type: material
+  material: MAGMA_CREAM
   amount: 1
   meta:
-    display-name: "Nucleo di Fuoco"
+    display-name: "<gradient:#ff6b2d:#ffb347><bold>Nucleo di Fuoco</bold></gradient>"
     lore:
       - "Un nucleo fuso."
+      - "Sprigiona calore costante."
     enchants:
       DURABILITY: 1
     flags:

@@ -1,0 +1,631 @@
+quests:
+  quest_hostile_t1_hostile_t1_blazeling:
+    name: "<green><bold>Caccia Epica: Blazeling</bold></green>"
+    description:
+      - "<gray>Elimina Blazeling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_blazeling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_blocksafe_creeper:
+    name: "<green><bold>Caccia Epica: Blocksafe Creeper</bold></green>"
+    description:
+      - "<gray>Elimina Blocksafe Creeper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_blocksafe_creeper
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_breezeling:
+    name: "<green><bold>Caccia Epica: Breezeling</bold></green>"
+    description:
+      - "<gray>Elimina Breezeling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_breezeling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_bristlehog:
+    name: "<green><bold>Caccia Epica: Bristlehog</bold></green>"
+    description:
+      - "<gray>Elimina Bristlehog e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_bristlehog
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_brute_thug:
+    name: "<green><bold>Caccia Epica: Brute Thug</bold></green>"
+    description:
+      - "<gray>Elimina Brute Thug e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_brute_thug
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_cave_spitter:
+    name: "<green><bold>Caccia Epica: Cave Spitter</bold></green>"
+    description:
+      - "<gray>Elimina Cave Spitter e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_cave_spitter
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_cult_evoker:
+    name: "<green><bold>Caccia Epica: Cult Evoker</bold></green>"
+    description:
+      - "<gray>Elimina Cult Evoker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_cult_evoker
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_elder_minder:
+    name: "<green><bold>Caccia Epica: Elder Minder</bold></green>"
+    description:
+      - "<gray>Elimina Elder Minder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_elder_minder
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_endstalker:
+    name: "<green><bold>Caccia Epica: Endstalker</bold></green>"
+    description:
+      - "<gray>Elimina Endstalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_endstalker
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_ghastling:
+    name: "<green><bold>Caccia Epica: Ghastling</bold></green>"
+    description:
+      - "<gray>Elimina Ghastling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_ghastling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_hexwitch:
+    name: "<green><bold>Caccia Epica: Hexwitch</bold></green>"
+    description:
+      - "<gray>Elimina Hexwitch e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_hexwitch
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_illusion_rascal:
+    name: "<green><bold>Caccia Epica: Illusion Rascal</bold></green>"
+    description:
+      - "<gray>Elimina Illusion Rascal e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_illusion_rascal
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_magma_nibble:
+    name: "<green><bold>Caccia Epica: Magma Nibble</bold></green>"
+    description:
+      - "<gray>Elimina Magma Nibble e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_magma_nibble
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_miteswarm:
+    name: "<green><bold>Caccia Epica: Miteswarm</bold></green>"
+    description:
+      - "<gray>Elimina Miteswarm e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_miteswarm
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_piglin_raider:
+    name: "<green><bold>Caccia Epica: Piglin Raider</bold></green>"
+    description:
+      - "<gray>Elimina Piglin Raider e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_piglin_raider
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_pillager_scout:
+    name: "<green><bold>Caccia Epica: Pillager Scout</bold></green>"
+    description:
+      - "<gray>Elimina Pillager Scout e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_pillager_scout
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_ravager_calf:
+    name: "<green><bold>Caccia Epica: Ravager Calf</bold></green>"
+    description:
+      - "<gray>Elimina Ravager Calf e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_ravager_calf
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_river_guard:
+    name: "<green><bold>Caccia Epica: River Guard</bold></green>"
+    description:
+      - "<gray>Elimina River Guard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_river_guard
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_shellspike:
+    name: "<green><bold>Caccia Epica: Shellspike</bold></green>"
+    description:
+      - "<gray>Elimina Shellspike e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_shellspike
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_silver_skitter:
+    name: "<green><bold>Caccia Epica: Silver Skitter</bold></green>"
+    description:
+      - "<gray>Elimina Silver Skitter e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_silver_skitter
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_vexling:
+    name: "<green><bold>Caccia Epica: Vexling</bold></green>"
+    description:
+      - "<gray>Elimina Vexling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_vexling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_vindicator_grunt:
+    name: "<green><bold>Caccia Epica: Vindicator Grunt</bold></green>"
+    description:
+      - "<gray>Elimina Vindicator Grunt e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_vindicator_grunt
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_wardenling:
+    name: "<green><bold>Caccia Epica: Wardenling</bold></green>"
+    description:
+      - "<gray>Elimina Wardenling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_wardenling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_hostile_t1_webstalker:
+    name: "<green><bold>Caccia Epica: Webstalker</bold></green>"
+    description:
+      - "<gray>Elimina Webstalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t1_webstalker
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_itemId_broken_charm:
+    name: "<green><bold>Prova di Uso: Broken Charm</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: broken_charm
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_itemId_useless_scrap:
+    name: "<green><bold>Prova di Uso: Useless Scrap</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_scrap
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_material_ARROW:
+    name: "<green><bold>Prova di Uso: Arrow</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: ARROW
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_itemId_useless_pebble:
+    name: "<green><bold>Prova di Uso: Useless Pebble</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_pebble
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_material_LEATHER_HELMET:
+    name: "<green><bold>Prova di Uso: Leather Helmet</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_HELMET
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_material_LEATHER_CHESTPLATE:
+    name: "<green><bold>Prova di Uso: Leather Chestplate</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_CHESTPLATE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_use_material_CARROT:
+    name: "<green><bold>Prova di Uso: Carrot</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CARROT
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_craft_elemental_arcane_blade_ii:
+    name: "<green><bold>Forgiatura Mistica: Elemental Blade Ii</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_arcane_blade_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_craft_elemental_earth_blade_i:
+    name: "<green><bold>Forgiatura Mistica: Elemental Blade I</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_earth_blade_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_craft_basic_rune_ripresa_i:
+    name: "<green><bold>Forgiatura Mistica: Basic Rune Ripresa I</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_rune_ripresa_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t1_craft_elemental_fire_blade_ii:
+    name: "<green><bold>Forgiatura Mistica: Elemental Blade Ii</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 201
+    rewards:
+      xp: 300
+      tokens: 3
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_fire_blade_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

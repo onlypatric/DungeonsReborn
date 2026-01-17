@@ -8,6 +8,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+
+import java.util.concurrent.CompletableFuture;
 
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
@@ -33,9 +37,16 @@ public final class MobsCommand {
         .then(Commands.literal("editor").executes(ctx -> editor(ctx, yaml, registry)))
         .then(Commands.literal("list").executes(ctx -> list(ctx, registry)))
         .then(Commands.literal("spawners").executes(ctx -> spawners(ctx, spawns)))
+        .then(Commands.literal("loot")
+            .then(Commands.literal("list").executes(ctx -> lootList(ctx, yaml)))
+            .then(Commands.literal("info")
+                .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestLootPools(yaml, builder))
+                    .executes(ctx -> lootInfo(ctx, yaml, StringArgumentType.getString(ctx, "id"))))))
         .then(Commands.literal("spawner")
             .then(Commands.literal("give")
                 .then(Commands.argument("mob", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestMobs(registry, builder))
                     .executes(ctx -> spawnerGive(ctx, yaml, registry, StringArgumentType.getString(ctx, "mob"), null))
                     .then(Commands.argument("id", StringArgumentType.word())
                         .executes(ctx -> spawnerGive(ctx, yaml, registry,
@@ -43,37 +54,46 @@ public final class MobsCommand {
                             StringArgumentType.getString(ctx, "id"))))))
             .then(Commands.literal("give-block")
                 .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestSpawnerBlocks(yaml, builder))
                     .executes(ctx -> spawnerGiveBlock(ctx, yaml, StringArgumentType.getString(ctx, "id")))))
             .then(Commands.literal("give-id")
                 .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
                     .executes(ctx -> spawnerGiveId(ctx, yaml, spawns, StringArgumentType.getString(ctx, "id")))))
             .then(Commands.literal("create")
                 .then(Commands.argument("id", StringArgumentType.word())
                     .then(Commands.argument("mob", StringArgumentType.word())
+                        .suggests((ctx, builder) -> suggestMobs(registry, builder))
                         .executes(ctx -> spawnerCreate(ctx, yaml, registry,
                             StringArgumentType.getString(ctx, "id"),
                             StringArgumentType.getString(ctx, "mob"))))))
             .then(Commands.literal("remove")
                 .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
                     .executes(ctx -> spawnerRemove(ctx, yaml, spawns, spawnerStore, StringArgumentType.getString(ctx, "id")))))
             .then(Commands.literal("pause")
                 .then(Commands.argument("id", StringArgumentType.word())
-                    .executes(ctx -> spawnerToggle(ctx, yaml, StringArgumentType.getString(ctx, "id"), false))))
+                    .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
+                    .executes(ctx -> spawnerToggle(ctx, yaml, spawns, StringArgumentType.getString(ctx, "id"), false))))
             .then(Commands.literal("resume")
                 .then(Commands.argument("id", StringArgumentType.word())
-                    .executes(ctx -> spawnerToggle(ctx, yaml, StringArgumentType.getString(ctx, "id"), true))))
+                    .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
+                    .executes(ctx -> spawnerToggle(ctx, yaml, spawns, StringArgumentType.getString(ctx, "id"), true))))
             .then(Commands.literal("spawn")
                 .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
                     .executes(ctx -> spawnerSpawn(ctx, spawns, StringArgumentType.getString(ctx, "id"))))))
         .then(Commands.literal("dump")
             .then(Commands.argument("uuid", StringArgumentType.word())
                 .executes(ctx -> dump(ctx, registry, StringArgumentType.getString(ctx, "uuid")))))
         .then(Commands.literal("spawn")
             .then(Commands.argument("id", StringArgumentType.word())
+                .suggests((ctx, builder) -> suggestMobs(registry, builder))
                 .executes(ctx -> spawn(ctx, registry, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.literal("egg")
             .then(Commands.argument("id", StringArgumentType.word())
-                .executes(ctx -> giveEgg(ctx, yaml, StringArgumentType.getString(ctx, "id")))));
+                .suggests((ctx, builder) -> suggestMobs(registry, builder))
+                .executes(ctx -> giveEgg(ctx, yaml, registry, StringArgumentType.getString(ctx, "id")))));
   }
 
   private static int help(CommandContext<CommandSourceStack> ctx) {
@@ -83,6 +103,8 @@ public final class MobsCommand {
     CommandMessages.send(sender, "messages.command.mobs.help.editor");
     CommandMessages.send(sender, "messages.command.mobs.help.list");
     CommandMessages.send(sender, "messages.command.mobs.help.spawners");
+    CommandMessages.send(sender, "messages.command.mobs.help.lootList");
+    CommandMessages.send(sender, "messages.command.mobs.help.lootInfo");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerGive");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerGiveBlock");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerGiveId");
@@ -95,6 +117,46 @@ public final class MobsCommand {
     CommandMessages.send(sender, "messages.command.mobs.help.spawn");
     CommandMessages.send(sender, "messages.command.mobs.help.egg");
     return Command.SINGLE_SUCCESS;
+  }
+
+  private static CompletableFuture<Suggestions> suggestMobs(MobRegistry registry, SuggestionsBuilder builder) {
+    if (registry == null) {
+      return builder.buildFuture();
+    }
+    for (String id : registry.ids()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
+  }
+
+  private static CompletableFuture<Suggestions> suggestSpawnerBlocks(MobYamlRegistry yaml, SuggestionsBuilder builder) {
+    if (yaml == null) {
+      return builder.buildFuture();
+    }
+    for (String id : yaml.spawnerBlockIds()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
+  }
+
+  private static CompletableFuture<Suggestions> suggestSpawnIds(MobSpawnManager spawns, SuggestionsBuilder builder) {
+    if (spawns == null) {
+      return builder.buildFuture();
+    }
+    for (String id : spawns.spawnIds()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
+  }
+
+  private static CompletableFuture<Suggestions> suggestLootPools(MobYamlRegistry yaml, SuggestionsBuilder builder) {
+    if (yaml == null) {
+      return builder.buildFuture();
+    }
+    for (String id : yaml.lootPoolIds()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
   }
 
   private static int reload(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml) {
@@ -134,8 +196,15 @@ public final class MobsCommand {
           Locales.placeholders("permission", "dungeonsreborn.mobs.spawn"));
       return Command.SINGLE_SUCCESS;
     }
+    String normalized = Ids.normalize(id);
+    if (!registry.has(normalized)) {
+      CommandMessages.send(player, "messages.command.mobs.unknownMob",
+          Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(player, id, registry.ids());
+      return Command.SINGLE_SUCCESS;
+    }
     try {
-      registry.spawn(id, player.getLocation());
+      registry.spawn(normalized, player.getLocation());
       CommandMessages.send(player, "messages.command.mobs.spawned",
           Locales.placeholders("id", id));
     } catch (Exception ex) {
@@ -217,6 +286,7 @@ public final class MobsCommand {
     if (!registry.has(normalized)) {
       CommandMessages.send(sender, "messages.command.mobs.unknownMob",
           Locales.placeholders("id", mobId));
+      CommandMessages.sendClosestMatch(sender, mobId, registry.ids());
       return Command.SINGLE_SUCCESS;
     }
     ItemStack item = MobSpawnerItems.createSpawnerItem(normalized, desiredId);
@@ -251,6 +321,7 @@ public final class MobsCommand {
     if (item == null) {
       CommandMessages.send(sender, "messages.command.mobs.spawnerBlockUnknown",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.spawnerBlockIds());
       return Command.SINGLE_SUCCESS;
     }
     java.util.Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
@@ -285,6 +356,7 @@ public final class MobsCommand {
     if (spec == null) {
       CommandMessages.send(sender, "messages.command.mobs.spawnerUnknown",
           Locales.placeholders("id", spawnId));
+      CommandMessages.sendClosestMatch(sender, spawnId, spawns.spawnIds());
       return Command.SINGLE_SUCCESS;
     }
     ItemStack item = MobSpawnerItems.createSpawnerItem(spec.mobId(), spec.id());
@@ -320,6 +392,7 @@ public final class MobsCommand {
     if (!registry.has(normalized)) {
       CommandMessages.send(sender, "messages.command.mobs.unknownMob",
           Locales.placeholders("id", mobId));
+      CommandMessages.sendClosestMatch(sender, mobId, registry.ids());
       return Command.SINGLE_SUCCESS;
     }
     try {
@@ -365,6 +438,7 @@ public final class MobsCommand {
     if (!ok) {
       CommandMessages.send(sender, "messages.command.mobs.spawnerUnknown",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, spawns.spawnIds());
       return Command.SINGLE_SUCCESS;
     }
     CommandMessages.send(sender, "messages.command.mobs.spawnerRemoved",
@@ -372,7 +446,8 @@ public final class MobsCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int spawnerToggle(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, String id, boolean enabled) {
+  private static int spawnerToggle(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, MobSpawnManager spawns,
+      String id, boolean enabled) {
     var sender = ctx.getSource().getSender();
     if (yaml == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
@@ -388,6 +463,9 @@ public final class MobsCommand {
     if (!ok) {
       CommandMessages.send(sender, "messages.command.mobs.spawnerUnknown",
           Locales.placeholders("id", id));
+      if (spawns != null) {
+        CommandMessages.sendClosestMatch(sender, id, spawns.spawnIds());
+      }
       return Command.SINGLE_SUCCESS;
     }
     CommandMessages.send(sender, enabled ? "messages.command.mobs.spawnerResumed" : "messages.command.mobs.spawnerPaused",
@@ -411,6 +489,7 @@ public final class MobsCommand {
     if (!ok) {
       CommandMessages.send(sender, "messages.command.mobs.spawnerSpawnFailed",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, spawns.spawnIds());
       return Command.SINGLE_SUCCESS;
     }
     CommandMessages.send(sender, "messages.command.mobs.spawnerForced",
@@ -476,7 +555,7 @@ public final class MobsCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int giveEgg(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, String id) {
+  private static int giveEgg(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, MobRegistry registry, String id) {
     if (yaml == null) {
       CommandMessages.send(ctx.getSource().getSender(), "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(ctx.getSource().getSender(), "labels.system.mobsYaml")));
@@ -495,11 +574,74 @@ public final class MobsCommand {
     if (item == null) {
       CommandMessages.send(player, "messages.command.mobs.eggUnknown",
           Locales.placeholders("id", id));
+      if (registry != null) {
+        CommandMessages.sendClosestMatch(player, id, registry.ids());
+      }
       return Command.SINGLE_SUCCESS;
     }
     player.getInventory().addItem(item);
     CommandMessages.send(player, "messages.command.mobs.eggGiven",
         Locales.placeholders("id", id));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int lootList(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml) {
+    var sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobLoot")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.mobs.editor")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.editor"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var pools = yaml.lootPoolIds();
+    CommandMessages.send(sender, "messages.command.mobs.loot.header",
+        Locales.placeholders("count", pools.size()));
+    if (pools.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.mobs.loot.none");
+      return Command.SINGLE_SUCCESS;
+    }
+    for (String id : pools) {
+      CommandMessages.send(sender, "messages.command.mobs.loot.entry", Locales.placeholders("id", id));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int lootInfo(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, String id) {
+    var sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobLoot")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.mobs.editor")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.editor"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var pool = yaml.lootPool(id);
+    if (pool == null) {
+      CommandMessages.send(sender, "messages.command.mobs.loot.unknown",
+          Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.lootPoolIds());
+      return Command.SINGLE_SUCCESS;
+    }
+    String clear = pool.clearVanilla()
+        ? CommandMessages.text(sender, "messages.common.true")
+        : CommandMessages.text(sender, "messages.common.false");
+    CommandMessages.send(sender, "messages.command.mobs.loot.info.header",
+        Locales.placeholders("id", id));
+    CommandMessages.send(sender, "messages.command.mobs.loot.info.clearVanilla",
+        Locales.placeholders("value", clear));
+    CommandMessages.send(sender, "messages.command.mobs.loot.info.rolls",
+        Locales.placeholders("rolls", pool.rolls(), "bonus", pool.bonusRolls()));
+    CommandMessages.send(sender, "messages.command.mobs.loot.info.guaranteed",
+        Locales.placeholders("count", pool.guaranteed().size()));
+    CommandMessages.send(sender, "messages.command.mobs.loot.info.drops",
+        Locales.placeholders("count", pool.drops().size()));
     return Command.SINGLE_SUCCESS;
   }
 }

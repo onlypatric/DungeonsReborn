@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_mace_impeto_ii
 name: <yellow>Mazza dell'Impeto II</yellow>
 description: Ricetta per creare <yellow>Mazza dell'Impeto II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_mace_impeto_ii
   amount: 1

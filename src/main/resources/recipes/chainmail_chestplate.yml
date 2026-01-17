@@ -2,7 +2,10 @@ schemaVersion: 1
 id: chainmail_chestplate
 name: chainmail_chestplate
 description: Ricetta per creare chainmail_chestplate.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: chainmail_chestplate
+  material: CHAINMAIL_CHESTPLATE
   amount: 1

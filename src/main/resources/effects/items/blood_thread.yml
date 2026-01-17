@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: REDSTONE
+  type: material
+  material: REDSTONE
   amount: 1
   meta:
     display-name: "Filo di Sangue"

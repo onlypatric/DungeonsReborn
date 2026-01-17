@@ -1,0 +1,127 @@
+quests:
+  quest_fire_t2_fire_t2_blaze_inferno:
+    name: "<gold><bold>Caccia Epica: Blaze Inferno</bold></gold>"
+    description:
+      - "<gray>Elimina Blaze Inferno e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t2_blaze_inferno
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_fire_t2_ghast_cataclysm:
+    name: "<gold><bold>Caccia Epica: Ghast Cataclysm</bold></gold>"
+    description:
+      - "<gray>Elimina Ghast Cataclysm e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t2_ghast_cataclysm
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_fire_t2_hoglin_pyre:
+    name: "<gold><bold>Caccia Epica: Hoglin Pyre</bold></gold>"
+    description:
+      - "<gray>Elimina Hoglin Pyre e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t2_hoglin_pyre
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_fire_t2_magma_forge:
+    name: "<gold><bold>Caccia Epica: Magma Forge</bold></gold>"
+    description:
+      - "<gray>Elimina Magma Forge e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t2_magma_forge
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_fire_t2_piglin_scorch:
+    name: "<gold><bold>Caccia Epica: Piglin Scorch</bold></gold>"
+    description:
+      - "<gray>Elimina Piglin Scorch e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t2_piglin_scorch
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_use_material_WOODEN_AXE:
+    name: "<gold><bold>Prova di Uso: Wooden Axe</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: WOODEN_AXE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t2_craft_elemental_fire_bow_ii:
+    name: "<gold><bold>Forgiatura Mistica: Elemental Bow Ii</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_fire_bow_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

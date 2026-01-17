@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: SHULKER_SHELL
+  type: material
+  material: SHULKER_SHELL
   amount: 1
   meta:
     display-name: "Cuore Arcano"

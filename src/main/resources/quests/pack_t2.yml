@@ -1,0 +1,809 @@
+quests:
+  quest_pack_t2_pack_bruiser_goat_rockram:
+    name: "<gold><bold>Caccia Epica: Bruiser Goat Rockram</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Goat Rockram e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_goat_rockram
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_hoglin_tuskcrusher:
+    name: "<gold><bold>Caccia Epica: Bruiser Hoglin Tuskcrusher</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Hoglin Tuskcrusher e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_hoglin_tuskcrusher
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_husk_gritmaw:
+    name: "<gold><bold>Caccia Epica: Bruiser Husk Gritmaw</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Husk Gritmaw e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_husk_gritmaw
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_iron_golem_stonemaul:
+    name: "<gold><bold>Caccia Epica: Bruiser Iron Golem Stonemaul</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Iron Golem Stonemaul e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_iron_golem_stonemaul
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_piglin_brutebite:
+    name: "<gold><bold>Caccia Epica: Bruiser Piglin Brutebite</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Piglin Brutebite e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_piglin_brutebite
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_polar_bear_glaciermaw:
+    name: "<gold><bold>Caccia Epica: Bruiser Polar Bear Glaciermaw</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Polar Bear Glaciermaw e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_polar_bear_glaciermaw
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_ravager_cragbreaker:
+    name: "<gold><bold>Caccia Epica: Bruiser Ravager Cragbreaker</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Ravager Cragbreaker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_ravager_cragbreaker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_spider_bonecrusher:
+    name: "<gold><bold>Caccia Epica: Bruiser Spider Bonecrusher</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Spider Bonecrusher e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_spider_bonecrusher
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_vindicator_ironcleaver:
+    name: "<gold><bold>Caccia Epica: Bruiser Vindicator Ironcleaver</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Vindicator Ironcleaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_vindicator_ironcleaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_bruiser_wolf_ironfang:
+    name: "<gold><bold>Caccia Epica: Bruiser Wolf Ironfang</bold></gold>"
+    description:
+      - "<gray>Elimina Bruiser Wolf Ironfang e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_bruiser_wolf_ironfang
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_cave_spider_venomling:
+    name: "<gold><bold>Caccia Epica: Hunter Cave Spider Venomling</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Cave Spider Venomling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_cave_spider_venomling
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_fox_redpounce:
+    name: "<gold><bold>Caccia Epica: Hunter Fox Redpounce</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Fox Redpounce e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_fox_redpounce
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_fox_snowpounce:
+    name: "<gold><bold>Caccia Epica: Hunter Fox Snowpounce</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Fox Snowpounce e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_fox_snowpounce
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_goat_hillleap:
+    name: "<gold><bold>Caccia Epica: Hunter Goat Hillleap</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Goat Hillleap e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_goat_hillleap
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_hoglin_rushmaw:
+    name: "<gold><bold>Caccia Epica: Hunter Hoglin Rushmaw</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Hoglin Rushmaw e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_hoglin_rushmaw
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_piglin_feralhunter:
+    name: "<gold><bold>Caccia Epica: Hunter Piglin Feralhunter</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Piglin Feralhunter e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_piglin_feralhunter
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_polar_bear_frostpaws:
+    name: "<gold><bold>Caccia Epica: Hunter Polar Bear Frostpaws</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Polar Bear Frostpaws e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_polar_bear_frostpaws
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_spider_webstalker:
+    name: "<gold><bold>Caccia Epica: Hunter Spider Webstalker</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Spider Webstalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_spider_webstalker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_wolf_fangrunner:
+    name: "<gold><bold>Caccia Epica: Hunter Wolf Fangrunner</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Wolf Fangrunner e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_wolf_fangrunner
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_wolf_moonpelt:
+    name: "<gold><bold>Caccia Epica: Hunter Wolf Moonpelt</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter Wolf Moonpelt e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_wolf_moonpelt
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_cave_spider_venomshade:
+    name: "<gold><bold>Caccia Epica: Stalker Cave Spider Venomshade</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Cave Spider Venomshade e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_cave_spider_venomshade
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_enderman_voidlurker:
+    name: "<gold><bold>Caccia Epica: Stalker Enderman Voidlurker</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Enderman Voidlurker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_enderman_voidlurker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_fox_nightpounce:
+    name: "<gold><bold>Caccia Epica: Stalker Fox Nightpounce</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Fox Nightpounce e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_fox_nightpounce
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_husk_dunecreeper:
+    name: "<gold><bold>Caccia Epica: Stalker Husk Dunecreeper</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Husk Dunecreeper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_husk_dunecreeper
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_phantom_nightglide:
+    name: "<gold><bold>Caccia Epica: Stalker Phantom Nightglide</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Phantom Nightglide e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_phantom_nightglide
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_piglin_shadowraider:
+    name: "<gold><bold>Caccia Epica: Stalker Piglin Shadowraider</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Piglin Shadowraider e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_piglin_shadowraider
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_ravager_nightprowler:
+    name: "<gold><bold>Caccia Epica: Stalker Ravager Nightprowler</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Ravager Nightprowler e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_ravager_nightprowler
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_spider_gloomweaver:
+    name: "<gold><bold>Caccia Epica: Stalker Spider Gloomweaver</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Spider Gloomweaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_spider_gloomweaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_vindicator_duskcleaver:
+    name: "<gold><bold>Caccia Epica: Stalker Vindicator Duskcleaver</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Vindicator Duskcleaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_vindicator_duskcleaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_wolf_shadepelt:
+    name: "<gold><bold>Caccia Epica: Stalker Wolf Shadepelt</bold></gold>"
+    description:
+      - "<gray>Elimina Stalker Wolf Shadepelt e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_wolf_shadepelt
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_cracked_fang:
+    name: "<gold><bold>Prova di Uso: Cracked Fang</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: cracked_fang
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_material_LEATHER_LEGGINGS:
+    name: "<gold><bold>Prova di Uso: Leather Leggings</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_LEGGINGS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_material_STONE_AXE:
+    name: "<gold><bold>Prova di Uso: Stone Axe</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: STONE_AXE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_keen_shard:
+    name: "<gold><bold>Prova di Uso: Keen Shard</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: keen_shard
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_useless_stick:
+    name: "<gold><bold>Prova di Uso: Useless Stick</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_stick
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_iron_core:
+    name: "<gold><bold>Prova di Uso: Iron Core</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: iron_core
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_material_ARROW:
+    name: "<gold><bold>Prova di Uso: Arrow</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: ARROW
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_hostile_core:
+    name: "<gold><bold>Prova di Uso: Core</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: hostile_core
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_use_itemId_keen_core:
+    name: "<gold><bold>Prova di Uso: Keen Core</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: keen_core
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_craft_basic_pick_frattura_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Pick Frattura I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_pick_frattura_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_craft_elemental_earth_blade_ii:
+    name: "<gold><bold>Forgiatura Mistica: Elemental Blade Ii</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_earth_blade_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_craft_basic_bow_cadenza_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Bow Cadenza I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_bow_cadenza_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_craft_book_blank:
+    name: "<gold><bold>Forgiatura Mistica: Book Blank</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: book_blank
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_stalker_vindicator_duskcleaver_slayer_5:
+    name: "<gold><bold>Sterminio Leggendario: Stalker Vindicator Duskcleaver</bold></gold>"
+    description:
+      - "<gray>Elimina Piu Bersagli Per Ottenere Ricompense Maggiori e dimostra la tua forza.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_stalker_vindicator_duskcleaver
+        count: 5
+    cooldownSeconds: 0
+    rotation: none
+  quest_pack_t2_pack_hunter_goat_hillleap_slayer_8:
+    name: "<gold><bold>Sterminio Leggendario: Hunter Goat Hillleap</bold></gold>"
+    description:
+      - "<gray>Elimina Piu Bersagli Per Ottenere Ricompense Maggiori e dimostra la tua forza.</gray>"
+    requirements:
+      level: 1300
+    rewards:
+      xp: 1500
+      tokens: 6
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: pack_hunter_goat_hillleap
+        count: 5
+    cooldownSeconds: 0
+    rotation: none

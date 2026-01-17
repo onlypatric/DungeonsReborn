@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: GUNPOWDER
+  type: material
+  material: GUNPOWDER
   amount: 1
   meta:
     display-name: "Mucchio di Cenere"

@@ -19,15 +19,27 @@ messages:
     'no': 'No'
     'yes': 'Yes'
   command:
+    classes:
+      selectFirst: <red>Seleziona prima una classe.</red>
+      missingSpec: <red>Dati della classe mancanti.</red>
+      nodes:
+        headerAll: <gold>Nodi classe</gold>
+        entry: <gray>-</gray> <white>{id}</white> <dark_gray>({count} nodi)</dark_gray>
+        header: <gold>Nodi per</gold> <white>{id}</white> <dark_gray>({count})</dark_gray>
+        unknown: <red>Classe sconosciuta:</red> <white>{id}</white>
+      state:
+        playerMissing: <red>Giocatore non trovato:</red> <white>{player}</white>
+        noClass: <red>{player} non ha selezionato una classe.</red>
+        unknownClass: <red>Classe sconosciuta:</red> <white>{id}</white>
+        header: <gold>Stato classe</gold> <dark_gray>-</dark_gray> <white>{player}</white> <gray>({id})</gray>
+        points: <gray>Punti:</gray> <white>{unspent}</white> <dark_gray>liberi</dark_gray> <gray>/</gray> <white>{spent}</white> <dark_gray>spesi</dark_gray> <gray>(</gray><white>{total}</white><gray>)</gray>
+        unlocked: <gray>Nodi sbloccati:</gray> <white>{count}</white><gray>/</gray><white>{total}</white>
     help:
       header: <gold><bold>DungeonsReborn</bold></gold> <gray>Comandi</gray>
+      root: <gray>/{root}</gray> <dark_gray>- apri hub utente</dark_gray>
       hub: <gray>/{root} hub</gray> <dark_gray>- apri hub utente</dark_gray>
-      status: <gray>/{root} status</gray> <dark_gray>- stato sistema (admin)</dark_gray>
-      admin: <gray>/{root} admin</gray> <dark_gray>- apri hub admin</dark_gray>
-      effects: <gray>/{root} effects ...</gray> <dark_gray>- comandi effetti</dark_gray>
-      mobs: <gray>/{root} mobs ...</gray> <dark_gray>- comandi mob</dark_gray>
+      index: <gray>/{root} index &lt;...&gt;</gray> <dark_gray>- apri indici di sola lettura</dark_gray>
       gui: <gray>/{root} gui</gray> <dark_gray>- showcase GUI</dark_gray>
-      shop: <gray>/{root} shop ...</gray> <dark_gray>- comandi negozi</dark_gray>
       kits: <gray>/{root} kits ...</gray> <dark_gray>- comandi kit</dark_gray>
       classes: <gray>/{root} classes</gray> <dark_gray>- menu classi</dark_gray>
       classesSkills: <gray>/{root} classes skills</gray> <dark_gray>- percorso abilita</dark_gray>
@@ -37,36 +49,43 @@ messages:
         entra in coda</dark_gray>
       dungeonLeave: <gray>/{root} dungeon queue leave</gray> <dark_gray>- esci dalla
         coda</dark_gray>
-      dungeonReload: <gray>/{root} dungeon reload</gray> <dark_gray>- ricarica config</dark_gray>
-      localeReload: <gray>/{root} locale reload</gray> <dark_gray>- ricarica lingue</dark_gray>
-      dungeonValidate: <gray>/{root} dungeon validate</gray> <dark_gray>- valida config</dark_gray>
-      dungeonDebugStart: <gray>/{root} dungeon debug start &lt;level&gt;</gray> <dark_gray>-
-        avvia debug</dark_gray>
-      dungeonDebugSkip: <gray>/{root} dungeon debug skip</gray> <dark_gray>- salta
-        ondata</dark_gray>
-      dungeonDebugEnd: <gray>/{root} dungeon debug end [win|fail]</gray> <dark_gray>-
-        termina debug</dark_gray>
-      advancementsReload: <gray>/{root} advancements reload</gray> <dark_gray>- ricarica
-        configurazione avanzamenti</dark_gray>
       quests: <gray>/{root} quests</gray> <dark_gray>- registro missioni</dark_gray>
       questsGiver: <gray>/{root} quests giver &lt;id&gt;</gray> <dark_gray>- apri
         quest giver</dark_gray>
-      questsEditor: <gray>/{root} quests editor</gray> <dark_gray>- editor missioni</dark_gray>
       party: <gray>/{root} party</gray> <dark_gray>- menu party</dark_gray>
       partyGui: <gray>/{root} party gui</gray> <dark_gray>- menu party</dark_gray>
       partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- chat party</dark_gray>
       partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- messaggio
         party</dark_gray>
       upgrades: <gray>/{root} upgrades</gray> <dark_gray>- unisci potenziamenti</dark_gray>
-      upgradesInspect: <gray>/{root} upgrades inspect</gray> <dark_gray>- ispeziona
-        potenziamenti</dark_gray>
-      upgradesGive: <gray>/{root} upgrades give &lt;id&gt; [player]</gray> <dark_gray>-
-        dai potenziamento</dark_gray>
       crafting: <gray>/{root} crafting</gray> <dark_gray>- GUI crafting</dark_gray>
-      craftingEditor: <gray>/{root} crafting editor</gray> <dark_gray>- editor ricette</dark_gray>
-      craftingReload: <gray>/{root} crafting reload</gray> <dark_gray>- ricarica ricette</dark_gray>
-      reloadAll: <gray>/{root} reload</gray> <dark_gray>- ricarica tutti i dati</dark_gray>
+      adminHeader: <gold><bold>DungeonsReborn</bold></gold> <gray>Comandi Admin</gray>
+      adminRoot: <gray>/{root} admin</gray> <dark_gray>- apri hub admin</dark_gray>
+      adminStatus: <gray>/{root} admin status</gray> <dark_gray>- stato sistema</dark_gray>
+      adminReload: <gray>/{root} admin reload</gray> <dark_gray>- ricarica tutti i dati</dark_gray>
+      adminLocaleReload: <gray>/{root} admin locale reload</gray> <dark_gray>- ricarica lingue</dark_gray>
+      adminAdvancementsReload: <gray>/{root} admin advancements reload</gray> <dark_gray>- ricarica avanzamenti</dark_gray>
+      adminGive: <gray>/{root} admin give ...</gray> <dark_gray>- strumenti give admin</dark_gray>
+      adminEffects: <gray>/{root} admin effects ...</gray> <dark_gray>- comandi effetti</dark_gray>
+      adminMobs: <gray>/{root} admin mobs ...</gray> <dark_gray>- comandi mob</dark_gray>
+      adminShops: <gray>/{root} admin shops ...</gray> <dark_gray>- comandi negozi</dark_gray>
+      adminItemsGive: <gray>/{root} admin items give &lt;id&gt; [player] [amount]</gray> <dark_gray>- dai oggetto</dark_gray>
+      adminKitsReload: <gray>/{root} admin kits reload</gray> <dark_gray>- ricarica kit</dark_gray>
+      adminClassesReload: <gray>/{root} admin classes reload</gray> <dark_gray>- ricarica classi</dark_gray>
+      adminClassesEditor: <gray>/{root} admin classes editor</gray> <dark_gray>- editor classi</dark_gray>
+      adminDungeonReload: <gray>/{root} admin dungeon reload</gray> <dark_gray>- ricarica dungeon</dark_gray>
+      adminDungeonValidate: <gray>/{root} admin dungeon validate</gray> <dark_gray>- valida dungeon</dark_gray>
+      adminDungeonDebug: <gray>/{root} admin dungeon debug ...</gray> <dark_gray>- debug dungeon</dark_gray>
+      adminQuestsReload: <gray>/{root} admin quests reload</gray> <dark_gray>- ricarica missioni</dark_gray>
+      adminQuestsEditor: <gray>/{root} admin quests editor</gray> <dark_gray>- editor missioni</dark_gray>
+      adminUpgradesReload: <gray>/{root} admin upgrades reload</gray> <dark_gray>- ricarica potenziamenti</dark_gray>
+      adminUpgradesInspect: <gray>/{root} admin upgrades inspect</gray> <dark_gray>- ispeziona potenziamenti</dark_gray>
+      adminUpgradesGive: <gray>/{root} admin upgrades give &lt;id&gt; [player]</gray> <dark_gray>- dai potenziamento</dark_gray>
+      adminCraftingEditor: <gray>/{root} admin crafting editor</gray> <dark_gray>- editor ricette</dark_gray>
+      adminCraftingReload: <gray>/{root} admin crafting reload</gray> <dark_gray>- ricarica ricette</dark_gray>
     missingPermission: <red>Permesso mancante:</red> <white>{permission}</white>
+    adminGive:
+      hint: <yellow>Usa:</yellow> <white>{command}</white>
     reload:
       allOk: <green>Tutti i sistemi ricaricati.</green>
       allErrors: <red>Ricarica completata con {errors} errori. Controlla i log.</red>
@@ -90,6 +109,8 @@ messages:
         egg: Egg
         header: Header
         list: List
+        lootInfo: Info bottino
+        lootList: Pool bottino
         reload: Reload
         spawn: Spawn
         spawners: Spawners
@@ -101,10 +122,24 @@ messages:
         variant: Variant
         world: World
       spawned: Spawned
+      loot:
+        header: <gold><bold>Pool Bottino</bold></gold> <gray>({count})</gray>
+        none: <gray>Nessun pool bottino configurato.</gray>
+        entry: <gray>-</gray> <white>{id}</white>
+        unknown: <red>Pool bottino sconosciuto:</red> <white>{id}</white>
+        info:
+          header: <gold><bold>Pool Bottino</bold></gold> <white>{id}</white>
+          clearVanilla: <gray>Rimuovi drop vanilla:</gray> <white>{value}</white>
+          rolls: <gray>Tiri:</gray> <white>{rolls}</white> <gray>Bonus:</gray> <white>{bonus}</white>
+          guaranteed: <gray>Oggetti garantiti:</gray> <white>{count}</white>
+          drops: <gray>Voci drop:</gray> <white>{count}</white>
     result:
       error: Error
+    closestMatch: <yellow>Intendevi:</yellow> <white>{suggestion}</white>
     shops:
       give: Give
+      tokenGive: <green>Gettoni dati</green> <white>x{amount}</white> <green>a</green> <white>{player}</white>
+      tokenUnknown: <red>Tier gettone sconosciuto:</red> <white>{id}</white>
       help:
         editor: Editor
         give: Give
@@ -123,6 +158,22 @@ messages:
         entry: Entry
         header: Header
       unknown: Unknown
+    crafting:
+      given: <green>Output ricetta dato</green> <white>{id}</white> <green>a</green> <white>{player}</white>
+      unknown: <red>Ricetta sconosciuta:</red> <white>{id}</white>
+      outputMissing: <red>Ricetta senza output:</red> <white>{id}</white>
+      info:
+        header: <gold><bold>Ricetta</bold></gold> <white>{id}</white>
+        name: <gray>Nome:</gray> <white>{name}</white>
+        description: <gray>Descrizione:</gray> <white>{description}</white>
+        variants: <gray>Varianti:</gray> <white>{count}</white>
+        outputs: <gray>Uscite:</gray> <white>{count}</white>
+        cooldown: <gray>Ricarica:</gray> <white>{seconds}</white><gray>s</gray>
+        permissions: <gray>Permessi:</gray> <white>{count}</white>
+  userHub:
+    comingSoon: <yellow>In arrivo.</yellow>
+  index:
+    viewOnly: <yellow>Menu solo consultazione.</yellow>
   shop:
     tokens:
       missing: <red>Oggetto gettone non configurato.</red>
@@ -130,6 +181,8 @@ messages:
     systemUnavailable: <red>{system} non disponibile.</red>
     targetNotFound: <red>Giocatore non trovato.</red>
     unknownUpgrade: <red>Potenziamento sconosciuto:</red> <white>{id}</white>
+    unknownItem: <red>Oggetto sconosciuto:</red> <white>{id}</white>
+    itemGiven: <green>Dato oggetto</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>a</green> <white>{player}</white>
     upgradeGiven: <green>Potenziamento dato a</green> <white>{player}</white>
     result:
       success: <green>{message}</green>
@@ -158,9 +211,11 @@ messages:
     classes:
       selectFirst: <red>Seleziona prima una classe.</red>
       missingSpec: <red>Classe selezionata mancante nel YAML.</red>
-    quests:
-      partyAcceptGiver: <red>Usa un quest giver per accettare missioni party.</red>
-      unknownGiver: <red>Quest giver sconosciuto:</red> <white>{id}</white>
+  quests:
+    partyAcceptGiver: <red>Usa un quest giver per accettare missioni party.</red>
+    unknownGiver: <red>Quest giver sconosciuto:</red> <white>{id}</white>
+    giverIndex:
+      visitHint: <yellow>Visita</yellow> <white>{title}</white> <gray>per accettare missioni.</gray>
     party:
       inviteSelf: <red>Non puoi invitare te stesso.</red>
       inviteReceived: <yellow>Sei stato invitato da</yellow> <white>{leader}</white><yellow>.</yellow>

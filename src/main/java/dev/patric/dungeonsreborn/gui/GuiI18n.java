@@ -23,6 +23,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
  */
 public final class GuiI18n {
   private static volatile Locale defaultLocale = Locale.US;
+  private static final java.util.regex.Pattern LEGACY_PLACEHOLDER =
+      java.util.regex.Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
 
   private GuiI18n() {
   }
@@ -37,11 +39,11 @@ public final class GuiI18n {
 
   public static Locale locale(Player player) {
     Objects.requireNonNull(player, "player");
-    Locale locale = player.locale();
-    if (locale == null) {
-      return defaultLocale;
+    LocaleService service = Locales.service();
+    if (service != null) {
+      return Locale.forLanguageTag(service.defaultLocale());
     }
-    return locale;
+    return defaultLocale;
   }
 
   public static Component tr(Player player, String key, TagResolver... resolvers) {
@@ -63,10 +65,10 @@ public final class GuiI18n {
     if (service != null) {
       String localeTag = locale.toLanguageTag().toLowerCase(Locale.ROOT);
       String template = service.text(localeTag, key, java.util.Map.of());
-      return GuiMini.mm(template, resolvers);
+      return GuiMini.mm(normalizeTemplate(template), resolvers);
     }
     String template = str(locale, key);
-    return GuiMini.mm(template, resolvers);
+    return GuiMini.mm(normalizeTemplate(template), resolvers);
   }
 
   public static String str(Locale locale, String key) {
@@ -78,5 +80,12 @@ public final class GuiI18n {
       return service.text(localeTag, key, java.util.Map.of());
     }
     return "<gray>" + key + "</gray>";
+  }
+
+  private static String normalizeTemplate(String template) {
+    if (template == null || template.isBlank()) {
+      return template;
+    }
+    return LEGACY_PLACEHOLDER.matcher(template).replaceAll("<$1>");
   }
 }

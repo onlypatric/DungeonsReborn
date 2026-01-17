@@ -43,6 +43,14 @@ public final class DungeonYamlRegistry {
     return dungeon;
   }
 
+  public java.util.Set<Integer> levelIds() {
+    DungeonSpec spec = dungeon;
+    if (spec == null || spec.levels() == null || spec.levels().isEmpty()) {
+      return java.util.Set.of();
+    }
+    return java.util.Set.copyOf(spec.levels().keySet());
+  }
+
   public List<String> lastErrors() {
     return lastErrors;
   }

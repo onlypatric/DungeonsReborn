@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_axe_forza_i
 name: <yellow>Incisione Brutale I</yellow>
 description: Ricetta per creare <yellow>Incisione Brutale I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_axe_forza_i
   amount: 1

@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: ENDER_EYE
+  type: material
+  material: ENDER_EYE
   amount: 1
   meta:
-    display-name: "Nucleo Arcano"
+    display-name: "<gradient:#b37bff:#4f9dff><bold>Nucleo Arcano</bold></gradient>"
     lore:
       - "Pulsante di energia."
+      - "Intona un sussurro distante."
     enchants:
       DURABILITY: 1
     flags:

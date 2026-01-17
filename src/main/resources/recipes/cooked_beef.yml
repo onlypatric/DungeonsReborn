@@ -2,7 +2,10 @@ schemaVersion: 1
 id: cooked_beef
 name: cooked_beef
 description: Ricetta per creare cooked_beef.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: cooked_beef
+  material: COOKED_BEEF
   amount: 1

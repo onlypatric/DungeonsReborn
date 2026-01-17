@@ -1,0 +1,127 @@
+quests:
+  quest_fire_t1_fire_t1_blazeling:
+    name: "<green><bold>Caccia Epica: Blazeling</bold></green>"
+    description:
+      - "<gray>Elimina Blazeling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t1_blazeling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_fire_t1_ghast_ashling:
+    name: "<green><bold>Caccia Epica: Ghast Ashling</bold></green>"
+    description:
+      - "<gray>Elimina Ghast Ashling e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t1_ghast_ashling
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_fire_t1_hoglin_cinder:
+    name: "<green><bold>Caccia Epica: Hoglin Cinder</bold></green>"
+    description:
+      - "<gray>Elimina Hoglin Cinder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t1_hoglin_cinder
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_fire_t1_magma_spark:
+    name: "<green><bold>Caccia Epica: Magma Spark</bold></green>"
+    description:
+      - "<gray>Elimina Magma Spark e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t1_magma_spark
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_fire_t1_piglin_ember:
+    name: "<green><bold>Caccia Epica: Piglin Ember</bold></green>"
+    description:
+      - "<gray>Elimina Piglin Ember e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: fire_t1_piglin_ember
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_use_itemId_useless_stick:
+    name: "<green><bold>Prova di Uso: Useless Stick</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_stick
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_fire_t1_craft_elemental_crafted_fire_i:
+    name: "<green><bold>Forgiatura Mistica: Elemental Crafted I</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_crafted_fire_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: PAPER
+  type: material
+  material: PAPER
   amount: 1
   meta:
     display-name: "Straccio Inutile"

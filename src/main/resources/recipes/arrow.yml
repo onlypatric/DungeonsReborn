@@ -2,7 +2,10 @@ schemaVersion: 1
 id: arrow
 name: arrow
 description: Ricetta per creare arrow.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: arrow
+  material: ARROW
   amount: 1

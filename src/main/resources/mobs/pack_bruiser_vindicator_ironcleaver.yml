@@ -5,6 +5,8 @@ mobs:
     name: <gold>Ironcleaver</gold>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 80
     ai:
       enabled: true
@@ -34,8 +36,8 @@ mobs:
     xpGating:
       minLevel: 5000
     progression:
-      minXp: 16
-      maxXp: 24
+      minXp: 144
+      maxXp: 216
       maxPlayerXp: 900000
 spawnerBlocks:
   pack_bruiser_vindicator_ironcleaver_spawner:

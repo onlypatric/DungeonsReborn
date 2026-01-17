@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: NETHER_WART
+  type: material
+  material: NETHER_WART
   amount: 1
   meta:
     display-name: Cuore Corrotto

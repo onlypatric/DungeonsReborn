@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: ENDER_PEARL
+  type: material
+  material: ENDER_PEARL
   amount: 1
   meta:
     display-name: "Bagliore Arcano"

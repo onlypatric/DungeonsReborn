@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: GLOWSTONE_DUST
+  type: material
+  material: GLOWSTONE_DUST
   amount: 1
   meta:
     display-name: "Scintilla di Tempesta"

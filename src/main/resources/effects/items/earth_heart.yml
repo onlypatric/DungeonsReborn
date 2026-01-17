@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: EMERALD
+  type: material
+  material: EMERALD
   amount: 1
   meta:
     display-name: "Cuore di Terra"

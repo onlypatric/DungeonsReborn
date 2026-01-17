@@ -1,0 +1,127 @@
+quests:
+  quest_earth_t2_earth_t2_enderman_terrastalker:
+    name: "<gold><bold>Caccia Epica: Enderman Terrastalker</bold></gold>"
+    description:
+      - "<gray>Elimina Enderman Terrastalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: earth_t2_enderman_terrastalker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_earth_t2_husk_mudreaver:
+    name: "<gold><bold>Caccia Epica: Husk Mudreaver</bold></gold>"
+    description:
+      - "<gray>Elimina Husk Mudreaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: earth_t2_husk_mudreaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_earth_t2_iron_golem_boulderlord:
+    name: "<gold><bold>Caccia Epica: Iron Golem Boulderlord</bold></gold>"
+    description:
+      - "<gray>Elimina Iron Golem Boulderlord e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: earth_t2_iron_golem_boulderlord
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_earth_t2_ravager_colossus:
+    name: "<gold><bold>Caccia Epica: Ravager Colossus</bold></gold>"
+    description:
+      - "<gray>Elimina Ravager Colossus e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: earth_t2_ravager_colossus
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_earth_t2_warden_tremor:
+    name: "<gold><bold>Caccia Epica: Warden Tremor</bold></gold>"
+    description:
+      - "<gray>Elimina Warden Tremor e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: earth_t2_warden_tremor
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_use_material_BAKED_POTATO:
+    name: "<gold><bold>Prova di Uso: Baked Potato</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: BAKED_POTATO
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_earth_t2_craft_earth_heart:
+    name: "<gold><bold>Forgiatura Mistica: Heart</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1600
+    rewards:
+      xp: 1800
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: earth_heart
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

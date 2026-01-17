@@ -2,7 +2,10 @@ schemaVersion: 1
 id: frost_heart
 name: frost_heart
 description: Ricetta per creare frost_heart.
-inputs: []
-output:
-  itemId: frost_heart
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: frost_heart

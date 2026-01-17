@@ -2,7 +2,10 @@ schemaVersion: 1
 id: wooden_sword
 name: wooden_sword
 description: Ricetta per creare wooden_sword.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: wooden_sword
+  material: WOODEN_SWORD
   amount: 1

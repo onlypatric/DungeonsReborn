@@ -27,24 +27,37 @@ public final class QuestsCommand {
   private QuestsCommand() {
   }
 
-  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(QuestService quests, QuestGiverYamlRegistry givers,
-      PartyService parties) {
-    return Commands.literal("quests")
+  public static LiteralArgumentBuilder<CommandSourceStack> createUserCommand(QuestService quests,
+      QuestGiverYamlRegistry givers, PartyService parties) {
+    return createCommand(quests, givers, parties, false);
+  }
+
+  public static LiteralArgumentBuilder<CommandSourceStack> createAdminCommand(QuestService quests,
+      QuestGiverYamlRegistry givers, PartyService parties) {
+    return createCommand(quests, givers, parties, true);
+  }
+
+  private static LiteralArgumentBuilder<CommandSourceStack> createCommand(QuestService quests,
+      QuestGiverYamlRegistry givers, PartyService parties, boolean includeAdmin) {
+    var builder = Commands.literal("quests")
         .executes(ctx -> openLog(ctx, quests))
         .then(Commands.literal("log").executes(ctx -> openLog(ctx, quests)))
-        .then(Commands.literal("reload").executes(ctx -> reload(ctx, quests, givers)))
-        .then(Commands.literal("editor").executes(ctx -> openEditor(ctx, quests)))
         .then(Commands.literal("giver")
             .then(Commands.argument("id", StringArgumentType.word())
-                .suggests((ctx, builder) -> suggestGivers(givers, builder))
+                .suggests((ctx, builderSuggestion) -> suggestGivers(givers, builderSuggestion))
                 .executes(ctx -> openGiver(ctx, quests, givers, parties, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.literal("accept")
             .then(Commands.argument("id", StringArgumentType.word())
-                .suggests((ctx, builder) -> suggestQuests(quests, builder))
+                .suggests((ctx, builderSuggestion) -> suggestQuests(quests, builderSuggestion))
                 .executes(ctx -> accept(ctx, quests, parties, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.argument("id", StringArgumentType.word())
-            .suggests((ctx, builder) -> suggestQuests(quests, builder))
+            .suggests((ctx, builderSuggestion) -> suggestQuests(quests, builderSuggestion))
             .executes(ctx -> accept(ctx, quests, parties, StringArgumentType.getString(ctx, "id"))));
+    if (includeAdmin) {
+      builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, quests, givers)));
+      builder.then(Commands.literal("editor").executes(ctx -> openEditor(ctx, quests)));
+    }
+    return builder;
   }
 
   private static int openLog(CommandContext<CommandSourceStack> ctx, QuestService quests) {
@@ -77,6 +90,12 @@ public final class QuestsCommand {
     }
     if (parties != null && parties.partyOf(player) != null) {
       CommandMessages.send(sender, "messages.command.quests.partyAcceptGiver");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (quests.registry().quest(questId) == null) {
+      CommandMessages.send(sender, "messages.quests.accept.unknown",
+          Locales.placeholders("id", questId));
+      CommandMessages.sendClosestMatch(sender, questId, quests.registry().quests().keySet());
       return Command.SINGLE_SUCCESS;
     }
     QuestService.QuestAcceptResult result = quests.accept(player, questId);
@@ -165,6 +184,7 @@ public final class QuestsCommand {
     if (spec == null) {
       CommandMessages.send(sender, "messages.command.quests.unknownGiver",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, givers.givers().keySet());
       return Command.SINGLE_SUCCESS;
     }
     new QuestGiverMenu(quests, spec, parties).open(player);

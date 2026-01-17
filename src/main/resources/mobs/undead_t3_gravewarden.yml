@@ -9,6 +9,8 @@ mobs:
       chest: CHAINMAIL_CHESTPLATE
       mainhand: IRON_SWORD
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 34
     ai:
       enabled: true
@@ -41,8 +43,8 @@ mobs:
     xpGating:
       minLevel: 8000
     progression:
-      minXp: 22
-      maxXp: 32
+      minXp: 198
+      maxXp: 288
       maxPlayerXp: 1200000
 spawnerBlocks:
   undead_t3_gravewarden_spawner:

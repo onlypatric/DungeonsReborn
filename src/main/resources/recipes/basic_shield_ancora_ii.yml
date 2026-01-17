@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_shield_ancora_ii
 name: <yellow>Scudo Ancora II</yellow>
 description: Ricetta per creare <yellow>Scudo Ancora II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_shield_ancora_ii
   amount: 1

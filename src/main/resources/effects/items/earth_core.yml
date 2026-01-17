@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: COBBLESTONE
+  type: material
+  material: COBBLESTONE
   amount: 1
   meta:
-    display-name: "Nucleo di Terra"
+    display-name: "<gradient:#6f8a3a:#b58a4f><bold>Nucleo di Terra</bold></gradient>"
     lore:
       - "Un nucleo ruvido."
+      - "Scricchiola come roccia viva."
     enchants:
       DURABILITY: 1
     flags:

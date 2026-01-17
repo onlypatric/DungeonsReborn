@@ -5,6 +5,8 @@ mobs:
     name: <dark_gray>Shadepelt</dark_gray>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 25
     ai:
       enabled: true
@@ -34,8 +36,8 @@ mobs:
     xpGating:
       minLevel: 6000
     progression:
-      minXp: 18
-      maxXp: 26
+      minXp: 162
+      maxXp: 234
       maxPlayerXp: 1000000
 spawnerBlocks:
   pack_stalker_wolf_shadepelt_spawner:

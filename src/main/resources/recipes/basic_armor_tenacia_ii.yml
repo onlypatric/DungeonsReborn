@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_armor_tenacia_ii
 name: <yellow>Runa di Tenacia II</yellow>
 description: Ricetta per creare <yellow>Runa di Tenacia II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_armor_tenacia_ii
   amount: 1

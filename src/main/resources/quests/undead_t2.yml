@@ -1,0 +1,325 @@
+quests:
+  quest_undead_t2_undead_t2_blightshot:
+    name: "<gold><bold>Caccia Epica: Blightshot</bold></gold>"
+    description:
+      - "<gray>Elimina Blightshot e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_blightshot
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_boneguard:
+    name: "<gold><bold>Caccia Epica: Boneguard</bold></gold>"
+    description:
+      - "<gray>Elimina Boneguard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_boneguard
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_cryptarcher:
+    name: "<gold><bold>Caccia Epica: Cryptarcher</bold></gold>"
+    description:
+      - "<gray>Elimina Cryptarcher e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_cryptarcher
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_dreadmonger:
+    name: "<gold><bold>Caccia Epica: Dreadmonger</bold></gold>"
+    description:
+      - "<gray>Elimina Dreadmonger e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_dreadmonger
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_frostvein:
+    name: "<gold><bold>Caccia Epica: Frostvein</bold></gold>"
+    description:
+      - "<gray>Elimina Frostvein e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_frostvein
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_graveknight:
+    name: "<gold><bold>Caccia Epica: Graveknight</bold></gold>"
+    description:
+      - "<gray>Elimina Graveknight e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_graveknight
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_grimcharger:
+    name: "<gold><bold>Caccia Epica: Grimcharger</bold></gold>"
+    description:
+      - "<gray>Elimina Grimcharger e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_grimcharger
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_marrowmage:
+    name: "<gold><bold>Caccia Epica: Marrowmage</bold></gold>"
+    description:
+      - "<gray>Elimina Marrowmage e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_marrowmage
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_mirestalker:
+    name: "<gold><bold>Caccia Epica: Mirestalker</bold></gold>"
+    description:
+      - "<gray>Elimina Mirestalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_mirestalker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_plaguebearer:
+    name: "<gold><bold>Caccia Epica: Plaguebearer</bold></gold>"
+    description:
+      - "<gray>Elimina Plaguebearer e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_plaguebearer
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_rotfang:
+    name: "<gold><bold>Caccia Epica: Rotfang</bold></gold>"
+    description:
+      - "<gray>Elimina Rotfang e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_rotfang
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_undead_t2_wailreaper:
+    name: "<gold><bold>Caccia Epica: Wailreaper</bold></gold>"
+    description:
+      - "<gray>Elimina Wailreaper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: undead_t2_wailreaper
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_use_itemId_undead_bone:
+    name: "<gold><bold>Prova di Uso: Bone</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: undead_bone
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_use_material_CHAINMAIL_LEGGINGS:
+    name: "<gold><bold>Prova di Uso: Chainmail Leggings</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CHAINMAIL_LEGGINGS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_use_material_COOKED_BEEF:
+    name: "<gold><bold>Prova di Uso: Cooked Beef</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_BEEF
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_use_material_CHAINMAIL_HELMET:
+    name: "<gold><bold>Prova di Uso: Chainmail Helmet</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CHAINMAIL_HELMET
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_craft_basic_armor_caduta_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Armor Caduta I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_armor_caduta_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_undead_t2_craft_basic_elytra_corrente_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Elytra Corrente I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 800
+    rewards:
+      xp: 1000
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_elytra_corrente_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

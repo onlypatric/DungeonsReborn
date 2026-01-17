@@ -2,7 +2,10 @@ schemaVersion: 1
 id: useless_stick
 name: useless_stick
 description: Ricetta per creare useless_stick.
-inputs: []
-output:
-  itemId: useless_stick
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: useless_stick

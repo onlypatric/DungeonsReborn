@@ -1,0 +1,127 @@
+quests:
+  quest_frost_t1_frost_t1_goat_rimehorn:
+    name: "<green><bold>Caccia Epica: Goat Rimehorn</bold></green>"
+    description:
+      - "<gray>Elimina Goat Rimehorn e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t1_goat_rimehorn
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_frost_t1_polar_bear_sleetmaw:
+    name: "<green><bold>Caccia Epica: Polar Bear Sleetmaw</bold></green>"
+    description:
+      - "<gray>Elimina Polar Bear Sleetmaw e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t1_polar_bear_sleetmaw
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_frost_t1_snowgaze:
+    name: "<green><bold>Caccia Epica: Snowgaze</bold></green>"
+    description:
+      - "<gray>Elimina Snowgaze e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t1_snowgaze
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_frost_t1_stray_glint:
+    name: "<green><bold>Caccia Epica: Stray Glint</bold></green>"
+    description:
+      - "<gray>Elimina Stray Glint e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t1_stray_glint
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_frost_t1_wolf_icefang:
+    name: "<green><bold>Caccia Epica: Wolf Icefang</bold></green>"
+    description:
+      - "<gray>Elimina Wolf Icefang e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: frost_t1_wolf_icefang
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_use_material_COOKED_BEEF:
+    name: "<green><bold>Prova di Uso: Cooked Beef</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_BEEF
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_frost_t1_craft_frost_heart:
+    name: "<green><bold>Forgiatura Mistica: Heart</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 801
+    rewards:
+      xp: 450
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: frost_heart
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

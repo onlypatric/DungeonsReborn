@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: FLINT
+  type: material
+  material: FLINT
   amount: 1
   meta:
     display-name: "Amuleto Spezzato"

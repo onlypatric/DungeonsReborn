@@ -1,0 +1,387 @@
+quests:
+  quest_knight_t3_knight_bulwark:
+    name: "<red><bold>Caccia Epica: Bulwark</bold></red>"
+    description:
+      - "<gray>Elimina Bulwark e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_bulwark
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_captain:
+    name: "<red><bold>Caccia Epica: Captain</bold></red>"
+    description:
+      - "<gray>Elimina Captain e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_captain
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_champion:
+    name: "<red><bold>Caccia Epica: Champion</bold></red>"
+    description:
+      - "<gray>Elimina Champion e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_champion
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_crusader:
+    name: "<red><bold>Caccia Epica: Crusader</bold></red>"
+    description:
+      - "<gray>Elimina Crusader e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_crusader
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_defender:
+    name: "<red><bold>Caccia Epica: Defender</bold></red>"
+    description:
+      - "<gray>Elimina Defender e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_defender
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_grandmarshal:
+    name: "<red><bold>Caccia Epica: Grandmarshal</bold></red>"
+    description:
+      - "<gray>Elimina Grandmarshal e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_grandmarshal
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_guard:
+    name: "<red><bold>Caccia Epica: Guard</bold></red>"
+    description:
+      - "<gray>Elimina Guard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+      items:
+        - type: itemId
+          itemId: elemental_fire_shield_i
+          amount: 1
+    objectives:
+      - type: kill_mob
+        mob: knight_guard
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_highguard:
+    name: "<red><bold>Caccia Epica: Highguard</bold></red>"
+    description:
+      - "<gray>Elimina Highguard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_highguard
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_initiate:
+    name: "<red><bold>Caccia Epica: Initiate</bold></red>"
+    description:
+      - "<gray>Elimina Initiate e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_initiate
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_paladin:
+    name: "<red><bold>Caccia Epica: Paladin</bold></red>"
+    description:
+      - "<gray>Elimina Paladin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_paladin
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_sentinel:
+    name: "<red><bold>Caccia Epica: Sentinel</bold></red>"
+    description:
+      - "<gray>Elimina Sentinel e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_sentinel
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_squire:
+    name: "<red><bold>Caccia Epica: Squire</bold></red>"
+    description:
+      - "<gray>Elimina Squire e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_squire
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_templar:
+    name: "<red><bold>Caccia Epica: Templar</bold></red>"
+    description:
+      - "<gray>Elimina Templar e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+      items:
+        - type: itemId
+          itemId: hybrid_fire_frost_mail_i
+          amount: 1
+    objectives:
+      - type: kill_mob
+        mob: knight_templar
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_vanguard:
+    name: "<red><bold>Caccia Epica: Vanguard</bold></red>"
+    description:
+      - "<gray>Elimina Vanguard e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_vanguard
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_knight_warden:
+    name: "<red><bold>Caccia Epica: Warden</bold></red>"
+    description:
+      - "<gray>Elimina Warden e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: knight_warden
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_use_material_COOKED_PORKCHOP:
+    name: "<red><bold>Prova di Uso: Cooked Porkchop</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_PORKCHOP
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_use_itemId_lucky_charm:
+    name: "<red><bold>Prova di Uso: Lucky Charm</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: lucky_charm
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_use_material_BREAD:
+    name: "<red><bold>Prova di Uso: Bread</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: BREAD
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_use_itemId_book_blank:
+    name: "<red><bold>Prova di Uso: Book Blank</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: book_blank
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_craft_basic_bow_longshot_ii:
+    name: "<red><bold>Forgiatura Mistica: Basic Bow Longshot Ii</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_bow_longshot_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_knight_t3_craft_basic_multi_taglio_ii:
+    name: "<red><bold>Forgiatura Mistica: Basic Multi Taglio Ii</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 3200
+    rewards:
+      xp: 6000
+      tokens: 10
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_multi_taglio_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

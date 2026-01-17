@@ -142,6 +142,10 @@ public final class MobSpawnManager implements Listener {
     return spawns.containsKey(id);
   }
 
+  public java.util.Set<String> spawnIds() {
+    return java.util.Collections.unmodifiableSet(spawns.keySet());
+  }
+
   public int despawnSpawn(String id) {
     SpawnState state = states.get(id);
     if (state == null) {

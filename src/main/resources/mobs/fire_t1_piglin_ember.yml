@@ -5,6 +5,8 @@ mobs:
     name: <gold>Piglin Ember</gold>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 40
     ai:
       enabled: true
@@ -31,8 +33,8 @@ mobs:
     xpGating:
       minLevel: 10000
     progression:
-      minXp: 30
-      maxXp: 45
+      minXp: 270
+      maxXp: 405
       maxPlayerXp: 1400000
     loot:
       pool: elemental_fire

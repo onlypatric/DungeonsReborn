@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_rune_squarcio_ii
 name: <yellow>Runa dello Squarcio II</yellow>
 description: Ricetta per creare <yellow>Runa dello Squarcio II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_rune_squarcio_ii
   amount: 1

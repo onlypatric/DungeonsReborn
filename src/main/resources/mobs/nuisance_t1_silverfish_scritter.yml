@@ -5,6 +5,8 @@ mobs:
     name: <gray>Scritter</gray>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 8
       movementSpeed: 0.3
     ai:
@@ -25,8 +27,8 @@ mobs:
             \ originAt=origin {\n    potion effect=HUNGER durationTicks=60 amplifier=0\n\
             \  }\n}"
     progression:
-      minXp: 1
-      maxXp: 2
+      minXp: 9
+      maxXp: 18
       maxPlayerXp: 100000
 spawnerBlocks:
   nuisance_t1_silverfish_scritter_spawner:

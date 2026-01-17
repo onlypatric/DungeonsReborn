@@ -1,0 +1,55 @@
+quests:
+  quest_nuisance_t3_nuisance_t3_silverfish_frostbite:
+    name: "<red><bold>Caccia Epica: Nuisance Silverfish Frostbite</bold></red>"
+    description:
+      - "<gray>Elimina Nuisance Silverfish Frostbite e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2300
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t3_silverfish_frostbite
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t3_nuisance_t3_tadpole_frostfin:
+    name: "<red><bold>Caccia Epica: Nuisance Tadpole Frostfin</bold></red>"
+    description:
+      - "<gray>Elimina Nuisance Tadpole Frostfin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2300
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t3_tadpole_frostfin
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t3_use_material_COOKED_BEEF:
+    name: "<red><bold>Prova di Uso: Cooked Beef</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2300
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_BEEF
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

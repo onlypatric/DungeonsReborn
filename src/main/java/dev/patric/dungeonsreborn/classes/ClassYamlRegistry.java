@@ -21,6 +21,8 @@ import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import dev.patric.dungeonsreborn.classes.skills.SkillAttributeSpec;
+import dev.patric.dungeonsreborn.classes.skills.SkillAbilitySpec;
+import dev.patric.dungeonsreborn.classes.skills.SkillAbilityTrigger;
 import dev.patric.dungeonsreborn.classes.skills.SkillEdgeSpec;
 import dev.patric.dungeonsreborn.classes.skills.SkillNodeSpec;
 import dev.patric.dungeonsreborn.classes.skills.SkillNodeType;
@@ -118,8 +120,10 @@ public final class ClassYamlRegistry {
       try {
         String id = Ids.normalize(rawId);
         String nameRaw = YamlValues.string(node, "name", id);
+        String nameKey = YamlValues.string(node, "nameKey", null);
         boolean enabled = node.getBoolean("enabled", true);
         List<String> descRaw = listOf(node, "description");
+        String descriptionKey = YamlValues.string(node, "descriptionKey", null);
         ItemStack icon = parseIcon(node.get("icon"), base + ".icon", errors);
         if (icon == null) {
           icon = new ItemStack(Material.BOOK);
@@ -132,7 +136,8 @@ public final class ClassYamlRegistry {
         for (String line : descRaw) {
           desc.add(EditorItemLore.parseRichText(line));
         }
-        out.put(id, new ClassSpec(id, enabled, name, List.copyOf(desc), icon, unlock, skillTree, bonuses));
+        out.put(id, new ClassSpec(id, enabled, nameKey, descriptionKey, name, List.copyOf(desc), icon, unlock, skillTree,
+            bonuses));
       } catch (Exception ex) {
         errors.add(base + ": " + ex.getMessage());
       }
@@ -214,12 +219,17 @@ public final class ClassYamlRegistry {
     }
     List<Map<?, ?>> nodesRaw = section.getMapList("nodes");
     List<SkillNodeSpec> nodes = new ArrayList<>();
+    java.util.Set<String> seenIds = new java.util.HashSet<>();
     for (int i = 0; i < nodesRaw.size(); i++) {
       Map<?, ?> map = nodesRaw.get(i);
       String path = base + ".nodes[" + i + "]";
       try {
         SkillNodeSpec node = parseNode(map, path, errors);
         if (node != null) {
+          if (!seenIds.add(node.id())) {
+            errors.add(path + ".id: duplicate node id " + node.id());
+            continue;
+          }
           nodes.add(node);
         }
       } catch (Exception ex) {
@@ -238,6 +248,42 @@ public final class ClassYamlRegistry {
         continue;
       }
       edges.add(new SkillEdgeSpec(Ids.normalize(from), Ids.normalize(to)));
+    }
+    java.util.Set<String> nodeIds = new java.util.HashSet<>();
+    for (SkillNodeSpec node : nodes) {
+      if (node != null && node.id() != null) {
+        nodeIds.add(node.id());
+      }
+    }
+    for (SkillNodeSpec node : nodes) {
+      if (node == null || node.id() == null) {
+        continue;
+      }
+      for (String req : node.requiresOrEmpty()) {
+        if (!nodeIds.contains(req)) {
+          errors.add(base + ".nodes: node " + node.id() + " requires missing node " + req);
+        }
+      }
+    }
+    java.util.Set<String> edgeKeys = new java.util.HashSet<>();
+    for (int i = 0; i < edges.size(); i++) {
+      SkillEdgeSpec edge = edges.get(i);
+      if (edge == null) {
+        continue;
+      }
+      if (!nodeIds.contains(edge.from())) {
+        errors.add(base + ".edges[" + i + "]: missing from node " + edge.from());
+      }
+      if (!nodeIds.contains(edge.to())) {
+        errors.add(base + ".edges[" + i + "]: missing to node " + edge.to());
+      }
+      if (edge.from().equals(edge.to())) {
+        errors.add(base + ".edges[" + i + "]: from and to are the same (" + edge.from() + ")");
+      }
+      String key = edge.from() + "->" + edge.to();
+      if (!edgeKeys.add(key)) {
+        errors.add(base + ".edges[" + i + "]: duplicate edge " + key);
+      }
     }
     ConfigurationSection respec = section.getConfigurationSection("respec");
     int respecTokens = respec == null ? 0 : Math.max(0, respec.getInt("tokens", 0));
@@ -360,7 +406,9 @@ public final class ClassYamlRegistry {
     }
     String id = Ids.normalize(rawId);
     String nameRaw = YamlValues.string(map, "name", id);
+    String nameKey = YamlValues.string(map, "nameKey", null);
     List<String> descRaw = listOf(map.get("description"));
+    String descriptionKey = YamlValues.string(map, "descriptionKey", null);
     ItemStack icon = parseIcon(map.get("icon"), path + ".icon", errors);
     if (icon == null) {
       String materialRaw = YamlValues.string(map, "material", null);
@@ -381,6 +429,7 @@ public final class ClassYamlRegistry {
     SkillStatSpec stat = null;
     SkillAttributeSpec attribute = null;
     SkillPotionSpec potion = null;
+    SkillAbilitySpec ability = null;
     Object statRaw = map.get("stat");
     if (statRaw instanceof Map<?, ?> statMap) {
       String key = YamlValues.string(statMap, "key", YamlValues.string(statMap, "stat", null));
@@ -411,12 +460,31 @@ public final class ClassYamlRegistry {
         type = typeRaw == null ? SkillNodeType.POTION : type;
       }
     }
+    Object abilityRaw = map.get("ability");
+    if (abilityRaw instanceof Map<?, ?> abilityMap) {
+      String abilityId = YamlValues.string(abilityMap, "id", YamlValues.string(abilityMap, "ability", null));
+      if (abilityId == null || abilityId.isBlank()) {
+        errors.add(path + ".ability.id: missing ability id");
+      } else {
+        String triggerRaw = YamlValues.string(abilityMap, "trigger", "passive");
+        SkillAbilityTrigger trigger = SkillAbilityTrigger.parse(triggerRaw);
+        boolean requireSneaking = YamlValues.bool(abilityMap.get("requireSneaking"), false);
+        String permission = YamlValues.string(abilityMap, "permission", null);
+        long periodTicks = Math.max(1L, (long) YamlValues.intValue(abilityMap.get("periodTicks"), 20));
+        boolean cancelEvent = YamlValues.bool(abilityMap.get("cancelEvent"), true);
+        ability = new SkillAbilitySpec(abilityId, trigger, requireSneaking, permission, periodTicks, cancelEvent);
+        if (typeRaw == null) {
+          type = SkillNodeType.CUSTOM;
+        }
+      }
+    }
     Component name = EditorItemLore.parseRichText(nameRaw);
     List<Component> desc = new ArrayList<>();
     for (String line : descRaw) {
       desc.add(EditorItemLore.parseRichText(line));
     }
-    return new SkillNodeSpec(id, name, List.copyOf(desc), icon, type, cost, List.copyOf(requires), stat, attribute, potion);
+    return new SkillNodeSpec(id, name, List.copyOf(desc), icon, type, cost, List.copyOf(requires), stat, attribute, potion,
+        ability, nameKey, descriptionKey);
   }
 
   private ItemStack parseItemStack(Object raw, String path, List<String> errors) {

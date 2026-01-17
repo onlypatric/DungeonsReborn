@@ -5,6 +5,8 @@ mobs:
     name: <dark_purple>Umbrapole</dark_purple>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 50
       movementSpeed: 0.38
     ai:
@@ -27,8 +29,8 @@ mobs:
     xpGating:
       minLevel: 5000
     progression:
-      minXp: 5
-      maxXp: 7
+      minXp: 45
+      maxXp: 63
       maxPlayerXp: 800000
 spawnerBlocks:
   nuisance_t5_tadpole_umbra_spawner:

@@ -93,7 +93,7 @@ public final class ShopTradeListener implements Listener {
     ShopTradeSpec trade = tradeIndex >= 0 && tradeIndex < spec.trades().size() ? spec.trades().get(tradeIndex) : null;
     if (trade != null && trade.minLevel() > 0) {
       if (customXpService == null) {
-        logger.warning("[Shops] trade gating skipped (custom XP unavailable): shop=" + shopId + " trade="
+        logger.warn("[Shops] trade gating skipped (custom XP unavailable): shop=" + shopId + " trade="
             + tradeIndex);
       } else {
         int level = customXpService.getOrCreate(player.getUniqueId()).level();

@@ -2,7 +2,10 @@ schemaVersion: 1
 id: bow
 name: bow
 description: Ricetta per creare bow.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: bow
+  material: BOW
   amount: 1

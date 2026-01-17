@@ -215,6 +215,17 @@ public final class MobYamlRegistry {
     return Set.copyOf(spawnerBlocks.keySet());
   }
 
+  public Set<String> lootPoolIds() {
+    return Set.copyOf(lootPools.keySet());
+  }
+
+  public MobLootSpec lootPool(String id) {
+    if (id == null) {
+      return null;
+    }
+    return lootPools.get(Ids.normalize(id));
+  }
+
   public ItemStack eggItemForMob(String mobId) {
     if (mobId == null || mobId.isBlank()) {
       return null;
@@ -302,6 +313,7 @@ public final class MobYamlRegistry {
     }
     lootPools.clear();
     lootPools.putAll(nextLootPools);
+    int loadedLootPools = nextLootPools.size();
 
     Map<String, MobSpec> specs = new HashMap<>();
     for (YamlSource source : sources) {
@@ -355,8 +367,32 @@ public final class MobYamlRegistry {
         file().getPath(),
         "mobs=" + loaded + ", spawns=" + spawns.activeSpawns() + ", eggs=" + loadedEggs,
         errors);
+    SystemStatusStore.get().record(
+        "mobLoot",
+        "Mob Loot",
+        lootFolder().getPath(),
+        "pools=" + loadedLootPools,
+        filterLootErrors(errors));
 
     return new ReloadResult(loaded, spawns.activeSpawns(), errors);
+  }
+
+  private static List<String> filterLootErrors(List<String> errors) {
+    if (errors == null || errors.isEmpty()) {
+      return List.of();
+    }
+    List<String> out = new ArrayList<>();
+    for (String error : errors) {
+      if (error == null) {
+        continue;
+      }
+      String lower = error.toLowerCase();
+      if (lower.contains("/loot/") || lower.contains("\\loot\\") || lower.contains(".loot")
+          || lower.contains("lootpools") || lower.contains("loot pool")) {
+        out.add(error);
+      }
+    }
+    return out;
   }
 
   public String createSpawn(String desiredId, String mobId, Location location) {
@@ -768,6 +804,7 @@ public final class MobYamlRegistry {
     Boolean hologramEnabled = null;
     Double hologramOffsetY = null;
     String hologramFormat = null;
+    String hologramTitle = null;
     ConfigurationSection hologram = node.getConfigurationSection("hologram");
     if (hologram != null) {
       if (hologram.contains("enabled")) {
@@ -776,9 +813,15 @@ public final class MobYamlRegistry {
       if (hologram.contains("offsetY")) {
         hologramOffsetY = hologram.getDouble("offsetY");
       }
+      if (hologram.contains("title")) {
+        hologramTitle = YamlValues.string(hologram, "title", null);
+      }
       if (hologram.contains("format")) {
         hologramFormat = YamlValues.string(hologram, "format", null);
       }
+    }
+    if ((hologramFormat == null || hologramFormat.isBlank()) && hologramTitle != null && !hologramTitle.isBlank()) {
+      hologramFormat = "<gold>" + hologramTitle + "</gold> <gray>({alive}/{cap})</gray>";
     }
     Boolean enabled = node.contains("enabled") ? node.getBoolean("enabled") : null;
     return new MobSpawnerTemplate(
@@ -1345,6 +1388,7 @@ public final class MobYamlRegistry {
         boolean hologramEnabled = false;
         double hologramOffsetY = 2.3;
         String hologramFormat = null;
+        String hologramTitle = null;
         ConfigurationSection hologram = node.getConfigurationSection("hologram");
         if (node.contains("hologramEnabled")) {
           hologramEnabled = node.getBoolean("hologramEnabled", hologramEnabled);
@@ -1362,9 +1406,15 @@ public final class MobYamlRegistry {
           if (hologram.contains("offsetY")) {
             hologramOffsetY = hologram.getDouble("offsetY", hologramOffsetY);
           }
+          if (hologram.contains("title")) {
+            hologramTitle = YamlValues.string(hologram, "title", hologramTitle);
+          }
           if (hologram.contains("format")) {
             hologramFormat = YamlValues.string(hologram, "format", hologramFormat);
           }
+        }
+        if ((hologramFormat == null || hologramFormat.isBlank()) && hologramTitle != null && !hologramTitle.isBlank()) {
+          hologramFormat = "<gold>" + hologramTitle + "</gold> <gray>({alive}/{cap})</gray>";
         }
         if (groupMaxAlive < 0) {
           throw new IllegalArgumentException(base + ".groupMaxAlive: must be >= 0");

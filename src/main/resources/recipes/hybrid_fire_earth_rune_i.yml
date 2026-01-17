@@ -3,21 +3,21 @@ id: hybrid_fire_earth_rune_i
 name: <light_purple>Runa della Lava I</light_purple>
 description: Ricetta per creare <light_purple>Runa della Lava I</light_purple>.
 inputs:
-- type: item
-  itemId: fire_core
+- type: item_id
   amount: 4
-- type: item
-  itemId: earth_core
+  item: fire_core
+- type: item_id
   amount: 4
+  item: earth_core
 - type: tag
   tag: dungeonsreborn:shop_token_compressed
   amount: 1
 - type: tag
   tag: dungeonsreborn:shop_token
   amount: 56
-- type: item
-  itemId: book_blank
+- type: item_id
   amount: 1
+  item: book_blank
 output:
   itemId: hybrid_fire_earth_rune_i
   amount: 1

@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: BOOK
+  type: material
+  material: BOOK
   amount: 1
   meta:
     display-name: "Tomo Vuoto"

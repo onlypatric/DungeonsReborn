@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_armor_guardia_iii
 name: <yellow>Sigillo di Guardia III</yellow>
 description: Ricetta per creare <yellow>Sigillo di Guardia III</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_armor_guardia_iii
   amount: 1

@@ -2,7 +2,10 @@ schemaVersion: 1
 id: blood_thread
 name: blood_thread
 description: Ricetta per creare blood_thread.
-inputs: []
-output:
-  itemId: blood_thread
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: blood_thread

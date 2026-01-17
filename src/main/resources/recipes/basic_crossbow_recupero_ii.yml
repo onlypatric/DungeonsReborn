@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_crossbow_recupero_ii
 name: <yellow>Dardo di Recupero II</yellow>
 description: Ricetta per creare <yellow>Dardo di Recupero II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_crossbow_recupero_ii
   amount: 1

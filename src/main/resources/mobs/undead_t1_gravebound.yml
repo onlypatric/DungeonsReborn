@@ -7,6 +7,8 @@ mobs:
     equipment:
       head: LEATHER_HELMET
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 11
     ai:
       enabled: true
@@ -26,8 +28,8 @@ mobs:
       pool: undead_t1
       merge: true
     progression:
-      minXp: 6
-      maxXp: 9
+      minXp: 54
+      maxXp: 81
       maxPlayerXp: 250000
 spawnerBlocks:
   undead_t1_gravebound_spawner:

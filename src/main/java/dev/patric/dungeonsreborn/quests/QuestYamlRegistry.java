@@ -40,6 +40,10 @@ public final class QuestYamlRegistry {
     return new File(plugin.getDataFolder(), "quests.yml");
   }
 
+  public File questsDir() {
+    return new File(plugin.getDataFolder(), "quests");
+  }
+
   public Map<String, QuestSpec> quests() {
     return Map.copyOf(quests);
   }
@@ -58,8 +62,17 @@ public final class QuestYamlRegistry {
   public ReloadResult reload() {
     ensureFile();
     List<String> errors = new ArrayList<>();
+    Map<String, QuestSpec> next = new LinkedHashMap<>();
     YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file());
-    Map<String, QuestSpec> next = parseQuests(cfg, errors);
+    mergeQuests(next, parseQuests(cfg, errors, file().getPath()), errors, file().getPath());
+    File[] files = questsDir().listFiles((dir, name) -> name.endsWith(".yml"));
+    if (files != null) {
+      java.util.Arrays.sort(files, java.util.Comparator.comparing(File::getName));
+      for (File questFile : files) {
+        YamlConfiguration questCfg = YamlConfiguration.loadConfiguration(questFile);
+        mergeQuests(next, parseQuests(questCfg, errors, questFile.getPath()), errors, questFile.getPath());
+      }
+    }
     if (errors.isEmpty()) {
       quests.clear();
       quests.putAll(next);
@@ -85,12 +98,20 @@ public final class QuestYamlRegistry {
   private void ensureFile() {
     File file = file();
     if (file.exists()) {
+      File dir = questsDir();
+      if (!dir.exists()) {
+        dir.mkdirs();
+      }
       return;
     }
     plugin.saveResource("quests.yml", false);
+    File dir = questsDir();
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
   }
 
-  private Map<String, QuestSpec> parseQuests(YamlConfiguration cfg, List<String> errors) {
+  private Map<String, QuestSpec> parseQuests(YamlConfiguration cfg, List<String> errors, String source) {
     ConfigurationSection questsSec = cfg.getConfigurationSection("quests");
     if (questsSec == null) {
       return Map.of();
@@ -98,9 +119,10 @@ public final class QuestYamlRegistry {
     Map<String, QuestSpec> out = new LinkedHashMap<>();
     for (String rawId : questsSec.getKeys(false)) {
       String base = "quests." + rawId;
+      String baseWithSource = source == null || source.isBlank() ? base : source + ": " + base;
       ConfigurationSection node = questsSec.getConfigurationSection(rawId);
       if (node == null) {
-        errors.add(base + ": must be an object");
+        errors.add(baseWithSource + ": must be an object");
         continue;
       }
       try {
@@ -108,21 +130,40 @@ public final class QuestYamlRegistry {
         String name = YamlValues.string(node, "name", id);
         boolean enabled = node.getBoolean("enabled", true);
         List<String> description = parseDescription(node.get("description"));
-        QuestRequirements requirements = parseRequirements(node.getConfigurationSection("requirements"), base + ".requirements", errors);
-        QuestRewards rewards = parseRewards(node.getConfigurationSection("rewards"), base + ".rewards", errors);
-        List<QuestObjectiveSpec> objectives = parseObjectives(node.getList("objectives"), base + ".objectives", errors);
+        QuestRequirements requirements = parseRequirements(node.getConfigurationSection("requirements"),
+            baseWithSource + ".requirements", errors);
+        QuestRewards rewards = parseRewards(node.getConfigurationSection("rewards"), baseWithSource + ".rewards",
+            errors);
+        List<QuestObjectiveSpec> objectives = parseObjectives(node.getList("objectives"),
+            baseWithSource + ".objectives", errors);
         if (objectives.isEmpty()) {
-          errors.add(base + ".objectives: at least one objective is required");
+          errors.add(baseWithSource + ".objectives: at least one objective is required");
         }
         long cooldownSeconds = Math.max(0L, node.getLong("cooldownSeconds", 0L));
         QuestRotation rotation = QuestRotation.parse(node.getString("rotation"));
         out.put(id, new QuestSpec(id, name, enabled, description, requirements, rewards, objectives,
             cooldownSeconds, rotation));
       } catch (Exception ex) {
-        errors.add(base + ": " + ex.getMessage());
+        errors.add(baseWithSource + ": " + ex.getMessage());
       }
     }
     return out;
+  }
+
+  private void mergeQuests(Map<String, QuestSpec> target, Map<String, QuestSpec> incoming, List<String> errors,
+      String source) {
+    if (incoming == null || incoming.isEmpty()) {
+      return;
+    }
+    for (Map.Entry<String, QuestSpec> entry : incoming.entrySet()) {
+      String id = entry.getKey();
+      if (target.containsKey(id)) {
+        String prefix = source == null || source.isBlank() ? "" : source + ": ";
+        errors.add(prefix + "duplicate quest id " + id);
+        continue;
+      }
+      target.put(id, entry.getValue());
+    }
   }
 
   private List<String> parseDescription(Object raw) {

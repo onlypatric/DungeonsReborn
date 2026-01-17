@@ -2,7 +2,10 @@ schemaVersion: 1
 id: useless_bone
 name: useless_bone
 description: Ricetta per creare useless_bone.
-inputs: []
-output:
-  itemId: useless_bone
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: useless_bone

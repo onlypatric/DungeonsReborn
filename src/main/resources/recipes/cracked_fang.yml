@@ -2,7 +2,10 @@ schemaVersion: 1
 id: cracked_fang
 name: cracked_fang
 description: Ricetta per creare cracked_fang.
-inputs: []
-output:
-  itemId: cracked_fang
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: cracked_fang

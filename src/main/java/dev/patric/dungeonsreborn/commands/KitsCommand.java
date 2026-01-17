@@ -21,14 +21,25 @@ public final class KitsCommand {
   private KitsCommand() {
   }
 
-  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(KitService kits) {
-    return Commands.literal("kits")
+  public static LiteralArgumentBuilder<CommandSourceStack> createUserCommand(KitService kits) {
+    return createCommand(kits, false);
+  }
+
+  public static LiteralArgumentBuilder<CommandSourceStack> createAdminCommand(KitService kits) {
+    return createCommand(kits, true);
+  }
+
+  private static LiteralArgumentBuilder<CommandSourceStack> createCommand(KitService kits, boolean includeAdmin) {
+    var builder = Commands.literal("kits")
         .executes(ctx -> claimDefault(ctx, kits))
         .then(Commands.literal("list").executes(ctx -> list(ctx, kits)))
-        .then(Commands.literal("reload").executes(ctx -> reload(ctx, kits)))
         .then(Commands.argument("id", StringArgumentType.word())
-            .suggests((ctx, builder) -> suggestKits(kits, builder))
+            .suggests((ctx, builderSuggestion) -> suggestKits(kits, builderSuggestion))
             .executes(ctx -> claim(ctx, kits, StringArgumentType.getString(ctx, "id"))));
+    if (includeAdmin) {
+      builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, kits)));
+    }
+    return builder;
   }
 
   private static int claimDefault(CommandContext<CommandSourceStack> ctx, KitService kits) {

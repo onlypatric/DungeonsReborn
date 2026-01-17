@@ -7,6 +7,8 @@ mobs:
     equipment:
       head: LEATHER_HELMET
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 80
     ai:
       enabled: true
@@ -52,8 +54,8 @@ mobs:
     xpGating:
       minLevel: 15000
     progression:
-      minXp: 60
-      maxXp: 85
+      minXp: 540
+      maxXp: 765
       maxPlayerXp: 2200000
 spawnerBlocks:
   cultist_darkherald_spawner:

@@ -5,6 +5,8 @@ mobs:
     name: <dark_red>Corrupted Villager</dark_red>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 26
     ai:
       enabled: true
@@ -26,8 +28,8 @@ mobs:
     xpGating:
       minLevel: 8000
     progression:
-      minXp: 22
-      maxXp: 32
+      minXp: 198
+      maxXp: 288
       maxPlayerXp: 1200000
     loot:
       pool: corrupted_t3

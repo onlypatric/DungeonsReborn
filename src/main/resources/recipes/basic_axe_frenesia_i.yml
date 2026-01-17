@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_axe_frenesia_i
 name: <yellow>Ascia della Frenesia I</yellow>
 description: Ricetta per creare <yellow>Ascia della Frenesia I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_axe_frenesia_i
   amount: 1

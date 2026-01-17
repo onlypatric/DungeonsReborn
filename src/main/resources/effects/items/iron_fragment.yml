@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: IRON_NUGGET
+  type: material
+  material: IRON_NUGGET
   amount: 1
   meta:
     display-name: Frammento di Ferro

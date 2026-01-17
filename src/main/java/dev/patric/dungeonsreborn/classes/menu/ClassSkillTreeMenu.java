@@ -31,11 +31,17 @@ public final class ClassSkillTreeMenu extends Window {
   private final ClassSpec spec;
   private final ClassSkillService skills;
   private final VirtualList<SkillNodeSpec> list;
+  private final boolean previewOnly;
 
   public ClassSkillTreeMenu(ClassSpec spec, ClassSkillService skills) {
+    this(spec, skills, false);
+  }
+
+  public ClassSkillTreeMenu(ClassSpec spec, ClassSkillService skills, boolean previewOnly) {
     super(SIZE, GuiI18n.tr("gui.classes.skillTree.title"), true);
     this.spec = Objects.requireNonNull(spec, "spec");
     this.skills = Objects.requireNonNull(skills, "skills");
+    this.previewOnly = previewOnly;
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
@@ -68,7 +74,7 @@ public final class ClassSkillTreeMenu extends Window {
       int totalNodes = tree.nodes().size();
       List<Component> lore = new ArrayList<>();
       lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.class",
-          Placeholder.component("value", spec.displayName())));
+          Placeholder.component("value", spec.displayName(player))));
       lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.points.unspent",
           Placeholder.unparsed("value", String.valueOf(points))));
       lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.points.total",
@@ -77,15 +83,19 @@ public final class ClassSkillTreeMenu extends Window {
       lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.unlocked",
           Placeholder.unparsed("unlocked", String.valueOf(unlocked)),
           Placeholder.unparsed("total", String.valueOf(totalNodes))));
-      if (tree.respecTokens() > 0 || tree.respecPoints() > 0) {
+      if (!previewOnly && (tree.respecTokens() > 0 || tree.respecPoints() > 0)) {
         lore.add(Component.text(" "));
         lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.respecCost",
             Placeholder.unparsed("tokens", String.valueOf(tree.respecTokens())),
             Placeholder.unparsed("points", String.valueOf(tree.respecPoints()))));
       }
       lore.add(Component.text(" "));
-      lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.hint.unlock"));
-      lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.hint.respec"));
+      if (previewOnly) {
+        lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.hint.preview"));
+      } else {
+        lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.hint.unlock"));
+        lore.add(GuiI18n.tr(player, "gui.classes.skillTree.header.hint.respec"));
+      }
       return GuiItems.named(Material.ENCHANTED_BOOK, GuiI18n.tr(player, "gui.classes.skillTree.header.title"), lore);
     });
   }
@@ -98,7 +108,7 @@ public final class ClassSkillTreeMenu extends Window {
     boolean unlocked = skills.isUnlocked(player.getUniqueId(), spec.id(), node.id());
     List<String> requires = skills.requirements(spec, node);
     List<Component> lore = new ArrayList<>();
-    lore.addAll(node.descriptionOrEmpty());
+    lore.addAll(node.descriptionFor(player));
     if (!lore.isEmpty()) {
       lore.add(Component.text(" "));
     }
@@ -111,12 +121,15 @@ public final class ClassSkillTreeMenu extends Window {
           Placeholder.unparsed("value", String.join(", ", requires))));
     }
     lore.add(Component.text(" "));
+    if (previewOnly) {
+      lore.add(GuiI18n.tr(player, "gui.classes.skillTree.node.preview"));
+    }
     lore.add(unlocked
         ? GuiI18n.tr(player, "gui.classes.skillTree.node.status.unlocked")
         : GuiI18n.tr(player, "gui.classes.skillTree.node.status.locked"));
     ItemStack base = node.icon() == null ? new ItemStack(Material.PAPER) : node.icon().clone();
     return GuiItem.of(base)
-        .displayName(node.displayName())
+        .displayName(node.displayName(player))
         .lore(lore)
         .glint(unlocked)
         .hideItemFlags(true)
@@ -125,6 +138,10 @@ public final class ClassSkillTreeMenu extends Window {
 
   private void handleClick(Player player, SkillNodeSpec node, org.bukkit.event.inventory.ClickType clickType) {
     if (player == null || node == null) {
+      return;
+    }
+    if (previewOnly) {
+      GuiSounds.click(player);
       return;
     }
     if (clickType.isLeftClick()) {
@@ -142,7 +159,7 @@ public final class ClassSkillTreeMenu extends Window {
 
   private void openRespec(Player player, SkillNodeSpec node) {
     List<Component> lore = new ArrayList<>();
-    lore.addAll(node.descriptionOrEmpty());
+    lore.addAll(node.descriptionFor(player));
     if (!lore.isEmpty()) {
       lore.add(Component.text(" "));
     }
@@ -152,7 +169,7 @@ public final class ClassSkillTreeMenu extends Window {
         Placeholder.unparsed("points", String.valueOf(tree.respecPoints()))));
     ConfirmDialogWindow confirm = new ConfirmDialogWindow(
         GuiI18n.tr(player, "gui.classes.skillTree.respec.title"),
-        node.displayName(),
+        node.displayName(player),
         lore,
         (p, result) -> {
           if (result != ConfirmDialogWindow.ConfirmResult.CONFIRM) {

@@ -1,0 +1,396 @@
+quests:
+  quest_bandit_t2_bandit_bowman:
+    name: "<gold><bold>Caccia Epica: Bowman</bold></gold>"
+    description:
+      - "<gray>Elimina Bowman e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_bowman
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_brawler:
+    name: "<gold><bold>Caccia Epica: Brawler</bold></gold>"
+    description:
+      - "<gray>Elimina Brawler e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_brawler
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_chief:
+    name: "<gold><bold>Caccia Epica: Chief</bold></gold>"
+    description:
+      - "<gray>Elimina Chief e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_chief
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_cutpurse:
+    name: "<gold><bold>Caccia Epica: Cutpurse</bold></gold>"
+    description:
+      - "<gray>Elimina Cutpurse e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_cutpurse
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_deadeye:
+    name: "<gold><bold>Caccia Epica: Deadeye</bold></gold>"
+    description:
+      - "<gray>Elimina Deadeye e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_deadeye
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_enforcer:
+    name: "<gold><bold>Caccia Epica: Enforcer</bold></gold>"
+    description:
+      - "<gray>Elimina Enforcer e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_enforcer
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_footpad:
+    name: "<gold><bold>Caccia Epica: Footpad</bold></gold>"
+    description:
+      - "<gray>Elimina Footpad e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_footpad
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_hunter:
+    name: "<gold><bold>Caccia Epica: Hunter</bold></gold>"
+    description:
+      - "<gray>Elimina Hunter e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_hunter
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_marauder:
+    name: "<gold><bold>Caccia Epica: Marauder</bold></gold>"
+    description:
+      - "<gray>Elimina Marauder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_marauder
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_marksman:
+    name: "<gold><bold>Caccia Epica: Marksman</bold></gold>"
+    description:
+      - "<gray>Elimina Marksman e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_marksman
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_raider:
+    name: "<gold><bold>Caccia Epica: Raider</bold></gold>"
+    description:
+      - "<gray>Elimina Raider e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_raider
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_reaver:
+    name: "<gold><bold>Caccia Epica: Reaver</bold></gold>"
+    description:
+      - "<gray>Elimina Reaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_reaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_sharpshot:
+    name: "<gold><bold>Caccia Epica: Sharpshot</bold></gold>"
+    description:
+      - "<gray>Elimina Sharpshot e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_sharpshot
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_skirmisher:
+    name: "<gold><bold>Caccia Epica: Skirmisher</bold></gold>"
+    description:
+      - "<gray>Elimina Skirmisher e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_skirmisher
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_slinger:
+    name: "<gold><bold>Caccia Epica: Slinger</bold></gold>"
+    description:
+      - "<gray>Elimina Slinger e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_slinger
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_use_material_LEATHER_HELMET:
+    name: "<gold><bold>Prova di Uso: Leather Helmet</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_HELMET
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_use_itemId_useless_rag:
+    name: "<gold><bold>Prova di Uso: Useless Rag</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_rag
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_use_itemId_ash_pile:
+    name: "<gold><bold>Prova di Uso: Ash Pile</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: ash_pile
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_use_itemId_hostile_fang:
+    name: "<gold><bold>Prova di Uso: Fang</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: hostile_fang
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_craft_basic_armor_rigenerazione_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Armor Rigenerazione I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_armor_rigenerazione_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_craft_basic_armor_salto_ii:
+    name: "<gold><bold>Forgiatura Mistica: Basic Armor Salto Ii</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 5
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_armor_salto_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_bandit_t2_bandit_marauder_slayer_1:
+    name: "<gold><bold>Sterminio Leggendario: Marauder</bold></gold>"
+    description:
+      - "<gray>Elimina Piu Bersagli Per Ottenere Ricompense Maggiori e dimostra la tua forza.</gray>"
+    requirements:
+      level: 1400
+    rewards:
+      xp: 1300
+      tokens: 6
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: bandit_marauder
+        count: 5
+    cooldownSeconds: 0
+    rotation: none

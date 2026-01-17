@@ -32,6 +32,7 @@ basic_armor_vigore_iii.yml
 basic_armor_visione_i.yml
 basic_armor_vita_i.yml
 basic_armor_vita_ii.yml
+basic_armor_vita_iii.yml
 basic_axe_esecuzione_i.yml
 basic_axe_forza_i.yml
 basic_axe_frenesia_i.yml
@@ -113,6 +114,7 @@ basic_rune_durata_ii.yml
 basic_rune_esperienza_i.yml
 basic_rune_esperienza_ii.yml
 basic_rune_fortuna_i.yml
+basic_rune_fortuna_ii.yml
 basic_rune_furia_i.yml
 basic_rune_furia_ii.yml
 basic_rune_magnete_i.yml

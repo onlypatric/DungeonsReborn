@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: BLUE_ICE
+  type: material
+  material: BLUE_ICE
   amount: 1
   meta:
     display-name: "Cuore di Gelo"

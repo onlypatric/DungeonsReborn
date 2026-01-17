@@ -1,0 +1,665 @@
+quests:
+  quest_hostile_t3_hostile_t3_blaze_overlord:
+    name: "<red><bold>Caccia Epica: Blaze Overlord</bold></red>"
+    description:
+      - "<gray>Elimina Blaze Overlord e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_blaze_overlord
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_breeze_warper:
+    name: "<red><bold>Caccia Epica: Breeze Warper</bold></red>"
+    description:
+      - "<gray>Elimina Breeze Warper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_breeze_warper
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_brute_berserker:
+    name: "<red><bold>Caccia Epica: Brute Berserker</bold></red>"
+    description:
+      - "<gray>Elimina Brute Berserker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_brute_berserker
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_cave_toxin:
+    name: "<red><bold>Caccia Epica: Cave Toxin</bold></red>"
+    description:
+      - "<gray>Elimina Cave Toxin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_cave_toxin
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_creeper_ruin:
+    name: "<red><bold>Caccia Epica: Creeper Ruin</bold></red>"
+    description:
+      - "<gray>Elimina Creeper Ruin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_creeper_ruin
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_elder_tyrant:
+    name: "<red><bold>Caccia Epica: Elder Tyrant</bold></red>"
+    description:
+      - "<gray>Elimina Elder Tyrant e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_elder_tyrant
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_ender_abductor:
+    name: "<red><bold>Caccia Epica: Ender Abductor</bold></red>"
+    description:
+      - "<gray>Elimina Ender Abductor e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_ender_abductor
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_evoker_magus:
+    name: "<red><bold>Caccia Epica: Evoker Magus</bold></red>"
+    description:
+      - "<gray>Elimina Evoker Magus e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_evoker_magus
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_ghast_cataclyst:
+    name: "<red><bold>Caccia Epica: Ghast Cataclyst</bold></red>"
+    description:
+      - "<gray>Elimina Ghast Cataclyst e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_ghast_cataclyst
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_guardian_warden:
+    name: "<red><bold>Caccia Epica: Guardian Warden</bold></red>"
+    description:
+      - "<gray>Elimina Guardian Warden e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_guardian_warden
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_hex_matron:
+    name: "<red><bold>Caccia Epica: Hex Matron</bold></red>"
+    description:
+      - "<gray>Elimina Hex Matron e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_hex_matron
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_hoglin_wrecker:
+    name: "<red><bold>Caccia Epica: Hoglin Wrecker</bold></red>"
+    description:
+      - "<gray>Elimina Hoglin Wrecker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_hoglin_wrecker
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_illusion_archon:
+    name: "<red><bold>Caccia Epica: Illusion Archon</bold></red>"
+    description:
+      - "<gray>Elimina Illusion Archon e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_illusion_archon
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_magma_titan:
+    name: "<red><bold>Caccia Epica: Magma Titan</bold></red>"
+    description:
+      - "<gray>Elimina Magma Titan e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_magma_titan
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_mite_hive:
+    name: "<red><bold>Caccia Epica: Mite Hive</bold></red>"
+    description:
+      - "<gray>Elimina Mite Hive e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_mite_hive
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_piglin_warlord:
+    name: "<red><bold>Caccia Epica: Piglin Warlord</bold></red>"
+    description:
+      - "<gray>Elimina Piglin Warlord e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_piglin_warlord
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_pillager_marksman:
+    name: "<red><bold>Caccia Epica: Pillager Marksman</bold></red>"
+    description:
+      - "<gray>Elimina Pillager Marksman e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_pillager_marksman
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_ravager_dread:
+    name: "<red><bold>Caccia Epica: Ravager Dread</bold></red>"
+    description:
+      - "<gray>Elimina Ravager Dread e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_ravager_dread
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_shulker_reaper:
+    name: "<red><bold>Caccia Epica: Shulker Reaper</bold></red>"
+    description:
+      - "<gray>Elimina Shulker Reaper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_shulker_reaper
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_silver_plague:
+    name: "<red><bold>Caccia Epica: Silver Plague</bold></red>"
+    description:
+      - "<gray>Elimina Silver Plague e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_silver_plague
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_vex_harrow:
+    name: "<red><bold>Caccia Epica: Vex Harrow</bold></red>"
+    description:
+      - "<gray>Elimina Vex Harrow e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_vex_harrow
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_vindicator_exec:
+    name: "<red><bold>Caccia Epica: Vindicator Exec</bold></red>"
+    description:
+      - "<gray>Elimina Vindicator Exec e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_vindicator_exec
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_warden_mauler:
+    name: "<red><bold>Caccia Epica: Warden Mauler</bold></red>"
+    description:
+      - "<gray>Elimina Warden Mauler e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_warden_mauler
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_web_tyrant:
+    name: "<red><bold>Caccia Epica: Web Tyrant</bold></red>"
+    description:
+      - "<gray>Elimina Web Tyrant e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_web_tyrant
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_itemId_book_blank:
+    name: "<red><bold>Prova di Uso: Book Blank</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: book_blank
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_material_BREAD:
+    name: "<red><bold>Prova di Uso: Bread</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: BREAD
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_material_COOKED_PORKCHOP:
+    name: "<red><bold>Prova di Uso: Cooked Porkchop</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_PORKCHOP
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_material_CHAINMAIL_LEGGINGS:
+    name: "<red><bold>Prova di Uso: Chainmail Leggings</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CHAINMAIL_LEGGINGS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_material_STONE_SWORD:
+    name: "<red><bold>Prova di Uso: Stone Sword</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: STONE_SWORD
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_itemId_useless_scrap:
+    name: "<red><bold>Prova di Uso: Useless Scrap</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_scrap
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_use_material_CHAINMAIL_BOOTS:
+    name: "<red><bold>Prova di Uso: Chainmail Boots</bold></red>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CHAINMAIL_BOOTS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_craft_basic_rune_carica_i:
+    name: "<red><bold>Forgiatura Mistica: Basic Rune Carica I</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_rune_carica_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_craft_elemental_storm_rune_ii:
+    name: "<red><bold>Forgiatura Mistica: Elemental Rune Ii</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_storm_rune_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_craft_basic_trident_risacca_ii:
+    name: "<red><bold>Forgiatura Mistica: Basic Trident Risacca Ii</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_trident_risacca_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_craft_basic_rune_esperienza_i:
+    name: "<red><bold>Forgiatura Mistica: Basic Rune Esperienza I</bold></red>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_rune_esperienza_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_creeper_ruin_slayer_6:
+    name: "<red><bold>Sterminio Leggendario: Creeper Ruin</bold></red>"
+    description:
+      - "<gray>Elimina Piu Bersagli Per Ottenere Ricompense Maggiori e dimostra la tua forza.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_creeper_ruin
+        count: 8
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t3_hostile_t3_illusion_archon_slayer_7:
+    name: "<red><bold>Sterminio Leggendario: Illusion Archon</bold></red>"
+    description:
+      - "<gray>Elimina Piu Bersagli Per Ottenere Ricompense Maggiori e dimostra la tua forza.</gray>"
+    requirements:
+      level: 2200
+    rewards:
+      xp: 3600
+      tokens: 6
+      compressed: 1
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t3_illusion_archon
+        count: 8
+    cooldownSeconds: 0
+    rotation: none

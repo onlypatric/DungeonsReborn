@@ -2,7 +2,10 @@ schemaVersion: 1
 id: hybrid_storm_earth_rune_ii
 name: <light_purple>Runa del Fronte Elettrico II</light_purple>
 description: Ricetta per creare <light_purple>Runa del Fronte Elettrico II</light_purple>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: hybrid_storm_earth_rune_ii
   amount: 1

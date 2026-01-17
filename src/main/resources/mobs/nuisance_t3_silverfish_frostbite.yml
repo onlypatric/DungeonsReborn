@@ -5,6 +5,8 @@ mobs:
     name: <aqua>Frostbite Skitter</aqua>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 20
       movementSpeed: 0.34
     ai:
@@ -27,8 +29,8 @@ mobs:
     xpGating:
       minLevel: 1500
     progression:
-      minXp: 3
-      maxXp: 4
+      minXp: 27
+      maxXp: 36
       maxPlayerXp: 350000
 spawnerBlocks:
   nuisance_t3_silverfish_frostbite_spawner:

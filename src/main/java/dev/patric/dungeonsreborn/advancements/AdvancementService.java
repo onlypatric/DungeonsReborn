@@ -961,10 +961,15 @@ public final class AdvancementService {
     if (api == null) {
       return;
     }
-    try {
-      api.unregisterAdvancementTab(TAB_NAMESPACE);
-    } catch (Exception ex) {
-      plugin.getLogger().warning("[Advancements] Failed to unregister advancement tab: " + ex.getMessage());
+    if (tab != null) {
+      try {
+        api.unregisterAdvancementTab(TAB_NAMESPACE);
+      } catch (Exception ex) {
+        String message = ex.getMessage();
+        if (message == null || !message.contains("has not been initialised yet")) {
+          plugin.getLogger().warning("[Advancements] Failed to unregister advancement tab: " + ex.getMessage());
+        }
+      }
     }
     tab = null;
     root = null;

@@ -1,0 +1,3232 @@
+schemaVersion: 1
+spawnerBlocks:
+  arcane_t1_batch_spawner:
+    mob: arcane_t1_allay_wisp
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t1_allay_wisp
+          weight: 1.0
+        - mob: arcane_t1_enderman_voidstep
+          weight: 1.0
+        - mob: arcane_t1_evoker_runesage
+          weight: 1.0
+        - mob: arcane_t1_illusioner_mirage
+          weight: 1.0
+        - mob: arcane_t1_shulker_rune
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sussurri dell'Arcanum"
+  arcane_t2_batch_spawner:
+    mob: arcane_t2_allay_astral
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t2_allay_astral
+          weight: 1.0
+        - mob: arcane_t2_enderman_voidbinder
+          weight: 1.0
+        - mob: arcane_t2_evoker_archsage
+          weight: 1.0
+        - mob: arcane_t2_illusioner_spectral
+          weight: 1.0
+        - mob: arcane_t2_shulker_rune_core
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Cataclisma dell'Arcanum"
+  bandit_batch_spawner:
+    mob: bandit_bowman
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: bandit_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: bandit_bowman
+          weight: 1.0
+        - mob: bandit_brawler
+          weight: 1.0
+        - mob: bandit_chief
+          weight: 1.0
+        - mob: bandit_cutpurse
+          weight: 1.0
+        - mob: bandit_deadeye
+          weight: 1.0
+        - mob: bandit_enforcer
+          weight: 1.0
+        - mob: bandit_footpad
+          weight: 1.0
+        - mob: bandit_hunter
+          weight: 1.0
+        - mob: bandit_marauder
+          weight: 1.0
+        - mob: bandit_marksman
+          weight: 1.0
+        - mob: bandit_raider
+          weight: 1.0
+        - mob: bandit_reaver
+          weight: 1.0
+        - mob: bandit_sharpshot
+          weight: 1.0
+        - mob: bandit_skirmisher
+          weight: 1.0
+        - mob: bandit_slinger
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Briganti del Crocevia"
+  corrupted_t1_batch_spawner:
+    mob: corrupted_t1_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t1_allay
+          weight: 1.0
+        - mob: corrupted_t1_armadillo
+          weight: 1.0
+        - mob: corrupted_t1_axolotl
+          weight: 1.0
+        - mob: corrupted_t1_bee
+          weight: 1.0
+        - mob: corrupted_t1_camel
+          weight: 1.0
+        - mob: corrupted_t1_cat
+          weight: 1.0
+        - mob: corrupted_t1_chicken
+          weight: 1.0
+        - mob: corrupted_t1_cow
+          weight: 1.0
+        - mob: corrupted_t1_dolphin
+          weight: 1.0
+        - mob: corrupted_t1_donkey
+          weight: 1.0
+        - mob: corrupted_t1_fox
+          weight: 1.0
+        - mob: corrupted_t1_frog
+          weight: 1.0
+        - mob: corrupted_t1_glow_squid
+          weight: 1.0
+        - mob: corrupted_t1_goat
+          weight: 1.0
+        - mob: corrupted_t1_horse
+          weight: 1.0
+        - mob: corrupted_t1_iron_golem
+          weight: 1.0
+        - mob: corrupted_t1_llama
+          weight: 1.0
+        - mob: corrupted_t1_mule
+          weight: 1.0
+        - mob: corrupted_t1_ocelot
+          weight: 1.0
+        - mob: corrupted_t1_panda
+          weight: 1.0
+        - mob: corrupted_t1_parrot
+          weight: 1.0
+        - mob: corrupted_t1_pig
+          weight: 1.0
+        - mob: corrupted_t1_polar_bear
+          weight: 1.0
+        - mob: corrupted_t1_rabbit
+          weight: 1.0
+        - mob: corrupted_t1_sheep
+          weight: 1.0
+        - mob: corrupted_t1_sniffer
+          weight: 1.0
+        - mob: corrupted_t1_snow_golem
+          weight: 1.0
+        - mob: corrupted_t1_squid
+          weight: 1.0
+        - mob: corrupted_t1_trader_llama
+          weight: 1.0
+        - mob: corrupted_t1_turtle
+          weight: 1.0
+        - mob: corrupted_t1_villager
+          weight: 1.0
+        - mob: corrupted_t1_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t1_wolf
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corruzione Nascente"
+  corrupted_t2_batch_spawner:
+    mob: corrupted_t2_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t2_allay
+          weight: 1.0
+        - mob: corrupted_t2_armadillo
+          weight: 1.0
+        - mob: corrupted_t2_axolotl
+          weight: 1.0
+        - mob: corrupted_t2_bee
+          weight: 1.0
+        - mob: corrupted_t2_camel
+          weight: 1.0
+        - mob: corrupted_t2_cat
+          weight: 1.0
+        - mob: corrupted_t2_chicken
+          weight: 1.0
+        - mob: corrupted_t2_cow
+          weight: 1.0
+        - mob: corrupted_t2_dolphin
+          weight: 1.0
+        - mob: corrupted_t2_donkey
+          weight: 1.0
+        - mob: corrupted_t2_fox
+          weight: 1.0
+        - mob: corrupted_t2_frog
+          weight: 1.0
+        - mob: corrupted_t2_glow_squid
+          weight: 1.0
+        - mob: corrupted_t2_goat
+          weight: 1.0
+        - mob: corrupted_t2_horse
+          weight: 1.0
+        - mob: corrupted_t2_iron_golem
+          weight: 1.0
+        - mob: corrupted_t2_llama
+          weight: 1.0
+        - mob: corrupted_t2_mule
+          weight: 1.0
+        - mob: corrupted_t2_ocelot
+          weight: 1.0
+        - mob: corrupted_t2_panda
+          weight: 1.0
+        - mob: corrupted_t2_parrot
+          weight: 1.0
+        - mob: corrupted_t2_pig
+          weight: 1.0
+        - mob: corrupted_t2_polar_bear
+          weight: 1.0
+        - mob: corrupted_t2_rabbit
+          weight: 1.0
+        - mob: corrupted_t2_sheep
+          weight: 1.0
+        - mob: corrupted_t2_sniffer
+          weight: 1.0
+        - mob: corrupted_t2_snow_golem
+          weight: 1.0
+        - mob: corrupted_t2_squid
+          weight: 1.0
+        - mob: corrupted_t2_trader_llama
+          weight: 1.0
+        - mob: corrupted_t2_turtle
+          weight: 1.0
+        - mob: corrupted_t2_villager
+          weight: 1.0
+        - mob: corrupted_t2_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t2_wolf
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corruzione Putrescente"
+  corrupted_t3_batch_spawner:
+    mob: corrupted_t3_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t3_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t3_allay
+          weight: 1.0
+        - mob: corrupted_t3_armadillo
+          weight: 1.0
+        - mob: corrupted_t3_axolotl
+          weight: 1.0
+        - mob: corrupted_t3_bee
+          weight: 1.0
+        - mob: corrupted_t3_camel
+          weight: 1.0
+        - mob: corrupted_t3_cat
+          weight: 1.0
+        - mob: corrupted_t3_chicken
+          weight: 1.0
+        - mob: corrupted_t3_cow
+          weight: 1.0
+        - mob: corrupted_t3_dolphin
+          weight: 1.0
+        - mob: corrupted_t3_donkey
+          weight: 1.0
+        - mob: corrupted_t3_fox
+          weight: 1.0
+        - mob: corrupted_t3_frog
+          weight: 1.0
+        - mob: corrupted_t3_glow_squid
+          weight: 1.0
+        - mob: corrupted_t3_goat
+          weight: 1.0
+        - mob: corrupted_t3_horse
+          weight: 1.0
+        - mob: corrupted_t3_iron_golem
+          weight: 1.0
+        - mob: corrupted_t3_llama
+          weight: 1.0
+        - mob: corrupted_t3_mule
+          weight: 1.0
+        - mob: corrupted_t3_ocelot
+          weight: 1.0
+        - mob: corrupted_t3_panda
+          weight: 1.0
+        - mob: corrupted_t3_parrot
+          weight: 1.0
+        - mob: corrupted_t3_pig
+          weight: 1.0
+        - mob: corrupted_t3_polar_bear
+          weight: 1.0
+        - mob: corrupted_t3_rabbit
+          weight: 1.0
+        - mob: corrupted_t3_sheep
+          weight: 1.0
+        - mob: corrupted_t3_sniffer
+          weight: 1.0
+        - mob: corrupted_t3_snow_golem
+          weight: 1.0
+        - mob: corrupted_t3_squid
+          weight: 1.0
+        - mob: corrupted_t3_trader_llama
+          weight: 1.0
+        - mob: corrupted_t3_turtle
+          weight: 1.0
+        - mob: corrupted_t3_villager
+          weight: 1.0
+        - mob: corrupted_t3_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t3_wolf
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corruzione Abissale"
+  cultist_batch_spawner:
+    mob: cultist_acolyte
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: cultist_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: cultist_acolyte
+          weight: 1.0
+        - mob: cultist_adept
+          weight: 1.0
+        - mob: cultist_binder
+          weight: 1.0
+        - mob: cultist_bloodmystic
+          weight: 1.0
+        - mob: cultist_darkherald
+          weight: 1.0
+        - mob: cultist_hexer
+          weight: 1.0
+        - mob: cultist_mirage
+          weight: 1.0
+        - mob: cultist_occultist
+          weight: 1.0
+        - mob: cultist_oracle
+          weight: 1.0
+        - mob: cultist_plaguecaster
+          weight: 1.0
+        - mob: cultist_ritualist
+          weight: 1.0
+        - mob: cultist_shadowseer
+          weight: 1.0
+        - mob: cultist_spectral
+          weight: 1.0
+        - mob: cultist_warmonger
+          weight: 1.0
+        - mob: cultist_witchdoctor
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Concilio delle Ombre"
+  earth_t1_batch_spawner:
+    mob: earth_t1_enderman_sandrift
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t1_enderman_sandrift
+          weight: 1.0
+        - mob: earth_t1_husk_dustwarden
+          weight: 1.0
+        - mob: earth_t1_iron_golem_rubbleguard
+          weight: 1.0
+        - mob: earth_t1_ravager_stonecrash
+          weight: 1.0
+        - mob: earth_t1_warden_gravelmaw
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Custodi di Pietra"
+  earth_t2_batch_spawner:
+    mob: earth_t2_enderman_terrastalker
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t2_enderman_terrastalker
+          weight: 1.0
+        - mob: earth_t2_husk_mudreaver
+          weight: 1.0
+        - mob: earth_t2_iron_golem_boulderlord
+          weight: 1.0
+        - mob: earth_t2_ravager_colossus
+          weight: 1.0
+        - mob: earth_t2_warden_tremor
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Titani Tellurici"
+  fire_t1_batch_spawner:
+    mob: fire_t1_blazeling
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t1_blazeling
+          weight: 1.0
+        - mob: fire_t1_ghast_ashling
+          weight: 1.0
+        - mob: fire_t1_hoglin_cinder
+          weight: 1.0
+        - mob: fire_t1_magma_spark
+          weight: 1.0
+        - mob: fire_t1_piglin_ember
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Brace Infernali"
+  fire_t2_batch_spawner:
+    mob: fire_t2_blaze_inferno
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t2_blaze_inferno
+          weight: 1.0
+        - mob: fire_t2_ghast_cataclysm
+          weight: 1.0
+        - mob: fire_t2_hoglin_pyre
+          weight: 1.0
+        - mob: fire_t2_magma_forge
+          weight: 1.0
+        - mob: fire_t2_piglin_scorch
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Forgia Cremisi"
+  frost_t1_batch_spawner:
+    mob: frost_t1_goat_rimehorn
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t1_goat_rimehorn
+          weight: 1.0
+        - mob: frost_t1_polar_bear_sleetmaw
+          weight: 1.0
+        - mob: frost_t1_snowgaze
+          weight: 1.0
+        - mob: frost_t1_stray_glint
+          weight: 1.0
+        - mob: frost_t1_wolf_icefang
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Veli di Brina"
+  frost_t2_batch_spawner:
+    mob: frost_t2_goat_frosthorn
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t2_goat_frosthorn
+          weight: 1.0
+        - mob: frost_t2_polar_bear_frostmaw
+          weight: 1.0
+        - mob: frost_t2_snow_golem_hailguard
+          weight: 1.0
+        - mob: frost_t2_stray_icecaller
+          weight: 1.0
+        - mob: frost_t2_wolf_icefang_alpha
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Morsa Glaciale"
+  hostile_t1_batch_spawner:
+    mob: hostile_t1_blazeling
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t1_blazeling
+          weight: 1.0
+        - mob: hostile_t1_blocksafe_creeper
+          weight: 1.0
+        - mob: hostile_t1_breezeling
+          weight: 1.0
+        - mob: hostile_t1_bristlehog
+          weight: 1.0
+        - mob: hostile_t1_brute_thug
+          weight: 1.0
+        - mob: hostile_t1_cave_spitter
+          weight: 1.0
+        - mob: hostile_t1_cult_evoker
+          weight: 1.0
+        - mob: hostile_t1_elder_minder
+          weight: 1.0
+        - mob: hostile_t1_endstalker
+          weight: 1.0
+        - mob: hostile_t1_ghastling
+          weight: 1.0
+        - mob: hostile_t1_hexwitch
+          weight: 1.0
+        - mob: hostile_t1_illusion_rascal
+          weight: 1.0
+        - mob: hostile_t1_magma_nibble
+          weight: 1.0
+        - mob: hostile_t1_miteswarm
+          weight: 1.0
+        - mob: hostile_t1_piglin_raider
+          weight: 1.0
+        - mob: hostile_t1_pillager_scout
+          weight: 1.0
+        - mob: hostile_t1_ravager_calf
+          weight: 1.0
+        - mob: hostile_t1_river_guard
+          weight: 1.0
+        - mob: hostile_t1_shellspike
+          weight: 1.0
+        - mob: hostile_t1_silver_skitter
+          weight: 1.0
+        - mob: hostile_t1_vexling
+          weight: 1.0
+        - mob: hostile_t1_vindicator_grunt
+          weight: 1.0
+        - mob: hostile_t1_wardenling
+          weight: 1.0
+        - mob: hostile_t1_webstalker
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Orda Selvaggia"
+  hostile_t2_batch_spawner:
+    mob: hostile_t2_blaze_stalker
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t2_blaze_stalker
+          weight: 1.0
+        - mob: hostile_t2_breeze_harrier
+          weight: 1.0
+        - mob: hostile_t2_brute_enforcer
+          weight: 1.0
+        - mob: hostile_t2_cave_tox
+          weight: 1.0
+        - mob: hostile_t2_creeper_sapper
+          weight: 1.0
+        - mob: hostile_t2_elder_sentinel
+          weight: 1.0
+        - mob: hostile_t2_ender_ravager
+          weight: 1.0
+        - mob: hostile_t2_evoker_reaver
+          weight: 1.0
+        - mob: hostile_t2_ghast_raider
+          weight: 1.0
+        - mob: hostile_t2_guardian_binder
+          weight: 1.0
+        - mob: hostile_t2_hex_hag
+          weight: 1.0
+        - mob: hostile_t2_hoglin_brut
+          weight: 1.0
+        - mob: hostile_t2_illusion_trickster
+          weight: 1.0
+        - mob: hostile_t2_magma_brute
+          weight: 1.0
+        - mob: hostile_t2_mite_burst
+          weight: 1.0
+        - mob: hostile_t2_piglin_marauder
+          weight: 1.0
+        - mob: hostile_t2_pillager_sharpshot
+          weight: 1.0
+        - mob: hostile_t2_ravager_breaker
+          weight: 1.0
+        - mob: hostile_t2_shulker_binder
+          weight: 1.0
+        - mob: hostile_t2_silver_swarm
+          weight: 1.0
+        - mob: hostile_t2_vex_stinger
+          weight: 1.0
+        - mob: hostile_t2_vindicator_crusher
+          weight: 1.0
+        - mob: hostile_t2_warden_brute
+          weight: 1.0
+        - mob: hostile_t2_web_mauler
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Furia Predatrice"
+  hostile_t3_batch_spawner:
+    mob: hostile_t3_blaze_overlord
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t3_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t3_blaze_overlord
+          weight: 1.0
+        - mob: hostile_t3_breeze_warper
+          weight: 1.0
+        - mob: hostile_t3_brute_berserker
+          weight: 1.0
+        - mob: hostile_t3_cave_toxin
+          weight: 1.0
+        - mob: hostile_t3_creeper_ruin
+          weight: 1.0
+        - mob: hostile_t3_elder_tyrant
+          weight: 1.0
+        - mob: hostile_t3_ender_abductor
+          weight: 1.0
+        - mob: hostile_t3_evoker_magus
+          weight: 1.0
+        - mob: hostile_t3_ghast_cataclyst
+          weight: 1.0
+        - mob: hostile_t3_guardian_warden
+          weight: 1.0
+        - mob: hostile_t3_hex_matron
+          weight: 1.0
+        - mob: hostile_t3_hoglin_wrecker
+          weight: 1.0
+        - mob: hostile_t3_illusion_archon
+          weight: 1.0
+        - mob: hostile_t3_magma_titan
+          weight: 1.0
+        - mob: hostile_t3_mite_hive
+          weight: 1.0
+        - mob: hostile_t3_piglin_warlord
+          weight: 1.0
+        - mob: hostile_t3_pillager_marksman
+          weight: 1.0
+        - mob: hostile_t3_ravager_dread
+          weight: 1.0
+        - mob: hostile_t3_shulker_reaper
+          weight: 1.0
+        - mob: hostile_t3_silver_plague
+          weight: 1.0
+        - mob: hostile_t3_vex_harrow
+          weight: 1.0
+        - mob: hostile_t3_vindicator_exec
+          weight: 1.0
+        - mob: hostile_t3_warden_mauler
+          weight: 1.0
+        - mob: hostile_t3_web_tyrant
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Assalto Tirannico"
+  knight_batch_spawner:
+    mob: knight_bulwark
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: knight_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: knight_bulwark
+          weight: 1.0
+        - mob: knight_captain
+          weight: 1.0
+        - mob: knight_champion
+          weight: 1.0
+        - mob: knight_crusader
+          weight: 1.0
+        - mob: knight_defender
+          weight: 1.0
+        - mob: knight_grandmarshal
+          weight: 1.0
+        - mob: knight_guard
+          weight: 1.0
+        - mob: knight_highguard
+          weight: 1.0
+        - mob: knight_initiate
+          weight: 1.0
+        - mob: knight_paladin
+          weight: 1.0
+        - mob: knight_sentinel
+          weight: 1.0
+        - mob: knight_squire
+          weight: 1.0
+        - mob: knight_templar
+          weight: 1.0
+        - mob: knight_vanguard
+          weight: 1.0
+        - mob: knight_warden
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Ordine d'Acciaio"
+  nuisance_t1_batch_spawner:
+    mob: nuisance_t1_silverfish_scritter
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: nuisance_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: nuisance_t1_silverfish_scritter
+          weight: 1.0
+        - mob: nuisance_t1_tadpole_wiggler
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sciame Fastidioso"
+  nuisance_t2_batch_spawner:
+    mob: nuisance_t2_silverfish_ember
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: nuisance_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: nuisance_t2_silverfish_ember
+          weight: 1.0
+        - mob: nuisance_t2_tadpole_bile
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sciame Irascibile"
+  nuisance_t3_batch_spawner:
+    mob: nuisance_t3_silverfish_frostbite
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: nuisance_t3_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: nuisance_t3_silverfish_frostbite
+          weight: 1.0
+        - mob: nuisance_t3_tadpole_frostfin
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sciame Insidioso"
+  nuisance_t4_batch_spawner:
+    mob: nuisance_t4_silverfish_stormskitter
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: nuisance_t4_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: nuisance_t4_silverfish_stormskitter
+          weight: 1.0
+        - mob: nuisance_t4_tadpole_thunderfin
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sciame Tempestoso"
+  nuisance_t5_batch_spawner:
+    mob: nuisance_t5_silverfish_voidmote
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: nuisance_t5_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: nuisance_t5_silverfish_voidmote
+          weight: 1.0
+        - mob: nuisance_t5_tadpole_umbra
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Sciame dell'Ombra"
+  pack_batch_spawner:
+    mob: pack_bruiser_goat_rockram
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: pack_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: pack_bruiser_goat_rockram
+          weight: 1.0
+        - mob: pack_bruiser_hoglin_tuskcrusher
+          weight: 1.0
+        - mob: pack_bruiser_husk_gritmaw
+          weight: 1.0
+        - mob: pack_bruiser_iron_golem_stonemaul
+          weight: 1.0
+        - mob: pack_bruiser_piglin_brutebite
+          weight: 1.0
+        - mob: pack_bruiser_polar_bear_glaciermaw
+          weight: 1.0
+        - mob: pack_bruiser_ravager_cragbreaker
+          weight: 1.0
+        - mob: pack_bruiser_spider_bonecrusher
+          weight: 1.0
+        - mob: pack_bruiser_vindicator_ironcleaver
+          weight: 1.0
+        - mob: pack_bruiser_wolf_ironfang
+          weight: 1.0
+        - mob: pack_hunter_cave_spider_venomling
+          weight: 1.0
+        - mob: pack_hunter_fox_redpounce
+          weight: 1.0
+        - mob: pack_hunter_fox_snowpounce
+          weight: 1.0
+        - mob: pack_hunter_goat_hillleap
+          weight: 1.0
+        - mob: pack_hunter_hoglin_rushmaw
+          weight: 1.0
+        - mob: pack_hunter_piglin_feralhunter
+          weight: 1.0
+        - mob: pack_hunter_polar_bear_frostpaws
+          weight: 1.0
+        - mob: pack_hunter_spider_webstalker
+          weight: 1.0
+        - mob: pack_hunter_wolf_fangrunner
+          weight: 1.0
+        - mob: pack_hunter_wolf_moonpelt
+          weight: 1.0
+        - mob: pack_stalker_cave_spider_venomshade
+          weight: 1.0
+        - mob: pack_stalker_enderman_voidlurker
+          weight: 1.0
+        - mob: pack_stalker_fox_nightpounce
+          weight: 1.0
+        - mob: pack_stalker_husk_dunecreeper
+          weight: 1.0
+        - mob: pack_stalker_phantom_nightglide
+          weight: 1.0
+        - mob: pack_stalker_piglin_shadowraider
+          weight: 1.0
+        - mob: pack_stalker_ravager_nightprowler
+          weight: 1.0
+        - mob: pack_stalker_spider_gloomweaver
+          weight: 1.0
+        - mob: pack_stalker_vindicator_duskcleaver
+          weight: 1.0
+        - mob: pack_stalker_wolf_shadepelt
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Branchi delle Lande"
+  storm_t1_batch_spawner:
+    mob: storm_t1_breeze_spark
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t1_breeze_spark
+          weight: 1.0
+        - mob: storm_t1_guardian_surge
+          weight: 1.0
+        - mob: storm_t1_phantom_shockwing
+          weight: 1.0
+        - mob: storm_t1_shulker_static
+          weight: 1.0
+        - mob: storm_t1_vex_arc
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Tempesta Frizzante"
+  storm_t2_batch_spawner:
+    mob: storm_t2_breeze_thunderclap
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t2_breeze_thunderclap
+          weight: 1.0
+        - mob: storm_t2_guardian_tempest
+          weight: 1.0
+        - mob: storm_t2_phantom_stormwing
+          weight: 1.0
+        - mob: storm_t2_shulker_lightning_core
+          weight: 1.0
+        - mob: storm_t2_vex_stormripper
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Cielo Infranto"
+  undead_t1_batch_spawner:
+    mob: undead_t1_boneshiver
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t1_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t1_boneshiver
+          weight: 1.0
+        - mob: undead_t1_bonewalker
+          weight: 1.0
+        - mob: undead_t1_cinderbrand
+          weight: 1.0
+        - mob: undead_t1_cryptleap
+          weight: 1.0
+        - mob: undead_t1_dustcaller
+          weight: 1.0
+        - mob: undead_t1_gloomthrall
+          weight: 1.0
+        - mob: undead_t1_gravebound
+          weight: 1.0
+        - mob: undead_t1_gravetouched
+          weight: 1.0
+        - mob: undead_t1_ironjaw
+          weight: 1.0
+        - mob: undead_t1_marshrot
+          weight: 1.0
+        - mob: undead_t1_nightmoan
+          weight: 1.0
+        - mob: undead_t1_tombwarden
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Ossa Erranti"
+  undead_t2_batch_spawner:
+    mob: undead_t2_blightshot
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t2_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t2_blightshot
+          weight: 1.0
+        - mob: undead_t2_boneguard
+          weight: 1.0
+        - mob: undead_t2_cryptarcher
+          weight: 1.0
+        - mob: undead_t2_dreadmonger
+          weight: 1.0
+        - mob: undead_t2_frostvein
+          weight: 1.0
+        - mob: undead_t2_graveknight
+          weight: 1.0
+        - mob: undead_t2_grimcharger
+          weight: 1.0
+        - mob: undead_t2_marrowmage
+          weight: 1.0
+        - mob: undead_t2_mirestalker
+          weight: 1.0
+        - mob: undead_t2_plaguebearer
+          weight: 1.0
+        - mob: undead_t2_rotfang
+          weight: 1.0
+        - mob: undead_t2_wailreaper
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Mietitori Sepolcrali"
+  undead_t3_batch_spawner:
+    mob: undead_t3_boneshard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t3_batch_spawner
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t3_boneshard
+          weight: 1.0
+        - mob: undead_t3_boneward
+          weight: 1.0
+        - mob: undead_t3_cinderwretch
+          weight: 1.0
+        - mob: undead_t3_cryptstalker
+          weight: 1.0
+        - mob: undead_t3_dreadcaster
+          weight: 1.0
+        - mob: undead_t3_frostmarshal
+          weight: 1.0
+        - mob: undead_t3_gravetide
+          weight: 1.0
+        - mob: undead_t3_gravewarden
+          weight: 1.0
+        - mob: undead_t3_marshhexer
+          weight: 1.0
+        - mob: undead_t3_nightgaunt
+          weight: 1.0
+        - mob: undead_t3_rotreaver
+          weight: 1.0
+        - mob: undead_t3_wailbringer
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Legione del Sepolcro"
+  arcane_t1_batch_spawner_lite:
+    mob: arcane_t1_allay_wisp
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t1_allay_wisp
+          weight: 1.0
+        - mob: arcane_t1_enderman_voidstep
+          weight: 1.0
+        - mob: arcane_t1_evoker_runesage
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Arcane T1 Batch Spawner Lite"
+  arcane_t1_batch_spawner_core:
+    mob: arcane_t1_evoker_runesage
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t1_evoker_runesage
+          weight: 1.0
+        - mob: arcane_t1_illusioner_mirage
+          weight: 1.0
+        - mob: arcane_t1_shulker_rune
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Arcane T1 Batch Spawner Core"
+  arcane_t2_batch_spawner_lite:
+    mob: arcane_t2_allay_astral
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t2_allay_astral
+          weight: 1.0
+        - mob: arcane_t2_enderman_voidbinder
+          weight: 1.0
+        - mob: arcane_t2_evoker_archsage
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Arcane T2 Batch Spawner Lite"
+  arcane_t2_batch_spawner_core:
+    mob: arcane_t2_evoker_archsage
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: arcane_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: arcane_t2_evoker_archsage
+          weight: 1.0
+        - mob: arcane_t2_illusioner_spectral
+          weight: 1.0
+        - mob: arcane_t2_shulker_rune_core
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Arcane T2 Batch Spawner Core"
+  bandit_batch_spawner_lite:
+    mob: bandit_bowman
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: bandit_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: bandit_bowman
+          weight: 1.0
+        - mob: bandit_brawler
+          weight: 1.0
+        - mob: bandit_chief
+          weight: 1.0
+        - mob: bandit_cutpurse
+          weight: 1.0
+        - mob: bandit_deadeye
+          weight: 1.0
+        - mob: bandit_enforcer
+          weight: 1.0
+        - mob: bandit_footpad
+          weight: 1.0
+        - mob: bandit_hunter
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Bandit Batch Spawner Lite"
+  bandit_batch_spawner_core:
+    mob: bandit_hunter
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: bandit_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: bandit_hunter
+          weight: 1.0
+        - mob: bandit_marauder
+          weight: 1.0
+        - mob: bandit_marksman
+          weight: 1.0
+        - mob: bandit_raider
+          weight: 1.0
+        - mob: bandit_reaver
+          weight: 1.0
+        - mob: bandit_sharpshot
+          weight: 1.0
+        - mob: bandit_skirmisher
+          weight: 1.0
+        - mob: bandit_slinger
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Bandit Batch Spawner Core"
+  corrupted_t1_batch_spawner_lite:
+    mob: corrupted_t1_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t1_allay
+          weight: 1.0
+        - mob: corrupted_t1_armadillo
+          weight: 1.0
+        - mob: corrupted_t1_axolotl
+          weight: 1.0
+        - mob: corrupted_t1_bee
+          weight: 1.0
+        - mob: corrupted_t1_camel
+          weight: 1.0
+        - mob: corrupted_t1_cat
+          weight: 1.0
+        - mob: corrupted_t1_chicken
+          weight: 1.0
+        - mob: corrupted_t1_cow
+          weight: 1.0
+        - mob: corrupted_t1_dolphin
+          weight: 1.0
+        - mob: corrupted_t1_donkey
+          weight: 1.0
+        - mob: corrupted_t1_fox
+          weight: 1.0
+        - mob: corrupted_t1_frog
+          weight: 1.0
+        - mob: corrupted_t1_glow_squid
+          weight: 1.0
+        - mob: corrupted_t1_goat
+          weight: 1.0
+        - mob: corrupted_t1_horse
+          weight: 1.0
+        - mob: corrupted_t1_iron_golem
+          weight: 1.0
+        - mob: corrupted_t1_llama
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T1 Batch Spawner Lite"
+  corrupted_t1_batch_spawner_core:
+    mob: corrupted_t1_llama
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t1_llama
+          weight: 1.0
+        - mob: corrupted_t1_mule
+          weight: 1.0
+        - mob: corrupted_t1_ocelot
+          weight: 1.0
+        - mob: corrupted_t1_panda
+          weight: 1.0
+        - mob: corrupted_t1_parrot
+          weight: 1.0
+        - mob: corrupted_t1_pig
+          weight: 1.0
+        - mob: corrupted_t1_polar_bear
+          weight: 1.0
+        - mob: corrupted_t1_rabbit
+          weight: 1.0
+        - mob: corrupted_t1_sheep
+          weight: 1.0
+        - mob: corrupted_t1_sniffer
+          weight: 1.0
+        - mob: corrupted_t1_snow_golem
+          weight: 1.0
+        - mob: corrupted_t1_squid
+          weight: 1.0
+        - mob: corrupted_t1_trader_llama
+          weight: 1.0
+        - mob: corrupted_t1_turtle
+          weight: 1.0
+        - mob: corrupted_t1_villager
+          weight: 1.0
+        - mob: corrupted_t1_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t1_wolf
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T1 Batch Spawner Core"
+  corrupted_t2_batch_spawner_lite:
+    mob: corrupted_t2_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t2_allay
+          weight: 1.0
+        - mob: corrupted_t2_armadillo
+          weight: 1.0
+        - mob: corrupted_t2_axolotl
+          weight: 1.0
+        - mob: corrupted_t2_bee
+          weight: 1.0
+        - mob: corrupted_t2_camel
+          weight: 1.0
+        - mob: corrupted_t2_cat
+          weight: 1.0
+        - mob: corrupted_t2_chicken
+          weight: 1.0
+        - mob: corrupted_t2_cow
+          weight: 1.0
+        - mob: corrupted_t2_dolphin
+          weight: 1.0
+        - mob: corrupted_t2_donkey
+          weight: 1.0
+        - mob: corrupted_t2_fox
+          weight: 1.0
+        - mob: corrupted_t2_frog
+          weight: 1.0
+        - mob: corrupted_t2_glow_squid
+          weight: 1.0
+        - mob: corrupted_t2_goat
+          weight: 1.0
+        - mob: corrupted_t2_horse
+          weight: 1.0
+        - mob: corrupted_t2_iron_golem
+          weight: 1.0
+        - mob: corrupted_t2_llama
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T2 Batch Spawner Lite"
+  corrupted_t2_batch_spawner_core:
+    mob: corrupted_t2_llama
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t2_llama
+          weight: 1.0
+        - mob: corrupted_t2_mule
+          weight: 1.0
+        - mob: corrupted_t2_ocelot
+          weight: 1.0
+        - mob: corrupted_t2_panda
+          weight: 1.0
+        - mob: corrupted_t2_parrot
+          weight: 1.0
+        - mob: corrupted_t2_pig
+          weight: 1.0
+        - mob: corrupted_t2_polar_bear
+          weight: 1.0
+        - mob: corrupted_t2_rabbit
+          weight: 1.0
+        - mob: corrupted_t2_sheep
+          weight: 1.0
+        - mob: corrupted_t2_sniffer
+          weight: 1.0
+        - mob: corrupted_t2_snow_golem
+          weight: 1.0
+        - mob: corrupted_t2_squid
+          weight: 1.0
+        - mob: corrupted_t2_trader_llama
+          weight: 1.0
+        - mob: corrupted_t2_turtle
+          weight: 1.0
+        - mob: corrupted_t2_villager
+          weight: 1.0
+        - mob: corrupted_t2_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t2_wolf
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T2 Batch Spawner Core"
+  corrupted_t3_batch_spawner_lite:
+    mob: corrupted_t3_allay
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t3_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t3_allay
+          weight: 1.0
+        - mob: corrupted_t3_armadillo
+          weight: 1.0
+        - mob: corrupted_t3_axolotl
+          weight: 1.0
+        - mob: corrupted_t3_bee
+          weight: 1.0
+        - mob: corrupted_t3_camel
+          weight: 1.0
+        - mob: corrupted_t3_cat
+          weight: 1.0
+        - mob: corrupted_t3_chicken
+          weight: 1.0
+        - mob: corrupted_t3_cow
+          weight: 1.0
+        - mob: corrupted_t3_dolphin
+          weight: 1.0
+        - mob: corrupted_t3_donkey
+          weight: 1.0
+        - mob: corrupted_t3_fox
+          weight: 1.0
+        - mob: corrupted_t3_frog
+          weight: 1.0
+        - mob: corrupted_t3_glow_squid
+          weight: 1.0
+        - mob: corrupted_t3_goat
+          weight: 1.0
+        - mob: corrupted_t3_horse
+          weight: 1.0
+        - mob: corrupted_t3_iron_golem
+          weight: 1.0
+        - mob: corrupted_t3_llama
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T3 Batch Spawner Lite"
+  corrupted_t3_batch_spawner_core:
+    mob: corrupted_t3_llama
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: corrupted_t3_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: corrupted_t3_llama
+          weight: 1.0
+        - mob: corrupted_t3_mule
+          weight: 1.0
+        - mob: corrupted_t3_ocelot
+          weight: 1.0
+        - mob: corrupted_t3_panda
+          weight: 1.0
+        - mob: corrupted_t3_parrot
+          weight: 1.0
+        - mob: corrupted_t3_pig
+          weight: 1.0
+        - mob: corrupted_t3_polar_bear
+          weight: 1.0
+        - mob: corrupted_t3_rabbit
+          weight: 1.0
+        - mob: corrupted_t3_sheep
+          weight: 1.0
+        - mob: corrupted_t3_sniffer
+          weight: 1.0
+        - mob: corrupted_t3_snow_golem
+          weight: 1.0
+        - mob: corrupted_t3_squid
+          weight: 1.0
+        - mob: corrupted_t3_trader_llama
+          weight: 1.0
+        - mob: corrupted_t3_turtle
+          weight: 1.0
+        - mob: corrupted_t3_villager
+          weight: 1.0
+        - mob: corrupted_t3_wandering_trader
+          weight: 1.0
+        - mob: corrupted_t3_wolf
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Corrupted T3 Batch Spawner Core"
+  cultist_batch_spawner_lite:
+    mob: cultist_acolyte
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: cultist_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: cultist_acolyte
+          weight: 1.0
+        - mob: cultist_adept
+          weight: 1.0
+        - mob: cultist_binder
+          weight: 1.0
+        - mob: cultist_bloodmystic
+          weight: 1.0
+        - mob: cultist_darkherald
+          weight: 1.0
+        - mob: cultist_hexer
+          weight: 1.0
+        - mob: cultist_mirage
+          weight: 1.0
+        - mob: cultist_occultist
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Cultist Batch Spawner Lite"
+  cultist_batch_spawner_core:
+    mob: cultist_occultist
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: cultist_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: cultist_occultist
+          weight: 1.0
+        - mob: cultist_oracle
+          weight: 1.0
+        - mob: cultist_plaguecaster
+          weight: 1.0
+        - mob: cultist_ritualist
+          weight: 1.0
+        - mob: cultist_shadowseer
+          weight: 1.0
+        - mob: cultist_spectral
+          weight: 1.0
+        - mob: cultist_warmonger
+          weight: 1.0
+        - mob: cultist_witchdoctor
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Cultist Batch Spawner Core"
+  earth_t1_batch_spawner_lite:
+    mob: earth_t1_enderman_sandrift
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t1_enderman_sandrift
+          weight: 1.0
+        - mob: earth_t1_husk_dustwarden
+          weight: 1.0
+        - mob: earth_t1_iron_golem_rubbleguard
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Earth T1 Batch Spawner Lite"
+  earth_t1_batch_spawner_core:
+    mob: earth_t1_iron_golem_rubbleguard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t1_iron_golem_rubbleguard
+          weight: 1.0
+        - mob: earth_t1_ravager_stonecrash
+          weight: 1.0
+        - mob: earth_t1_warden_gravelmaw
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Earth T1 Batch Spawner Core"
+  earth_t2_batch_spawner_lite:
+    mob: earth_t2_enderman_terrastalker
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t2_enderman_terrastalker
+          weight: 1.0
+        - mob: earth_t2_husk_mudreaver
+          weight: 1.0
+        - mob: earth_t2_iron_golem_boulderlord
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Earth T2 Batch Spawner Lite"
+  earth_t2_batch_spawner_core:
+    mob: earth_t2_iron_golem_boulderlord
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: earth_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: earth_t2_iron_golem_boulderlord
+          weight: 1.0
+        - mob: earth_t2_ravager_colossus
+          weight: 1.0
+        - mob: earth_t2_warden_tremor
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Earth T2 Batch Spawner Core"
+  fire_t1_batch_spawner_lite:
+    mob: fire_t1_blazeling
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t1_blazeling
+          weight: 1.0
+        - mob: fire_t1_ghast_ashling
+          weight: 1.0
+        - mob: fire_t1_hoglin_cinder
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Fire T1 Batch Spawner Lite"
+  fire_t1_batch_spawner_core:
+    mob: fire_t1_hoglin_cinder
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t1_hoglin_cinder
+          weight: 1.0
+        - mob: fire_t1_magma_spark
+          weight: 1.0
+        - mob: fire_t1_piglin_ember
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Fire T1 Batch Spawner Core"
+  fire_t2_batch_spawner_lite:
+    mob: fire_t2_blaze_inferno
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t2_blaze_inferno
+          weight: 1.0
+        - mob: fire_t2_ghast_cataclysm
+          weight: 1.0
+        - mob: fire_t2_hoglin_pyre
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Fire T2 Batch Spawner Lite"
+  fire_t2_batch_spawner_core:
+    mob: fire_t2_hoglin_pyre
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: fire_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: fire_t2_hoglin_pyre
+          weight: 1.0
+        - mob: fire_t2_magma_forge
+          weight: 1.0
+        - mob: fire_t2_piglin_scorch
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Fire T2 Batch Spawner Core"
+  frost_t1_batch_spawner_lite:
+    mob: frost_t1_goat_rimehorn
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t1_goat_rimehorn
+          weight: 1.0
+        - mob: frost_t1_polar_bear_sleetmaw
+          weight: 1.0
+        - mob: frost_t1_snowgaze
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Frost T1 Batch Spawner Lite"
+  frost_t1_batch_spawner_core:
+    mob: frost_t1_snowgaze
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t1_snowgaze
+          weight: 1.0
+        - mob: frost_t1_stray_glint
+          weight: 1.0
+        - mob: frost_t1_wolf_icefang
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Frost T1 Batch Spawner Core"
+  frost_t2_batch_spawner_lite:
+    mob: frost_t2_goat_frosthorn
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t2_goat_frosthorn
+          weight: 1.0
+        - mob: frost_t2_polar_bear_frostmaw
+          weight: 1.0
+        - mob: frost_t2_snow_golem_hailguard
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Frost T2 Batch Spawner Lite"
+  frost_t2_batch_spawner_core:
+    mob: frost_t2_snow_golem_hailguard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: frost_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: frost_t2_snow_golem_hailguard
+          weight: 1.0
+        - mob: frost_t2_stray_icecaller
+          weight: 1.0
+        - mob: frost_t2_wolf_icefang_alpha
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Frost T2 Batch Spawner Core"
+  hostile_t1_batch_spawner_lite:
+    mob: hostile_t1_blazeling
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t1_blazeling
+          weight: 1.0
+        - mob: hostile_t1_blocksafe_creeper
+          weight: 1.0
+        - mob: hostile_t1_breezeling
+          weight: 1.0
+        - mob: hostile_t1_bristlehog
+          weight: 1.0
+        - mob: hostile_t1_brute_thug
+          weight: 1.0
+        - mob: hostile_t1_cave_spitter
+          weight: 1.0
+        - mob: hostile_t1_cult_evoker
+          weight: 1.0
+        - mob: hostile_t1_elder_minder
+          weight: 1.0
+        - mob: hostile_t1_endstalker
+          weight: 1.0
+        - mob: hostile_t1_ghastling
+          weight: 1.0
+        - mob: hostile_t1_hexwitch
+          weight: 1.0
+        - mob: hostile_t1_illusion_rascal
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T1 Batch Spawner Lite"
+  hostile_t1_batch_spawner_core:
+    mob: hostile_t1_magma_nibble
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t1_magma_nibble
+          weight: 1.0
+        - mob: hostile_t1_miteswarm
+          weight: 1.0
+        - mob: hostile_t1_piglin_raider
+          weight: 1.0
+        - mob: hostile_t1_pillager_scout
+          weight: 1.0
+        - mob: hostile_t1_ravager_calf
+          weight: 1.0
+        - mob: hostile_t1_river_guard
+          weight: 1.0
+        - mob: hostile_t1_shellspike
+          weight: 1.0
+        - mob: hostile_t1_silver_skitter
+          weight: 1.0
+        - mob: hostile_t1_vexling
+          weight: 1.0
+        - mob: hostile_t1_vindicator_grunt
+          weight: 1.0
+        - mob: hostile_t1_wardenling
+          weight: 1.0
+        - mob: hostile_t1_webstalker
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T1 Batch Spawner Core"
+  hostile_t2_batch_spawner_lite:
+    mob: hostile_t2_blaze_stalker
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t2_blaze_stalker
+          weight: 1.0
+        - mob: hostile_t2_breeze_harrier
+          weight: 1.0
+        - mob: hostile_t2_brute_enforcer
+          weight: 1.0
+        - mob: hostile_t2_cave_tox
+          weight: 1.0
+        - mob: hostile_t2_creeper_sapper
+          weight: 1.0
+        - mob: hostile_t2_elder_sentinel
+          weight: 1.0
+        - mob: hostile_t2_ender_ravager
+          weight: 1.0
+        - mob: hostile_t2_evoker_reaver
+          weight: 1.0
+        - mob: hostile_t2_ghast_raider
+          weight: 1.0
+        - mob: hostile_t2_guardian_binder
+          weight: 1.0
+        - mob: hostile_t2_hex_hag
+          weight: 1.0
+        - mob: hostile_t2_hoglin_brut
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T2 Batch Spawner Lite"
+  hostile_t2_batch_spawner_core:
+    mob: hostile_t2_illusion_trickster
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t2_illusion_trickster
+          weight: 1.0
+        - mob: hostile_t2_magma_brute
+          weight: 1.0
+        - mob: hostile_t2_mite_burst
+          weight: 1.0
+        - mob: hostile_t2_piglin_marauder
+          weight: 1.0
+        - mob: hostile_t2_pillager_sharpshot
+          weight: 1.0
+        - mob: hostile_t2_ravager_breaker
+          weight: 1.0
+        - mob: hostile_t2_shulker_binder
+          weight: 1.0
+        - mob: hostile_t2_silver_swarm
+          weight: 1.0
+        - mob: hostile_t2_vex_stinger
+          weight: 1.0
+        - mob: hostile_t2_vindicator_crusher
+          weight: 1.0
+        - mob: hostile_t2_warden_brute
+          weight: 1.0
+        - mob: hostile_t2_web_mauler
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T2 Batch Spawner Core"
+  hostile_t3_batch_spawner_lite:
+    mob: hostile_t3_blaze_overlord
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t3_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t3_blaze_overlord
+          weight: 1.0
+        - mob: hostile_t3_breeze_warper
+          weight: 1.0
+        - mob: hostile_t3_brute_berserker
+          weight: 1.0
+        - mob: hostile_t3_cave_toxin
+          weight: 1.0
+        - mob: hostile_t3_creeper_ruin
+          weight: 1.0
+        - mob: hostile_t3_elder_tyrant
+          weight: 1.0
+        - mob: hostile_t3_ender_abductor
+          weight: 1.0
+        - mob: hostile_t3_evoker_magus
+          weight: 1.0
+        - mob: hostile_t3_ghast_cataclyst
+          weight: 1.0
+        - mob: hostile_t3_guardian_warden
+          weight: 1.0
+        - mob: hostile_t3_hex_matron
+          weight: 1.0
+        - mob: hostile_t3_hoglin_wrecker
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T3 Batch Spawner Lite"
+  hostile_t3_batch_spawner_core:
+    mob: hostile_t3_illusion_archon
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: hostile_t3_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: hostile_t3_illusion_archon
+          weight: 1.0
+        - mob: hostile_t3_magma_titan
+          weight: 1.0
+        - mob: hostile_t3_mite_hive
+          weight: 1.0
+        - mob: hostile_t3_piglin_warlord
+          weight: 1.0
+        - mob: hostile_t3_pillager_marksman
+          weight: 1.0
+        - mob: hostile_t3_ravager_dread
+          weight: 1.0
+        - mob: hostile_t3_shulker_reaper
+          weight: 1.0
+        - mob: hostile_t3_silver_plague
+          weight: 1.0
+        - mob: hostile_t3_vex_harrow
+          weight: 1.0
+        - mob: hostile_t3_vindicator_exec
+          weight: 1.0
+        - mob: hostile_t3_warden_mauler
+          weight: 1.0
+        - mob: hostile_t3_web_tyrant
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Hostile T3 Batch Spawner Core"
+  knight_batch_spawner_lite:
+    mob: knight_bulwark
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: knight_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: knight_bulwark
+          weight: 1.0
+        - mob: knight_captain
+          weight: 1.0
+        - mob: knight_champion
+          weight: 1.0
+        - mob: knight_crusader
+          weight: 1.0
+        - mob: knight_defender
+          weight: 1.0
+        - mob: knight_grandmarshal
+          weight: 1.0
+        - mob: knight_guard
+          weight: 1.0
+        - mob: knight_highguard
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Knight Batch Spawner Lite"
+  knight_batch_spawner_core:
+    mob: knight_highguard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: knight_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: knight_highguard
+          weight: 1.0
+        - mob: knight_initiate
+          weight: 1.0
+        - mob: knight_paladin
+          weight: 1.0
+        - mob: knight_sentinel
+          weight: 1.0
+        - mob: knight_squire
+          weight: 1.0
+        - mob: knight_templar
+          weight: 1.0
+        - mob: knight_vanguard
+          weight: 1.0
+        - mob: knight_warden
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Knight Batch Spawner Core"
+  pack_batch_spawner_lite:
+    mob: pack_bruiser_goat_rockram
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: pack_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: pack_bruiser_goat_rockram
+          weight: 1.0
+        - mob: pack_bruiser_hoglin_tuskcrusher
+          weight: 1.0
+        - mob: pack_bruiser_husk_gritmaw
+          weight: 1.0
+        - mob: pack_bruiser_iron_golem_stonemaul
+          weight: 1.0
+        - mob: pack_bruiser_piglin_brutebite
+          weight: 1.0
+        - mob: pack_bruiser_polar_bear_glaciermaw
+          weight: 1.0
+        - mob: pack_bruiser_ravager_cragbreaker
+          weight: 1.0
+        - mob: pack_bruiser_spider_bonecrusher
+          weight: 1.0
+        - mob: pack_bruiser_vindicator_ironcleaver
+          weight: 1.0
+        - mob: pack_bruiser_wolf_ironfang
+          weight: 1.0
+        - mob: pack_hunter_cave_spider_venomling
+          weight: 1.0
+        - mob: pack_hunter_fox_redpounce
+          weight: 1.0
+        - mob: pack_hunter_fox_snowpounce
+          weight: 1.0
+        - mob: pack_hunter_goat_hillleap
+          weight: 1.0
+        - mob: pack_hunter_hoglin_rushmaw
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Pack Batch Spawner Lite"
+  pack_batch_spawner_core:
+    mob: pack_hunter_piglin_feralhunter
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: pack_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: pack_hunter_piglin_feralhunter
+          weight: 1.0
+        - mob: pack_hunter_polar_bear_frostpaws
+          weight: 1.0
+        - mob: pack_hunter_spider_webstalker
+          weight: 1.0
+        - mob: pack_hunter_wolf_fangrunner
+          weight: 1.0
+        - mob: pack_hunter_wolf_moonpelt
+          weight: 1.0
+        - mob: pack_stalker_cave_spider_venomshade
+          weight: 1.0
+        - mob: pack_stalker_enderman_voidlurker
+          weight: 1.0
+        - mob: pack_stalker_fox_nightpounce
+          weight: 1.0
+        - mob: pack_stalker_husk_dunecreeper
+          weight: 1.0
+        - mob: pack_stalker_phantom_nightglide
+          weight: 1.0
+        - mob: pack_stalker_piglin_shadowraider
+          weight: 1.0
+        - mob: pack_stalker_ravager_nightprowler
+          weight: 1.0
+        - mob: pack_stalker_spider_gloomweaver
+          weight: 1.0
+        - mob: pack_stalker_vindicator_duskcleaver
+          weight: 1.0
+        - mob: pack_stalker_wolf_shadepelt
+          weight: 1.0
+      respawnTicks: 400
+      respawnJitterTicks: 40
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Pack Batch Spawner Core"
+  storm_t1_batch_spawner_lite:
+    mob: storm_t1_breeze_spark
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t1_breeze_spark
+          weight: 1.0
+        - mob: storm_t1_guardian_surge
+          weight: 1.0
+        - mob: storm_t1_phantom_shockwing
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Storm T1 Batch Spawner Lite"
+  storm_t1_batch_spawner_core:
+    mob: storm_t1_phantom_shockwing
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t1_phantom_shockwing
+          weight: 1.0
+        - mob: storm_t1_shulker_static
+          weight: 1.0
+        - mob: storm_t1_vex_arc
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Storm T1 Batch Spawner Core"
+  storm_t2_batch_spawner_lite:
+    mob: storm_t2_breeze_thunderclap
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t2_breeze_thunderclap
+          weight: 1.0
+        - mob: storm_t2_guardian_tempest
+          weight: 1.0
+        - mob: storm_t2_phantom_stormwing
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Storm T2 Batch Spawner Lite"
+  storm_t2_batch_spawner_core:
+    mob: storm_t2_phantom_stormwing
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: storm_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: storm_t2_phantom_stormwing
+          weight: 1.0
+        - mob: storm_t2_shulker_lightning_core
+          weight: 1.0
+        - mob: storm_t2_vex_stormripper
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Storm T2 Batch Spawner Core"
+  undead_t1_batch_spawner_lite:
+    mob: undead_t1_boneshiver
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t1_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t1_boneshiver
+          weight: 1.0
+        - mob: undead_t1_bonewalker
+          weight: 1.0
+        - mob: undead_t1_cinderbrand
+          weight: 1.0
+        - mob: undead_t1_cryptleap
+          weight: 1.0
+        - mob: undead_t1_dustcaller
+          weight: 1.0
+        - mob: undead_t1_gloomthrall
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T1 Batch Spawner Lite"
+  undead_t1_batch_spawner_core:
+    mob: undead_t1_gravebound
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t1_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t1_gravebound
+          weight: 1.0
+        - mob: undead_t1_gravetouched
+          weight: 1.0
+        - mob: undead_t1_ironjaw
+          weight: 1.0
+        - mob: undead_t1_marshrot
+          weight: 1.0
+        - mob: undead_t1_nightmoan
+          weight: 1.0
+        - mob: undead_t1_tombwarden
+          weight: 1.0
+      respawnTicks: 66
+      respawnJitterTicks: 13
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T1 Batch Spawner Core"
+  undead_t2_batch_spawner_lite:
+    mob: undead_t2_blightshot
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t2_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t2_blightshot
+          weight: 1.0
+        - mob: undead_t2_boneguard
+          weight: 1.0
+        - mob: undead_t2_cryptarcher
+          weight: 1.0
+        - mob: undead_t2_dreadmonger
+          weight: 1.0
+        - mob: undead_t2_frostvein
+          weight: 1.0
+        - mob: undead_t2_graveknight
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T2 Batch Spawner Lite"
+  undead_t2_batch_spawner_core:
+    mob: undead_t2_grimcharger
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t2_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t2_grimcharger
+          weight: 1.0
+        - mob: undead_t2_marrowmage
+          weight: 1.0
+        - mob: undead_t2_mirestalker
+          weight: 1.0
+        - mob: undead_t2_plaguebearer
+          weight: 1.0
+        - mob: undead_t2_rotfang
+          weight: 1.0
+        - mob: undead_t2_wailreaper
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T2 Batch Spawner Core"
+  undead_t3_batch_spawner_lite:
+    mob: undead_t3_boneshard
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t3_batch_spawner_lite
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t3_boneshard
+          weight: 1.0
+        - mob: undead_t3_boneward
+          weight: 1.0
+        - mob: undead_t3_cinderwretch
+          weight: 1.0
+        - mob: undead_t3_cryptstalker
+          weight: 1.0
+        - mob: undead_t3_dreadcaster
+          weight: 1.0
+        - mob: undead_t3_frostmarshal
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T3 Batch Spawner Lite"
+  undead_t3_batch_spawner_core:
+    mob: undead_t3_gravetide
+    material: SPAWNER
+    spawn:
+      count: 1
+      maxAlive: 6
+      groupId: undead_t3_batch_spawner_core
+      groupMaxAlive: 12
+      groups:
+      - chance: 1.0
+        count: 1
+        mobs:
+        - mob: undead_t3_gravetide
+          weight: 1.0
+        - mob: undead_t3_gravewarden
+          weight: 1.0
+        - mob: undead_t3_marshhexer
+          weight: 1.0
+        - mob: undead_t3_nightgaunt
+          weight: 1.0
+        - mob: undead_t3_rotreaver
+          weight: 1.0
+        - mob: undead_t3_wailbringer
+          weight: 1.0
+      respawnTicks: 200
+      respawnJitterTicks: 20
+      radius: 12
+      activationRadius: 30
+      attackRadius: 20
+      allowBlockDamage: false
+      tether:
+        radius: 16
+        action: TELEPORT
+      hologram:
+        enabled: true
+        offsetY: 2.3
+        title: "Undead T3 Batch Spawner Core"

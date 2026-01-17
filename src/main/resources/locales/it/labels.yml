@@ -18,6 +18,7 @@ labels:
     mobsYaml: Loader YAML mob
     mobsEditor: Editor mob
     mobSpawners: Sistema spawner
+    mobLoot: Pool bottino mob
   upgrades:
     requirements:
       xpLevelMin: Richiede livello {level} per applicare questo potenziamento.
@@ -83,3 +84,55 @@ labels:
         onHit: "All'impatto"
         inInventory: "In inventario"
         onDamaged: "Quando subisci danno"
+  classes:
+    definitions:
+      fire:
+        name: "<red><bold>Fuoco</bold></red>"
+        description:
+          - "<gray>Specialista nel danno da bruciatura.</gray>"
+          - "<gray>Alta pressione con colpi esplosivi.</gray>"
+      frost:
+        name: "<aqua><bold>Gelo</bold></aqua>"
+        description:
+          - "<gray>Controllo e rallentamento costanti.</gray>"
+          - "<gray>Difese fredde e colpi precisi.</gray>"
+      storm:
+        name: "<yellow><bold>Tempesta</bold></yellow>"
+        description:
+          - "<gray>Mobilita e colpi rapidi.</gray>"
+          - "<gray>Scosse e catene di fulmini.</gray>"
+      earth:
+        name: "<green><bold>Terra</bold></green>"
+        description:
+          - "<gray>Resistenza e controllo del terreno.</gray>"
+          - "<gray>Colpi pesanti e difesa solida.</gray>"
+      arcane:
+        name: "<light_purple><bold>Arcano</bold></light_purple>"
+        description:
+          - "<gray>Mana e controllo delle abilita.</gray>"
+          - "<gray>Potenza magica stabile.</gray>"
+      hybrid_cenere_gelida:
+        name: "<gradient:#ff7e5f:#6dd5ed><bold>Cenere Gelida</bold></gradient>"
+        description:
+          - "<gray>Bruciature e gelo combinati.</gray>"
+          - "<gray>Riduce la mobilita dei nemici.</gray>"
+      hybrid_furia_tellurica:
+        name: "<gradient:#f7b733:#4a00e0><bold>Furia Tellurica</bold></gradient>"
+        description:
+          - "<gray>Scosse e stabilita assoluta.</gray>"
+          - "<gray>Bilanciamento tra danno e difesa.</gray>"
+      hybrid_sigillo_incandescente:
+        name: "<gradient:#ff512f:#dd2476><bold>Sigillo Incandescente</bold></gradient>"
+        description:
+          - "<gray>Braci arcane e potere magico.</gray>"
+          - "<gray>Stile aggressivo con controllo.</gray>"
+      celestial:
+        name: "<gradient:#8fd3f4:#84fab0><bold>Custode Celestiale</bold></gradient>"
+        description:
+          - "<gray>Luce pura e disciplina astrale.</gray>"
+          - "<gray>Supporto e potenziamenti armonici.</gray>"
+      void:
+        name: "<gradient:#41295a:#2f0743><bold>Ombra del Vuoto</bold></gradient>"
+        description:
+          - "<gray>Fenditure e assorbimento oscuro.</gray>"
+          - "<gray>Debilitazioni e controllo totale.</gray>"

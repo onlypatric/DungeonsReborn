@@ -2,7 +2,10 @@ schemaVersion: 1
 id: elemental_fire_blade_ii
 name: <aqua>Lama Incandescente II</aqua>
 description: Ricetta per creare <aqua>Lama Incandescente II</aqua>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: elemental_fire_blade_ii
   amount: 1

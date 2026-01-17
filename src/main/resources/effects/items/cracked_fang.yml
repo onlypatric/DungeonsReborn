@@ -1,8 +1,11 @@
 schemaVersion: 1
 item:
-  type: BONE
+  type: material
+  material: BONE
   amount: 1
   meta:
-    display-name: "Zanna Scheggiata"
+    display-name: "<gold><bold>Zanna Scheggiata</bold></gold>"
     lore:
       - "Una zanna danneggiata."
+      - "Segni di combattimenti feroci."
+      - "Ancora intrisa di bestialita."

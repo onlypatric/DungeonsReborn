@@ -2,7 +2,10 @@ schemaVersion: 1
 id: leather_leggings
 name: leather_leggings
 description: Ricetta per creare leather_leggings.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: leather_leggings
+  material: LEATHER_LEGGINGS
   amount: 1

@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_crossbow_tiro_i
 name: <yellow>Ingranaggio Serrato I</yellow>
 description: Ricetta per creare <yellow>Ingranaggio Serrato I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_crossbow_tiro_i
   amount: 1

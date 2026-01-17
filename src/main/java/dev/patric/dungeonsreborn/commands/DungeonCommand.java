@@ -20,30 +20,45 @@ public final class DungeonCommand {
   private DungeonCommand() {
   }
 
-  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(DungeonYamlRegistry registry,
+  public static LiteralArgumentBuilder<CommandSourceStack> createUserCommand(DungeonYamlRegistry registry,
       DungeonQueueService queue, DungeonSessionManager sessions) {
-    return Commands.literal("dungeon")
+    return createCommand(registry, queue, sessions, false);
+  }
+
+  public static LiteralArgumentBuilder<CommandSourceStack> createAdminCommand(DungeonYamlRegistry registry,
+      DungeonQueueService queue, DungeonSessionManager sessions) {
+    return createCommand(registry, queue, sessions, true);
+  }
+
+  private static LiteralArgumentBuilder<CommandSourceStack> createCommand(DungeonYamlRegistry registry,
+      DungeonQueueService queue, DungeonSessionManager sessions, boolean includeAdmin) {
+    var builder = Commands.literal("dungeon")
         .executes(ctx -> open(ctx, registry, queue))
         .then(Commands.literal("status")
             .executes(ctx -> openStatus(ctx, registry, queue, sessions)))
         .then(Commands.literal("queue")
             .then(Commands.literal("join")
                 .then(Commands.argument("level", IntegerArgumentType.integer(1))
+                    .suggests((ctx, suggestionsBuilder) -> suggestLevels(registry, suggestionsBuilder))
                     .executes(ctx -> join(ctx, queue, IntegerArgumentType.getInteger(ctx, "level")))))
             .then(Commands.literal("leave").executes(ctx -> leave(ctx, queue)))
-            .then(Commands.literal("status").executes(ctx -> status(ctx, queue))))
-        .then(Commands.literal("reload").executes(ctx -> reload(ctx, registry, queue, sessions)))
-        .then(Commands.literal("validate").executes(ctx -> validate(ctx, registry)))
-        .then(Commands.literal("debug")
-            .then(Commands.literal("start")
-                .then(Commands.argument("level", IntegerArgumentType.integer(1))
-                    .executes(ctx -> debugStart(ctx, queue, IntegerArgumentType.getInteger(ctx, "level")))))
-            .then(Commands.literal("skip").executes(ctx -> debugSkip(ctx, sessions)))
-            .then(Commands.literal("end")
-                .then(Commands.literal("win").executes(ctx -> debugEnd(ctx, sessions, true)))
-                .then(Commands.literal("fail").executes(ctx -> debugEnd(ctx, sessions, false)))
-                .executes(ctx -> debugEnd(ctx, sessions, false))))
+            .then(Commands.literal("status").executes(ctx -> status(ctx, registry, queue))))
         .then(Commands.literal("gui").executes(ctx -> open(ctx, registry, queue)));
+    if (includeAdmin) {
+      builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, registry, queue, sessions)));
+      builder.then(Commands.literal("validate").executes(ctx -> validate(ctx, registry)));
+      builder.then(Commands.literal("debug")
+          .then(Commands.literal("start")
+              .then(Commands.argument("level", IntegerArgumentType.integer(1))
+                  .suggests((ctx, suggestionsBuilder) -> suggestLevels(registry, suggestionsBuilder))
+                  .executes(ctx -> debugStart(ctx, queue, IntegerArgumentType.getInteger(ctx, "level")))))
+          .then(Commands.literal("skip").executes(ctx -> debugSkip(ctx, sessions)))
+          .then(Commands.literal("end")
+              .then(Commands.literal("win").executes(ctx -> debugEnd(ctx, sessions, true)))
+              .then(Commands.literal("fail").executes(ctx -> debugEnd(ctx, sessions, false)))
+              .executes(ctx -> debugEnd(ctx, sessions, false))));
+    }
+    return builder;
   }
 
   private static int open(CommandContext<CommandSourceStack> ctx, DungeonYamlRegistry registry, DungeonQueueService queue) {
@@ -56,6 +71,9 @@ public final class DungeonCommand {
     if (registry == null || queue == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!isConfigured(sender, registry)) {
       return Command.SINGLE_SUCCESS;
     }
     new DungeonQueueMenu(registry, queue).open(player);
@@ -73,6 +91,9 @@ public final class DungeonCommand {
     if (registry == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!isConfigured(sender, registry)) {
       return Command.SINGLE_SUCCESS;
     }
     new DungeonStatusMenu(registry, queue, sessions).open(player);
@@ -113,7 +134,8 @@ public final class DungeonCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int status(CommandContext<CommandSourceStack> ctx, DungeonQueueService queue) {
+  private static int status(CommandContext<CommandSourceStack> ctx, DungeonYamlRegistry registry,
+      DungeonQueueService queue) {
     var sender = ctx.getSource().getSender();
     var executor = ctx.getSource().getExecutor();
     if (!(executor instanceof Player player)) {
@@ -123,6 +145,9 @@ public final class DungeonCommand {
     if (queue == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!isConfigured(sender, registry)) {
       return Command.SINGLE_SUCCESS;
     }
     var status = queue.status(player.getUniqueId());
@@ -237,5 +262,29 @@ public final class DungeonCommand {
     CommandMessages.send(sender, "messages.command.dungeons.debugEnd",
         Locales.placeholders("result", success ? "win" : "fail"));
     return Command.SINGLE_SUCCESS;
+  }
+
+  private static java.util.concurrent.CompletableFuture<com.mojang.brigadier.suggestion.Suggestions> suggestLevels(
+      DungeonYamlRegistry registry,
+      com.mojang.brigadier.suggestion.SuggestionsBuilder builder) {
+    if (registry == null) {
+      return builder.buildFuture();
+    }
+    for (Integer level : registry.levelIds()) {
+      builder.suggest(String.valueOf(level));
+    }
+    return builder.buildFuture();
+  }
+
+  private static boolean isConfigured(org.bukkit.command.CommandSender sender, DungeonYamlRegistry registry) {
+    if (registry == null || registry.dungeon() == null) {
+      CommandMessages.send(sender, "messages.dungeons.unavailable");
+      return false;
+    }
+    if (registry.levelIds().isEmpty()) {
+      CommandMessages.send(sender, "messages.dungeons.unavailable");
+      return false;
+    }
+    return true;
   }
 }

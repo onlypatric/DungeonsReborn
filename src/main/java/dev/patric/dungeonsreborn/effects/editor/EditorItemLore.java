@@ -23,6 +23,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import dev.patric.dungeonsreborn.util.TextStyles;
 
 public final class EditorItemLore {
   private static final MiniMessage MINI = MiniMessage.miniMessage();
@@ -39,12 +40,12 @@ public final class EditorItemLore {
       return Component.empty();
     }
     if (raw.indexOf('§') >= 0) {
-      return LEGACY.deserialize(raw);
+      return TextStyles.noItalic(LEGACY.deserialize(raw));
     }
     try {
-      return MINI.deserialize(raw);
+      return TextStyles.noItalic(MINI.deserialize(raw));
     } catch (Exception ignored) {
-      return LEGACY.deserialize(raw.replace('&', '§'));
+      return TextStyles.noItalic(LEGACY.deserialize(raw.replace('&', '§')));
     }
   }
 

@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: BLAZE_POWDER
+  type: material
+  material: BLAZE_POWDER
   amount: 1
   meta:
     display-name: "Brace di Fuoco"

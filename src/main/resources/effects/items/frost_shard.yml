@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: PRISMARINE_CRYSTALS
+  type: material
+  material: PRISMARINE_CRYSTALS
   amount: 1
   meta:
     display-name: "Scheggia di Gelo"

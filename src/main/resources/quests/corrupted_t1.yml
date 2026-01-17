@@ -1,0 +1,865 @@
+quests:
+  quest_corrupted_t1_corrupted_t1_allay:
+    name: "<green><bold>Caccia Epica: Allay</bold></green>"
+    description:
+      - "<gray>Elimina Allay e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_allay
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_armadillo:
+    name: "<green><bold>Caccia Epica: Armadillo</bold></green>"
+    description:
+      - "<gray>Elimina Armadillo e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_armadillo
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_axolotl:
+    name: "<green><bold>Caccia Epica: Axolotl</bold></green>"
+    description:
+      - "<gray>Elimina Axolotl e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_axolotl
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_bee:
+    name: "<green><bold>Caccia Epica: Bee</bold></green>"
+    description:
+      - "<gray>Elimina Bee e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_bee
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_camel:
+    name: "<green><bold>Caccia Epica: Camel</bold></green>"
+    description:
+      - "<gray>Elimina Camel e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_camel
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_cat:
+    name: "<green><bold>Caccia Epica: Cat</bold></green>"
+    description:
+      - "<gray>Elimina Cat e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_cat
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_chicken:
+    name: "<green><bold>Caccia Epica: Chicken</bold></green>"
+    description:
+      - "<gray>Elimina Chicken e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_chicken
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_cow:
+    name: "<green><bold>Caccia Epica: Cow</bold></green>"
+    description:
+      - "<gray>Elimina Cow e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_cow
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_dolphin:
+    name: "<green><bold>Caccia Epica: Dolphin</bold></green>"
+    description:
+      - "<gray>Elimina Dolphin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_dolphin
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_donkey:
+    name: "<green><bold>Caccia Epica: Donkey</bold></green>"
+    description:
+      - "<gray>Elimina Donkey e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_donkey
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_fox:
+    name: "<green><bold>Caccia Epica: Fox</bold></green>"
+    description:
+      - "<gray>Elimina Fox e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_fox
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_frog:
+    name: "<green><bold>Caccia Epica: Frog</bold></green>"
+    description:
+      - "<gray>Elimina Frog e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_frog
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_glow_squid:
+    name: "<green><bold>Caccia Epica: Glow Squid</bold></green>"
+    description:
+      - "<gray>Elimina Glow Squid e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_glow_squid
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_goat:
+    name: "<green><bold>Caccia Epica: Goat</bold></green>"
+    description:
+      - "<gray>Elimina Goat e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_goat
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_horse:
+    name: "<green><bold>Caccia Epica: Horse</bold></green>"
+    description:
+      - "<gray>Elimina Horse e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_horse
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_iron_golem:
+    name: "<green><bold>Caccia Epica: Iron Golem</bold></green>"
+    description:
+      - "<gray>Elimina Iron Golem e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_iron_golem
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_llama:
+    name: "<green><bold>Caccia Epica: Llama</bold></green>"
+    description:
+      - "<gray>Elimina Llama e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_llama
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_mule:
+    name: "<green><bold>Caccia Epica: Mule</bold></green>"
+    description:
+      - "<gray>Elimina Mule e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_mule
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_ocelot:
+    name: "<green><bold>Caccia Epica: Ocelot</bold></green>"
+    description:
+      - "<gray>Elimina Ocelot e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_ocelot
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_panda:
+    name: "<green><bold>Caccia Epica: Panda</bold></green>"
+    description:
+      - "<gray>Elimina Panda e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_panda
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_parrot:
+    name: "<green><bold>Caccia Epica: Parrot</bold></green>"
+    description:
+      - "<gray>Elimina Parrot e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_parrot
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_pig:
+    name: "<green><bold>Caccia Epica: Pig</bold></green>"
+    description:
+      - "<gray>Elimina Pig e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_pig
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_polar_bear:
+    name: "<green><bold>Caccia Epica: Polar Bear</bold></green>"
+    description:
+      - "<gray>Elimina Polar Bear e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_polar_bear
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_rabbit:
+    name: "<green><bold>Caccia Epica: Rabbit</bold></green>"
+    description:
+      - "<gray>Elimina Rabbit e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_rabbit
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_sheep:
+    name: "<green><bold>Caccia Epica: Sheep</bold></green>"
+    description:
+      - "<gray>Elimina Sheep e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_sheep
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_sniffer:
+    name: "<green><bold>Caccia Epica: Sniffer</bold></green>"
+    description:
+      - "<gray>Elimina Sniffer e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_sniffer
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_snow_golem:
+    name: "<green><bold>Caccia Epica: Snow Golem</bold></green>"
+    description:
+      - "<gray>Elimina Snow Golem e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_snow_golem
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_squid:
+    name: "<green><bold>Caccia Epica: Squid</bold></green>"
+    description:
+      - "<gray>Elimina Squid e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_squid
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_trader_llama:
+    name: "<green><bold>Caccia Epica: Trader Llama</bold></green>"
+    description:
+      - "<gray>Elimina Trader Llama e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_trader_llama
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_turtle:
+    name: "<green><bold>Caccia Epica: Turtle</bold></green>"
+    description:
+      - "<gray>Elimina Turtle e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_turtle
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_villager:
+    name: "<green><bold>Caccia Epica: Villager</bold></green>"
+    description:
+      - "<gray>Elimina Villager e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_villager
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_wandering_trader:
+    name: "<green><bold>Caccia Epica: Wandering Trader</bold></green>"
+    description:
+      - "<gray>Elimina Wandering Trader e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_wandering_trader
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_corrupted_t1_wolf:
+    name: "<green><bold>Caccia Epica: Wolf</bold></green>"
+    description:
+      - "<gray>Elimina Wolf e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: corrupted_t1_wolf
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_useless_pebble:
+    name: "<green><bold>Prova di Uso: Useless Pebble</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_pebble
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_useless_dust:
+    name: "<green><bold>Prova di Uso: Useless Dust</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_dust
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_material_LEATHER_CHESTPLATE:
+    name: "<green><bold>Prova di Uso: Leather Chestplate</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_CHESTPLATE
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_ash_pile:
+    name: "<green><bold>Prova di Uso: Ash Pile</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: ash_pile
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_mirror_shard:
+    name: "<green><bold>Prova di Uso: Mirror Shard</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: mirror_shard
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_dull_shard:
+    name: "<green><bold>Prova di Uso: Dull Shard</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: dull_shard
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_material_BAKED_POTATO:
+    name: "<green><bold>Prova di Uso: Baked Potato</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: BAKED_POTATO
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_useless_scrap:
+    name: "<green><bold>Prova di Uso: Useless Scrap</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_scrap
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_material_LEATHER_LEGGINGS:
+    name: "<green><bold>Prova di Uso: Leather Leggings</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_LEGGINGS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_tattered_cloth:
+    name: "<green><bold>Prova di Uso: Tattered Cloth</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: tattered_cloth
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_use_itemId_useless_rag:
+    name: "<green><bold>Prova di Uso: Useless Rag</bold></green>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_rag
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_craft_elemental_storm_rune_ii:
+    name: "<green><bold>Forgiatura Mistica: Elemental Rune Ii</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_storm_rune_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_craft_basic_axe_frenesia_i:
+    name: "<green><bold>Forgiatura Mistica: Basic Axe Frenesia I</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_axe_frenesia_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_craft_elemental_arcane_blade_ii:
+    name: "<green><bold>Forgiatura Mistica: Elemental Blade Ii</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_arcane_blade_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_corrupted_t1_craft_basic_bow_precisione_i:
+    name: "<green><bold>Forgiatura Mistica: Basic Bow Precisione I</bold></green>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 401
+    rewards:
+      xp: 350
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_bow_precisione_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

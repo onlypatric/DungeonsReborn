@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: AMETHYST_SHARD
+  type: material
+  material: AMETHYST_SHARD
   amount: 1
   meta:
     display-name: "Frammento di Saggezza"

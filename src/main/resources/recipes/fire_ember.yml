@@ -2,7 +2,10 @@ schemaVersion: 1
 id: fire_ember
 name: fire_ember
 description: Ricetta per creare fire_ember.
-inputs: []
-output:
-  itemId: fire_ember
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: fire_ember

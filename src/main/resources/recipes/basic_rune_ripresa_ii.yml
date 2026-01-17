@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_rune_ripresa_ii
 name: <yellow>Runa della Ripresa II</yellow>
 description: Ricetta per creare <yellow>Runa della Ripresa II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_rune_ripresa_ii
   amount: 1

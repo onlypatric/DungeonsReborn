@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: WHEAT
+  type: material
+  material: WHEAT
   amount: 1
   meta:
     display-name: Fascio di Erbe

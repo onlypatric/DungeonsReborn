@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: PRISMARINE_SHARD
+  type: material
+  material: PRISMARINE_SHARD
   amount: 1
   meta:
     display-name: "Scheggia Spenta"

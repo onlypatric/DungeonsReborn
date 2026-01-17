@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: QUARTZ
+  type: material
+  material: QUARTZ
   amount: 1
   meta:
     display-name: Nucleo Affilato

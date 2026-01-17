@@ -2,7 +2,10 @@ schemaVersion: 1
 id: elemental_crafted_frost_i
 name: <aqua>Catalizzatore di Gelo</aqua>
 description: Ricetta per creare <aqua>Catalizzatore di Gelo</aqua>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: elemental_crafted_frost_i
   amount: 1

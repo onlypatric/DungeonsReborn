@@ -5,6 +5,8 @@ mobs:
     name: <red>Magma Forge</red>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 40
     ai:
       enabled: true
@@ -31,8 +33,8 @@ mobs:
     xpGating:
       minLevel: 15000
     progression:
-      minXp: 45
-      maxXp: 65
+      minXp: 405
+      maxXp: 585
       maxPlayerXp: 2000000
     loot:
       pool: elemental_fire

@@ -13,6 +13,7 @@ import dev.patric.dungeonsreborn.classes.ClassSpec;
 import dev.patric.dungeonsreborn.classes.ClassService;
 import dev.patric.dungeonsreborn.classes.ClassYamlRegistry;
 import dev.patric.dungeonsreborn.classes.ClassBonusSpec;
+import dev.patric.dungeonsreborn.classes.skills.ClassSkillService;
 import dev.patric.dungeonsreborn.gui.GuiItem;
 import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
@@ -32,12 +33,14 @@ public final class ClassSelectMenu extends Window {
 
   private final ClassYamlRegistry registry;
   private final ClassService service;
+  private final ClassSkillService skills;
   private final VirtualList<ClassSpec> list;
 
-  public ClassSelectMenu(ClassYamlRegistry registry, ClassService service) {
+  public ClassSelectMenu(ClassYamlRegistry registry, ClassService service, ClassSkillService skills) {
     super(SIZE, GuiI18n.tr("gui.classes.select.title"), true);
     this.registry = Objects.requireNonNull(registry, "registry");
     this.service = Objects.requireNonNull(service, "service");
+    this.skills = skills;
 
     background(GuiItems.blankPane(Material.BLACK_STAINED_GLASS_PANE));
 
@@ -45,7 +48,7 @@ public final class ClassSelectMenu extends Window {
         1, 1, 4, 7,
         this::entries,
         (player, entry) -> entryItem(player, entry),
-        (ctx, entry) -> openConfirm(ctx.player(), entry));
+        (ctx, entry) -> handleEntryClick(ctx.player(), entry, ctx.clickType()));
     list.searchKey(spec -> spec.id());
     list.apply(this, Placement.FIXED);
 
@@ -91,35 +94,62 @@ public final class ClassSelectMenu extends Window {
     String current = service.currentClassId(player.getUniqueId());
     boolean selected = current != null && current.equals(spec.id());
     List<Component> lore = new ArrayList<>();
-    lore.addAll(spec.descriptionOrEmpty());
+    lore.addAll(spec.descriptionFor(player));
     if (!lore.isEmpty()) {
       lore.add(Component.text(" "));
     }
     appendStatSummary(lore, spec.bonusesOrEmpty());
+    lore.add(GuiI18n.tr(player, "gui.classes.select.entry.skillCount",
+        Placeholder.unparsed("count", String.valueOf(spec.skillTreeOrEmpty().nodes().size()))));
     lore.addAll(service.buildRequirementLore(player, spec));
+    if (current != null && !selected) {
+      lore.add(Component.text(" "));
+      lore.add(GuiI18n.tr(player, "gui.classes.select.entry.warning.swap"));
+    }
     if (selected) {
       lore.add(Component.text(" "));
       lore.add(GuiI18n.tr(player, "gui.classes.select.entry.selected"));
     }
+    lore.add(Component.text(" "));
+    lore.add(GuiI18n.tr(player, "gui.classes.select.entry.hint.select"));
+    if (skills != null) {
+      lore.add(GuiI18n.tr(player, "gui.classes.select.entry.hint.preview"));
+    }
     ItemStack base = spec.icon() == null ? new ItemStack(Material.BOOK) : spec.icon().clone();
     return GuiItem.of(base)
-        .displayName(spec.displayName())
+        .displayName(spec.displayName(player))
         .lore(lore)
         .hideItemFlags(true)
         .build();
   }
 
+  private void handleEntryClick(Player player, ClassSpec spec, org.bukkit.event.inventory.ClickType clickType) {
+    if (player == null || spec == null) {
+      return;
+    }
+    if (skills != null && clickType.isRightClick()) {
+      openPreview(player, spec);
+      return;
+    }
+    openConfirm(player, spec);
+  }
+
   private void openConfirm(Player player, ClassSpec spec) {
     List<Component> lore = new ArrayList<>();
-    lore.addAll(spec.descriptionOrEmpty());
+    lore.addAll(spec.descriptionFor(player));
     if (!lore.isEmpty()) {
       lore.add(Component.text(" "));
     }
     appendStatSummary(lore, spec.bonusesOrEmpty());
     lore.addAll(service.buildRequirementLore(player, spec));
+    String current = service.currentClassId(player.getUniqueId());
+    if (current != null && !current.equals(spec.id())) {
+      lore.add(Component.text(" "));
+      lore.add(GuiI18n.tr(player, "gui.classes.select.entry.warning.swap"));
+    }
     ConfirmDialogWindow confirm = new ConfirmDialogWindow(
         GuiI18n.tr(player, "gui.classes.select.confirm.title"),
-        spec.displayName(),
+        spec.displayName(player),
         lore,
         (p, result) -> {
           if (result != ConfirmDialogWindow.ConfirmResult.CONFIRM) {
@@ -131,6 +161,11 @@ public final class ClassSelectMenu extends Window {
           list.redraw(this, p);
         });
     openSubWindow(player, confirm);
+    GuiSounds.click(player);
+  }
+
+  private void openPreview(Player player, ClassSpec spec) {
+    new ClassSkillTreeMenu(spec, skills, true).open(player);
     GuiSounds.click(player);
   }
 

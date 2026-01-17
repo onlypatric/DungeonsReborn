@@ -2,7 +2,10 @@ schemaVersion: 1
 id: chainmail_helmet
 name: chainmail_helmet
 description: Ricetta per creare chainmail_helmet.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: chainmail_helmet
+  material: CHAINMAIL_HELMET
   amount: 1

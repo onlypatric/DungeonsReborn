@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: STRING
+  type: material
+  material: STRING
   amount: 1
   meta:
-    display-name: "Filo Corrotto"
+    display-name: "<dark_purple><bold>Filo Corrotto</bold></dark_purple>"
     lore:
       - "Un filo intriso di corruzione."
+      - "Emana un fremito innaturale."
     enchants:
       DURABILITY: 1
     flags:

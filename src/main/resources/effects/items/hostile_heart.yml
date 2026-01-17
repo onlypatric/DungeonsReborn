@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: GHAST_TEAR
+  type: material
+  material: GHAST_TEAR
   amount: 1
   meta:
     display-name: Cuore Ostile

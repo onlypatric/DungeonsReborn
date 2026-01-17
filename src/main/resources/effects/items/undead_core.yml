@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: BONE_BLOCK
+  type: material
+  material: BONE_BLOCK
   amount: 1
   meta:
     display-name: "Nucleo Non Morto"

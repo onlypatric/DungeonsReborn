@@ -5,6 +5,8 @@ mobs:
     name: <light_purple>Spectral</light_purple>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 40
     ai:
       enabled: true
@@ -36,8 +38,8 @@ mobs:
     xpGating:
       minLevel: 15000
     progression:
-      minXp: 50
-      maxXp: 75
+      minXp: 450
+      maxXp: 675
       maxPlayerXp: 2000000
     loot:
       pool: elemental_arcane

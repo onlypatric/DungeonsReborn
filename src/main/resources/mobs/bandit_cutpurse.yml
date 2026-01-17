@@ -8,6 +8,8 @@ mobs:
       mainhand: WOODEN_SWORD
       head: LEATHER_HELMET
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 20
     ai:
       enabled: true
@@ -30,8 +32,8 @@ mobs:
     xpGating:
       minLevel: 3500
     progression:
-      minXp: 14
-      maxXp: 22
+      minXp: 126
+      maxXp: 198
       maxPlayerXp: 700000
 spawnerBlocks:
   bandit_cutpurse_spawner:

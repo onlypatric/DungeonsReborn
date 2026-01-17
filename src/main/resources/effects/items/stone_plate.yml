@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: SMOOTH_STONE
+  type: material
+  material: SMOOTH_STONE
   amount: 1
   meta:
     display-name: Lastra di Pietra

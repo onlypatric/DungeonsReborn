@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.kyori.adventure.text.Component;
+import dev.patric.dungeonsreborn.util.TextStyles;
 
 public final class GuiItem {
   /**
@@ -53,12 +54,12 @@ public final class GuiItem {
   }
 
   public GuiItem displayName(Component name) {
-    return editMeta(meta -> meta.displayName(Objects.requireNonNull(name, "name")));
+    return editMeta(meta -> meta.displayName(TextStyles.noItalic(Objects.requireNonNull(name, "name"))));
   }
 
   public GuiItem lore(List<Component> lore) {
     Objects.requireNonNull(lore, "lore");
-    return editMeta(meta -> meta.lore(List.copyOf(lore)));
+    return editMeta(meta -> meta.lore(TextStyles.noItalic(List.copyOf(lore))));
   }
 
   public GuiItem clearLore() {
@@ -70,7 +71,7 @@ public final class GuiItem {
     return editMeta(meta -> {
       List<Component> lore = meta.lore();
       List<Component> next = new ArrayList<>(lore == null ? List.of() : lore);
-      next.add(line);
+      next.add(TextStyles.noItalic(line));
       meta.lore(next);
     });
   }

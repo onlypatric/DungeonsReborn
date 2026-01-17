@@ -2,7 +2,10 @@ schemaVersion: 1
 id: leather_chestplate
 name: leather_chestplate
 description: Ricetta per creare leather_chestplate.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: leather_chestplate
+  material: LEATHER_CHESTPLATE
   amount: 1

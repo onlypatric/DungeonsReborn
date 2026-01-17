@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_crossbow_turbina_ii
 name: <yellow>Dardo Turbina II</yellow>
 description: Ricetta per creare <yellow>Dardo Turbina II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_crossbow_turbina_ii
   amount: 1

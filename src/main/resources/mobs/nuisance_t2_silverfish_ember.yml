@@ -5,6 +5,8 @@ mobs:
     name: <gold>Ember Scutter</gold>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 14
       movementSpeed: 0.32
     ai:
@@ -26,8 +28,8 @@ mobs:
     xpGating:
       minLevel: 500
     progression:
-      minXp: 2
-      maxXp: 3
+      minXp: 18
+      maxXp: 27
       maxPlayerXp: 200000
 spawnerBlocks:
   nuisance_t2_silverfish_ember_spawner:

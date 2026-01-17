@@ -5,6 +5,8 @@ mobs:
     name: <dark_red>Corrupted Iron Golem</dark_red>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 32
     ai:
       enabled: true
@@ -26,8 +28,8 @@ mobs:
     xpGating:
       minLevel: 3000
     progression:
-      minXp: 12
-      maxXp: 18
+      minXp: 108
+      maxXp: 162
       maxPlayerXp: 600000
     loot:
       pool: corrupted_t2

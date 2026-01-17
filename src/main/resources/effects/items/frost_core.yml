@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: PACKED_ICE
+  type: material
+  material: PACKED_ICE
   amount: 1
   meta:
-    display-name: "Nucleo di Gelo"
+    display-name: "<gradient:#7efcff:#4aa3ff><bold>Nucleo di Gelo</bold></gradient>"
     lore:
       - "Un nucleo di ghiaccio."
+      - "La brina si forma al tocco."
     enchants:
       DURABILITY: 1
     flags:

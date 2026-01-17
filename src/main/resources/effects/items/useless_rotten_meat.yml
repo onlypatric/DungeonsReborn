@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: ROTTEN_FLESH
+  type: material
+  material: ROTTEN_FLESH
   amount: 1
   meta:
     display-name: "Carne Marcia Inutile"

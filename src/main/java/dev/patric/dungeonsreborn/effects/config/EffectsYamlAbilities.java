@@ -34,6 +34,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -68,6 +70,7 @@ import dev.patric.dungeonsreborn.effects.integration.PassiveBinding;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemYaml;
+import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.minions.MinionScaling;
 import dev.patric.dungeonsreborn.effects.minions.MinionSpec;
@@ -78,6 +81,7 @@ import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.logging.ServiceLogManager;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -189,6 +193,10 @@ public final class EffectsYamlAbilities {
       return null;
     }
     return template.item().clone();
+  }
+
+  public Set<String> loadedItemIds() {
+    return java.util.Collections.unmodifiableSet(itemTemplates.keySet());
   }
 
   public Set<String> loadedAbilityIds() {
@@ -682,6 +690,9 @@ public final class EffectsYamlAbilities {
   private void loadItemTemplate(String itemId, String base, YamlConfiguration cfg, List<String> errors) {
     ItemStack item = cfg.getItemStack("item");
     if (item == null || item.getType().isAir()) {
+      item = parseCustomItemTemplate(cfg.getConfigurationSection("item"), base + ".item", errors);
+    }
+    if (item == null || item.getType().isAir()) {
       errors.add(base + ": item is missing or invalid");
       return;
     }
@@ -759,6 +770,89 @@ public final class EffectsYamlAbilities {
     } catch (Exception ex) {
       errors.add(base + ": " + ex.getMessage());
     }
+  }
+
+  private ItemStack parseCustomItemTemplate(ConfigurationSection section, String path, List<String> errors) {
+    if (section == null) {
+      return null;
+    }
+    String typeRaw = YamlValues.string(section, "type", null);
+    String materialRaw = YamlValues.string(section, "material", null);
+    String materialKey = materialRaw;
+    if (materialKey == null && typeRaw != null && !typeRaw.equalsIgnoreCase("material")) {
+      materialKey = typeRaw;
+    }
+    if (materialKey == null || materialKey.isBlank()) {
+      errors.add(path + ".material: missing material");
+      return null;
+    }
+    Material material = Material.matchMaterial(materialKey);
+    if (material == null) {
+      errors.add(path + ".material: unknown material=" + materialKey);
+      return null;
+    }
+    int amount = section.getInt("amount", 1);
+    ItemStack item = new ItemStack(material, Math.max(1, amount));
+    ConfigurationSection meta = section.getConfigurationSection("meta");
+    if (meta == null) {
+      return item;
+    }
+    ItemMeta itemMeta = item.getItemMeta();
+    if (itemMeta == null) {
+      return item;
+    }
+    String displayName = YamlValues.string(meta, "display-name",
+        YamlValues.string(meta, "displayName", YamlValues.string(meta, "name", null)));
+    if (displayName != null && !displayName.isBlank()) {
+      itemMeta.displayName(GuiMini.mm(displayName));
+    }
+    List<String> loreLines = meta.getStringList("lore");
+    if (!loreLines.isEmpty()) {
+      itemMeta.lore(GuiMini.loreMm(loreLines));
+    }
+    ConfigurationSection enchants = meta.getConfigurationSection("enchants");
+    if (enchants != null) {
+      for (String key : enchants.getKeys(false)) {
+        int level = enchants.getInt(key, 1);
+        Enchantment enchant = parseEnchantment(key);
+        if (enchant == null) {
+          errors.add(path + ".meta.enchants: unknown enchantment=" + key);
+          continue;
+        }
+        itemMeta.addEnchant(enchant, Math.max(1, level), true);
+      }
+    }
+    List<String> flags = meta.getStringList("flags");
+    for (String raw : flags) {
+      if (raw == null || raw.isBlank()) {
+        continue;
+      }
+      try {
+        itemMeta.addItemFlags(ItemFlag.valueOf(raw.trim().toUpperCase(Locale.ROOT)));
+      } catch (IllegalArgumentException ex) {
+        errors.add(path + ".meta.flags: unknown flag=" + raw);
+      }
+    }
+    item.setItemMeta(itemMeta);
+    return item;
+  }
+
+  private Enchantment parseEnchantment(String raw) {
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    String trimmed = raw.trim();
+    Enchantment byName = Enchantment.getByName(trimmed.toUpperCase(Locale.ROOT));
+    if (byName != null) {
+      return byName;
+    }
+    NamespacedKey key = trimmed.contains(":")
+        ? NamespacedKey.fromString(trimmed)
+        : NamespacedKey.minecraft(trimmed.toLowerCase(Locale.ROOT));
+    if (key == null) {
+      return null;
+    }
+    return Enchantment.getByKey(key);
   }
 
   public LintResult lintScripts() {

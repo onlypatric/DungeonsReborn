@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_shield_riflesso_ii
 name: <yellow>Scudo Riflesso II</yellow>
 description: Ricetta per creare <yellow>Scudo Riflesso II</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_shield_riflesso_ii
   amount: 1

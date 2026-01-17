@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_bow_tiro_i
 name: <yellow>Corda Tesa I</yellow>
 description: Ricetta per creare <yellow>Corda Tesa I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_bow_tiro_i
   amount: 1

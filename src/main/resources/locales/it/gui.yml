@@ -15,6 +15,12 @@ gui:
       none: <green>Nessun errore.</green>
       clickView: <red>Clicca per vedere gli errori.</red>
       count: <red>Errori:</red> <white>{count}</white>
+    time:
+      never: mai
+      daysHours: "{days}g {hours}h fa"
+      hoursMinutes: "{hours}h {minutes}m fa"
+      minutesSeconds: "{minutes}m {seconds}s fa"
+      seconds: "{seconds}s fa"
     action:
       leftClickEdit: <green>Clic sinistro per modificare.</green>
       rightClickDelete: <red>Clic destro per eliminare.</red>
@@ -568,6 +574,12 @@ gui:
         hint: <gray>Ricarica l'elenco.</gray>
       entry:
         selected: <green>Selezionata</green>
+        skillCount: <gray>Nodi abilita:</gray> <white>{count}</white>
+        warning:
+          swap: <red>Il cambio classe resetta i punti abilita.</red>
+        hint:
+          select: <gray>Clic sinistro per scegliere.</gray>
+          preview: <gray>Clic destro per anteprima.</gray>
       confirm:
         title: <gold><bold>Conferma Classe</bold></gold>
       stat:
@@ -590,10 +602,12 @@ gui:
         hint:
           unlock: <gray>Clic sinistro per sbloccare.</gray>
           respec: <gray>Clic destro per respec.</gray>
+          preview: <gray>Solo anteprima (nessuno sblocco).</gray>
       node:
         type: <gray>Tipo:</gray> <white>{value}</white>
         cost: <gray>Costo:</gray> <white>{value}</white>
         requires: <gray>Richiede:</gray> <white>{value}</white>
+        preview: <gray>Modalita anteprima.</gray>
         status:
           unlocked: <green>Sbloccato</green>
           locked: <red>Bloccato</red>
@@ -1221,6 +1235,13 @@ gui:
     header:
       title: <gold><bold>Hub Avventuriero</bold></gold>
       subtitle: <gray>Accesso rapido ai sistemi del giocatore.</gray>
+    section:
+      play:
+        title: <aqua><bold>Gioco</bold></aqua>
+        hint: <gray>Attivita principali e progressione.</gray>
+      index:
+        title: <yellow><bold>Indici</bold></yellow>
+        hint: <gray>Consulta cio che e disponibile.</gray>
     dungeonQueue:
       title: <aqua><bold>Coda Dungeon</bold></aqua>
       hint: <gray>Entra in un livello dungeon.</gray>
@@ -1247,9 +1268,162 @@ gui:
     upgrades:
       title: <red><bold>Potenziamenti</bold></red>
       hint: <gray>Unisci potenziamenti incantesimi.</gray>
+    questGivers:
+      title: <gold><bold>Mandanti Missioni</bold></gold>
+      hint: <gray>Consulta gli NPC missioni.</gray>
+    mobIndex:
+      title: <green><bold>Indice Mob</bold></green>
+      hint: <gray>Sfoglia i mob personalizzati.</gray>
+    itemIndex:
+      title: <yellow><bold>Indice Oggetti</bold></yellow>
+      hint: <gray>Sfoglia gli oggetti personalizzati.</gray>
+    upgradeIndex:
+      title: <light_purple><bold>Indice Upgrade</bold></light_purple>
+      hint: <gray>Sfoglia gli upgrade.</gray>
+    craftablesIndex:
+      title: <aqua><bold>Indice Craftabili</bold></aqua>
+      hint: <gray>Sfoglia gli oggetti craftabili.</gray>
+    shopIndex:
+      title: <green><bold>Indice Negozi</bold></green>
+      hint: <gray>Vedi gli scambi disponibili.</gray>
     kits:
       title: <gold><bold>Kit</bold></gold>
       hint: <gray>Riscatta ricompense iniziali.</gray>
+  questGivers:
+    index:
+      title: <white><bold>Mandanti Missioni</bold></white>
+      header:
+        title: <gold><bold>Mandanti Missioni</bold></gold>
+        hint: <gray>Totale mandanti:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        title: <white>{title}</white>
+        id: <gray>ID:</gray> <white>{id}</white>
+        mode: <gray>Modalita:</gray> <white>{mode}</white>
+        count: <gray>Missioni:</gray> <white>{count}</white>
+        hint: <dark_gray>Visita l'NPC per accettare missioni.</dark_gray>
+        mode:
+          fixed: Fisso
+          random: Pool casuale
+  mobs:
+    index:
+      title: <white><bold>Indice Mob</bold></white>
+      header:
+        title: <gold><bold>Indice Mob</bold></gold>
+        hint: <gray>Totale mob:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        title: <white>{name}</white>
+        type: <gray>Specie:</gray> <aqua>{type}</aqua>
+        minLevel: <gray>Consigliato:</gray> <gold>Lv {level}</gold>
+        hint: <dark_gray>Voce bestiario.</dark_gray>
+  items:
+    index:
+      title: <white><bold>Indice Oggetti</bold></white>
+      header:
+        title: <gold><bold>Indice Oggetti</bold></gold>
+        hint: <gray>Totale oggetti:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        id: <gray>ID:</gray> <white>{id}</white>
+        activator: <gray>Attivatore:</gray> <white>{value}</white>
+        ability: <gray>Abilita:</gray> <white>{id}</white>
+        hint: <dark_gray>Voce solo consultazione.</dark_gray>
+  upgrades:
+    merge:
+      activator:
+        left: Click sinistro
+        right: Click destro
+        shiftLeft: Shift + click sinistro
+        shiftRight: Shift + click destro
+        passive: Passivo
+    index:
+      title: <white><bold>Indice Upgrade</bold></white>
+      header:
+        title: <gold><bold>Indice Upgrade</bold></gold>
+        hint: <gray>Totale upgrade:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        id: <gray>ID:</gray> <white>{id}</white>
+        hint: <dark_gray>Clicca per vedere la ricetta.</dark_gray>
+    detail:
+      title: <white><bold>Ricetta Crafting</bold></white>
+      header:
+        title: <gold><bold>Dettagli Ricetta</bold></gold>
+        hint: <gray>Ingredienti per questo craftabile.</gray>
+        id: <gray>ID:</gray> <white>{id}</white>
+      output:
+        hint: <dark_gray>Anteprima del risultato.</dark_gray>
+      ingredients:
+        title: <yellow><bold>Ingredienti</bold></yellow>
+        hint: <gray>Richiede:</gray>
+        none: <red>Nessun ingrediente indicato.</red>
+        line: <gray>{amount}x</gray> <white>{item}</white>
+      variants: <gray>Varianti:</gray> <white>{count}</white>
+      description: <gray>{text}</gray>
+  craftables:
+    index:
+      title: <white><bold>Indice Craftabili</bold></white>
+      header:
+        title: <gold><bold>Indice Craftabili</bold></gold>
+        hint: <gray>Totale ricette:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        activator: <gray>Attivazione:</gray> <aqua>{value}</aqua>
+        ability: <gray>Abilita:</gray> <white>{id}</white>
+        hint: <dark_gray>Anteprima upgrade.</dark_gray>
+    detail:
+      title: <white><bold>Ricetta Crafting</bold></white>
+      header:
+        title: <gold><bold>Dettagli Ricetta</bold></gold>
+        hint: <gray>Ingredienti per questo craftabile.</gray>
+        id: <gray>ID:</gray> <white>{id}</white>
+      output:
+        hint: <dark_gray>Anteprima del risultato.</dark_gray>
+      ingredients:
+        title: <yellow><bold>Ingredienti</bold></yellow>
+        hint: <gray>Richiede:</gray>
+        none: <red>Nessun ingrediente indicato.</red>
+        line: <gray>{amount}x</gray> <white>{item}</white>
+      variants: <gray>Varianti:</gray> <white>{count}</white>
+      description: <gray>{text}</gray>
+  shops:
+    preview:
+      title: <white><bold>Anteprima Negozio</bold></white>
+      header:
+        title: <gold><bold>Anteprima Negozio</bold></gold>
+        hint: <gray>Venditore:</gray> <white>{title}</white>
+        id: <gray>ID:</gray> <white>{id}</white>
+      entry:
+        cost: <gray>Costo:</gray> <white>{cost}</white>
+        minLevel: <gray>Livello minimo:</gray> <white>{level}</white>
+        hint: <dark_gray>Solo anteprima.</dark_gray>
+    index:
+      title: <white><bold>Indice Negozi</bold></white>
+      header:
+        title: <gold><bold>Indice Negozi</bold></gold>
+        hint: <gray>Totale negozi:</gray> <white>{count}</white>
+      refresh:
+        title: <yellow><bold>Aggiorna</bold></yellow>
+        hint: <gray>Ricarica le voci.</gray>
+      entry:
+        title: <white>{title}</white>
+        id: <gray>ID:</gray> <white>{id}</white>
+        trades: <gray>Scambi:</gray> <white>{count}</white>
+        minLevel: <gray>Livello minimo:</gray> <white>{level}</white>
+        trade: <gray>{buy}</gray> <dark_gray>-></dark_gray> <white>{sell}</white>
+        more: <dark_gray>... {count} altro</dark_gray>
+        hint: <dark_gray>Voce solo consultazione.</dark_gray>
   adminHub:
     title: <white><bold>Hub Admin</bold></white>
     header:
@@ -1276,6 +1450,9 @@ gui:
     shopEditor:
       title: <green><bold>Editor Negozi</bold></green>
       hint: <gray>Modifica scambi negozio.</gray>
+    giveTools:
+      title: <red><bold>Strumenti Give</bold></red>
+      hint: <gray>Scorciatoie give admin.</gray>
     craftingEditor:
       title: <aqua><bold>Editor Crafting</bold></aqua>
       hint: <gray>Modifica ricette personalizzate.</gray>
@@ -1285,6 +1462,66 @@ gui:
     dungeonAdmin:
       title: <red><bold>Admin Dungeon</bold></red>
       hint: <gray>Coda + strumenti sessione.</gray>
+    dungeonValidate:
+      title: <yellow><bold>Valida Dungeon</bold></yellow>
+      hint: <gray>Esegui validazione dungeon.</gray>
+    dungeonReload:
+      title: <red><bold>Ricarica Dungeon</bold></red>
+      hint: <gray>Ricarica config dungeon.</gray>
+    reloadAll:
+      title: <gold><bold>Ricarica Tutto</bold></gold>
+      hint: <gray>Ricarica tutti i sistemi.</gray>
+    reloadEffects:
+      title: <aqua><bold>Ricarica Effetti</bold></aqua>
+      hint: <gray>Ricarica abilita + binding.</gray>
+    reloadMobs:
+      title: <green><bold>Ricarica Mob</bold></green>
+      hint: <gray>Ricarica mob + spawn.</gray>
+    reloadQuests:
+      title: <gold><bold>Ricarica Missioni</bold></gold>
+      hint: <gray>Ricarica missioni + giver.</gray>
+    reloadShops:
+      title: <green><bold>Ricarica Negozi</bold></green>
+      hint: <gray>Ricarica registro negozi.</gray>
+    reloadCrafting:
+      title: <aqua><bold>Ricarica Crafting</bold></aqua>
+      hint: <gray>Ricarica ricette.</gray>
+    reloadUpgrades:
+      title: <light_purple><bold>Ricarica Upgrade</bold></light_purple>
+      hint: <gray>Ricarica registro upgrade.</gray>
+    status:
+      title: <yellow><bold>Panoramica Sistema</bold></yellow>
+      systems: <gray>Sistemi:</gray> <white>{count}</white>
+      lastReload: <gray>Ultima ricarica:</gray> <white>{value}</white>
+      never: mai
+    errors:
+      title: <red><bold>Errori</bold></red>
+      count: <gray>Errori totali:</gray> <white>{count}</white>
+      hint: <yellow>Apri Stato Sistema per dettagli.</yellow>
+      clear: <green>Nessun errore segnalato.</green>
+  adminGive:
+    title: <white><bold>Strumenti Give</bold></white>
+    header:
+      title: <gold><bold>Strumenti Give</bold></gold>
+      subtitle: <gray>Clicca un riquadro per il comando.</gray>
+    item:
+      title: <yellow><bold>Dai Oggetto</bold></yellow>
+      hint: <gray>Oggetti template effetti.</gray>
+    upgrade:
+      title: <light_purple><bold>Dai Upgrade</bold></light_purple>
+      hint: <gray>Libri upgrade.</gray>
+    mobEgg:
+      title: <green><bold>Dai Uovo Mob</bold></green>
+      hint: <gray>Uova mob personalizzate.</gray>
+    spawner:
+      title: <aqua><bold>Dai Spawner</bold></aqua>
+      hint: <gray>Spawner per id.</gray>
+    recipe:
+      title: <gold><bold>Dai Output Ricetta</bold></gold>
+      hint: <gray>Anteprima output ricetta.</gray>
+    shopToken:
+      title: <red><bold>Dai Gettoni</bold></red>
+      hint: <gray>Tier gettoni.</gray>
   kits:
     title: <white><bold>Kit</bold></white>
     header:

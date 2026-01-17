@@ -2,7 +2,10 @@ schemaVersion: 1
 id: storm_spark
 name: storm_spark
 description: Ricetta per creare storm_spark.
-inputs: []
-output:
-  itemId: storm_spark
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: storm_spark

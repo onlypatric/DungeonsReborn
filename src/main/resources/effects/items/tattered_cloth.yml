@@ -1,8 +1,11 @@
 schemaVersion: 1
 item:
-  type: STRING
+  type: material
+  material: STRING
   amount: 1
   meta:
-    display-name: "Panno Logoro"
+    display-name: "<gray><bold>Panno Logoro</bold></gray>"
     lore:
       - "Stracci consumati."
+      - "Odore di polvere e muffa."
+      - "Utile solo per riparazioni grezze."

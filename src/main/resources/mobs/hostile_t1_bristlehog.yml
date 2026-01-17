@@ -5,6 +5,8 @@ mobs:
     name: <gold>Bristlehog</gold>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 18
     ai:
       enabled: true
@@ -24,8 +26,8 @@ mobs:
             \ originAt=origin {\n    knockback horizontal=0.9 vertical=0.25\n    potion\
             \ effect=SLOWNESS durationTicks=60 amplifier=0\n  }\n}"
     progression:
-      minXp: 6
-      maxXp: 9
+      minXp: 54
+      maxXp: 81
       maxPlayerXp: 250000
     loot:
       pool: hostile_t1

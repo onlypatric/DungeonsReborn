@@ -9,6 +9,8 @@ mobs:
       chest: LEATHER_CHESTPLATE
       mainhand: BOW
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 16
     ai:
       enabled: true
@@ -41,8 +43,8 @@ mobs:
     xpGating:
       minLevel: 3000
     progression:
-      minXp: 12
-      maxXp: 18
+      minXp: 108
+      maxXp: 162
       maxPlayerXp: 600000
 spawnerBlocks:
   undead_t2_blightshot_spawner:

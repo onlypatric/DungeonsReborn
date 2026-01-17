@@ -88,7 +88,7 @@ public final class SystemStatusMenu extends Window {
       lore.add(Locales.component(player, "gui.common.line.source", Locales.placeholders("value", entry.source())));
     }
     lore.add(Locales.component(player, "gui.common.line.lastReload",
-        Locales.placeholders("value", formatAgo(entry.timestampMs()))));
+        Locales.placeholders("value", formatAgo(player, entry.timestampMs()))));
     if (entry.errorCount() > 0) {
       lore.add(Locales.component(player, "gui.common.errors.count", Locales.placeholders("count", entry.errorCount())));
       lore.add(GuiI18n.tr(player, "gui.common.errors.clickView"));
@@ -119,9 +119,9 @@ public final class SystemStatusMenu extends Window {
     }).autoDescribeInLore(false);
   }
 
-  private static String formatAgo(long timestampMs) {
+  private static String formatAgo(Player player, long timestampMs) {
     if (timestampMs <= 0L) {
-      return "never";
+      return Locales.text(player, "gui.common.time.never");
     }
     long delta = Math.max(0L, System.currentTimeMillis() - timestampMs);
     long seconds = delta / 1000L;
@@ -129,14 +129,21 @@ public final class SystemStatusMenu extends Window {
     long hours = minutes / 60L;
     long days = hours / 24L;
     if (days > 0) {
-      return days + "d " + (hours % 24) + "h ago";
+      return Locales.text(player, "gui.common.time.daysHours", Locales.placeholders(
+          "days", days,
+          "hours", hours % 24));
     }
     if (hours > 0) {
-      return hours + "h " + (minutes % 60) + "m ago";
+      return Locales.text(player, "gui.common.time.hoursMinutes", Locales.placeholders(
+          "hours", hours,
+          "minutes", minutes % 60));
     }
     if (minutes > 0) {
-      return minutes + "m " + (seconds % 60) + "s ago";
+      return Locales.text(player, "gui.common.time.minutesSeconds", Locales.placeholders(
+          "minutes", minutes,
+          "seconds", seconds % 60));
     }
-    return seconds + "s ago";
+    return Locales.text(player, "gui.common.time.seconds", Locales.placeholders(
+        "seconds", seconds));
   }
 }

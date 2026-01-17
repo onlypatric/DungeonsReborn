@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: IRON_INGOT
+  type: material
+  material: IRON_INGOT
   amount: 1
   meta:
     display-name: Nucleo di Ferro

@@ -5,6 +5,8 @@ mobs:
     name: <gold>Redpounce</gold>
     showName: true
     stats:
+      scale: 1.0
+      scaleVariance: 0.12
       maxHealth: 25
     ai:
       enabled: true
@@ -29,8 +31,8 @@ mobs:
     xpGating:
       minLevel: 500
     progression:
-      minXp: 8
-      maxXp: 12
+      minXp: 72
+      maxXp: 108
       maxPlayerXp: 300000
 spawnerBlocks:
   pack_hunter_fox_redpounce_spawner:

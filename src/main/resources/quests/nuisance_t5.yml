@@ -1,0 +1,55 @@
+quests:
+  quest_nuisance_t5_nuisance_t5_silverfish_voidmote:
+    name: "<gold><bold>Caccia Epica: Nuisance T5 Silverfish Voidmote</bold></gold>"
+    description:
+      - "<gray>Elimina Nuisance T5 Silverfish Voidmote e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 8
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t5_silverfish_voidmote
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t5_nuisance_t5_tadpole_umbra:
+    name: "<gold><bold>Caccia Epica: Nuisance T5 Tadpole Umbra</bold></gold>"
+    description:
+      - "<gray>Elimina Nuisance T5 Tadpole Umbra e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 8
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t5_tadpole_umbra
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t5_use_material_CROSSBOW:
+    name: "<gold><bold>Prova di Uso: Crossbow</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 8
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: CROSSBOW
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

@@ -2,7 +2,10 @@ schemaVersion: 1
 id: earth_heart
 name: earth_heart
 description: Ricetta per creare earth_heart.
-inputs: []
-output:
-  itemId: earth_heart
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: earth_heart

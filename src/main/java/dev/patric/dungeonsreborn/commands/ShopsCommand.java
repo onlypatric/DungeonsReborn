@@ -106,6 +106,13 @@ public final class ShopsCommand {
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shops")));
       return Command.SINGLE_SUCCESS;
     }
+    ShopSpec spec = shops.shop(id);
+    if (spec == null) {
+      CommandMessages.send(sender, "messages.command.shops.unknown",
+          Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, shops.shops().keySet());
+      return Command.SINGLE_SUCCESS;
+    }
     sessions.openShop(player, id, "command");
     return Command.SINGLE_SUCCESS;
   }
@@ -146,6 +153,7 @@ public final class ShopsCommand {
     if (spec == null) {
       CommandMessages.send(sender, "messages.command.shops.unknown",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, shops.shops().keySet());
       return Command.SINGLE_SUCCESS;
     }
     CommandMessages.send(sender, "messages.command.shops.info.header",
@@ -194,6 +202,7 @@ public final class ShopsCommand {
     if (spec == null) {
       CommandMessages.send(sender, "messages.command.shops.unknown",
           Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, shops.shops().keySet());
       return Command.SINGLE_SUCCESS;
     }
     ItemStack item = ShopItems.shopOpenItem(spec, shops);

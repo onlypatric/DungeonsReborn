@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: RABBIT_FOOT
+  type: material
+  material: RABBIT_FOOT
   amount: 1
   meta:
     display-name: "Amuleto della Fortuna"

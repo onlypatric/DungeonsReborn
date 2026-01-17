@@ -2,7 +2,10 @@ schemaVersion: 1
 id: basic_sword_forza_i
 name: <yellow>Tomo della Forza I</yellow>
 description: Ricetta per creare <yellow>Tomo della Forza I</yellow>.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
   itemId: basic_sword_forza_i
   amount: 1

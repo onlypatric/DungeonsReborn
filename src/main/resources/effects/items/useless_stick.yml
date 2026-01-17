@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: STICK
+  type: material
+  material: STICK
   amount: 1
   meta:
     display-name: "Bastone Inutile"

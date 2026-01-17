@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: CLAY_BALL
+  type: material
+  material: CLAY_BALL
   amount: 1
   meta:
     display-name: "Frammento di Terra"

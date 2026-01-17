@@ -2,7 +2,10 @@ schemaVersion: 1
 id: golden_apple
 name: golden_apple
 description: Ricetta per creare golden_apple.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: golden_apple
+  material: GOLDEN_APPLE
   amount: 1

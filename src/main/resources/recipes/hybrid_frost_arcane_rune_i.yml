@@ -3,21 +3,21 @@ id: hybrid_frost_arcane_rune_i
 name: <light_purple>Runa del Silenzio Freddo I</light_purple>
 description: Ricetta per creare <light_purple>Runa del Silenzio Freddo I</light_purple>.
 inputs:
-- type: item
-  itemId: frost_core
+- type: item_id
   amount: 4
-- type: item
-  itemId: arcane_core
+  item: frost_core
+- type: item_id
   amount: 4
+  item: arcane_core
 - type: tag
   tag: dungeonsreborn:shop_token_compressed
   amount: 1
 - type: tag
   tag: dungeonsreborn:shop_token
   amount: 56
-- type: item
-  itemId: book_blank
+- type: item_id
   amount: 1
+  item: book_blank
 output:
   itemId: hybrid_frost_arcane_rune_i
   amount: 1

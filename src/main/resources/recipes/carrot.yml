@@ -2,7 +2,10 @@ schemaVersion: 1
 id: carrot
 name: carrot
 description: Ricetta per creare carrot.
-inputs: []
+inputs:
+- type: material
+  material: BEDROCK
+  amount: 1
 output:
-  itemId: carrot
+  material: CARROT
   amount: 1

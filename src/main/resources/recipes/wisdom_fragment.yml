@@ -2,7 +2,10 @@ schemaVersion: 1
 id: wisdom_fragment
 name: wisdom_fragment
 description: Ricetta per creare wisdom_fragment.
-inputs: []
-output:
-  itemId: wisdom_fragment
+inputs:
+- type: material
+  material: BEDROCK
   amount: 1
+output:
+  amount: 1
+  itemId: wisdom_fragment

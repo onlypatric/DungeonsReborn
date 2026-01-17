@@ -1,6 +1,7 @@
 schemaVersion: 1
 item:
-  type: BONE
+  type: material
+  material: BONE
   amount: 1
   meta:
     display-name: Zanna Ostile

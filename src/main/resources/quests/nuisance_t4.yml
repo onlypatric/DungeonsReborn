@@ -1,0 +1,55 @@
+quests:
+  quest_nuisance_t4_nuisance_t4_silverfish_stormskitter:
+    name: "<gold><bold>Caccia Epica: Nuisance T4 Silverfish Stormskitter</bold></gold>"
+    description:
+      - "<gray>Elimina Nuisance T4 Silverfish Stormskitter e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t4_silverfish_stormskitter
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t4_nuisance_t4_tadpole_thunderfin:
+    name: "<gold><bold>Caccia Epica: Nuisance T4 Tadpole Thunderfin</bold></gold>"
+    description:
+      - "<gray>Elimina Nuisance T4 Tadpole Thunderfin e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: nuisance_t4_tadpole_thunderfin
+        count: 3
+    cooldownSeconds: 0
+    rotation: none
+  quest_nuisance_t4_use_material_COOKED_PORKCHOP:
+    name: "<gold><bold>Prova di Uso: Cooked Porkchop</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1100
+    rewards:
+      xp: 1200
+      tokens: 7
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_PORKCHOP
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

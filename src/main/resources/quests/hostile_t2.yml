@@ -1,0 +1,631 @@
+quests:
+  quest_hostile_t2_hostile_t2_blaze_stalker:
+    name: "<gold><bold>Caccia Epica: Blaze Stalker</bold></gold>"
+    description:
+      - "<gray>Elimina Blaze Stalker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_blaze_stalker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_breeze_harrier:
+    name: "<gold><bold>Caccia Epica: Breeze Harrier</bold></gold>"
+    description:
+      - "<gray>Elimina Breeze Harrier e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_breeze_harrier
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_brute_enforcer:
+    name: "<gold><bold>Caccia Epica: Brute Enforcer</bold></gold>"
+    description:
+      - "<gray>Elimina Brute Enforcer e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_brute_enforcer
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_cave_tox:
+    name: "<gold><bold>Caccia Epica: Cave Tox</bold></gold>"
+    description:
+      - "<gray>Elimina Cave Tox e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_cave_tox
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_creeper_sapper:
+    name: "<gold><bold>Caccia Epica: Creeper Sapper</bold></gold>"
+    description:
+      - "<gray>Elimina Creeper Sapper e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_creeper_sapper
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_elder_sentinel:
+    name: "<gold><bold>Caccia Epica: Elder Sentinel</bold></gold>"
+    description:
+      - "<gray>Elimina Elder Sentinel e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_elder_sentinel
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_ender_ravager:
+    name: "<gold><bold>Caccia Epica: Ender Ravager</bold></gold>"
+    description:
+      - "<gray>Elimina Ender Ravager e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_ender_ravager
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_evoker_reaver:
+    name: "<gold><bold>Caccia Epica: Evoker Reaver</bold></gold>"
+    description:
+      - "<gray>Elimina Evoker Reaver e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_evoker_reaver
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_ghast_raider:
+    name: "<gold><bold>Caccia Epica: Ghast Raider</bold></gold>"
+    description:
+      - "<gray>Elimina Ghast Raider e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_ghast_raider
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_guardian_binder:
+    name: "<gold><bold>Caccia Epica: Guardian Binder</bold></gold>"
+    description:
+      - "<gray>Elimina Guardian Binder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_guardian_binder
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_hex_hag:
+    name: "<gold><bold>Caccia Epica: Hex Hag</bold></gold>"
+    description:
+      - "<gray>Elimina Hex Hag e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_hex_hag
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_hoglin_brut:
+    name: "<gold><bold>Caccia Epica: Hoglin Brut</bold></gold>"
+    description:
+      - "<gray>Elimina Hoglin Brut e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_hoglin_brut
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_illusion_trickster:
+    name: "<gold><bold>Caccia Epica: Illusion Trickster</bold></gold>"
+    description:
+      - "<gray>Elimina Illusion Trickster e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_illusion_trickster
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_magma_brute:
+    name: "<gold><bold>Caccia Epica: Magma Brute</bold></gold>"
+    description:
+      - "<gray>Elimina Magma Brute e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_magma_brute
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_mite_burst:
+    name: "<gold><bold>Caccia Epica: Mite Burst</bold></gold>"
+    description:
+      - "<gray>Elimina Mite Burst e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_mite_burst
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_piglin_marauder:
+    name: "<gold><bold>Caccia Epica: Piglin Marauder</bold></gold>"
+    description:
+      - "<gray>Elimina Piglin Marauder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_piglin_marauder
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_pillager_sharpshot:
+    name: "<gold><bold>Caccia Epica: Pillager Sharpshot</bold></gold>"
+    description:
+      - "<gray>Elimina Pillager Sharpshot e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_pillager_sharpshot
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_ravager_breaker:
+    name: "<gold><bold>Caccia Epica: Ravager Breaker</bold></gold>"
+    description:
+      - "<gray>Elimina Ravager Breaker e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_ravager_breaker
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_shulker_binder:
+    name: "<gold><bold>Caccia Epica: Shulker Binder</bold></gold>"
+    description:
+      - "<gray>Elimina Shulker Binder e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_shulker_binder
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_silver_swarm:
+    name: "<gold><bold>Caccia Epica: Silver Swarm</bold></gold>"
+    description:
+      - "<gray>Elimina Silver Swarm e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_silver_swarm
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_vex_stinger:
+    name: "<gold><bold>Caccia Epica: Vex Stinger</bold></gold>"
+    description:
+      - "<gray>Elimina Vex Stinger e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_vex_stinger
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_vindicator_crusher:
+    name: "<gold><bold>Caccia Epica: Vindicator Crusher</bold></gold>"
+    description:
+      - "<gray>Elimina Vindicator Crusher e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_vindicator_crusher
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_warden_brute:
+    name: "<gold><bold>Caccia Epica: Warden Brute</bold></gold>"
+    description:
+      - "<gray>Elimina Warden Brute e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_warden_brute
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_hostile_t2_web_mauler:
+    name: "<gold><bold>Caccia Epica: Web Mauler</bold></gold>"
+    description:
+      - "<gray>Elimina Web Mauler e dimostra la tua forza.</gray>"
+      - "<gray>Completa la missione per ottenere ricompense.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: kill_mob
+        mob: hostile_t2_web_mauler
+        count: 2
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_itemId_tattered_cloth:
+    name: "<gold><bold>Prova di Uso: Tattered Cloth</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: tattered_cloth
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_material_COOKED_PORKCHOP:
+    name: "<gold><bold>Prova di Uso: Cooked Porkchop</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: COOKED_PORKCHOP
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_material_LEATHER_HELMET:
+    name: "<gold><bold>Prova di Uso: Leather Helmet</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_HELMET
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_material_LEATHER_LEGGINGS:
+    name: "<gold><bold>Prova di Uso: Leather Leggings</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: LEATHER_LEGGINGS
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_itemId_useless_pebble:
+    name: "<gold><bold>Prova di Uso: Useless Pebble</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: useless_pebble
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_itemId_iron_core:
+    name: "<gold><bold>Prova di Uso: Iron Core</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        itemId: iron_core
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_use_material_BREAD:
+    name: "<gold><bold>Prova di Uso: Bread</bold></gold>"
+    description:
+      - "<gray>Usa l'oggetto richiesto e mostra disciplina.</gray>"
+      - "<gray>Mostra la tua padronanza delle risorse.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: use_item
+        material: BREAD
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_craft_basic_multi_tiro_ii:
+    name: "<gold><bold>Forgiatura Mistica: Basic Multi Tiro Ii</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_multi_tiro_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_craft_basic_mace_impeto_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Mace Impeto I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_mace_impeto_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_craft_basic_rune_carica_i:
+    name: "<gold><bold>Forgiatura Mistica: Basic Rune Carica I</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: basic_rune_carica_i
+        count: 1
+    cooldownSeconds: 0
+    rotation: none
+  quest_hostile_t2_craft_elemental_fire_crossbow_ii:
+    name: "<gold><bold>Forgiatura Mistica: Elemental Crossbow Ii</bold></gold>"
+    description:
+      - "<gray>Crea l'oggetto indicato nella fucina.</gray>"
+      - "<gray>La maestria richiede dedizione.</gray>"
+    requirements:
+      level: 1000
+    rewards:
+      xp: 1200
+      tokens: 4
+      compressed: 0
+      pallet: 0
+    objectives:
+      - type: craft_item
+        recipeId: elemental_fire_crossbow_ii
+        count: 1
+    cooldownSeconds: 0
+    rotation: none

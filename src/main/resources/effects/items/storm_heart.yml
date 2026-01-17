@@ -1,11 +1,13 @@
 schemaVersion: 1
 item:
-  type: HEART_OF_THE_SEA
+  type: material
+  material: HEART_OF_THE_SEA
   amount: 1
   meta:
-    display-name: "Cuore di Tempesta"
+    display-name: "<gradient:#6fe2ff:#8f6bff><bold>Cuore di Tempesta</bold></gradient>"
     lore:
       - "Un cuore di tempeste."
+      - "Scatena bagliori quando pulsa."
     enchants:
       DURABILITY: 1
     flags:
