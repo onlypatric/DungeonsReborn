@@ -1,0 +1,130 @@
+schemaVersion: 1
+shapes:
+  sigil_final:
+    points:
+      -
+        x: 0.0
+        y: 0.0
+        z: 0.0
+      -
+        x: 0.7
+        y: 0.1
+        z: 0.2
+      -
+        x: 1.3
+        y: 0.0
+        z: -0.1
+      -
+        x: 0.6
+        y: 0.0
+        z: -0.6
+      -
+        x: 0.2
+        y: 0.0
+        z: 0.7
+    triangles:
+      -
+        -
+          x: 0.0
+          y: 0.0
+          z: 0.0
+        -
+          x: 0.7
+          y: 0.1
+          z: 0.2
+        -
+          x: 1.3
+          y: 0.0
+          z: -0.1
+      -
+        -
+          x: 0.0
+          y: 0.0
+          z: 0.0
+        -
+          x: 1.3
+          y: 0.0
+          z: -0.1
+        -
+          x: 0.6
+          y: 0.0
+          z: -0.6
+      -
+        -
+          x: 0.0
+          y: 0.0
+          z: 0.0
+        -
+          x: 0.6
+          y: 0.0
+          z: -0.6
+        -
+          x: 0.2
+          y: 0.0
+          z: 0.7
+  sigil_path:
+    points:
+      -
+        x: 0.0
+        y: 0.0
+        z: 0.0
+      -
+        x: 0.6
+        y: 0.8
+        z: 0.2
+      -
+        x: 1.2
+        y: 0.3
+        z: 0.7
+      -
+        x: 1.8
+        y: 0.0
+        z: 0.4
+abilities:
+  final_showcase_decaphase:
+    name: "<gradient:#ff6a00:#7fd4ff>Deca‑Fase del Cataclisma</gradient>"
+    description: "<dark_gray>10 fasi, morph multipli, forme custom e cromie dinamiche.</dark_gray>"
+    script:
+      language: dsl-v1
+      source: |-
+        on_cast {
+          delay ticks=0 {
+            particles.morph_box particle=DUST startX=1.8 startY=0.2 startZ=1.8 endX=1.0 endY=0.8 endZ=1.0 step=0.4 durationTicks=100 periodTicks=1 easing=IN_OUT_CUBIC count=1 at=origin color="#ff6a00" size=1.0
+          }
+          delay ticks=120 {
+            particles.morph_sphere_shell particle=DUST startRadius=1.0 endRadius=2.6 durationTicks=100 periodTicks=1 points=64 easing=IN_OUT_CUBIC count=1 at=origin color="#ff6a00" size=1.0
+          }
+          delay ticks=240 {
+            particles.gradient_ring particle=DUST radius=2.4 points=52 startColor="#ff6a00" endColor="#7fd4ff" count=1 at=origin color="#ff6a00" size=1.0
+          }
+          delay ticks=360 {
+            particles.morph_helix particle=DUST startRadius=1.2 endRadius=2.4 length=5.4 turns=6 durationTicks=100 periodTicks=1 points=140 easing=IN_OUT_CUBIC count=1 at=origin color="#ff6a00" size=1.0
+          }
+          delay ticks=480 {
+            particles.gradient_arc particle=DUST radius=2.8 angleDegrees=210 points=64 startColor="#ffd166" endColor="#9b59ff" count=1 color="#ffd166" at=origin forward=1.8 size=1.0
+          }
+          delay ticks=600 {
+            particles.morph_cylinder particle=DUST startRadius=1.0 endRadius=2.2 height=4.8 rings=6 pointsPerRing=32 durationTicks=100 periodTicks=1 easing=IN_OUT_CUBIC count=1 at=origin right=-1.6 color="#ff6a00" size=1.0
+          }
+          delay ticks=720 {
+            particles.gradient_cone particle=DUST radius=2.0 angleDegrees=30 rings=8 pointsPerRing=28 startColor="#7fd4ff" endColor="#ff6a00" count=1 at=origin up=1.4 color="#ff6a00" size=1.0
+          }
+          delay ticks=840 {
+            particles.polygon particle=DUST radius=2.2 sides=8 pointsPerEdge=6 count=1 color="#7fd4ff" size=1.0 at=origin forward=-1.6
+          }
+          delay ticks=960 {
+            particles.mesh particle=DUST shape=sigil_final step=0.35 count=1 offset=0.0 extra=0.0 size=1.0 startColor="#ff6a00" endColor="#ffd166" color="#ff6a00" at=origin
+          }
+          delay ticks=1080 {
+            particles.physics_points particle=DUST count=1 velocityX=0.0 velocityY=0.9 velocityZ=0.0 spread=0.35 gravity=0.09 drag=0.03 steps=32 periodTicks=1 collide=false collisionMode=STOP restitution=0.0 offset=0.0 extra=0.0 p0_x=0 p0_y=0 p0_z=0 p1_x=0.6 p1_y=0.2 p1_z=0.1 p2_x=1.2 p2_y=0 p2_z=0.4 p3_x=0.8 p3_y=0.5 p3_z=0.2 color="#ff6a00" at=origin size=1.0
+          }
+          repeat times=120 every=4 {
+            particles.orbiting_runes particle=END_ROD radius=3.0 copies=10 count=1 at=origin color="#ff6a00" size=1.0
+          }
+          repeat times=60 every=8 {
+            particles.spiral_aura particle=DUST radius=2.4 height=4.8 durationTicks=40 periodTicks=2 count=1 color="#7fd4ff" size=1.0 at=origin
+          }
+          repeat times=40 every=12 {
+            particles.polyline particle=END_ROD step=0.25 count=1 offset=0.0 extra=0.0 size=1.0 shape=sigil_path startColor="#7fd4ff" endColor="#5ad1ff" color="#7fd4ff" at=origin
+          }
+        }

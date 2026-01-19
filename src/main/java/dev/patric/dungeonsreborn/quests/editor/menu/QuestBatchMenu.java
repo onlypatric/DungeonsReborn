@@ -21,7 +21,6 @@ import dev.patric.dungeonsreborn.gui.components.Label;
 import dev.patric.dungeonsreborn.gui.components.TextButton;
 import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import dev.patric.dungeonsreborn.quests.QuestYamlRegistry;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 public final class QuestBatchMenu extends Window {

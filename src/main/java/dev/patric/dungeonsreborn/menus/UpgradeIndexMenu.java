@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeService;
-import dev.patric.dungeonsreborn.effects.upgrades.UpgradeSpellSpec;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeSpec;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeTemplate;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeActivator;

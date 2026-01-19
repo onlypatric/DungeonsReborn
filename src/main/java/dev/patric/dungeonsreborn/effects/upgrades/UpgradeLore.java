@@ -551,40 +551,6 @@ public final class UpgradeLore {
     return String.join(", ", names);
   }
 
-  private static void appendBindTargets(List<Component> lore, UpgradeCompatibilitySpec compatibility) {
-    if (compatibility == null) {
-      return;
-    }
-    lore.add(mmLine(loreText("labels.upgrades.lore.bindsSeparator")));
-    List<String> targets = new ArrayList<>();
-    if (!compatibility.allowItemIds().isEmpty()) {
-      targets.addAll(compatibility.allowItemIds());
-    }
-    if (!compatibility.allowMaterials().isEmpty()) {
-      for (org.bukkit.Material material : compatibility.allowMaterials()) {
-        targets.add(material.name().toLowerCase(java.util.Locale.ROOT));
-      }
-    }
-    if (targets.isEmpty()) {
-      lore.add(mmLine(loreText("labels.upgrades.lore.bindsAny")));
-      return;
-    }
-    lore.add(mmLine(loreText("labels.upgrades.lore.bindsHeader")));
-    int limit = targetLineLimit;
-    int shown = 0;
-    for (String entry : targets) {
-      if (limit > 0 && shown >= limit) {
-        break;
-      }
-      lore.add(mmLine(loreText("labels.upgrades.lore.bindsEntry", "entry", entry)));
-      shown++;
-    }
-    int remaining = targets.size() - shown;
-    if (limit > 0 && remaining > 0) {
-      lore.add(mmLine(loreText("labels.upgrades.lore.bindsMore", "remaining", remaining)));
-    }
-  }
-
   private static String resolveAbilityName(String id) {
     if (id == null || id.isBlank()) {
       return "";
@@ -655,6 +621,7 @@ public final class UpgradeLore {
     return component.decoration(TextDecoration.ITALIC, false);
   }
 
+  @SuppressWarnings("unused")
   private static Component line(String text, NamedTextColor color) {
     return Component.text(text, color).decoration(TextDecoration.ITALIC, false);
   }

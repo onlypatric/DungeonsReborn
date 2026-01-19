@@ -1,9 +1,0 @@
-schemaVersion: 1
-item:
-  type: material
-  material: SAND
-  amount: 1
-  meta:
-    display-name: "Polvere Inutile"
-    lore:
-      - "Polvere senza valore."

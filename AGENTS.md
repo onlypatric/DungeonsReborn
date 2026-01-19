@@ -202,18 +202,37 @@ Crafting:
 --------------------------------------------------------------------------------
 ## Checklists (Only referenced here)
 
-- `docs/checklists/GUI_LIBRARY_INSPECTION_CHECKLIST.md`
-- `docs/checklists/SPELLS_EFFECTS_INGAME_EDITOR_CHECKLIST.md`
-- `docs/checklists/MOB_LIBRARY_CHECKLIST.md`
-- `docs/checklists/MINIONS_CHECKLIST.md`
-- `docs/checklists/PLUGIN_TEST_CHECKLIST.md`
-- `docs/checklists/PARTICLE_CUSTOMIZATION_CHECKLIST.md`
-- `docs/checklists/MINIONS_TEST_CHECKLIST.md`
-- `docs/checklists/CUSTOM_ITEM_CRAFTING_GUI_CHECKLIST.md`
-- `docs/checklists/SPELL_ITEM_UPGRADE_CHECKLIST.md`
-- `docs/checklists/RPG_POLISH_AND_GUI_RETHINK_CHECKLIST.md`
-- `docs/checklists/RPG_PLUGIN_TEST_CHECKLIST.md`
-- `docs/checklists/MOB_DESIGN_CHECKLIST.md`
+- `docs/checklists/MVP/ADVANCEMENTS_CHECKLIST.md`
+- `docs/checklists/MVP/CUSTOM_ITEM_CRAFTING_GUI_CHECKLIST.md`
+- `docs/checklists/MVP/GUI_LIBRARY_CHECKLIST.md`
+- `docs/checklists/MVP/GUI_LIBRARY_INSPECTION_CHECKLIST.md`
+- `docs/checklists/MVP/MINIONS_CHECKLIST.md`
+- `docs/checklists/MVP/MINIONS_TEST_CHECKLIST.md`
+- `docs/checklists/MVP/MOB_DESIGN_CHECKLIST.md`
+- `docs/checklists/MVP/MOB_LIBRARY_CHECKLIST.md`
+- `docs/checklists/MVP/MOB_SPAWNER_CHECKLIST.md`
+- `docs/checklists/MVP/PARTICLE_CUSTOMIZATION_CHECKLIST.md`
+- `docs/checklists/MVP/PLUGIN_TEST_CHECKLIST.md`
+- `docs/checklists/MVP/RPG_PLUGIN_ROADMAP.md`
+- `docs/checklists/MVP/RPG_PLUGIN_TEST_CHECKLIST.md`
+- `docs/checklists/MVP/RPG_POLISH_AND_GUI_RETHINK_CHECKLIST.md`
+- `docs/checklists/MVP/SHOP_GUI_CHECKLIST.md`
+- `docs/checklists/MVP/SPELL_ITEM_UPGRADE_CHECKLIST.md`
+- `docs/checklists/MVP/SPELLS_EFFECTS_INGAME_EDITOR_CHECKLIST.md`
+- `docs/checklists/V1/BOOK_UPGRADES_CHECKLIST.md`
+- `docs/checklists/V1/BOOK_UPGRADES_IMPLEMENTATION.md`
+- `docs/checklists/V1/CLASS_SYSTEM_PLAN.md`
+- `docs/checklists/V1/COMMANDS_AND_ADMIN_REWORK_PLAN.md`
+- `docs/checklists/V1/CUSTOM_XP_MIGRATION_PLAN.md`
+- `docs/checklists/V1/USER_MENU_REWORK_PLAN.md`
+- `docs/checklists/V1/XP_LEVEL_GATING_CHECKLIST.md`
+- `docs/checklists/V2/ULTIMATE_ELEMENTAL_UPGRADES.md`
+- `docs/checklists/V3/PLUGIN_BUILDER_PLAN.md`
+- `docs/checklists/V3/PLUGIN_BUILDER_VFX_UPDATES.md`
+- `docs/checklists/V3/SPELL_ENGINE_EXPANSION_PLAN.md`
+- `docs/checklists/V3/SPELL_ENGINE_VFX_EVOLUTION.md`
+- `docs/checklists/V3/SPELL_ENGINE_VFX_PHASE0.md`
+- `docs/checklists/V3/VFX_CORE_EXPANSION_PLAN.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies

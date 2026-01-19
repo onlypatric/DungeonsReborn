@@ -14,6 +14,39 @@ public final class Frames {
   private Frames() {
   }
 
+  public record FrameSpec(Frame frame, double forward, double right, double up) {
+    public FrameSpec {
+      Objects.requireNonNull(frame, "frame");
+    }
+
+    public Location location(CastContext ctx) {
+      Location base = frame.location(ctx);
+      if (base == null) {
+        return null;
+      }
+      Vector dir = frame.direction(ctx);
+      if (dir == null) {
+        dir = ctx.direction();
+      }
+      if (dir.lengthSquared() < 1e-9) {
+        dir = new Vector(0, 0, 1);
+      }
+      dir = dir.clone().normalize();
+      Vector upVec = new Vector(0, 1, 0);
+      Vector rightVec = dir.clone().crossProduct(upVec);
+      if (rightVec.lengthSquared() < 1e-9) {
+        rightVec = new Vector(1, 0, 0);
+      } else {
+        rightVec.normalize();
+      }
+      Location out = base.clone();
+      out.add(dir.multiply(forward));
+      out.add(rightVec.multiply(right));
+      out.add(0, up, 0);
+      return out;
+    }
+  }
+
   public static Frame castOrigin() {
     return new Frame() {
       @Override
@@ -80,5 +113,8 @@ public final class Frames {
       }
     };
   }
-}
 
+  public static FrameSpec withOffsets(Frame frame, double forward, double right, double up) {
+    return new FrameSpec(frame, forward, right, up);
+  }
+}

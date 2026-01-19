@@ -1324,6 +1324,9 @@ gui:
     upgrades:
       title: <red><bold>Upgrades</bold></red>
       hint: <gray>Merge spell upgrades.</gray>
+    settings:
+      title: <blue><bold>Settings</bold></blue>
+      hint: <gray>Adjust personal visuals.</gray>
     questGivers:
       title: <gold><bold>Quest Givers</bold></gold>
       hint: <gray>Browse quest NPCs.</gray>
@@ -1345,6 +1348,23 @@ gui:
     kits:
       title: <gold><bold>Kits</bold></gold>
       hint: <gray>Claim starter rewards.</gray>
+  cinematics:
+    title: <aqua><bold>Cinematic Settings</bold></aqua>
+    header:
+      title: <gold><bold>Cinematic Effects</bold></gold>
+      hint: <gray>Toggle immersive visuals.</gray>
+    shake:
+      title: <yellow><bold>Screen Shake</bold></yellow>
+      hint: <gray>Short nausea-based shake.</gray>
+    flash:
+      title: <yellow><bold>Screen Flash</bold></yellow>
+      hint: <gray>Flash particles on the camera.</gray>
+    overlay:
+      title: <yellow><bold>UI Overlays</bold></yellow>
+      hint: <gray>Titles and overlays during effects.</gray>
+    toggle:
+      on: <green>Enabled</green>
+      off: <red>Disabled</red>
   questGivers:
     index:
       title: <white><bold>Quest Givers</bold></white>

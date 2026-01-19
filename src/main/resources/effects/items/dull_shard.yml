@@ -1,9 +1,0 @@
-schemaVersion: 1
-item:
-  type: material
-  material: PRISMARINE_SHARD
-  amount: 1
-  meta:
-    display-name: "Scheggia Spenta"
-    lore:
-      - "Una scheggia senza luce."

@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.time.Duration;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -68,6 +69,20 @@ public final class EffectsEngine {
     boolean cancel();
 
     boolean isCancelled();
+  }
+
+  public interface TimelineHandle extends ScheduledHandle {
+    String id();
+
+    long startTick();
+
+    long durationTicks();
+
+    long periodTicks();
+
+    long currentTick();
+
+    void subscribe(Consumer<Long> listener);
   }
 
   private static final class ScheduledTask implements ScheduledHandle {
@@ -153,7 +168,9 @@ public final class EffectsEngine {
   private final Map<UUID, DamageAttribution> lastDamageAttributionByVictim = new ConcurrentHashMap<>();
   private final Map<UUID, java.util.EnumMap<DamageType, ResistanceEntry>> resistancesByEntity = new ConcurrentHashMap<>();
   private final Map<UUID, ReflectEntry> reflectByEntity = new ConcurrentHashMap<>();
+  private final Map<String, GlobalTimeline> timelines = new ConcurrentHashMap<>();
   private final ParticleEngine particles = new ParticleEngine();
+  private final CinematicSettings cinematicSettings = new CinematicSettings();
   private final TypeRegistry<ActionType> actionTypes = new TypeRegistry<>("action");
   private final TypeRegistry<TargeterType<?>> targeterTypes = new TypeRegistry<>("targeter");
   private final TypeRegistry<ConditionType> conditionTypes = new TypeRegistry<>("condition");
@@ -219,6 +236,10 @@ public final class EffectsEngine {
         lastTickNanos);
   }
 
+  public CinematicSettings cinematicSettings() {
+    return cinematicSettings;
+  }
+
   public void shutdown() {
     if (ticker != null) {
       ticker.cancel();
@@ -229,6 +250,114 @@ public final class EffectsEngine {
     cooldownUntilTickByPlayer.clear();
     resistancesByEntity.clear();
     reflectByEntity.clear();
+    timelines.values().forEach(GlobalTimeline::cancel);
+    timelines.clear();
+  }
+
+  private final class GlobalTimeline implements TimelineHandle {
+    private final String id;
+    private final long startTick;
+    private final long durationTicks;
+    private final long periodTicks;
+    private final List<Consumer<Long>> listeners = new CopyOnWriteArrayList<>();
+    private ScheduledHandle handle;
+    private volatile boolean cancelled;
+
+    private GlobalTimeline(String id, long startTick, long durationTicks, long periodTicks) {
+      this.id = id;
+      this.startTick = startTick;
+      this.durationTicks = durationTicks;
+      this.periodTicks = periodTicks;
+    }
+
+    private void start() {
+      handle = runRepeating(0L, periodTicks, () -> {
+        if (cancelled) {
+          return;
+        }
+        long now = tickNow();
+        long elapsed = Math.max(0L, now - startTick);
+        if (elapsed >= durationTicks) {
+          cancel();
+          timelines.remove(id);
+          return;
+        }
+        for (Consumer<Long> listener : listeners) {
+          listener.accept(elapsed);
+        }
+      });
+    }
+
+    @Override
+    public String id() {
+      return id;
+    }
+
+    @Override
+    public long startTick() {
+      return startTick;
+    }
+
+    @Override
+    public long durationTicks() {
+      return durationTicks;
+    }
+
+    @Override
+    public long periodTicks() {
+      return periodTicks;
+    }
+
+    @Override
+    public long currentTick() {
+      return Math.max(0L, tickNow() - startTick);
+    }
+
+    @Override
+    public void subscribe(Consumer<Long> listener) {
+      if (listener != null) {
+        listeners.add(listener);
+      }
+    }
+
+    @Override
+    public boolean cancel() {
+      boolean was = cancelled;
+      cancelled = true;
+      if (handle != null) {
+        handle.cancel();
+      }
+      return !was;
+    }
+
+    @Override
+    public boolean isCancelled() {
+      return cancelled || (handle != null && handle.isCancelled());
+    }
+  }
+
+  public TimelineHandle startTimeline(String id, long durationTicks, long periodTicks) {
+    Objects.requireNonNull(id, "id");
+    if (durationTicks <= 0) {
+      throw new IllegalArgumentException("durationTicks must be > 0");
+    }
+    if (periodTicks <= 0) {
+      throw new IllegalArgumentException("periodTicks must be > 0");
+    }
+    String normalized = normalizeId(id);
+    GlobalTimeline existing = timelines.remove(normalized);
+    if (existing != null) {
+      existing.cancel();
+    }
+    GlobalTimeline timeline = new GlobalTimeline(normalized, tickNow(), durationTicks, periodTicks);
+    timelines.put(normalized, timeline);
+    timeline.start();
+    return timeline;
+  }
+
+  public TimelineHandle timeline(String id) {
+    Objects.requireNonNull(id, "id");
+    return timelines.get(normalizeId(id));
   }
 
   public JavaPlugin plugin() {

@@ -50,4 +50,21 @@ public record CastContext(
   public java.util.Random rng() {
     return state.rng();
   }
+
+  public EffectsEngine.TimelineHandle startTimeline(String id, long durationTicks, long periodTicks) {
+    return engine.startTimeline(id, durationTicks, periodTicks);
+  }
+
+  public EffectsEngine.TimelineHandle timeline(String id) {
+    return engine.timeline(id);
+  }
+
+  public EffectsEngine.TimelineHandle subscribeTimeline(String id, java.util.function.BiConsumer<CastContext, Long> listener) {
+    EffectsEngine.TimelineHandle handle = engine.timeline(id);
+    if (handle == null) {
+      return null;
+    }
+    handle.subscribe(tick -> listener.accept(this, tick));
+    return handle;
+  }
 }

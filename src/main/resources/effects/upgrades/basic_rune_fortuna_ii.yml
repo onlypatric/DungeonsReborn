@@ -1,8 +1,0 @@
-schemaVersion: 1
-id: basic_rune_fortuna_ii
-name: "<yellow>Runa della Fortuna II</yellow>"
-description: |-
-  Versione avanzata della fortuna. Effetti da definire.
-limits:
-  category: basic
-  tier: 2

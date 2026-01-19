@@ -33,6 +33,7 @@ public final class ShopPreviewMenu extends Window {
   private final ShopYamlRegistry shops;
   private final String shopId;
   private final String shopTitle;
+  @SuppressWarnings("unused")
   private final ShopSpec spec;
   private final VirtualList<ShopTradeSpec> list;
 

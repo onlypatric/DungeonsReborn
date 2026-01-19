@@ -1,9 +1,0 @@
-schemaVersion: 1
-item:
-  type: material
-  material: STICK
-  amount: 1
-  meta:
-    display-name: "Bastone Inutile"
-    lore:
-      - "Non serve a nulla."

@@ -1268,6 +1268,9 @@ gui:
     upgrades:
       title: <red><bold>Potenziamenti</bold></red>
       hint: <gray>Unisci potenziamenti incantesimi.</gray>
+    settings:
+      title: <blue><bold>Impostazioni</bold></blue>
+      hint: <gray>Personalizza le visuali.</gray>
     questGivers:
       title: <gold><bold>Mandanti Missioni</bold></gold>
       hint: <gray>Consulta gli NPC missioni.</gray>
@@ -1289,6 +1292,23 @@ gui:
     kits:
       title: <gold><bold>Kit</bold></gold>
       hint: <gray>Riscatta ricompense iniziali.</gray>
+  cinematics:
+    title: <aqua><bold>Impostazioni Cinematiche</bold></aqua>
+    header:
+      title: <gold><bold>Effetti Cinematici</bold></gold>
+      hint: <gray>Attiva o disattiva le visuali.</gray>
+    shake:
+      title: <yellow><bold>Scossa Schermo</bold></yellow>
+      hint: <gray>Breve effetto di nausea.</gray>
+    flash:
+      title: <yellow><bold>Lampo Schermo</bold></yellow>
+      hint: <gray>Lampi di particelle davanti alla vista.</gray>
+    overlay:
+      title: <yellow><bold>Sovraimpressioni UI</bold></yellow>
+      hint: <gray>Titoli e overlay durante gli effetti.</gray>
+    toggle:
+      on: <green>Attivo</green>
+      off: <red>Disattivo</red>
   questGivers:
     index:
       title: <white><bold>Mandanti Missioni</bold></white>

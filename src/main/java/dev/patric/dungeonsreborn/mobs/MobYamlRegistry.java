@@ -296,8 +296,6 @@ public final class MobYamlRegistry {
         previousScriptAbilities.put(id, spec);
       }
     }
-    Map<String, MobEggSpec> previousEggs = new HashMap<>(eggSpecs);
-    Map<String, MobSpawnerBlockSpec> previousBlocks = new HashMap<>(spawnerBlocks);
 
     for (String abilityId : loadedScriptAbilityIds) {
       engine.unregisterAbility(abilityId);

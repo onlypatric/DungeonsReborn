@@ -24,8 +24,6 @@ import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
-import dev.patric.dungeonsreborn.mobs.MobSpawnSpec;
-import dev.patric.dungeonsreborn.mobs.MobSpawnerItems;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
@@ -811,16 +809,6 @@ public final class DungeonsRebornCommand {
       return builder.buildFuture();
     }
     for (String id : registry.ids()) {
-      builder.suggest(id);
-    }
-    return builder.buildFuture();
-  }
-
-  private static CompletableFuture<Suggestions> suggestSpawnIds(MobSpawnManager spawns, SuggestionsBuilder builder) {
-    if (spawns == null) {
-      return builder.buildFuture();
-    }
-    for (String id : spawns.spawnIds()) {
       builder.suggest(id);
     }
     return builder.buildFuture();

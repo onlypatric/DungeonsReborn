@@ -45,6 +45,7 @@ public final class LocaleService {
   private static final Pattern EMPTY_KEY_LINE = Pattern.compile("^\\s*(?:''|\"\"|):\\s*.*$");
   private String defaultLocale = "en";
   private Set<String> enabledLocales = Set.of("en");
+  @SuppressWarnings("unused")
   private Map<UUID, String> playerOverrides = new HashMap<>();
 
   public LocaleService(JavaPlugin plugin, ServiceLogger logger) {

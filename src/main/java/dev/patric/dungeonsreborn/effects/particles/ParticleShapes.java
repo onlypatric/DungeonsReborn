@@ -537,4 +537,79 @@ public final class ParticleShapes {
     line.accept(c010, c110);
     line.accept(c011, c111);
   }
+
+  public static void points(java.util.List<Location> points, java.util.function.Consumer<Location> pointConsumer) {
+    Objects.requireNonNull(points, "points");
+    Objects.requireNonNull(pointConsumer, "pointConsumer");
+    for (Location point : points) {
+      if (point != null) {
+        pointConsumer.accept(point);
+      }
+    }
+  }
+
+  public static void polyline(java.util.List<Location> points, double step,
+      java.util.function.Consumer<Location> pointConsumer) {
+    Objects.requireNonNull(points, "points");
+    Objects.requireNonNull(pointConsumer, "pointConsumer");
+    if (step <= 0) {
+      throw new IllegalArgumentException("step must be > 0");
+    }
+    if (points.size() < 2) {
+      return;
+    }
+    Location tmp = points.getFirst().clone();
+    for (int i = 0; i < points.size() - 1; i++) {
+      Location a0 = points.get(i);
+      Location b0 = points.get(i + 1);
+      if (a0 == null || b0 == null) {
+        continue;
+      }
+      double dx = b0.getX() - a0.getX();
+      double dy = b0.getY() - a0.getY();
+      double dz = b0.getZ() - a0.getZ();
+      double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      int segments = Math.max(1, (int) Math.ceil(len / step));
+      for (int s = 0; s <= segments; s++) {
+        double t = segments == 0 ? 0.0 : (s / (double) segments);
+        tmp.set(a0.getX() + dx * t, a0.getY() + dy * t, a0.getZ() + dz * t);
+        pointConsumer.accept(tmp);
+      }
+    }
+  }
+
+  public static void mesh(java.util.List<Location[]> triangles, double step,
+      java.util.function.Consumer<Location> pointConsumer) {
+    Objects.requireNonNull(triangles, "triangles");
+    Objects.requireNonNull(pointConsumer, "pointConsumer");
+    if (step <= 0) {
+      throw new IllegalArgumentException("step must be > 0");
+    }
+    Location tmp = new Location(null, 0, 0, 0);
+    for (Location[] tri : triangles) {
+      if (tri == null || tri.length < 3 || tri[0] == null || tri[1] == null || tri[2] == null) {
+        continue;
+      }
+      Location a = tri[0];
+      Location b = tri[1];
+      Location c = tri[2];
+      double ab = a.distance(b);
+      double bc = b.distance(c);
+      double ca = c.distance(a);
+      double max = Math.max(ab, Math.max(bc, ca));
+      int div = Math.max(1, (int) Math.ceil(max / step));
+      for (int i = 0; i <= div; i++) {
+        double u = i / (double) div;
+        for (int j = 0; j <= div - i; j++) {
+          double v = j / (double) div;
+          double w = 1.0 - u - v;
+          tmp.set(
+              a.getX() * w + b.getX() * u + c.getX() * v,
+              a.getY() * w + b.getY() * u + c.getY() * v,
+              a.getZ() * w + b.getZ() * u + c.getZ() * v);
+          pointConsumer.accept(tmp);
+        }
+      }
+    }
+  }
 }

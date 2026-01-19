@@ -18,6 +18,7 @@ import dev.patric.dungeonsreborn.dungeons.DungeonSessionManager;
 import dev.patric.dungeonsreborn.dungeons.DungeonYamlRegistry;
 import dev.patric.dungeonsreborn.dungeons.menu.DungeonQueueMenu;
 import dev.patric.dungeonsreborn.dungeons.menu.DungeonStatusMenu;
+import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeService;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
@@ -49,11 +50,13 @@ public final class UserHubMenu extends Window {
   private final DungeonSessionManager dungeonSessions;
   private final QuestService quests;
   private final QuestGiverYamlRegistry questGivers;
+  @SuppressWarnings("unused")
   private final PartyService parties;
   private final CraftingYamlRegistry crafting;
   private final CraftingGuiSessionManager craftingSessions;
   private final AdvancementService advancements;
   private final UpgradeService upgrades;
+  @SuppressWarnings("unused")
   private final KitService kits;
   private final MobRegistry mobs;
   private final EffectsYamlAbilities effects;
@@ -122,6 +125,9 @@ public final class UserHubMenu extends Window {
           }
           new CraftingTestMenu(this.crafting, this.craftingSessions, this.advancements, this.quests).open(player);
         }));
+    setFixed(14, button(Material.COMPARATOR, "gui.userHub.settings.title",
+        "gui.userHub.settings.hint",
+        player -> new CinematicSettingsMenu(EffectsEngine.get().cinematicSettings()).open(player)));
     setFixed(19, button(Material.WRITABLE_BOOK, "gui.userHub.questGivers.title",
         "gui.userHub.questGivers.hint",
         player -> {
@@ -236,12 +242,5 @@ public final class UserHubMenu extends Window {
     }
     String system = Locales.text(player, systemKey);
     player.sendMessage(Locales.component(player, "messages.command.systemUnavailable", Locales.placeholders("system", system)));
-  }
-
-  private void sendComingSoon(Player player) {
-    if (player == null) {
-      return;
-    }
-    player.sendMessage(Locales.component(player, "messages.userHub.comingSoon"));
   }
 }

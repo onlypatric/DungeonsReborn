@@ -1,9 +1,0 @@
-schemaVersion: 1
-item:
-  type: material
-  material: FLINT
-  amount: 1
-  meta:
-    display-name: "Amuleto Spezzato"
-    lore:
-      - "Un amuleto senza potere."

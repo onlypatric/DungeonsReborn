@@ -14,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import dev.patric.dungeonsreborn.locale.Locales;
-import net.kyori.adventure.text.Component;
 
 public final class PartyService {
   public record Result(boolean success, String message) {

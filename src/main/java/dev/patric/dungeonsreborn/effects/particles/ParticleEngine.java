@@ -129,9 +129,9 @@ public final class ParticleEngine {
   public void emit(World world, Location location, Particle particle, int count,
       double offsetX, double offsetY, double offsetZ, double extra, Object data,
       double range, String permission, UUID excludeViewer) {
-    Objects.requireNonNull(world, "world");
-    Objects.requireNonNull(location, "location");
-    Objects.requireNonNull(particle, "particle");
+    if (world == null || location == null || particle == null) {
+      return;
+    }
 
     if (count <= 0) {
       return;

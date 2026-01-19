@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Enumeration;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +46,9 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
 import dev.patric.dungeonsreborn.effects.CastContext;
@@ -96,6 +102,7 @@ import java.time.Duration;
  * This is intentionally limited and lives in the plugin layer (not the core engine).
  */
 public final class EffectsYamlAbilities {
+  private static final int MAX_REPEAT_TIMES = 10000;
   public record ReloadResult(int loadedAbilities, int loadedItemBindings, List<String> errors) {
   }
 
@@ -106,6 +113,9 @@ public final class EffectsYamlAbilities {
   }
 
   private record ItemTemplate(String id, ItemStack item, ItemStack matchBase) {
+  }
+
+  private record ShapeTemplate(List<PointSpec> points, List<List<PointSpec>> triangles) {
   }
 
   private enum VarScope {
@@ -123,6 +133,7 @@ public final class EffectsYamlAbilities {
   private final Set<String> loadedBindingIds = new HashSet<>();
   private final java.util.Map<String, AbilitySpec> overriddenCodeAbilities = new java.util.HashMap<>();
   private java.util.Map<String, java.util.Map<String, Object>> macros = java.util.Collections.emptyMap();
+  private java.util.Map<String, ShapeTemplate> shapeTemplates = java.util.Collections.emptyMap();
   private final Map<UUID, Map<String, Object>> playerVars = new ConcurrentHashMap<>();
   private final Map<UUID, Map<String, Object>> entityVars = new ConcurrentHashMap<>();
   private final java.util.Map<String, dev.patric.dungeonsreborn.effects.actions.Action> yamlActionGraphs = new ConcurrentHashMap<>();
@@ -250,6 +261,7 @@ public final class EffectsYamlAbilities {
     }
 
     Set<String> previousLoadedAbilityIds = new HashSet<>(loadedAbilityIds);
+    @SuppressWarnings("unused")
     Set<String> previousLoadedBindingIds = new HashSet<>(loadedBindingIds);
     Map<String, AbilitySpec> previousYamlAbilities = new HashMap<>();
     for (String id : previousLoadedAbilityIds) {
@@ -258,11 +270,17 @@ public final class EffectsYamlAbilities {
         previousYamlAbilities.put(id, spec);
       }
     }
+    @SuppressWarnings("unused")
     Map<String, AbilitySpec> previousOverridden = new HashMap<>(overriddenCodeAbilities);
+    @SuppressWarnings("unused")
     Map<String, ItemTemplate> previousTemplates = new HashMap<>(itemTemplates);
+    @SuppressWarnings("unused")
     Map<String, dev.patric.dungeonsreborn.effects.actions.Action> previousYamlGraphs = new HashMap<>(yamlActionGraphs);
+    @SuppressWarnings("unused")
     Map<String, java.util.Map<String, Object>> previousMacros = macros;
+    @SuppressWarnings("unused")
     List<InteractBinding> previousInteractBindings = bindings == null ? java.util.List.of() : new ArrayList<>(bindings.interactBindings());
+    @SuppressWarnings("unused")
     List<PassiveBinding> previousPassiveBindings = bindings == null ? java.util.List.of() : new ArrayList<>(bindings.passiveBindings());
 
     // Unregister previously-loaded abilities (YAML owned).
@@ -319,6 +337,7 @@ public final class EffectsYamlAbilities {
 
     java.util.LinkedHashMap<String, AbilityEntry> all = new java.util.LinkedHashMap<>();
     java.util.HashMap<String, java.util.Map<String, Object>> macroTmp = new java.util.HashMap<>();
+    java.util.HashMap<String, ShapeTemplate> shapeTmp = new java.util.HashMap<>();
 
     for (var source : sources) {
       String sourcePath = source.getKey();
@@ -346,6 +365,28 @@ public final class EffectsYamlAbilities {
             continue;
           }
           macroTmp.put(key, normalizeMap(m.getValues(false)));
+        }
+      }
+
+      ConfigurationSection shapesSec = cfg.getConfigurationSection("shapes");
+      if (shapesSec != null) {
+        for (String key : shapesSec.getKeys(false)) {
+          if (shapeTmp.containsKey(key)) {
+            String message = sourcePath + ": shapes." + key + ": duplicate shape id";
+            errors.add(message);
+            effectsLog.warn("[Effects] " + message);
+            continue;
+          }
+          ConfigurationSection s = shapesSec.getConfigurationSection(key);
+          if (s == null) {
+            errors.add(sourcePath + ": shapes." + key + ": must be an object");
+            continue;
+          }
+          try {
+            shapeTmp.put(key, parseShapeTemplate(normalizeMap(s.getValues(false)), sourcePath + ": shapes." + key));
+          } catch (Exception ex) {
+            errors.add(sourcePath + ": shapes." + key + ": " + ex.getMessage());
+          }
         }
       }
 
@@ -380,6 +421,7 @@ public final class EffectsYamlAbilities {
     }
 
     macros = java.util.Collections.unmodifiableMap(macroTmp);
+    shapeTemplates = java.util.Collections.unmodifiableMap(shapeTmp);
 
     warmScriptCache(errors);
     int loaded = 0;
@@ -479,7 +521,7 @@ public final class EffectsYamlAbilities {
   private void ensureDefaultAbilities(File dir) {
     List<String> entries = readResourceIndex("effects/abilities/index.txt");
     if (entries.isEmpty()) {
-      return;
+      entries = listResourceDirectory("effects/abilities/");
     }
     for (String entry : entries) {
       String trimmed = entry.trim();
@@ -495,6 +537,35 @@ public final class EffectsYamlAbilities {
       }
       plugin.saveResource("effects/abilities/" + trimmed, false);
     }
+  }
+
+  private List<String> listResourceDirectory(String prefix) {
+    List<String> entries = new ArrayList<>();
+    try (JarFile jar = new JarFile(resolvePluginJar())) {
+      Enumeration<JarEntry> jarEntries = jar.entries();
+      while (jarEntries.hasMoreElements()) {
+        JarEntry entry = jarEntries.nextElement();
+        String name = entry.getName();
+        if (entry.isDirectory()) {
+          continue;
+        }
+        if (!name.startsWith(prefix)) {
+          continue;
+        }
+        if (!name.endsWith(".yml") && !name.endsWith(".yaml")) {
+          continue;
+        }
+        entries.add(name.substring(prefix.length()));
+      }
+    } catch (Exception ex) {
+      effectsLog.warn("[Effects] Unable to scan " + prefix + ": " + ex.getMessage());
+    }
+    return entries;
+  }
+
+  private File resolvePluginJar() throws Exception {
+    var location = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
+    return new File(location.toURI());
   }
 
   private List<String> readResourceIndex(String path) {
@@ -842,17 +913,20 @@ public final class EffectsYamlAbilities {
       return null;
     }
     String trimmed = raw.trim();
-    Enchantment byName = Enchantment.getByName(trimmed.toUpperCase(Locale.ROOT));
-    if (byName != null) {
-      return byName;
+    NamespacedKey key;
+    if (trimmed.contains(":")) {
+      key = NamespacedKey.fromString(trimmed);
+    } else {
+      String legacy = switch (trimmed.toUpperCase(Locale.ROOT)) {
+        case "DURABILITY" -> "unbreaking";
+        default -> trimmed.toLowerCase(Locale.ROOT);
+      };
+      key = NamespacedKey.minecraft(legacy);
     }
-    NamespacedKey key = trimmed.contains(":")
-        ? NamespacedKey.fromString(trimmed)
-        : NamespacedKey.minecraft(trimmed.toLowerCase(Locale.ROOT));
     if (key == null) {
       return null;
     }
-    return Enchantment.getByKey(key);
+    return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
   }
 
   public LintResult lintScripts() {
@@ -1589,6 +1663,31 @@ public final class EffectsYamlAbilities {
         }
         yield Actions.sequence(actions.toArray(dev.patric.dungeonsreborn.effects.actions.Action[]::new));
       }
+      case "timeline" -> {
+        List<?> list = mapList(node, "entries", path + ".entries");
+        var entries = new java.util.ArrayList<TimelineEntrySpec>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+          Map<String, Object> entry = castMap(list.get(i), path + ".entries[" + i + "]");
+          NumValue at = entry.containsKey("at")
+              ? numValue(entry, "at", 0.0, path + ".entries[" + i + "]")
+              : numValue(entry, "delay", 0.0, path + ".entries[" + i + "]");
+          Map<String, Object> actionNode = castMap(require(entry, "action", path + ".entries[" + i + "].action"),
+              path + ".entries[" + i + "].action");
+          dev.patric.dungeonsreborn.effects.actions.Action action = compileAction(actionNode, path + ".entries[" + i + "].action", includeStack);
+          entries.add(new TimelineEntrySpec(at, action));
+        }
+        yield new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            var resolved = new java.util.ArrayList<Actions.TimelineEntry>(entries.size());
+            for (TimelineEntrySpec spec : entries) {
+              long delayTicks = Math.max(0L, evalLong(spec.delayTicks(), ctx));
+              resolved.add(new Actions.TimelineEntry(delayTicks, spec.action()));
+            }
+            return Actions.timeline(resolved).executeWithHandle(ctx);
+          }
+        };
+      }
       case "delay" -> {
         NumValue ticksValue = numValue(node, "ticks", 0.0, path);
         Map<String, Object> then = castMap(require(node, "then", path + ".then"), path + ".then");
@@ -1881,6 +1980,220 @@ public final class EffectsYamlAbilities {
           }).execute(ctx);
         };
       }
+      case "animate_shape" -> {
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean followCaster = bool(node, "followCaster", true);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        Object raw = pick(node, "shape", "action");
+        if (raw == null) {
+          throw new IllegalArgumentException(path + ".shape: missing shape/action");
+        }
+        Map<String, Object> action = castMap(raw, path + ".shape");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".shape", includeStack);
+        yield ctx -> {
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (duration <= 0 || period <= 0) {
+            return;
+          }
+          Actions.animate(duration, period, easing, (tickCtx, t) -> {
+            CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+            withTempVar(exec, VarScope.CAST, "t", t, () -> tickAction.execute(exec));
+          }).execute(ctx);
+        };
+      }
+      case "motion" -> {
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean followCaster = bool(node, "followCaster", true);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        String modeRaw = string(node, "mode", "translate");
+        dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode mode = parseMotionMode(modeRaw, path + ".mode");
+        NumValue velocityX = numValue(node, "velocityX", 0.0, path);
+        NumValue velocityY = numValue(node, "velocityY", 0.0, path);
+        NumValue velocityZ = numValue(node, "velocityZ", 0.0, path);
+        NumValue radius = numValue(node, "radius", 0.0, path);
+        NumValue turns = numValue(node, "turns", 1.0, path);
+        NumValue vertical = numValue(node, "vertical", 0.0, path);
+        NumValue drift = numValue(node, "drift", 0.0, path);
+        NumValue driftVertical = numValue(node, "driftVertical", 0.0, path);
+        NumValue driftSpeed = numValue(node, "driftSpeed", 0.35, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        Object raw = pick(node, "action", "shape");
+        if (raw == null) {
+          throw new IllegalArgumentException(path + ".action: missing action/shape");
+        }
+        Map<String, Object> action = castMap(raw, path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(action, path + ".action", includeStack);
+        yield ctx -> {
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (duration <= 0 || period <= 0) {
+            return;
+          }
+          Vector vel = new Vector(evalDouble(velocityX, ctx), evalDouble(velocityY, ctx), evalDouble(velocityZ, ctx));
+          double radiusVal = evalDouble(radius, ctx);
+          double turnsVal = evalDouble(turns, ctx);
+          double verticalVal = evalDouble(vertical, ctx);
+          double driftVal = evalDouble(drift, ctx);
+          double driftVerticalVal = evalDouble(driftVertical, ctx);
+          double driftSpeedVal = evalDouble(driftSpeed, ctx);
+          java.util.function.Function<CastContext, Location> base = baseCtx -> {
+            CastContext ref = followCaster ? followCasterContext(baseCtx) : baseCtx;
+            return resolveAtWithOffsets(ref, at, forward, right, up);
+          };
+          dev.patric.dungeonsreborn.effects.actions.Actions.MotionSpec motion =
+              new dev.patric.dungeonsreborn.effects.actions.Actions.MotionSpec(
+                  mode,
+                  base,
+                  vel,
+                  radiusVal,
+                  turnsVal,
+                  verticalVal,
+                  driftVal,
+                  driftVerticalVal,
+                  driftSpeedVal);
+          Actions.motion(duration, period, easing, motion, (tickCtx, t) ->
+              withTempVar(tickCtx, VarScope.CAST, "t", t, () -> inner.execute(tickCtx))).execute(ctx);
+        };
+      }
+      case "state_machine" -> {
+        NumValue chargeTicks = numValue(node, "chargeTicks", 20.0, path);
+        NumValue sustainTicks = numValue(node, "sustainTicks", 40.0, path);
+        NumValue releaseTicks = numValue(node, "releaseTicks", 20.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean followCaster = bool(node, "followCaster", true);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        Object chargeRaw = node.get("charge");
+        Object sustainRaw = node.get("sustain");
+        Object releaseRaw = node.get("release");
+        if (chargeRaw == null && sustainRaw == null && releaseRaw == null) {
+          throw new IllegalArgumentException(path + ": missing charge/sustain/release actions");
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action chargeAction = chargeRaw == null
+            ? Actions.noop()
+            : compileAction(castMap(chargeRaw, path + ".charge"), path + ".charge", includeStack);
+        dev.patric.dungeonsreborn.effects.actions.Action sustainAction = sustainRaw == null
+            ? Actions.noop()
+            : compileAction(castMap(sustainRaw, path + ".sustain"), path + ".sustain", includeStack);
+        dev.patric.dungeonsreborn.effects.actions.Action releaseAction = releaseRaw == null
+            ? Actions.noop()
+            : compileAction(castMap(releaseRaw, path + ".release"), path + ".release", includeStack);
+        yield ctx -> {
+          long charge = Math.max(0L, evalLong(chargeTicks, ctx));
+          long sustain = Math.max(0L, evalLong(sustainTicks, ctx));
+          long release = Math.max(0L, evalLong(releaseTicks, ctx));
+          long period = Math.max(1L, evalLong(periodTicks, ctx));
+          java.util.List<Actions.TimelineEntry> entries = new java.util.ArrayList<>();
+          long at = 0L;
+          if (charge > 0) {
+            dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+              Actions.animate(charge, period, easing, (tickCtx, t) -> {
+                CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                withTempVar(exec, VarScope.CAST, "phase", "charge",
+                    () -> withTempVar(exec, VarScope.CAST, "t", t, () -> chargeAction.execute(exec)));
+              }).execute(stepCtx);
+            };
+            entries.add(new Actions.TimelineEntry(at, step));
+            at += charge;
+          }
+          if (sustain > 0) {
+            dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+              Actions.animate(sustain, period, easing, (tickCtx, t) -> {
+                CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                withTempVar(exec, VarScope.CAST, "phase", "sustain",
+                    () -> withTempVar(exec, VarScope.CAST, "t", t, () -> sustainAction.execute(exec)));
+              }).execute(stepCtx);
+            };
+            entries.add(new Actions.TimelineEntry(at, step));
+            at += sustain;
+          }
+          if (release > 0) {
+            dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+              Actions.animate(release, period, easing, (tickCtx, t) -> {
+                CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                withTempVar(exec, VarScope.CAST, "phase", "release",
+                    () -> withTempVar(exec, VarScope.CAST, "t", t, () -> releaseAction.execute(exec)));
+              }).execute(stepCtx);
+            };
+            entries.add(new Actions.TimelineEntry(at, step));
+          }
+          if (entries.isEmpty()) {
+            return;
+          }
+          Actions.timeline(entries).execute(ctx);
+        };
+      }
+      case "burst" -> {
+        NumValue timesValue = numValue(node, "times", 6.0, path);
+        NumValue spacingValue = numValue(node, "spacingTicks", 0.0, path);
+        NumValue delayValue = numValue(node, "delayTicks", 0.0, path);
+        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(action, path + ".action", includeStack);
+        yield ctx -> {
+          int times = Math.max(1, evalInt(timesValue, ctx));
+          if (times > MAX_REPEAT_TIMES) {
+            if (ctx.engine().isDebugEnabled()) {
+              ctx.engine().debug("burst capped: " + times + " -> " + MAX_REPEAT_TIMES);
+            }
+            times = MAX_REPEAT_TIMES;
+          }
+          long spacing = Math.max(0L, evalLong(spacingValue, ctx));
+          long delay = Math.max(0L, evalLong(delayValue, ctx));
+          java.util.List<Actions.TimelineEntry> entries = new java.util.ArrayList<>(times);
+          for (int i = 0; i < times; i++) {
+            double t = times <= 1 ? 1.0 : i / (double) (times - 1);
+            long at = delay + (spacing * i);
+            dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx ->
+                withTempVar(stepCtx, VarScope.CAST, "t", t, () -> inner.execute(stepCtx));
+            entries.add(new Actions.TimelineEntry(at, step));
+          }
+          Actions.timeline(entries).execute(ctx);
+        };
+      }
+      case "pulse", "loop" -> {
+        NumValue durationTicks = numValue(node, "durationTicks", 60.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 10.0, path);
+        boolean followCaster = bool(node, "followCaster", false);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        yield ctx -> {
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (duration <= 0 || period <= 0) {
+            return;
+          }
+          Actions.animate(duration, period, easing, (tickCtx, t) -> {
+            CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+            withTempVar(exec, VarScope.CAST, "t", t, () -> tickAction.execute(exec));
+          }).execute(ctx);
+        };
+      }
+      case "trail" -> {
+        NumValue durationTicks = numValue(node, "durationTicks", 60.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 2.0, path);
+        boolean followCaster = bool(node, "followCaster", true);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        yield ctx -> {
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (duration <= 0 || period <= 0) {
+            return;
+          }
+          Actions.animate(duration, period, easing, (tickCtx, t) -> {
+            CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+            withTempVar(exec, VarScope.CAST, "t", t, () -> tickAction.execute(exec));
+          }).execute(ctx);
+        };
+      }
       case "animate_realtime", "animate_real_time" -> {
         NumValue durationMillis = numValue(node, "durationMillis", 1000.0, path);
         NumValue periodMillis = numValue(node, "periodMillis", 50.0, path);
@@ -1937,6 +2250,71 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      case "overlay" -> {
+        String rawTitle = requireString(node, "title", path + ".title");
+        String rawSubtitle = node.containsKey("subtitle") ? String.valueOf(node.get("subtitle")) : null;
+        NumValue fadeInTicks = numValue(node, "fadeInTicks", 10.0, path);
+        NumValue stayTicks = numValue(node, "stayTicks", 40.0, path);
+        NumValue fadeOutTicks = numValue(node, "fadeOutTicks", 10.0, path);
+        yield ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          Component title = renderText(rawTitle, ctx);
+          Component subtitle = rawSubtitle == null ? Component.empty() : renderText(rawSubtitle, ctx);
+          long fadeIn = Math.max(0L, evalLong(fadeInTicks, ctx));
+          long stay = Math.max(0L, evalLong(stayTicks, ctx));
+          long fadeOut = Math.max(0L, evalLong(fadeOutTicks, ctx));
+          Actions.overlay(title, subtitle,
+              Duration.ofMillis(fadeIn * 50L),
+              Duration.ofMillis(stay * 50L),
+              Duration.ofMillis(fadeOut * 50L))
+              .execute(new CastContext(ctx.engine(), ctx.plugin(), ctx.castId(), ctx.abilityId(), ctx.tick(), ctx.state(),
+                  player, ctx.origin(), ctx.direction(), ctx.itemInHand()));
+        };
+      }
+      case "screen_shake" -> {
+        NumValue durationTicks = numValue(node, "durationTicks", 20.0, path);
+        NumValue amplifier = numValue(node, "amplifier", 0.0, path);
+        boolean ambient = bool(node, "ambient", false);
+        boolean particles = bool(node, "particles", true);
+        boolean icon = bool(node, "icon", true);
+        yield ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          int duration = Math.max(0, evalInt(durationTicks, ctx));
+          int amp = Math.max(0, evalInt(amplifier, ctx));
+          Actions.screenShake(player, ctx.engine().cinematicSettings(), duration, amp, ambient, particles, icon);
+        };
+      }
+      case "screen_flash" -> {
+        Particle particle = node.containsKey("particle")
+            ? enumValue(node, "particle", Particle.class, path + ".particle")
+            : Particle.FLASH;
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Sound sound = node.containsKey("sound") ? soundValue(node, "sound", path + ".sound") : null;
+        NumValue volume = numValue(node, "volume", 1.0, path);
+        NumValue pitch = numValue(node, "pitch", 1.0, path);
+        yield ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          int emitCount = evalInt(count, ctx);
+          double off = evalDouble(offset, ctx);
+          double ex = evalDouble(extra, ctx);
+          Actions.screenFlash(player, ctx.engine().cinematicSettings(), particle, emitCount, off, ex);
+          if (sound != null) {
+            player.getWorld().playSound(player.getLocation(), sound,
+                (float) evalDouble(volume, ctx), (float) evalDouble(pitch, ctx));
+          }
+        };
+      }
       case "particles_ring" -> {
         Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
         Object data = parseParticleData(node, particle, path);
@@ -1945,10 +2323,13 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
         String atRaw = string(node, "at", "origin");
         final var at = parseAt(atRaw, path + ".at");
         yield ctx -> {
-          Location center = resolveAt(ctx, at);
+          Location center = resolveAtWithOffsets(ctx, at, forward, right, up);
           var pe = ctx.engine().particles();
           if (center.getWorld() == null) {
             return;
@@ -1972,10 +2353,13 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
         String atRaw = string(node, "at", "origin");
         final var at = parseAt(atRaw, path + ".at");
         yield ctx -> {
-          Location loc = resolveAt(ctx, at);
+          Location loc = resolveAtWithOffsets(ctx, at, forward, right, up);
           if (loc.getWorld() == null) {
             return;
           }
@@ -1989,6 +2373,365 @@ public final class EffectsYamlAbilities {
           ctx.engine().particles().emit(loc.getWorld(), loc, particle, emitCount, off, off, off, ex, resolved);
         };
       }
+      case "particles_physics" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 8.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue velocityX = numValue(node, "velocityX", 0.0, path);
+        NumValue velocityY = numValue(node, "velocityY", 0.2, path);
+        NumValue velocityZ = numValue(node, "velocityZ", 0.0, path);
+        NumValue spread = numValue(node, "spread", 0.08, path);
+        NumValue gravity = numValue(node, "gravity", 0.03, path);
+        NumValue drag = numValue(node, "drag", 0.02, path);
+        NumValue steps = numValue(node, "steps", 20.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean collide = bool(node, "collide", false);
+        String collisionModeRaw = string(node, "collisionMode", "STOP");
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+        try {
+          collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(path + ".collisionMode: unknown mode " + collisionModeRaw);
+        }
+        NumValue restitution = numValue(node, "restitution", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final var at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          int emitCount = evalInt(count, ctx);
+          int totalSteps = evalInt(steps, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (emitCount <= 0 || totalSteps <= 0 || period <= 0) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+          Actions.particlesPhysics(
+              particle,
+              emitCount,
+              vel,
+              evalDouble(spread, exec),
+              evalDouble(gravity, exec),
+              evalDouble(drag, exec),
+              totalSteps,
+              period,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              collide,
+              collisionMode,
+              evalDouble(restitution, exec)).execute(exec);
+        };
+      }
+      case "particles_physics_points" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue velocityX = numValue(node, "velocityX", 0.0, path);
+        NumValue velocityY = numValue(node, "velocityY", 0.2, path);
+        NumValue velocityZ = numValue(node, "velocityZ", 0.0, path);
+        NumValue spread = numValue(node, "spread", 0.08, path);
+        NumValue gravity = numValue(node, "gravity", 0.03, path);
+        NumValue drag = numValue(node, "drag", 0.02, path);
+        NumValue steps = numValue(node, "steps", 20.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean collide = bool(node, "collide", false);
+        String collisionModeRaw = string(node, "collisionMode", "STOP");
+        dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+        try {
+          collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(path + ".collisionMode: unknown mode " + collisionModeRaw);
+        }
+        NumValue restitution = numValue(node, "restitution", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<PointSpec> points;
+        if (node.containsKey("points")) {
+          Object rawPoints = node.get("points");
+          if (!(rawPoints instanceof List<?> list) || list.isEmpty()) {
+            throw new IllegalArgumentException(path + ".points: expected a non-empty list");
+          }
+          points = new ArrayList<>(list.size());
+          for (int i = 0; i < list.size(); i++) {
+            points.add(pointSpec(list.get(i), path + ".points[" + i + "]"));
+          }
+        } else if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.points().isEmpty()) {
+            throw new IllegalArgumentException(path + ".shape: unknown or empty shape=" + shapeId);
+          }
+          points = template.points();
+        } else {
+          throw new IllegalArgumentException(path + ": missing points or shape");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+        for (PointSpec p : points) {
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          int totalSteps = evalInt(steps, ctx);
+          long period = evalLong(periodTicks, ctx);
+          if (emitCount <= 0 || totalSteps <= 0 || period <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+          Actions.particlesPhysicsPoints(
+              particle,
+              fns,
+              emitCount,
+              vel,
+              evalDouble(spread, exec),
+              evalDouble(gravity, exec),
+              evalDouble(drag, exec),
+              totalSteps,
+              period,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              collide,
+              collisionMode,
+              evalDouble(restitution, exec)).execute(exec);
+        };
+      }
+      case "particles_physics_polyline" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue step = numValue(node, "step", 0.5, path);
+        NumValue velocityX = numValue(node, "velocityX", 0.0, path);
+        NumValue velocityY = numValue(node, "velocityY", 0.2, path);
+        NumValue velocityZ = numValue(node, "velocityZ", 0.0, path);
+        NumValue spread = numValue(node, "spread", 0.08, path);
+        NumValue gravity = numValue(node, "gravity", 0.03, path);
+        NumValue drag = numValue(node, "drag", 0.02, path);
+        NumValue steps = numValue(node, "steps", 20.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean collide = bool(node, "collide", false);
+        String collisionModeRaw = string(node, "collisionMode", "STOP");
+        dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+        try {
+          collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(path + ".collisionMode: unknown mode " + collisionModeRaw);
+        }
+        NumValue restitution = numValue(node, "restitution", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<PointSpec> points;
+        if (node.containsKey("points")) {
+          Object rawPoints = node.get("points");
+          if (!(rawPoints instanceof List<?> list) || list.isEmpty()) {
+            throw new IllegalArgumentException(path + ".points: expected a non-empty list");
+          }
+          points = new ArrayList<>(list.size());
+          for (int i = 0; i < list.size(); i++) {
+            points.add(pointSpec(list.get(i), path + ".points[" + i + "]"));
+          }
+        } else if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.points().size() < 2) {
+            throw new IllegalArgumentException(path + ".shape: unknown or insufficient shape=" + shapeId);
+          }
+          points = template.points();
+        } else {
+          throw new IllegalArgumentException(path + ": missing points or shape");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+        for (PointSpec p : points) {
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          int totalSteps = evalInt(steps, ctx);
+          long period = evalLong(periodTicks, ctx);
+          double stepValue = evalDouble(step, ctx);
+          if (emitCount <= 0 || totalSteps <= 0 || period <= 0 || stepValue <= 0.0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+          Actions.particlesPhysicsPolyline(
+              particle,
+              fns,
+              stepValue,
+              emitCount,
+              vel,
+              evalDouble(spread, exec),
+              evalDouble(gravity, exec),
+              evalDouble(drag, exec),
+              totalSteps,
+              period,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              collide,
+              collisionMode,
+              evalDouble(restitution, exec)).execute(exec);
+        };
+      }
+      case "particles_physics_mesh" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue step = numValue(node, "step", 0.75, path);
+        NumValue velocityX = numValue(node, "velocityX", 0.0, path);
+        NumValue velocityY = numValue(node, "velocityY", 0.2, path);
+        NumValue velocityZ = numValue(node, "velocityZ", 0.0, path);
+        NumValue spread = numValue(node, "spread", 0.08, path);
+        NumValue gravity = numValue(node, "gravity", 0.03, path);
+        NumValue drag = numValue(node, "drag", 0.02, path);
+        NumValue steps = numValue(node, "steps", 20.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        boolean collide = bool(node, "collide", false);
+        String collisionModeRaw = string(node, "collisionMode", "STOP");
+        dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+        try {
+          collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(path + ".collisionMode: unknown mode " + collisionModeRaw);
+        }
+        NumValue restitution = numValue(node, "restitution", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<List<PointSpec>> triangles;
+        if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.triangles().isEmpty()) {
+            throw new IllegalArgumentException(path + ".shape: unknown or empty triangle shape=" + shapeId);
+          }
+          triangles = template.triangles();
+        } else {
+          throw new IllegalArgumentException(path + ": missing shape with triangles");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location[]>>(triangles.size());
+        for (List<PointSpec> tri : triangles) {
+          if (tri.size() < 3) {
+            continue;
+          }
+          PointSpec a = tri.get(0);
+          PointSpec b = tri.get(1);
+          PointSpec c = tri.get(2);
+          fns.add(ctx -> new Location[] { pointAt(ctx, a), pointAt(ctx, b), pointAt(ctx, c) });
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          int totalSteps = evalInt(steps, ctx);
+          long period = evalLong(periodTicks, ctx);
+          double stepValue = evalDouble(step, ctx);
+          if (emitCount <= 0 || totalSteps <= 0 || period <= 0 || stepValue <= 0.0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+          Actions.particlesPhysicsMesh(
+              particle,
+              fns,
+              stepValue,
+              emitCount,
+              vel,
+              evalDouble(spread, exec),
+              evalDouble(gravity, exec),
+              evalDouble(drag, exec),
+              totalSteps,
+              period,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              collide,
+              collisionMode,
+              evalDouble(restitution, exec)).execute(exec);
+        };
+      }
       case "particles_line" -> {
         Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
         Object data = parseParticleData(node, particle, path);
@@ -1997,6 +2740,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         String targetRaw = string(node, "targetAt", null);
         final AtMode targetAt = targetRaw == null ? null : parseAt(targetRaw, path + ".targetAt");
         yield ctx -> {
@@ -2006,13 +2754,27 @@ public final class EffectsYamlAbilities {
           if (len <= 0.0 || st <= 0.0 || emitCount <= 0) {
             return;
           }
-          CastContext exec = ctx;
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
           if (targetAt != null) {
             Location target = resolveAt(ctx, targetAt);
-            if (target.getWorld() == null || !target.getWorld().equals(ctx.origin().getWorld())) {
+            if (target.getWorld() == null || !target.getWorld().equals(origin.getWorld())) {
               return;
             }
-            Vector direction = target.toVector().subtract(ctx.origin().toVector());
+            Vector direction = target.toVector().subtract(origin.toVector());
             if (direction.lengthSquared() < 1e-9) {
               return;
             }
@@ -2025,8 +2787,20 @@ public final class EffectsYamlAbilities {
                 ctx.tick(),
                 ctx.state(),
                 ctx.caster(),
-                ctx.origin().clone(),
+                origin.clone(),
                 direction,
+                ctx.itemInHand());
+          } else if (at != AtMode.ORIGIN) {
+            exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
                 ctx.itemInHand());
           }
           Actions.particlesLine(particle, len, st, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
@@ -2041,6 +2815,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           double angle = evalDouble(angleDegrees, ctx);
@@ -2049,7 +2828,22 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || angle <= 0.0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_disk" -> {
@@ -2061,6 +2855,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           int ringCount = evalInt(rings, ctx);
@@ -2069,7 +2868,22 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || ringCount <= 0 || ppr <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_sphere_shell" -> {
@@ -2080,6 +2894,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           int pts = evalInt(points, ctx);
@@ -2087,7 +2906,22 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_sphere_filled", "particles_sphere_fill", "particles_sphere" -> {
@@ -2098,6 +2932,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           int pts = evalInt(points, ctx);
@@ -2105,7 +2944,22 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_helix" -> {
@@ -2118,6 +2972,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           double len = evalDouble(length, ctx);
@@ -2127,7 +2986,23 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || len < 0.0 || t <= 0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "particles_bezier" -> {
@@ -2138,6 +3013,11 @@ public final class EffectsYamlAbilities {
         NumValue extra = numValue(node, "extra", 0.0, path);
         NumValue pointsPerMeter = numValue(node, "pointsPerMeter", 6.0, path);
         NumValue maxPoints = numValue(node, "maxPoints", 180.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
 
         PointSpec p0 = pointSpec(node.get("p0"), path + ".p0");
         PointSpec p1 = pointSpec(node.get("p1"), path + ".p1");
@@ -2151,6 +3031,21 @@ public final class EffectsYamlAbilities {
           if (ppm <= 0.0 || maxPts <= 0 || emitCount <= 0) {
             return;
           }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
           Actions.particlesBezier(
               c -> pointAt(c, p0),
               c -> pointAt(c, p1),
@@ -2160,9 +3055,9 @@ public final class EffectsYamlAbilities {
               maxPts,
               particle,
               emitCount,
-              evalDouble(offset, ctx),
-              evalDouble(extra, ctx),
-              data).execute(ctx);
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data).execute(exec);
         };
       }
       case "particles_spline" -> {
@@ -2173,6 +3068,11 @@ public final class EffectsYamlAbilities {
         NumValue extra = numValue(node, "extra", 0.0, path);
         NumValue pointsPerMeter = numValue(node, "pointsPerMeter", 10.0, path);
         NumValue maxPoints = numValue(node, "maxPoints", 320.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
 
         Object rawPoints = require(node, "points", path + ".points");
         if (!(rawPoints instanceof List<?> list) || list.size() < 2) {
@@ -2191,7 +3091,358 @@ public final class EffectsYamlAbilities {
           if (ppm <= 0.0 || maxPts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesSpline(fns, ppm, maxPts, particle, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesSpline(fns, ppm, maxPts, particle, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
+        };
+      }
+      case "particles_points" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from");
+        Object toRaw = pick(node, "endColor", "toColor", "to");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<PointSpec> points;
+        if (node.containsKey("points")) {
+          Object rawPoints = node.get("points");
+          if (!(rawPoints instanceof List<?> list) || list.isEmpty()) {
+            throw new IllegalArgumentException(path + ".points: expected a non-empty list");
+          }
+          points = new ArrayList<>(list.size());
+          for (int i = 0; i < list.size(); i++) {
+            points.add(pointSpec(list.get(i), path + ".points[" + i + "]"));
+          }
+        } else if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.points().isEmpty()) {
+            throw new IllegalArgumentException(path + ".shape: unknown or empty shape=" + shapeId);
+          }
+          points = template.points();
+        } else {
+          throw new IllegalArgumentException(path + ": missing points or shape");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+        for (PointSpec p : points) {
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (emitCount <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (from != null && to != null) {
+            Actions.particlesPointsGradient(
+                particle,
+                fns,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.particlesPoints(
+                particle,
+                fns,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data).execute(exec);
+          }
+        };
+      }
+      case "particles_polyline" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue step = numValue(node, "step", 0.5, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from");
+        Object toRaw = pick(node, "endColor", "toColor", "to");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<PointSpec> points;
+        if (node.containsKey("points")) {
+          Object rawPoints = node.get("points");
+          if (!(rawPoints instanceof List<?> list) || list.size() < 2) {
+            throw new IllegalArgumentException(path + ".points: expected a list with at least 2 point objects");
+          }
+          points = new ArrayList<>(list.size());
+          for (int i = 0; i < list.size(); i++) {
+            points.add(pointSpec(list.get(i), path + ".points[" + i + "]"));
+          }
+        } else if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.points().size() < 2) {
+            throw new IllegalArgumentException(path + ".shape: unknown or insufficient shape=" + shapeId);
+          }
+          points = template.points();
+        } else {
+          throw new IllegalArgumentException(path + ": missing points or shape");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+        for (PointSpec p : points) {
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          double stepValue = evalDouble(step, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (emitCount <= 0 || stepValue <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (from != null && to != null) {
+            Actions.particlesPolylineGradient(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.particlesPolyline(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data).execute(exec);
+          }
+        };
+      }
+      case "particles_mesh" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue step = numValue(node, "step", 0.75, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from");
+        Object toRaw = pick(node, "endColor", "toColor", "to");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        String shapeId = node.containsKey("shape") ? String.valueOf(node.get("shape")) : null;
+        List<List<PointSpec>> triangles = null;
+        if (node.containsKey("triangles")) {
+          Object rawTriangles = node.get("triangles");
+          if (!(rawTriangles instanceof List<?> list) || list.isEmpty()) {
+            throw new IllegalArgumentException(path + ".triangles: expected a non-empty list");
+          }
+          triangles = new ArrayList<>();
+          for (int i = 0; i < list.size(); i++) {
+            Object triRaw = list.get(i);
+            if (!(triRaw instanceof List<?> triList) || triList.size() < 3) {
+              throw new IllegalArgumentException(path + ".triangles[" + i + "]: expected a list with 3 point objects");
+            }
+            var tri = new ArrayList<PointSpec>(3);
+            for (int p = 0; p < 3; p++) {
+              tri.add(pointSpec(triList.get(p), path + ".triangles[" + i + "][" + p + "]"));
+            }
+            triangles.add(tri);
+          }
+        } else if (shapeId != null) {
+          ShapeTemplate template = shapeTemplates.get(shapeId);
+          if (template == null || template.triangles().isEmpty()) {
+            throw new IllegalArgumentException(path + ".shape: unknown or empty triangle shape=" + shapeId);
+          }
+          triangles = template.triangles();
+        } else {
+          throw new IllegalArgumentException(path + ": missing triangles or shape");
+        }
+
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location[]>>(triangles.size());
+        for (List<PointSpec> tri : triangles) {
+          if (tri.size() < 3) {
+            continue;
+          }
+          PointSpec a = tri.get(0);
+          PointSpec b = tri.get(1);
+          PointSpec c = tri.get(2);
+          fns.add(ctx -> new Location[] { pointAt(ctx, a), pointAt(ctx, b), pointAt(ctx, c) });
+        }
+
+        yield ctx -> {
+          int emitCount = evalInt(count, ctx);
+          double stepValue = evalDouble(step, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (emitCount <= 0 || stepValue <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (from != null && to != null) {
+            Actions.particlesMeshGradient(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.particlesMesh(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data).execute(exec);
+          }
+        };
+      }
+      case "preset_spline_motion" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue pointsPerMeter = numValue(node, "pointsPerMeter", 10.0, path);
+        NumValue maxPoints = numValue(node, "maxPoints", 320.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        Object rawPoints = require(node, "points", path + ".points");
+        if (!(rawPoints instanceof List<?> list) || list.size() < 2) {
+          throw new IllegalArgumentException(path + ".points: expected a list with at least 2 point objects");
+        }
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+          PointSpec p = pointSpec(list.get(i), path + ".points[" + i + "]");
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          double ppm = evalDouble(pointsPerMeter, ctx);
+          int maxPts = evalInt(maxPoints, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          if (ppm <= 0.0 || maxPts <= 0 || emitCount <= 0 || duration <= 0 || period <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetSplineMotion(fns, ppm, maxPts, duration, period, easing, particle, emitCount,
+              evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "particles_cone" -> {
@@ -2204,6 +3455,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double len = evalDouble(length, ctx);
           double angle = evalDouble(angleDegrees, ctx);
@@ -2213,8 +3469,23 @@ public final class EffectsYamlAbilities {
           if (len <= 0.0 || angle <= 0.0 || ringCount <= 0 || ppr <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-              .execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "particles_cylinder" -> {
@@ -2227,6 +3498,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           double h = evalDouble(height, ctx);
@@ -2236,8 +3512,23 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || h < 0.0 || ringCount <= 0 || ppr <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-              .execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "particles_box" -> {
@@ -2250,6 +3541,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double xr = evalDouble(xRadius, ctx);
           double yr = evalDouble(yRadius, ctx);
@@ -2259,7 +3555,23 @@ public final class EffectsYamlAbilities {
           if (xr < 0.0 || yr < 0.0 || zr < 0.0 || st <= 0.0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "particles_polygon" -> {
@@ -2271,6 +3583,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           int s = evalInt(sides, ctx);
@@ -2279,8 +3596,23 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || s <= 0 || ppe <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, ctx),
-              evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, exec),
+              evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "preset_shockwave" -> {
@@ -2295,6 +3627,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double start = evalDouble(startRadius, ctx);
           double end = evalDouble(endRadius, ctx);
@@ -2302,11 +3639,1215 @@ public final class EffectsYamlAbilities {
           long period = evalLong(periodTicks, ctx);
           int pts = evalInt(points, ctx);
           int emitCount = evalInt(count, ctx);
+          if (start < 0.0 || end < 0.0 || pts <= 0 || emitCount <= 0 || duration <= 0 || period <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetShockwave(particle, start, end, duration, period, easing, pts, emitCount, evalDouble(offset, exec),
+              evalDouble(extra, exec), data).execute(exec);
+        };
+      }
+      case "preset_morph_ring", "preset_gradient_ring" -> {
+        boolean gradient = type.equals("preset_gradient_ring");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 1.0, path)
+            : numValue(node, "radius", 1.0, path);
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 1.0, path)
+            : numValue(node, "radius", 1.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue points = numValue(node, "points", 32.0, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int pts = evalInt(points, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
           if (start < 0.0 || end < 0.0 || duration <= 0 || period <= 0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.presetShockwave(particle, start, end, duration, period, easing, pts, emitCount, evalDouble(offset, ctx),
-              evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientRing(
+                particle,
+                start,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphRing(
+                particle,
+                start,
+                end,
+                duration,
+                period,
+                easing,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_line", "preset_gradient_line" -> {
+        boolean gradient = type.equals("preset_gradient_line");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseLength = numValue(node, "length", 6.0, path);
+        NumValue startLength = node.containsKey("startLength")
+            ? numValue(node, "startLength", 0.0, path)
+            : baseLength;
+        NumValue endLength = node.containsKey("endLength")
+            ? numValue(node, "endLength", 6.0, path)
+            : baseLength;
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue step = numValue(node, "step", 0.3, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        final AtMode targetAt = node.containsKey("targetAt") ? parseAt(string(node, "targetAt", "origin"), path + ".targetAt") : null;
+        yield ctx -> {
+          double start = evalDouble(startLength, ctx);
+          double end = evalDouble(endLength, ctx);
+          double length = evalDouble(baseLength, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          double stepValue = evalDouble(step, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (stepValue <= 0.0 || emitCount <= 0 || start < 0.0 || end < 0.0 || length < 0.0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (targetAt != null) {
+            Location target = resolveAt(ctx, targetAt);
+            if (target.getWorld() == null || !target.getWorld().equals(origin.getWorld())) {
+              return;
+            }
+            Vector direction = target.toVector().subtract(origin.toVector());
+            if (direction.lengthSquared() < 1e-9) {
+              return;
+            }
+            direction.normalize();
+            exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                direction,
+                ctx.itemInHand());
+          }
+          if (gradient) {
+            Actions.presetGradientLine(
+                particle,
+                length,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphLine(
+                particle,
+                start,
+                end,
+                duration,
+                period,
+                easing,
+                stepValue,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_arc", "preset_gradient_arc" -> {
+        boolean gradient = type.equals("preset_gradient_arc");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 1.2, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 1.2, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 1.2, path)
+            : baseRadius;
+        NumValue angleDegrees = numValue(node, "angleDegrees", 90.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue points = numValue(node, "points", 24.0, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          double angle = evalDouble(angleDegrees, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int pts = evalInt(points, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || angle <= 0.0 || angle > 360.0 || pts <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientArc(
+                particle,
+                base,
+                angle,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphArc(
+                particle,
+                start,
+                end,
+                angle,
+                duration,
+                period,
+                easing,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_disk", "preset_gradient_disk" -> {
+        boolean gradient = type.equals("preset_gradient_disk");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 2.0, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 0.5, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 2.0, path)
+            : baseRadius;
+        NumValue rings = numValue(node, "rings", 6.0, path);
+        NumValue pointsPerRing = numValue(node, "pointsPerRing", 24.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          int ringCount = evalInt(rings, ctx);
+          int perRing = evalInt(pointsPerRing, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || ringCount <= 0 || perRing <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientDisk(
+                particle,
+                base,
+                ringCount,
+                perRing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphDisk(
+                particle,
+                start,
+                end,
+                ringCount,
+                perRing,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_sphere_shell", "preset_gradient_sphere_shell" -> {
+        boolean gradient = type.equals("preset_gradient_sphere_shell");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 2.0, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 1.0, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 2.0, path)
+            : baseRadius;
+        NumValue points = numValue(node, "points", 90.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          int pts = evalInt(points, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || pts <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientSphereShell(
+                particle,
+                base,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphSphereShell(
+                particle,
+                start,
+                end,
+                duration,
+                period,
+                easing,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_sphere_filled", "preset_gradient_sphere_filled" -> {
+        boolean gradient = type.equals("preset_gradient_sphere_filled");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 1.6, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 0.6, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 1.6, path)
+            : baseRadius;
+        NumValue points = numValue(node, "points", 120.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          int pts = evalInt(points, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || pts <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientSphereFilled(
+                particle,
+                base,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphSphereFilled(
+                particle,
+                start,
+                end,
+                duration,
+                period,
+                easing,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_helix", "preset_gradient_helix" -> {
+        boolean gradient = type.equals("preset_gradient_helix");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 1.2, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 0.8, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 1.2, path)
+            : baseRadius;
+        NumValue length = numValue(node, "length", 6.0, path);
+        NumValue turns = numValue(node, "turns", 3.0, path);
+        NumValue points = numValue(node, "points", 90.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          double len = evalDouble(length, ctx);
+          int t = evalInt(turns, ctx);
+          int pts = evalInt(points, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || len < 0.0 || t <= 0 || pts <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientHelix(
+                particle,
+                base,
+                len,
+                t,
+                pts,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphHelix(
+                particle,
+                start,
+                end,
+                len,
+                t,
+                pts,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_cone", "preset_gradient_cone" -> {
+        boolean gradient = type.equals("preset_gradient_cone");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseLength = numValue(node, "length", 6.0, path);
+        NumValue startLength = node.containsKey("startLength")
+            ? numValue(node, "startLength", 2.0, path)
+            : baseLength;
+        NumValue endLength = node.containsKey("endLength")
+            ? numValue(node, "endLength", 6.0, path)
+            : baseLength;
+        NumValue angleDegrees = numValue(node, "angleDegrees", 35.0, path);
+        NumValue rings = numValue(node, "rings", 5.0, path);
+        NumValue pointsPerRing = numValue(node, "pointsPerRing", 28.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseLength, ctx);
+          double start = evalDouble(startLength, ctx);
+          double end = evalDouble(endLength, ctx);
+          double angle = evalDouble(angleDegrees, ctx);
+          int ringCount = evalInt(rings, ctx);
+          int perRing = evalInt(pointsPerRing, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || angle <= 0.0 || angle > 89.0 || ringCount <= 0 || perRing <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientCone(
+                particle,
+                base,
+                angle,
+                ringCount,
+                perRing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphCone(
+                particle,
+                start,
+                end,
+                angle,
+                ringCount,
+                perRing,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_cylinder", "preset_gradient_cylinder" -> {
+        boolean gradient = type.equals("preset_gradient_cylinder");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 2.0, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 1.0, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 2.0, path)
+            : baseRadius;
+        NumValue height = numValue(node, "height", 4.0, path);
+        NumValue rings = numValue(node, "rings", 6.0, path);
+        NumValue pointsPerRing = numValue(node, "pointsPerRing", 28.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          double h = evalDouble(height, ctx);
+          int ringCount = evalInt(rings, ctx);
+          int perRing = evalInt(pointsPerRing, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || h < 0.0 || ringCount <= 0 || perRing <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientCylinder(
+                particle,
+                base,
+                h,
+                ringCount,
+                perRing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphCylinder(
+                particle,
+                start,
+                end,
+                h,
+                ringCount,
+                perRing,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_box", "preset_gradient_box" -> {
+        boolean gradient = type.equals("preset_gradient_box");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseX = numValue(node, "xRadius", 2.0, path);
+        NumValue baseY = numValue(node, "yRadius", 2.0, path);
+        NumValue baseZ = numValue(node, "zRadius", 2.0, path);
+        NumValue startX = node.containsKey("startX")
+            ? numValue(node, "startX", 1.0, path)
+            : baseX;
+        NumValue startY = node.containsKey("startY")
+            ? numValue(node, "startY", 1.0, path)
+            : baseY;
+        NumValue startZ = node.containsKey("startZ")
+            ? numValue(node, "startZ", 1.0, path)
+            : baseZ;
+        NumValue endX = node.containsKey("endX")
+            ? numValue(node, "endX", 2.0, path)
+            : baseX;
+        NumValue endY = node.containsKey("endY")
+            ? numValue(node, "endY", 2.0, path)
+            : baseY;
+        NumValue endZ = node.containsKey("endZ")
+            ? numValue(node, "endZ", 2.0, path)
+            : baseZ;
+        NumValue step = numValue(node, "step", 0.5, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double bx = evalDouble(baseX, ctx);
+          double by = evalDouble(baseY, ctx);
+          double bz = evalDouble(baseZ, ctx);
+          double sx = evalDouble(startX, ctx);
+          double sy = evalDouble(startY, ctx);
+          double sz = evalDouble(startZ, ctx);
+          double ex = evalDouble(endX, ctx);
+          double ey = evalDouble(endY, ctx);
+          double ez = evalDouble(endZ, ctx);
+          double st = evalDouble(step, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (st <= 0.0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientBox(
+                particle,
+                bx,
+                by,
+                bz,
+                st,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphBox(
+                particle,
+                sx,
+                sy,
+                sz,
+                ex,
+                ey,
+                ez,
+                st,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_morph_polygon", "preset_gradient_polygon" -> {
+        boolean gradient = type.equals("preset_gradient_polygon");
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue baseRadius = numValue(node, "radius", 1.6, path);
+        NumValue startRadius = node.containsKey("startRadius")
+            ? numValue(node, "startRadius", 1.0, path)
+            : baseRadius;
+        NumValue endRadius = node.containsKey("endRadius")
+            ? numValue(node, "endRadius", 1.6, path)
+            : baseRadius;
+        NumValue sides = numValue(node, "sides", 6.0, path);
+        NumValue pointsPerEdge = numValue(node, "pointsPerEdge", 5.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 40.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double base = evalDouble(baseRadius, ctx);
+          double start = evalDouble(startRadius, ctx);
+          double end = evalDouble(endRadius, ctx);
+          int s = evalInt(sides, ctx);
+          int ppe = evalInt(pointsPerEdge, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (base < 0.0 || start < 0.0 || end < 0.0 || s <= 2 || ppe <= 0 || emitCount <= 0) {
+            return;
+          }
+          if (!gradient && (duration <= 0 || period <= 0)) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          if (gradient) {
+            Actions.presetGradientPolygon(
+                particle,
+                base,
+                s,
+                ppe,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          } else {
+            Actions.presetMorphPolygon(
+                particle,
+                start,
+                end,
+                s,
+                ppe,
+                duration,
+                period,
+                easing,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          }
+        };
+      }
+      case "preset_gradient_bezier" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue pointsPerMeter = numValue(node, "pointsPerMeter", 6.0, path);
+        NumValue maxPoints = numValue(node, "maxPoints", 180.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        PointSpec p0 = pointSpec(node.get("p0"), path + ".p0");
+        PointSpec p1 = pointSpec(node.get("p1"), path + ".p1");
+        PointSpec p2 = pointSpec(node.get("p2"), path + ".p2");
+        PointSpec p3 = pointSpec(node.get("p3"), path + ".p3");
+
+        yield ctx -> {
+          double ppm = evalDouble(pointsPerMeter, ctx);
+          int maxPts = evalInt(maxPoints, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (ppm <= 0.0 || maxPts <= 0 || emitCount <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetGradientBezier(
+              c -> pointAt(c, p0),
+              c -> pointAt(c, p1),
+              c -> pointAt(c, p2),
+              c -> pointAt(c, p3),
+              ppm,
+              maxPts,
+              particle,
+              emitCount,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              from,
+              to,
+              dustSize).execute(exec);
+        };
+      }
+      case "preset_gradient_spline" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.0, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue pointsPerMeter = numValue(node, "pointsPerMeter", 10.0, path);
+        NumValue maxPoints = numValue(node, "maxPoints", 320.0, path);
+        Object fromRaw = pick(node, "startColor", "fromColor", "from", "color");
+        Object toRaw = pick(node, "endColor", "toColor", "to", "end");
+        org.bukkit.Color from = fromRaw == null ? null : parseColor(fromRaw, path + ".startColor");
+        org.bukkit.Color to = toRaw == null ? null : parseColor(toRaw, path + ".endColor");
+        NumValue size = numValue(node, "size", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+
+        Object rawPoints = require(node, "points", path + ".points");
+        if (!(rawPoints instanceof List<?> list) || list.size() < 2) {
+          throw new IllegalArgumentException(path + ".points: expected a list with at least 2 point objects");
+        }
+        var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+          PointSpec p = pointSpec(list.get(i), path + ".points[" + i + "]");
+          fns.add(ctx -> pointAt(ctx, p));
+        }
+
+        yield ctx -> {
+          double ppm = evalDouble(pointsPerMeter, ctx);
+          int maxPts = evalInt(maxPoints, ctx);
+          int emitCount = evalInt(count, ctx);
+          float dustSize = (float) evalDouble(size, ctx);
+          if (ppm <= 0.0 || maxPts <= 0 || emitCount <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetGradientSpline(
+              fns,
+              ppm,
+              maxPts,
+              particle,
+              emitCount,
+              evalDouble(offset, exec),
+              evalDouble(extra, exec),
+              data,
+              from,
+              to,
+              dustSize).execute(exec);
         };
       }
       case "preset_orbit" -> {
@@ -2320,6 +4861,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.02, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           long duration = evalLong(durationTicks, ctx);
@@ -2329,8 +4875,67 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || duration <= 0 || period <= 0 || c <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.presetOrbit(particle, r, duration, period, easing, c, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-              .execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetOrbit(particle, r, duration, period, easing, c, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
+        };
+      }
+      case "preset_orbiting_runes" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue radius = numValue(node, "radius", 2.6, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 80.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 2.0, path);
+        var easing = easing(node, "easing", EasingId.LINEAR);
+        NumValue copies = numValue(node, "copies", 6.0, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.02, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int c = evalInt(copies, ctx);
+          int emitCount = evalInt(count, ctx);
+          if (r < 0.0 || duration <= 0 || period <= 0 || c <= 0 || emitCount <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetOrbit(particle, r, duration, period, easing, c, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "preset_swirl" -> {
@@ -2345,6 +4950,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double r = evalDouble(radius, ctx);
           double h = evalDouble(height, ctx);
@@ -2355,8 +4965,69 @@ public final class EffectsYamlAbilities {
           if (r < 0.0 || h < 0.0 || duration <= 0 || period <= 0 || pts <= 0 || emitCount <= 0) {
             return;
           }
-          Actions.presetSwirl(particle, r, h, duration, period, easing, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-              .execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetSwirl(particle, r, h, duration, period, easing, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
+        };
+      }
+      case "preset_spiral_aura" -> {
+        Particle particle = enumValue(node, "particle", Particle.class, path + ".particle");
+        Object data = parseParticleData(node, particle, path);
+        NumValue radius = numValue(node, "radius", 1.8, path);
+        NumValue height = numValue(node, "height", 3.5, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 80.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 2.0, path);
+        var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
+        NumValue points = numValue(node, "points", 28.0, path);
+        NumValue count = numValue(node, "count", 1.0, path);
+        NumValue offset = numValue(node, "offset", 0.02, path);
+        NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          double h = evalDouble(height, ctx);
+          long duration = evalLong(durationTicks, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int pts = evalInt(points, ctx);
+          int emitCount = evalInt(count, ctx);
+          if (r < 0.0 || h < 0.0 || duration <= 0 || period <= 0 || pts <= 0 || emitCount <= 0) {
+            return;
+          }
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetSwirl(particle, r, h, duration, period, easing, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+              .execute(exec);
         };
       }
       case "preset_beam_chargeup" -> {
@@ -2373,6 +5044,11 @@ public final class EffectsYamlAbilities {
         NumValue count = numValue(node, "count", 1.0, path);
         NumValue offset = numValue(node, "offset", 0.0, path);
         NumValue extra = numValue(node, "extra", 0.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        String atRaw = string(node, "at", "origin");
+        final AtMode at = parseAt(atRaw, path + ".at");
         yield ctx -> {
           double start = evalDouble(startLength, ctx);
           double end = evalDouble(endLength, ctx);
@@ -2383,8 +5059,23 @@ public final class EffectsYamlAbilities {
           if (start < 0.0 || end < 0.0 || duration <= 0 || period <= 0 || st <= 0.0 || emitCount <= 0) {
             return;
           }
-          Actions.presetBeamChargeup(particle, start, end, duration, period, easing, st, emitCount, evalDouble(offset, ctx),
-              evalDouble(extra, ctx), data).execute(ctx);
+          Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+          if (origin.getWorld() == null) {
+            return;
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              ctx.direction().clone(),
+              ctx.itemInHand());
+          Actions.presetBeamChargeup(particle, start, end, duration, period, easing, st, emitCount, evalDouble(offset, exec),
+              evalDouble(extra, exec), data).execute(exec);
         };
       }
       case "chance" -> {
@@ -3014,6 +5705,9 @@ public final class EffectsYamlAbilities {
       }
       default -> throw new IllegalArgumentException(path + ": unknown action type: " + type);
     };
+  }
+
+  private record TimelineEntrySpec(NumValue delayTicks, dev.patric.dungeonsreborn.effects.actions.Action action) {
   }
 
   private MinionManager resolveMinionManager(String path) {
@@ -3715,6 +6409,241 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      if ("animate_shape".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        boolean followCaster = boolAttr(attrs, "followCaster", true, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(0L, evalLong(durationTicks, ctx));
+            long period = Math.max(0L, evalLong(periodTicks, ctx));
+            if (duration <= 0L || period <= 0L) {
+              return ActionHandle.completed();
+            }
+            return Actions.animate(duration, period, easingFromId(easingId), (tickCtx, t) -> {
+              CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+              withTempVar(exec, VarScope.CAST, "t", t, () -> inner.executeWithHandle(exec));
+            }).executeWithHandle(ctx);
+          }
+        };
+      }
+      if ("motion".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        boolean followCaster = boolAttr(attrs, "followCaster", true, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+        String modeRaw = stringAttr(attrs, "mode", "translate", stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode mode = parseMotionMode(modeRaw, pathAt(stmtToken) + ".mode");
+        NumValue velocityX = numAttr(attrs, "velocityX", 0.0, stmtToken);
+        NumValue velocityY = numAttr(attrs, "velocityY", 0.0, stmtToken);
+        NumValue velocityZ = numAttr(attrs, "velocityZ", 0.0, stmtToken);
+        NumValue radius = numAttr(attrs, "radius", 0.0, stmtToken);
+        NumValue turns = numAttr(attrs, "turns", 1.0, stmtToken);
+        NumValue vertical = numAttr(attrs, "vertical", 0.0, stmtToken);
+        NumValue drift = numAttr(attrs, "drift", 0.0, stmtToken);
+        NumValue driftVertical = numAttr(attrs, "driftVertical", 0.0, stmtToken);
+        NumValue driftSpeed = numAttr(attrs, "driftSpeed", 0.35, stmtToken);
+        String atRaw = attrs.containsKey("frame")
+            ? stringAttr(attrs, "frame", "origin", stmtToken)
+            : stringAttr(attrs, "at", "origin", stmtToken);
+        AtMode at = parseAt(atRaw, pathAt(stmtToken) + ".at");
+        double[] offsets = offsetsFromAttrs(attrs, stmtToken);
+        NumValue forward = numAttr(attrs, "forward", offsets == null ? 0.0 : offsets[0], stmtToken);
+        NumValue right = numAttr(attrs, "right", offsets == null ? 0.0 : offsets[1], stmtToken);
+        NumValue up = numAttr(attrs, "up", offsets == null ? 0.0 : offsets[2], stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(0L, evalLong(durationTicks, ctx));
+            long period = Math.max(0L, evalLong(periodTicks, ctx));
+            if (duration <= 0L || period <= 0L) {
+              return ActionHandle.completed();
+            }
+            Vector vel = new Vector(evalDouble(velocityX, ctx), evalDouble(velocityY, ctx), evalDouble(velocityZ, ctx));
+            double radiusVal = evalDouble(radius, ctx);
+            double turnsVal = evalDouble(turns, ctx);
+            double verticalVal = evalDouble(vertical, ctx);
+            double driftVal = evalDouble(drift, ctx);
+            double driftVerticalVal = evalDouble(driftVertical, ctx);
+            double driftSpeedVal = evalDouble(driftSpeed, ctx);
+            java.util.function.Function<CastContext, Location> base = baseCtx -> {
+              CastContext ref = followCaster ? followCasterContext(baseCtx) : baseCtx;
+              return resolveAtWithOffsets(ref, at, forward, right, up);
+            };
+            dev.patric.dungeonsreborn.effects.actions.Actions.MotionSpec motion =
+                new dev.patric.dungeonsreborn.effects.actions.Actions.MotionSpec(
+                    mode,
+                    base,
+                    vel,
+                    radiusVal,
+                    turnsVal,
+                    verticalVal,
+                    driftVal,
+                    driftVerticalVal,
+                    driftSpeedVal);
+            return Actions.motion(duration, period, easingFromId(easingId), motion, (tickCtx, t) -> {
+              withTempVar(tickCtx, VarScope.CAST, "t", t, () -> inner.executeWithHandle(tickCtx));
+            }).executeWithHandle(ctx);
+          }
+        };
+      }
+      if ("state_machine".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue chargeTicks = numAttr(attrs, "chargeTicks", 20.0, stmtToken);
+        NumValue sustainTicks = numAttr(attrs, "sustainTicks", 40.0, stmtToken);
+        NumValue releaseTicks = numAttr(attrs, "releaseTicks", 20.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        boolean followCaster = boolAttr(attrs, "followCaster", true, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+
+        String chargeName = requireIdent("charge");
+        if (!"charge".equalsIgnoreCase(chargeName)) {
+          throw error(stmtToken, "state_machine requires charge block");
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action chargeAction = parseBlock();
+
+        String sustainName = requireIdent("sustain");
+        if (!"sustain".equalsIgnoreCase(sustainName)) {
+          throw error(stmtToken, "state_machine requires sustain block");
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action sustainAction = parseBlock();
+
+        String releaseName = requireIdent("release");
+        if (!"release".equalsIgnoreCase(releaseName)) {
+          throw error(stmtToken, "state_machine requires release block");
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action releaseAction = parseBlock();
+
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long charge = Math.max(0L, evalLong(chargeTicks, ctx));
+            long sustain = Math.max(0L, evalLong(sustainTicks, ctx));
+            long release = Math.max(0L, evalLong(releaseTicks, ctx));
+            long period = Math.max(1L, evalLong(periodTicks, ctx));
+            java.util.List<Actions.TimelineEntry> entries = new java.util.ArrayList<>();
+            long at = 0L;
+            if (charge > 0) {
+              dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+                Actions.animate(charge, period, easingFromId(easingId), (tickCtx, t) -> {
+                  CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                  withTempVar(exec, VarScope.CAST, "phase", "charge",
+                      () -> withTempVar(exec, VarScope.CAST, "t", t, () -> chargeAction.executeWithHandle(exec)));
+                }).executeWithHandle(stepCtx);
+              };
+              entries.add(new Actions.TimelineEntry(at, step));
+              at += charge;
+            }
+            if (sustain > 0) {
+              dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+                Actions.animate(sustain, period, easingFromId(easingId), (tickCtx, t) -> {
+                  CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                  withTempVar(exec, VarScope.CAST, "phase", "sustain",
+                      () -> withTempVar(exec, VarScope.CAST, "t", t, () -> sustainAction.executeWithHandle(exec)));
+                }).executeWithHandle(stepCtx);
+              };
+              entries.add(new Actions.TimelineEntry(at, step));
+              at += sustain;
+            }
+            if (release > 0) {
+              dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx -> {
+                Actions.animate(release, period, easingFromId(easingId), (tickCtx, t) -> {
+                  CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+                  withTempVar(exec, VarScope.CAST, "phase", "release",
+                      () -> withTempVar(exec, VarScope.CAST, "t", t, () -> releaseAction.executeWithHandle(exec)));
+                }).executeWithHandle(stepCtx);
+              };
+              entries.add(new Actions.TimelineEntry(at, step));
+            }
+            if (entries.isEmpty()) {
+              return ActionHandle.completed();
+            }
+            return Actions.timeline(entries).executeWithHandle(ctx);
+          }
+        };
+      }
+      if ("burst".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue timesValue = numAttr(attrs, "times", 6.0, stmtToken);
+        NumValue spacingValue = numAttr(attrs, "spacingTicks", 0.0, stmtToken);
+        NumValue delayValue = numAttr(attrs, "delayTicks", 0.0, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        return ctx -> {
+          int times = Math.max(1, evalInt(timesValue, ctx));
+          if (times > MAX_REPEAT_TIMES) {
+            if (ctx.engine().isDebugEnabled()) {
+              ctx.engine().debug("dsl burst capped: " + times + " -> " + MAX_REPEAT_TIMES);
+            }
+            times = MAX_REPEAT_TIMES;
+          }
+          long spacing = Math.max(0L, evalLong(spacingValue, ctx));
+          long delay = Math.max(0L, evalLong(delayValue, ctx));
+          java.util.List<Actions.TimelineEntry> entries = new java.util.ArrayList<>(times);
+          for (int i = 0; i < times; i++) {
+            double t = times <= 1 ? 1.0 : i / (double) (times - 1);
+            long at = delay + (spacing * i);
+            dev.patric.dungeonsreborn.effects.actions.Action step = stepCtx ->
+                withTempVar(stepCtx, VarScope.CAST, "t", t, () -> inner.execute(stepCtx));
+            entries.add(new Actions.TimelineEntry(at, step));
+          }
+          Actions.timeline(entries).execute(ctx);
+        };
+      }
+      if ("pulse".equalsIgnoreCase(name) || "loop".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 10.0, stmtToken);
+        boolean followCaster = boolAttr(attrs, "followCaster", false, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(0L, evalLong(durationTicks, ctx));
+            long period = Math.max(0L, evalLong(periodTicks, ctx));
+            if (duration <= 0L || period <= 0L) {
+              return ActionHandle.completed();
+            }
+            return Actions.animate(duration, period, easingFromId(easingId), (tickCtx, t) -> {
+              CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+              withTempVar(exec, VarScope.CAST, "t", t, () -> inner.executeWithHandle(exec));
+            }).executeWithHandle(ctx);
+          }
+        };
+      }
+      if ("trail".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 2.0, stmtToken);
+        boolean followCaster = boolAttr(attrs, "followCaster", true, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(0L, evalLong(durationTicks, ctx));
+            long period = Math.max(0L, evalLong(periodTicks, ctx));
+            if (duration <= 0L || period <= 0L) {
+              return ActionHandle.completed();
+            }
+            return Actions.animate(duration, period, easingFromId(easingId), (tickCtx, t) -> {
+              CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
+              withTempVar(exec, VarScope.CAST, "t", t, () -> inner.executeWithHandle(exec));
+            }).executeWithHandle(ctx);
+          }
+        };
+      }
       if ("animate_realtime".equalsIgnoreCase(name) || "animate_real_time".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue durationMillis = numAttr(attrs, "durationMillis", 1000.0, stmtToken);
@@ -4047,6 +6976,81 @@ public final class EffectsYamlAbilities {
             long fo = Math.max(0L, evalLong(fadeOut, ctx));
             Title.Times times = Title.Times.times(Duration.ofMillis(fi * 50L), Duration.ofMillis(st * 50L), Duration.ofMillis(fo * 50L));
             player.showTitle(Title.title(title, subtitle, times));
+          }
+        };
+      }
+
+      if ("overlay".equalsIgnoreCase(name)) {
+        String rawTitle = requireStringToken("overlay");
+        Map<String, Value> attrs = parseAttributes();
+        String rawSubtitle = attrs.containsKey("subtitle") ? stringValue(attrs.get("subtitle"), "subtitle", stmtToken) : null;
+        NumValue fadeIn = attrs.containsKey("fadeInTicks")
+            ? numFromValue(attrs.get("fadeInTicks"), "fadeInTicks", stmtToken)
+            : numAttr(attrs, "fadeIn", 10.0, stmtToken);
+        NumValue stay = attrs.containsKey("stayTicks")
+            ? numFromValue(attrs.get("stayTicks"), "stayTicks", stmtToken)
+            : numAttr(attrs, "stay", 40.0, stmtToken);
+        NumValue fadeOut = attrs.containsKey("fadeOutTicks")
+            ? numFromValue(attrs.get("fadeOutTicks"), "fadeOutTicks", stmtToken)
+            : numAttr(attrs, "fadeOut", 10.0, stmtToken);
+        return ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          Component title = renderText(rawTitle, ctx);
+          Component subtitle = rawSubtitle == null ? Component.empty() : renderText(rawSubtitle, ctx);
+          long fi = Math.max(0L, evalLong(fadeIn, ctx));
+          long st = Math.max(0L, evalLong(stay, ctx));
+          long fo = Math.max(0L, evalLong(fadeOut, ctx));
+          Actions.overlay(title, subtitle, Duration.ofMillis(fi * 50L), Duration.ofMillis(st * 50L), Duration.ofMillis(fo * 50L))
+              .execute(new CastContext(ctx.engine(), ctx.plugin(), ctx.castId(), ctx.abilityId(), ctx.tick(), ctx.state(),
+                  player, ctx.origin(), ctx.direction(), ctx.itemInHand()));
+        };
+      }
+
+      if ("screen_shake".equalsIgnoreCase(name) || "shake".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 20.0, stmtToken);
+        NumValue amplifier = numAttr(attrs, "amplifier", 0.0, stmtToken);
+        boolean ambient = boolAttr(attrs, "ambient", false, stmtToken);
+        boolean particles = boolAttr(attrs, "particles", true, stmtToken);
+        boolean icon = boolAttr(attrs, "icon", true, stmtToken);
+        return ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          int duration = Math.max(0, evalInt(durationTicks, ctx));
+          int amp = Math.max(0, evalInt(amplifier, ctx));
+          Actions.screenShake(player, ctx.engine().cinematicSettings(), duration, amp, ambient, particles, icon);
+        };
+      }
+
+      if ("screen_flash".equalsIgnoreCase(name) || "flash".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        Particle particle = attrs.containsKey("particle")
+            ? parseParticle(requireAttr(attrs, "particle", stmtToken), stmtToken, "particle")
+            : Particle.FLASH;
+        NumValue count = numAttr(attrs, "count", 1.0, stmtToken);
+        NumValue offset = numAttr(attrs, "offset", 0.0, stmtToken);
+        NumValue extra = numAttr(attrs, "extra", 0.0, stmtToken);
+        Value soundAttr = attrs.get("sound");
+        Sound sound = soundAttr == null ? null : parseSound(soundAttr, stmtToken, "sound");
+        NumValue volume = numAttr(attrs, "volume", 1.0, stmtToken);
+        NumValue pitch = numAttr(attrs, "pitch", 1.0, stmtToken);
+        return ctx -> {
+          Player player = targetPlayer(ctx);
+          if (player == null) {
+            return;
+          }
+          int emitCount = evalInt(count, ctx);
+          double off = evalDouble(offset, ctx);
+          double ex = evalDouble(extra, ctx);
+          Actions.screenFlash(player, ctx.engine().cinematicSettings(), particle, emitCount, off, ex);
+          if (sound != null) {
+            player.getWorld().playSound(player.getLocation(), sound,
+                (float) evalDouble(volume, ctx), (float) evalDouble(pitch, ctx));
           }
         };
       }
@@ -4785,14 +7789,20 @@ public final class EffectsYamlAbilities {
       NumValue count = numAttr(attrs, "count", 1.0, stmtToken);
       NumValue offset = numAttr(attrs, "offset", 0.0, stmtToken);
       NumValue extra = numAttr(attrs, "extra", 0.0, stmtToken);
-      String atRaw = stringAttr(attrs, "at", "origin", stmtToken);
+      String atRaw = attrs.containsKey("frame")
+          ? stringAttr(attrs, "frame", "origin", stmtToken)
+          : stringAttr(attrs, "at", "origin", stmtToken);
       AtMode at = parseAt(atRaw, pathAt(stmtToken) + ".at");
+      double[] offsets = offsetsFromAttrs(attrs, stmtToken);
+      NumValue forward = numAttr(attrs, "forward", offsets == null ? 0.0 : offsets[0], stmtToken);
+      NumValue right = numAttr(attrs, "right", offsets == null ? 0.0 : offsets[1], stmtToken);
+      NumValue up = numAttr(attrs, "up", offsets == null ? 0.0 : offsets[2], stmtToken);
       Object data = particleDataFromAttrs(particle, attrs, stmtToken);
 
       switch (shape) {
         case "point" -> {
           return ctx -> {
-            Location loc = resolveAt(ctx, at);
+            Location loc = resolveAtWithOffsets(ctx, at, forward, right, up);
             if (loc.getWorld() == null) {
               return;
             }
@@ -4809,11 +7819,313 @@ public final class EffectsYamlAbilities {
             ctx.engine().particles().emit(loc.getWorld(), loc, particle, emitCount, off, off, off, ex, resolved);
           };
         }
+        case "physics" -> {
+          NumValue velocityX = numAttr(attrs, "velocityX", 0.0, stmtToken);
+          NumValue velocityY = numAttr(attrs, "velocityY", 0.2, stmtToken);
+          NumValue velocityZ = numAttr(attrs, "velocityZ", 0.0, stmtToken);
+          NumValue spread = numAttr(attrs, "spread", 0.08, stmtToken);
+          NumValue gravity = numAttr(attrs, "gravity", 0.03, stmtToken);
+          NumValue drag = numAttr(attrs, "drag", 0.02, stmtToken);
+          NumValue steps = numAttr(attrs, "steps", 20.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          boolean collide = boolAttr(attrs, "collide", false, stmtToken);
+          String collisionModeRaw = stringAttr(attrs, "collisionMode", "STOP", stmtToken);
+          dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+          try {
+            collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+          } catch (IllegalArgumentException ex) {
+            throw error(stmtToken, "invalid collisionMode=" + collisionModeRaw);
+          }
+          NumValue restitution = numAttr(attrs, "restitution", 0.0, stmtToken);
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            int totalSteps = Math.max(0, evalInt(steps, ctx));
+            long period = evalLong(periodTicks, ctx);
+            if (emitCount == 0 || totalSteps == 0 || period <= 0) {
+              return;
+            }
+            long total = (long) emitCount * totalSteps;
+            if (!consumeParticles(ctx, total)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+            Actions.particlesPhysics(
+                particle,
+                emitCount,
+                vel,
+                evalDouble(spread, exec),
+                evalDouble(gravity, exec),
+                evalDouble(drag, exec),
+                totalSteps,
+                period,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                collide,
+                collisionMode,
+                evalDouble(restitution, exec)).execute(exec);
+          };
+        }
+        case "physics_points" -> {
+          NumValue velocityX = numAttr(attrs, "velocityX", 0.0, stmtToken);
+          NumValue velocityY = numAttr(attrs, "velocityY", 0.2, stmtToken);
+          NumValue velocityZ = numAttr(attrs, "velocityZ", 0.0, stmtToken);
+          NumValue spread = numAttr(attrs, "spread", 0.08, stmtToken);
+          NumValue gravity = numAttr(attrs, "gravity", 0.03, stmtToken);
+          NumValue drag = numAttr(attrs, "drag", 0.02, stmtToken);
+          NumValue steps = numAttr(attrs, "steps", 20.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          boolean collide = boolAttr(attrs, "collide", false, stmtToken);
+          String collisionModeRaw = stringAttr(attrs, "collisionMode", "STOP", stmtToken);
+          dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+          try {
+            collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+          } catch (IllegalArgumentException ex) {
+            throw error(stmtToken, "invalid collisionMode=" + collisionModeRaw);
+          }
+          NumValue restitution = numAttr(attrs, "restitution", 0.0, stmtToken);
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<PointSpec> points;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.points().isEmpty()) {
+              throw error(stmtToken, "unknown or empty shape=" + shapeId);
+            }
+            points = template.points();
+          } else {
+            points = splinePointsFromAttrs(attrs, stmtToken);
+            if (points.isEmpty()) {
+              throw error(stmtToken, "particles.physics_points requires p0_*/p1_* (and more) point attributes");
+            }
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+          for (PointSpec spec : points) {
+            fns.add(ctx -> pointAt(ctx, spec));
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            int totalSteps = Math.max(0, evalInt(steps, ctx));
+            long period = evalLong(periodTicks, ctx);
+            if (emitCount == 0 || totalSteps == 0 || period <= 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+            Actions.particlesPhysicsPoints(
+                particle,
+                fns,
+                emitCount,
+                vel,
+                evalDouble(spread, exec),
+                evalDouble(gravity, exec),
+                evalDouble(drag, exec),
+                totalSteps,
+                period,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                collide,
+                collisionMode,
+                evalDouble(restitution, exec)).execute(exec);
+          };
+        }
+        case "physics_polyline" -> {
+          NumValue step = numAttr(attrs, "step", 0.5, stmtToken);
+          NumValue velocityX = numAttr(attrs, "velocityX", 0.0, stmtToken);
+          NumValue velocityY = numAttr(attrs, "velocityY", 0.2, stmtToken);
+          NumValue velocityZ = numAttr(attrs, "velocityZ", 0.0, stmtToken);
+          NumValue spread = numAttr(attrs, "spread", 0.08, stmtToken);
+          NumValue gravity = numAttr(attrs, "gravity", 0.03, stmtToken);
+          NumValue drag = numAttr(attrs, "drag", 0.02, stmtToken);
+          NumValue steps = numAttr(attrs, "steps", 20.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          boolean collide = boolAttr(attrs, "collide", false, stmtToken);
+          String collisionModeRaw = stringAttr(attrs, "collisionMode", "STOP", stmtToken);
+          dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+          try {
+            collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+          } catch (IllegalArgumentException ex) {
+            throw error(stmtToken, "invalid collisionMode=" + collisionModeRaw);
+          }
+          NumValue restitution = numAttr(attrs, "restitution", 0.0, stmtToken);
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<PointSpec> points;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.points().size() < 2) {
+              throw error(stmtToken, "unknown or insufficient shape=" + shapeId);
+            }
+            points = template.points();
+          } else {
+            points = splinePointsFromAttrs(attrs, stmtToken);
+            if (points.size() < 2) {
+              throw error(stmtToken, "particles.physics_polyline requires p0_*/p1_* (and more) point attributes");
+            }
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+          for (PointSpec spec : points) {
+            fns.add(ctx -> pointAt(ctx, spec));
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            int totalSteps = Math.max(0, evalInt(steps, ctx));
+            long period = evalLong(periodTicks, ctx);
+            double stepValue = evalDouble(step, ctx);
+            if (emitCount == 0 || totalSteps == 0 || period <= 0 || stepValue <= 0.0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+            Actions.particlesPhysicsPolyline(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                vel,
+                evalDouble(spread, exec),
+                evalDouble(gravity, exec),
+                evalDouble(drag, exec),
+                totalSteps,
+                period,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                collide,
+                collisionMode,
+                evalDouble(restitution, exec)).execute(exec);
+          };
+        }
+        case "physics_mesh" -> {
+          NumValue step = numAttr(attrs, "step", 0.75, stmtToken);
+          NumValue velocityX = numAttr(attrs, "velocityX", 0.0, stmtToken);
+          NumValue velocityY = numAttr(attrs, "velocityY", 0.2, stmtToken);
+          NumValue velocityZ = numAttr(attrs, "velocityZ", 0.0, stmtToken);
+          NumValue spread = numAttr(attrs, "spread", 0.08, stmtToken);
+          NumValue gravity = numAttr(attrs, "gravity", 0.03, stmtToken);
+          NumValue drag = numAttr(attrs, "drag", 0.02, stmtToken);
+          NumValue steps = numAttr(attrs, "steps", 20.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          boolean collide = boolAttr(attrs, "collide", false, stmtToken);
+          String collisionModeRaw = stringAttr(attrs, "collisionMode", "STOP", stmtToken);
+          dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode collisionMode;
+          try {
+            collisionMode = dev.patric.dungeonsreborn.effects.particles.ParticlePhysics.CollisionMode.valueOf(collisionModeRaw.toUpperCase(Locale.ROOT));
+          } catch (IllegalArgumentException ex) {
+            throw error(stmtToken, "invalid collisionMode=" + collisionModeRaw);
+          }
+          NumValue restitution = numAttr(attrs, "restitution", 0.0, stmtToken);
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<List<PointSpec>> triangles;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.triangles().isEmpty()) {
+              throw error(stmtToken, "unknown or empty triangle shape=" + shapeId);
+            }
+            triangles = template.triangles();
+          } else {
+            throw error(stmtToken, "particles.physics_mesh requires shape=<id> with triangles");
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location[]>>(triangles.size());
+          for (List<PointSpec> tri : triangles) {
+            if (tri.size() < 3) {
+              continue;
+            }
+            PointSpec a = tri.get(0);
+            PointSpec b = tri.get(1);
+            PointSpec c = tri.get(2);
+            fns.add(ctx -> new Location[] { pointAt(ctx, a), pointAt(ctx, b), pointAt(ctx, c) });
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            int totalSteps = Math.max(0, evalInt(steps, ctx));
+            long period = evalLong(periodTicks, ctx);
+            double stepValue = evalDouble(step, ctx);
+            if (emitCount == 0 || totalSteps == 0 || period <= 0 || stepValue <= 0.0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Vector vel = new Vector(evalDouble(velocityX, exec), evalDouble(velocityY, exec), evalDouble(velocityZ, exec));
+            Actions.particlesPhysicsMesh(
+                particle,
+                fns,
+                stepValue,
+                emitCount,
+                vel,
+                evalDouble(spread, exec),
+                evalDouble(gravity, exec),
+                evalDouble(drag, exec),
+                totalSteps,
+                period,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                collide,
+                collisionMode,
+                evalDouble(restitution, exec)).execute(exec);
+          };
+        }
         case "ring" -> {
           NumValue radius = numAttr(attrs, "radius", 1.0, stmtToken);
           NumValue points = numAttr(attrs, "points", 24.0, stmtToken);
           return ctx -> {
-            Location center = resolveAt(ctx, at);
+            Location center = resolveAtWithOffsets(ctx, at, forward, right, up);
             if (center.getWorld() == null) {
               return;
             }
@@ -4837,6 +8149,1060 @@ public final class EffectsYamlAbilities {
                 });
           };
         }
+        case "morph_ring", "gradient_ring" -> {
+          boolean gradient = "gradient_ring".equals(shape);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 1.0, stmtToken)
+              : numAttr(attrs, "radius", 1.0, stmtToken);
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 1.0, stmtToken)
+              : numAttr(attrs, "radius", 1.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue points = numAttr(attrs, "points", 32.0, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int pts = Math.max(0, evalInt(points, ctx));
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (start < 0.0 || end < 0.0 || pts == 0 || emitCount == 0 || (!gradient && (duration <= 0 || period <= 0))) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if (gradient) {
+              Actions.presetGradientRing(
+                  particle,
+                  start,
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphRing(
+                  particle,
+                  start,
+                  end,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_line", "gradient_line" -> {
+          NumValue baseLength = numAttr(attrs, "length", 6.0, stmtToken);
+          NumValue startLength = attrs.containsKey("startLength")
+              ? numAttr(attrs, "startLength", 0.0, stmtToken)
+              : baseLength;
+          NumValue endLength = attrs.containsKey("endLength")
+              ? numAttr(attrs, "endLength", 6.0, stmtToken)
+              : baseLength;
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue step = numAttr(attrs, "step", 0.3, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          final AtMode targetAt = attrs.containsKey("targetAt")
+              ? parseAt(stringAttr(attrs, "targetAt", "origin", stmtToken), pathAt(stmtToken) + ".targetAt")
+              : null;
+          return ctx -> {
+            double base = evalDouble(baseLength, ctx);
+            double start = evalDouble(startLength, ctx);
+            double end = evalDouble(endLength, ctx);
+            double stepValue = evalDouble(step, ctx);
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || stepValue <= 0.0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_line".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if (targetAt != null) {
+              Location target = resolveAt(ctx, targetAt);
+              if (target.getWorld() == null || !target.getWorld().equals(origin.getWorld())) {
+                return;
+              }
+              Vector direction = target.toVector().subtract(origin.toVector());
+              if (direction.lengthSquared() < 1e-9) {
+                return;
+              }
+              direction.normalize();
+              exec = new CastContext(
+                  ctx.engine(),
+                  ctx.plugin(),
+                  ctx.castId(),
+                  ctx.abilityId(),
+                  ctx.tick(),
+                  ctx.state(),
+                  ctx.caster(),
+                  origin.clone(),
+                  direction,
+                  ctx.itemInHand());
+            }
+            if ("gradient_line".equals(shape)) {
+              Actions.presetGradientLine(
+                  particle,
+                  base,
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphLine(
+                  particle,
+                  start,
+                  end,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_arc", "gradient_arc" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 1.2, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 1.2, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 1.2, stmtToken)
+              : baseRadius;
+          NumValue angleDegrees = numAttr(attrs, "angleDegrees", 90.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue points = numAttr(attrs, "points", 24.0, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            double angle = evalDouble(angleDegrees, ctx);
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int pts = Math.max(0, evalInt(points, ctx));
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || angle <= 0.0 || angle > 360.0 || pts == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_arc".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_arc".equals(shape)) {
+              Actions.presetGradientArc(
+                  particle,
+                  base,
+                  angle,
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphArc(
+                  particle,
+                  start,
+                  end,
+                  angle,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_disk", "gradient_disk" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 2.0, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 0.5, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 2.0, stmtToken)
+              : baseRadius;
+          NumValue rings = numAttr(attrs, "rings", 6.0, stmtToken);
+          NumValue pointsPerRing = numAttr(attrs, "pointsPerRing", 24.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            int ringCount = Math.max(0, evalInt(rings, ctx));
+            int perRing = Math.max(0, evalInt(pointsPerRing, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || ringCount == 0 || perRing == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_disk".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_disk".equals(shape)) {
+              Actions.presetGradientDisk(
+                  particle,
+                  base,
+                  ringCount,
+                  perRing,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphDisk(
+                  particle,
+                  start,
+                  end,
+                  ringCount,
+                  perRing,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_sphere_shell", "gradient_sphere_shell" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 2.0, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 1.0, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 2.0, stmtToken)
+              : baseRadius;
+          NumValue points = numAttr(attrs, "points", 90.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            int pts = Math.max(0, evalInt(points, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || pts == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_sphere_shell".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_sphere_shell".equals(shape)) {
+              Actions.presetGradientSphereShell(
+                  particle,
+                  base,
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphSphereShell(
+                  particle,
+                  start,
+                  end,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_sphere_filled", "gradient_sphere_filled" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 1.6, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 0.6, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 1.6, stmtToken)
+              : baseRadius;
+          NumValue points = numAttr(attrs, "points", 120.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            int pts = Math.max(0, evalInt(points, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || pts == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_sphere_filled".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_sphere_filled".equals(shape)) {
+              Actions.presetGradientSphereFilled(
+                  particle,
+                  base,
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphSphereFilled(
+                  particle,
+                  start,
+                  end,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_helix", "gradient_helix" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 1.2, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 0.8, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 1.2, stmtToken)
+              : baseRadius;
+          NumValue length = numAttr(attrs, "length", 6.0, stmtToken);
+          NumValue turns = numAttr(attrs, "turns", 3.0, stmtToken);
+          NumValue points = numAttr(attrs, "points", 90.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            double len = evalDouble(length, ctx);
+            int t = Math.max(0, evalInt(turns, ctx));
+            int pts = Math.max(0, evalInt(points, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || len < 0.0 || t == 0 || pts == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_helix".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_helix".equals(shape)) {
+              Actions.presetGradientHelix(
+                  particle,
+                  base,
+                  len,
+                  t,
+                  pts,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphHelix(
+                  particle,
+                  start,
+                  end,
+                  len,
+                  t,
+                  pts,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_cone", "gradient_cone" -> {
+          NumValue baseLength = numAttr(attrs, "length", 6.0, stmtToken);
+          NumValue startLength = attrs.containsKey("startLength")
+              ? numAttr(attrs, "startLength", 2.0, stmtToken)
+              : baseLength;
+          NumValue endLength = attrs.containsKey("endLength")
+              ? numAttr(attrs, "endLength", 6.0, stmtToken)
+              : baseLength;
+          NumValue angleDegrees = numAttr(attrs, "angleDegrees", 35.0, stmtToken);
+          NumValue rings = numAttr(attrs, "rings", 5.0, stmtToken);
+          NumValue pointsPerRing = numAttr(attrs, "pointsPerRing", 28.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseLength, ctx);
+            double start = evalDouble(startLength, ctx);
+            double end = evalDouble(endLength, ctx);
+            double angle = evalDouble(angleDegrees, ctx);
+            int ringCount = Math.max(0, evalInt(rings, ctx));
+            int perRing = Math.max(0, evalInt(pointsPerRing, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || angle <= 0.0 || angle > 89.0 || ringCount == 0 || perRing == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_cone".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_cone".equals(shape)) {
+              Actions.presetGradientCone(
+                  particle,
+                  base,
+                  angle,
+                  ringCount,
+                  perRing,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphCone(
+                  particle,
+                  start,
+                  end,
+                  angle,
+                  ringCount,
+                  perRing,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_cylinder", "gradient_cylinder" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 2.0, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 1.0, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 2.0, stmtToken)
+              : baseRadius;
+          NumValue height = numAttr(attrs, "height", 4.0, stmtToken);
+          NumValue rings = numAttr(attrs, "rings", 6.0, stmtToken);
+          NumValue pointsPerRing = numAttr(attrs, "pointsPerRing", 28.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            double h = evalDouble(height, ctx);
+            int ringCount = Math.max(0, evalInt(rings, ctx));
+            int perRing = Math.max(0, evalInt(pointsPerRing, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || h < 0.0 || ringCount == 0 || perRing == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_cylinder".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_cylinder".equals(shape)) {
+              Actions.presetGradientCylinder(
+                  particle,
+                  base,
+                  h,
+                  ringCount,
+                  perRing,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphCylinder(
+                  particle,
+                  start,
+                  end,
+                  h,
+                  ringCount,
+                  perRing,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_box", "gradient_box" -> {
+          NumValue baseX = numAttr(attrs, "xRadius", 2.0, stmtToken);
+          NumValue baseY = numAttr(attrs, "yRadius", 2.0, stmtToken);
+          NumValue baseZ = numAttr(attrs, "zRadius", 2.0, stmtToken);
+          NumValue startX = attrs.containsKey("startX")
+              ? numAttr(attrs, "startX", 1.0, stmtToken)
+              : baseX;
+          NumValue startY = attrs.containsKey("startY")
+              ? numAttr(attrs, "startY", 1.0, stmtToken)
+              : baseY;
+          NumValue startZ = attrs.containsKey("startZ")
+              ? numAttr(attrs, "startZ", 1.0, stmtToken)
+              : baseZ;
+          NumValue endX = attrs.containsKey("endX")
+              ? numAttr(attrs, "endX", 2.0, stmtToken)
+              : baseX;
+          NumValue endY = attrs.containsKey("endY")
+              ? numAttr(attrs, "endY", 2.0, stmtToken)
+              : baseY;
+          NumValue endZ = attrs.containsKey("endZ")
+              ? numAttr(attrs, "endZ", 2.0, stmtToken)
+              : baseZ;
+          NumValue step = numAttr(attrs, "step", 0.5, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double bx = evalDouble(baseX, ctx);
+            double by = evalDouble(baseY, ctx);
+            double bz = evalDouble(baseZ, ctx);
+            double sx = evalDouble(startX, ctx);
+            double sy = evalDouble(startY, ctx);
+            double sz = evalDouble(startZ, ctx);
+            double ex = evalDouble(endX, ctx);
+            double ey = evalDouble(endY, ctx);
+            double ez = evalDouble(endZ, ctx);
+            double st = evalDouble(step, ctx);
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (st <= 0.0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_box".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_box".equals(shape)) {
+              Actions.presetGradientBox(
+                  particle,
+                  bx,
+                  by,
+                  bz,
+                  st,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphBox(
+                  particle,
+                  sx,
+                  sy,
+                  sz,
+                  ex,
+                  ey,
+                  ez,
+                  st,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "morph_polygon", "gradient_polygon" -> {
+          NumValue baseRadius = numAttr(attrs, "radius", 1.6, stmtToken);
+          NumValue startRadius = attrs.containsKey("startRadius")
+              ? numAttr(attrs, "startRadius", 1.0, stmtToken)
+              : baseRadius;
+          NumValue endRadius = attrs.containsKey("endRadius")
+              ? numAttr(attrs, "endRadius", 1.6, stmtToken)
+              : baseRadius;
+          NumValue sides = numAttr(attrs, "sides", 6.0, stmtToken);
+          NumValue pointsPerEdge = numAttr(attrs, "pointsPerEdge", 5.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          return ctx -> {
+            double base = evalDouble(baseRadius, ctx);
+            double start = evalDouble(startRadius, ctx);
+            double end = evalDouble(endRadius, ctx);
+            int s = Math.max(0, evalInt(sides, ctx));
+            int ppe = Math.max(0, evalInt(pointsPerEdge, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (base < 0.0 || start < 0.0 || end < 0.0 || s <= 2 || ppe == 0 || emitCount == 0) {
+              return;
+            }
+            if ("morph_polygon".equals(shape) && (duration <= 0 || period <= 0)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if ("gradient_polygon".equals(shape)) {
+              Actions.presetGradientPolygon(
+                  particle,
+                  base,
+                  s,
+                  ppe,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.presetMorphPolygon(
+                  particle,
+                  start,
+                  end,
+                  s,
+                  ppe,
+                  duration,
+                  period,
+                  easingFromId(easingId),
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            }
+          };
+        }
+        case "gradient_bezier" -> {
+          NumValue pointsPerMeter = numAttr(attrs, "pointsPerMeter", 6.0, stmtToken);
+          NumValue maxPoints = numAttr(attrs, "maxPoints", 180.0, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          PointSpec p0 = pointSpecFromAttrs(attrs, "p0", stmtToken, true);
+          PointSpec p1 = pointSpecFromAttrs(attrs, "p1", stmtToken, true);
+          PointSpec p2 = pointSpecFromAttrs(attrs, "p2", stmtToken, true);
+          PointSpec p3 = pointSpecFromAttrs(attrs, "p3", stmtToken, true);
+          return ctx -> {
+            double ppm = evalDouble(pointsPerMeter, ctx);
+            int maxPts = Math.max(0, evalInt(maxPoints, ctx));
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (ppm <= 0.0 || maxPts == 0 || emitCount == 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.presetGradientBezier(
+                c -> pointAt(c, p0),
+                c -> pointAt(c, p1),
+                c -> pointAt(c, p2),
+                c -> pointAt(c, p3),
+                ppm,
+                maxPts,
+                particle,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          };
+        }
+        case "gradient_spline" -> {
+          NumValue pointsPerMeter = numAttr(attrs, "pointsPerMeter", 10.0, stmtToken);
+          NumValue maxPoints = numAttr(attrs, "maxPoints", 320.0, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          java.util.List<PointSpec> points = splinePointsFromAttrs(attrs, stmtToken);
+          return ctx -> {
+            double ppm = evalDouble(pointsPerMeter, ctx);
+            int maxPts = Math.max(0, evalInt(maxPoints, ctx));
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (ppm <= 0.0 || maxPts == 0 || emitCount == 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+            for (PointSpec point : points) {
+              fns.add(c -> pointAt(c, point));
+            }
+            Actions.presetGradientSpline(
+                fns,
+                ppm,
+                maxPts,
+                particle,
+                emitCount,
+                evalDouble(offset, exec),
+                evalDouble(extra, exec),
+                data,
+                from,
+                to,
+                dustSize).execute(exec);
+          };
+        }
         case "line" -> {
           NumValue length = numAttr(attrs, "length", 10.0, stmtToken);
           NumValue step = numAttr(attrs, "step", 0.35, stmtToken);
@@ -4855,13 +9221,27 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            CastContext exec = ctx;
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
             if (targetAt != null) {
               Location target = resolveAt(ctx, targetAt);
-              if (target.getWorld() == null || !target.getWorld().equals(ctx.origin().getWorld())) {
+              if (target.getWorld() == null || !target.getWorld().equals(origin.getWorld())) {
                 return;
               }
-              Vector direction = target.toVector().subtract(ctx.origin().toVector());
+              Vector direction = target.toVector().subtract(origin.toVector());
               if (direction.lengthSquared() < 1e-9) {
                 return;
               }
@@ -4874,7 +9254,7 @@ public final class EffectsYamlAbilities {
                   ctx.tick(),
                   ctx.state(),
                   ctx.caster(),
-                  ctx.origin().clone(),
+                  origin.clone(),
                   direction,
                   ctx.itemInHand());
             }
@@ -4897,7 +9277,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesArc(particle, r, angle, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "disk" -> {
@@ -4921,7 +9316,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesDisk(particle, r, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "sphere_shell", "sphere-shell", "sphere" -> {
@@ -4938,7 +9348,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesSphereShell(particle, r, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "sphere_filled", "sphere-filled", "sphere_fill" -> {
@@ -4955,7 +9380,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesSphereFilled(particle, r, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "helix" -> {
@@ -4976,7 +9416,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesHelix(particle, r, len, t, pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "bezier" -> {
@@ -4997,24 +9452,21 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            CastContext exec = ctx;
-            if (at != AtMode.ORIGIN) {
-              Location origin = resolveAt(ctx, at);
-              if (origin.getWorld() == null) {
-                return;
-              }
-              exec = new CastContext(
-                  ctx.engine(),
-                  ctx.plugin(),
-                  ctx.castId(),
-                  ctx.abilityId(),
-                  ctx.tick(),
-                  ctx.state(),
-                  ctx.caster(),
-                  origin.clone(),
-                  ctx.direction().clone(),
-                  ctx.itemInHand());
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
             }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
             Actions.particlesBezier(
                 c -> pointAt(c, p0),
                 c -> pointAt(c, p1),
@@ -5048,26 +9500,63 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            CastContext exec = ctx;
-            if (at != AtMode.ORIGIN) {
-              Location origin = resolveAt(ctx, at);
-              if (origin.getWorld() == null) {
-                return;
-              }
-              exec = new CastContext(
-                  ctx.engine(),
-                  ctx.plugin(),
-                  ctx.castId(),
-                  ctx.abilityId(),
-                  ctx.tick(),
-                  ctx.state(),
-                  ctx.caster(),
-                  origin.clone(),
-                  ctx.direction().clone(),
-                  ctx.itemInHand());
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
             }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
             Actions.particlesSpline(fns, ppm, maxPts, particle, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
                 .execute(exec);
+          };
+        }
+        case "spline_motion" -> {
+          NumValue pointsPerMeter = numAttr(attrs, "pointsPerMeter", 10.0, stmtToken);
+          NumValue maxPoints = numAttr(attrs, "maxPoints", 320.0, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", 40.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+          String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+          EasingId easingId = parseEasing(easingRaw, stmtToken);
+          java.util.List<PointSpec> points = splinePointsFromAttrs(attrs, stmtToken);
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+          for (PointSpec spec : points) {
+            fns.add(ctx -> pointAt(ctx, spec));
+          }
+          return ctx -> {
+            double ppm = evalDouble(pointsPerMeter, ctx);
+            int maxPts = Math.max(0, evalInt(maxPoints, ctx));
+            long duration = evalLong(durationTicks, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            if (ppm <= 0.0 || maxPts == 0 || emitCount == 0 || duration <= 0 || period <= 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.presetSplineMotion(fns, ppm, maxPts, duration, period, easingFromId(easingId), particle, emitCount,
+                evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "cone" -> {
@@ -5089,8 +9578,23 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-                .execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesCone(particle, len, angle, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+                .execute(exec);
           };
         }
         case "cylinder" -> {
@@ -5112,8 +9616,23 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data)
-                .execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesCylinder(particle, r, h, ringCount, ppr, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data)
+                .execute(exec);
           };
         }
         case "box" -> {
@@ -5138,7 +9657,22 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesBox(particle, xr, yr, zr, st, emitCount, evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "polygon" -> {
@@ -5158,18 +9692,34 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.particlesPolygon(particle, new Vector(0, 1, 0), r, s, ppe, emitCount, evalDouble(offset, exec), evalDouble(extra, exec),
                 data)
-                .execute(ctx);
+                .execute(exec);
           };
         }
-        case "orbit" -> {
-          NumValue radius = numAttr(attrs, "radius", 2.4, stmtToken);
-          NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
-          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        case "orbit", "orbiting_runes", "orbiting-runes" -> {
+          boolean runes = "orbiting_runes".equals(shape) || "orbiting-runes".equals(shape);
+          NumValue radius = numAttr(attrs, "radius", runes ? 2.6 : 2.4, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", runes ? 80.0 : 60.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", runes ? 2.0 : 1.0, stmtToken);
           String easingRaw = stringAttr(attrs, "easing", EasingId.LINEAR.name(), stmtToken);
           EasingId easingId = parseEasing(easingRaw, stmtToken);
-          NumValue copies = numAttr(attrs, "copies", 3.0, stmtToken);
+          NumValue copies = numAttr(attrs, "copies", runes ? 6.0 : 3.0, stmtToken);
           return ctx -> {
             double r = evalDouble(radius, ctx);
             long duration = evalLong(durationTicks, ctx);
@@ -5185,19 +9735,35 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.presetOrbit(particle, r, duration, period, easingFromId(easingId), c, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.presetOrbit(particle, r, duration, period, easingFromId(easingId), c, emitCount, evalDouble(offset, exec), evalDouble(extra, exec),
                 data)
-                .execute(ctx);
+                .execute(exec);
           };
         }
-        case "swirl" -> {
-          NumValue radius = numAttr(attrs, "radius", 1.8, stmtToken);
-          NumValue height = numAttr(attrs, "height", 2.6, stmtToken);
-          NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
-          NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        case "swirl", "spiral_aura", "spiral-aura" -> {
+          boolean aura = "spiral_aura".equals(shape) || "spiral-aura".equals(shape);
+          NumValue radius = numAttr(attrs, "radius", aura ? 1.8 : 1.8, stmtToken);
+          NumValue height = numAttr(attrs, "height", aura ? 3.5 : 2.6, stmtToken);
+          NumValue durationTicks = numAttr(attrs, "durationTicks", aura ? 80.0 : 60.0, stmtToken);
+          NumValue periodTicks = numAttr(attrs, "periodTicks", aura ? 2.0 : 1.0, stmtToken);
           String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
           EasingId easingId = parseEasing(easingRaw, stmtToken);
-          NumValue points = numAttr(attrs, "points", 22.0, stmtToken);
+          NumValue points = numAttr(attrs, "points", aura ? 28.0 : 22.0, stmtToken);
           return ctx -> {
             double r = evalDouble(radius, ctx);
             double h = evalDouble(height, ctx);
@@ -5214,9 +9780,24 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
-            Actions.presetSwirl(particle, r, h, duration, period, easingFromId(easingId), pts, emitCount, evalDouble(offset, ctx), evalDouble(extra, ctx),
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            Actions.presetSwirl(particle, r, h, duration, period, easingFromId(easingId), pts, emitCount, evalDouble(offset, exec), evalDouble(extra, exec),
                 data)
-                .execute(ctx);
+                .execute(exec);
           };
         }
         case "shockwave" -> {
@@ -5243,8 +9824,23 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
             Actions.presetShockwave(particle, start, end, duration, period, easingFromId(easingId), pts, emitCount,
-                evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+                evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
           };
         }
         case "beam_chargeup", "beam-chargeup" -> {
@@ -5273,11 +9869,263 @@ public final class EffectsYamlAbilities {
             if (!consumeParticles(ctx, total)) {
               return;
             }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
             Actions.presetBeamChargeup(particle, start, end, duration, period, easingFromId(easingId), st, emitCount,
-                evalDouble(offset, ctx), evalDouble(extra, ctx), data).execute(ctx);
+                evalDouble(offset, exec), evalDouble(extra, exec), data).execute(exec);
+          };
+        }
+        case "points" -> {
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<PointSpec> points;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.points().isEmpty()) {
+              throw error(stmtToken, "unknown or empty shape=" + shapeId);
+            }
+            points = template.points();
+          } else {
+            points = splinePointsFromAttrs(attrs, stmtToken);
+            if (points.isEmpty()) {
+              throw error(stmtToken, "particles.points requires p0_*/p1_* (and more) point attributes");
+            }
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+          for (PointSpec spec : points) {
+            fns.add(ctx -> pointAt(ctx, spec));
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            float dustSize = (float) evalDouble(size, ctx);
+            if (emitCount == 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if (from != null && to != null) {
+              Actions.particlesPointsGradient(
+                  particle,
+                  fns,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.particlesPoints(
+                  particle,
+                  fns,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data).execute(exec);
+            }
+          };
+        }
+        case "polyline" -> {
+          NumValue step = numAttr(attrs, "step", 0.5, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<PointSpec> points;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.points().size() < 2) {
+              throw error(stmtToken, "unknown or insufficient shape=" + shapeId);
+            }
+            points = template.points();
+          } else {
+            points = splinePointsFromAttrs(attrs, stmtToken);
+            if (points.size() < 2) {
+              throw error(stmtToken, "particles.polyline requires p0_*/p1_* (and more) point attributes");
+            }
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
+          for (PointSpec spec : points) {
+            fns.add(ctx -> pointAt(ctx, spec));
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            double stepValue = evalDouble(step, ctx);
+            float dustSize = (float) evalDouble(size, ctx);
+            if (emitCount == 0 || stepValue <= 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if (from != null && to != null) {
+              Actions.particlesPolylineGradient(
+                  particle,
+                  fns,
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.particlesPolyline(
+                  particle,
+                  fns,
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data).execute(exec);
+            }
+          };
+        }
+        case "mesh" -> {
+          NumValue step = numAttr(attrs, "step", 0.75, stmtToken);
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
+          java.util.List<List<PointSpec>> triangles;
+          if (shapeId != null) {
+            ShapeTemplate template = shapeTemplates.get(shapeId);
+            if (template == null || template.triangles().isEmpty()) {
+              throw error(stmtToken, "unknown or empty triangle shape=" + shapeId);
+            }
+            triangles = template.triangles();
+          } else {
+            throw error(stmtToken, "particles.mesh requires shape=<id> with triangles");
+          }
+          var fns = new ArrayList<java.util.function.Function<CastContext, Location[]>>(triangles.size());
+          for (List<PointSpec> tri : triangles) {
+            if (tri.size() < 3) {
+              continue;
+            }
+            PointSpec a = tri.get(0);
+            PointSpec b = tri.get(1);
+            PointSpec c = tri.get(2);
+            fns.add(ctx -> new Location[] { pointAt(ctx, a), pointAt(ctx, b), pointAt(ctx, c) });
+          }
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            double stepValue = evalDouble(step, ctx);
+            float dustSize = (float) evalDouble(size, ctx);
+            if (emitCount == 0 || stepValue <= 0) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            if (from != null && to != null) {
+              Actions.particlesMeshGradient(
+                  particle,
+                  fns,
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.particlesMesh(
+                  particle,
+                  fns,
+                  stepValue,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data).execute(exec);
+            }
           };
         }
         default -> throw error(stmtToken, "unknown particles shape: " + shape);
+      }
+    }
+
+    private double[] offsetsFromAttrs(Map<String, Value> attrs, Token at) {
+      Value rawOffsets = attrs.get("offsets");
+      if (rawOffsets == null) {
+        return null;
+      }
+      Object raw = rawValue(rawOffsets, "offsets", at);
+      String text = String.valueOf(raw).trim();
+      if (text.isEmpty()) {
+        throw error(at, "offsets: expected 'forward,right,up' or 'forward right up'");
+      }
+      String[] parts = text.split("[,\\s]+");
+      if (parts.length != 3) {
+        throw error(at, "offsets: expected 3 values (forward,right,up)");
+      }
+      try {
+        return new double[] {
+            Double.parseDouble(parts[0]),
+            Double.parseDouble(parts[1]),
+            Double.parseDouble(parts[2])
+        };
+      } catch (NumberFormatException ex) {
+        throw error(at, "offsets: invalid number format");
       }
     }
 
@@ -7264,6 +12112,49 @@ public final class EffectsYamlAbilities {
     return new PointSpec(forward, right, up, x, y, z);
   }
 
+  private ShapeTemplate parseShapeTemplate(Map<String, Object> node, String path) {
+    Object rawPoints = node.get("points");
+    Object rawTriangles = node.get("triangles");
+    List<PointSpec> points = java.util.Collections.emptyList();
+    List<List<PointSpec>> triangles = java.util.Collections.emptyList();
+
+    if (rawPoints != null) {
+      if (!(rawPoints instanceof List<?> list) || list.isEmpty()) {
+        throw new IllegalArgumentException(path + ".points: expected a non-empty list");
+      }
+      var parsed = new ArrayList<PointSpec>(list.size());
+      for (int i = 0; i < list.size(); i++) {
+        parsed.add(pointSpec(list.get(i), path + ".points[" + i + "]"));
+      }
+      points = java.util.Collections.unmodifiableList(parsed);
+    }
+
+    if (rawTriangles != null) {
+      if (!(rawTriangles instanceof List<?> list) || list.isEmpty()) {
+        throw new IllegalArgumentException(path + ".triangles: expected a non-empty list");
+      }
+      var parsed = new ArrayList<List<PointSpec>>(list.size());
+      for (int i = 0; i < list.size(); i++) {
+        Object triRaw = list.get(i);
+        if (!(triRaw instanceof List<?> triList) || triList.size() < 3) {
+          throw new IllegalArgumentException(path + ".triangles[" + i + "]: expected a list with 3 point objects");
+        }
+        var tri = new ArrayList<PointSpec>(3);
+        for (int p = 0; p < 3; p++) {
+          tri.add(pointSpec(triList.get(p), path + ".triangles[" + i + "][" + p + "]"));
+        }
+        parsed.add(java.util.Collections.unmodifiableList(tri));
+      }
+      triangles = java.util.Collections.unmodifiableList(parsed);
+    }
+
+    if (points.isEmpty() && triangles.isEmpty()) {
+      throw new IllegalArgumentException(path + ": shape requires points or triangles");
+    }
+
+    return new ShapeTemplate(points, triangles);
+  }
+
   private static Location pointAt(CastContext ctx, PointSpec spec) {
     Vector forward = ctx.direction().clone();
     if (forward.lengthSquared() < 1e-9) {
@@ -7303,6 +12194,17 @@ public final class EffectsYamlAbilities {
     };
   }
 
+  private static dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode parseMotionMode(String raw, String path) {
+    String s = (raw == null ? "translate" : raw).trim().toLowerCase(Locale.ROOT);
+    return switch (s) {
+      case "translate" -> dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode.TRANSLATE;
+      case "follow" -> dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode.FOLLOW;
+      case "orbit" -> dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode.ORBIT;
+      case "drift" -> dev.patric.dungeonsreborn.effects.actions.Actions.MotionMode.DRIFT;
+      default -> throw new IllegalArgumentException(path + ": invalid mode=" + raw + " (use translate|follow|orbit|drift)");
+    };
+  }
+
   private static Location resolveAt(CastContext ctx, AtMode mode) {
     return switch (mode) {
       case ORIGIN -> ctx.origin();
@@ -7323,6 +12225,37 @@ public final class EffectsYamlAbilities {
     };
   }
 
+  private static Location resolveAtWithOffsets(CastContext ctx, AtMode mode, NumValue forward, NumValue right, NumValue up) {
+    Location base = resolveAt(ctx, mode);
+    if (base == null) {
+      return null;
+    }
+    double f = evalDouble(forward, ctx);
+    double r = evalDouble(right, ctx);
+    double u = evalDouble(up, ctx);
+    if (f == 0.0 && r == 0.0 && u == 0.0) {
+      return base;
+    }
+    Vector dir = ctx.direction().clone();
+    if (dir.lengthSquared() < 1e-9) {
+      dir = new Vector(0, 0, 1);
+    } else {
+      dir.normalize();
+    }
+    Vector upVec = new Vector(0, 1, 0);
+    Vector rightVec = dir.clone().crossProduct(upVec);
+    if (rightVec.lengthSquared() < 1e-9) {
+      rightVec = new Vector(1, 0, 0);
+    } else {
+      rightVec.normalize();
+    }
+    Location out = base.clone();
+    out.add(dir.clone().multiply(f));
+    out.add(rightVec.clone().multiply(r));
+    out.add(0, u, 0);
+    return out;
+  }
+
   private static LivingEntity lastEntity(CastContext ctx) {
     Object v = ctx.state().get(YAML_LAST_ENTITY);
     if (v instanceof LivingEntity living) {
@@ -7331,6 +12264,17 @@ public final class EffectsYamlAbilities {
     Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
     if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph && ph.hitEntity() != null) {
       return ph.hitEntity();
+    }
+    return null;
+  }
+
+  private static Player targetPlayer(CastContext ctx) {
+    LivingEntity target = lastEntity(ctx);
+    if (target instanceof Player player) {
+      return player;
+    }
+    if (ctx.caster() instanceof Player player) {
+      return player;
     }
     return null;
   }
@@ -8435,6 +13379,7 @@ public final class EffectsYamlAbilities {
         || lower.contains("\\items\\");
   }
 
+  @SuppressWarnings("unused")
   private static List<File> listYamlFiles(File folder) {
     List<File> out = new ArrayList<>();
     File[] entries = folder.listFiles();

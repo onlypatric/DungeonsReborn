@@ -46,7 +46,9 @@ public final class EditorBindingDetailMenu extends Window {
     LORE_CONTAINS("lore_contains", "Lore Contains", "Matches if lore contains a string.");
 
     private final String id;
+    @SuppressWarnings("unused")
     private final String label;
+    @SuppressWarnings("unused")
     private final String hint;
 
     MatcherType(String id, String label, String hint) {

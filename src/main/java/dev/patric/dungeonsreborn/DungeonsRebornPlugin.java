@@ -549,6 +549,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (file.exists()) {
             return;
         }
+        if (getResource(resourcePath) == null) {
+            getLogger().warning("[Crafting] Missing bundled recipe: " + resourcePath + " (skipping copy)");
+            return;
+        }
         saveResource(resourcePath, false);
     }
 

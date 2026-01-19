@@ -1,9 +1,0 @@
-schemaVersion: 1
-item:
-  type: material
-  material: PAPER
-  amount: 1
-  meta:
-    display-name: "Straccio Inutile"
-    lore:
-      - "Un pezzo di stoffa inutile."
