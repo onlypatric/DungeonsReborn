@@ -1,0 +1,2 @@
+messages.mana.insufficient: <red>Not enough {resource}.</red> <gray>Need {cost}.</gray>
+messages.mana.low: <red>Low {resource}:</red> <white>{current}/{max}</white> <gray>({percent}%)</gray>

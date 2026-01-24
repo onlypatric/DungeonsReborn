@@ -7,8 +7,10 @@ public enum ServiceLogCategory {
   BINDINGS("bindings"),
   UPGRADES("upgrades"),
   SHOPS("shops"),
+  PARTY("party"),
   DUNGEONS("dungeons"),
-  LOCALES("locales");
+  LOCALES("locales"),
+  ADVANCEMENTS("advancements");
 
   private final String configKey;
 

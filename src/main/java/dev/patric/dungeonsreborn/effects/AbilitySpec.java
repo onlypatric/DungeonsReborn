@@ -17,11 +17,14 @@ import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatcher;
 import dev.patric.dungeonsreborn.progression.ProgressionService;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 /**
  * Code-first ability definition with metadata + reusable building blocks (requirements, costs, cooldowns, triggers).
  */
 public final class AbilitySpec {
+  private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
+
   public record Requirement(Condition condition, Component failMessage) {
     public Requirement {
       Objects.requireNonNull(condition, "condition");
@@ -126,6 +129,8 @@ public final class AbilitySpec {
         if (req.failMessage() != null && ctx.caster() instanceof Player player) {
           player.sendMessage(req.failMessage());
         }
+        String reason = req.failMessage() == null ? req.condition().getClass().getSimpleName() : PLAIN.serialize(req.failMessage());
+        ctx.engine().recordCastFailure(ctx, EffectsEngine.CastFailureType.REQUIREMENT, reason);
         return;
       }
 
@@ -139,6 +144,7 @@ public final class AbilitySpec {
         } else if (ctx.caster() instanceof Player player) {
           player.sendMessage(fail);
         }
+        ctx.engine().recordCastFailure(ctx, EffectsEngine.CastFailureType.COST, PLAIN.serialize(fail));
         return;
       }
 
@@ -156,6 +162,7 @@ public final class AbilitySpec {
           } else {
             player.sendMessage("§cOn cooldown (" + remaining + "t)");
           }
+          ctx.engine().recordCastFailure(ctx, EffectsEngine.CastFailureType.COOLDOWN, "remaining=" + remaining + "t");
           return;
         }
       }

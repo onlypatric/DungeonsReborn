@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,12 +21,15 @@ import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
+import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
+import dev.patric.dungeonsreborn.crafting.CraftingDiscoveryService;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
+import dev.patric.dungeonsreborn.mobs.editor.MobDebugOverlayService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
@@ -33,17 +38,6 @@ import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.kits.KitService;
 import dev.patric.dungeonsreborn.kits.KitYamlRegistry;
 import dev.patric.dungeonsreborn.shops.ShopSessionManager;
-import dev.patric.dungeonsreborn.menus.CraftingRecipeEditorMenu;
-import dev.patric.dungeonsreborn.menus.CraftingTestMenu;
-import dev.patric.dungeonsreborn.menus.AdminHubMenu;
-import dev.patric.dungeonsreborn.menus.CraftablesIndexMenu;
-import dev.patric.dungeonsreborn.menus.ItemIndexMenu;
-import dev.patric.dungeonsreborn.menus.MobIndexMenu;
-import dev.patric.dungeonsreborn.menus.QuestGiverIndexMenu;
-import dev.patric.dungeonsreborn.menus.ShopIndexMenu;
-import dev.patric.dungeonsreborn.menus.SystemStatusMenu;
-import dev.patric.dungeonsreborn.menus.UpgradeIndexMenu;
-import dev.patric.dungeonsreborn.menus.UserHubMenu;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.classes.ClassAbilityBindings;
 import dev.patric.dungeonsreborn.classes.ClassService;
@@ -52,8 +46,6 @@ import dev.patric.dungeonsreborn.classes.skills.ClassSkillService;
 import dev.patric.dungeonsreborn.dungeons.DungeonQueueService;
 import dev.patric.dungeonsreborn.dungeons.DungeonSessionManager;
 import dev.patric.dungeonsreborn.dungeons.DungeonYamlRegistry;
-import dev.patric.dungeonsreborn.menus.UpgradeMergeMenu;
-import dev.patric.dungeonsreborn.menus.UpgradeInspectMenu;
 import dev.patric.dungeonsreborn.quests.QuestGiverYamlRegistry;
 import dev.patric.dungeonsreborn.quests.QuestService;
 import dev.patric.dungeonsreborn.quests.QuestYamlRegistry;
@@ -63,6 +55,7 @@ import dev.patric.dungeonsreborn.locale.LocaleService;
 import dev.patric.dungeonsreborn.locale.Locales;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import net.kyori.adventure.text.Component;
 
 public final class DungeonsRebornCommand {
   private DungeonsRebornCommand() {
@@ -79,9 +72,11 @@ public final class DungeonsRebornCommand {
       MobYamlRegistry mobsYaml,
       MobRegistry mobsRegistry,
       MobSpawnManager mobSpawns,
+      MobDebugOverlayService mobDebugOverlay,
       dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore spawnerStore,
       CraftingYamlRegistry crafting,
       CraftingGuiSessionManager craftingSessions,
+      CraftingDiscoveryService craftingDiscovery,
       AdvancementService advancements,
       UpgradeService upgrades,
       ShopYamlRegistry shops,
@@ -101,36 +96,45 @@ public final class DungeonsRebornCommand {
       LocaleService locales
   ) {
     return Commands.literal(root)
-        .executes(ctx -> openHub(ctx, classRegistry, classService, classSkills,
-            dungeonRegistry, dungeonQueue, dungeonSessions, quests, questGivers, parties, crafting, craftingSessions,
-            advancements, upgrades, kits, mobsRegistry, yaml, shops))
+        .executes(ctx -> help(ctx, root))
         .then(Commands.literal("help").executes(ctx -> help(ctx, root)))
-        .then(Commands.literal("index")
-            .then(Commands.literal("mobs").executes(ctx -> openMobIndex(ctx, mobsRegistry)))
-            .then(Commands.literal("items").executes(ctx -> openItemIndex(ctx, yaml)))
-            .then(Commands.literal("upgrades").executes(ctx -> openUpgradeIndex(ctx, upgrades)))
-            .then(Commands.literal("craftables").executes(ctx -> openCraftablesIndex(ctx, crafting)))
-            .then(Commands.literal("shops").executes(ctx -> openShopIndex(ctx, shops)))
-            .then(Commands.literal("questgivers").executes(ctx -> openQuestGiverIndex(ctx, questGivers))))
-        .then(Commands.literal("hub").executes(ctx -> openHub(ctx, classRegistry, classService, classSkills,
-            dungeonRegistry, dungeonQueue, dungeonSessions, quests, questGivers, parties, crafting, craftingSessions,
-            advancements, upgrades, kits, mobsRegistry, yaml, shops)))
-        .then(Commands.literal("menu").executes(ctx -> openHub(ctx, classRegistry, classService, classSkills,
-            dungeonRegistry, dungeonQueue, dungeonSessions, quests, questGivers, parties, crafting, craftingSessions,
-            advancements, upgrades, kits, mobsRegistry, yaml, shops)))
         .then(Commands.literal("admin")
-            .executes(ctx -> openAdmin(ctx, editor, mobsYaml, mobsRegistry, quests, shops,
-                crafting, craftingSessions, classRegistry, upgrades, dungeonRegistry, dungeonQueue, dungeonSessions))
+            .executes(ctx -> helpAdmin(ctx, root))
             .then(Commands.literal("help").executes(ctx -> helpAdmin(ctx, root)))
-            .then(Commands.literal("status").executes(DungeonsRebornCommand::status))
             .then(Commands.literal("reload").executes(ctx -> reloadAll(ctx, plugin, yaml, mobsYaml, mobsRegistry,
                 crafting, advancements, upgrades, shops, kits, classRegistry, dungeonRegistry, questRegistry,
                 questGivers, locales, spawnerStore)))
             .then(Commands.literal("locale")
-                .then(Commands.literal("reload").executes(ctx -> localeReload(ctx, locales))))
+                .then(Commands.literal("reload").executes(ctx -> localeReload(ctx, locales)))
+                .then(Commands.literal("validate").executes(ctx -> localeValidate(ctx, locales))))
             .then(Commands.literal("advancements")
                 .then(Commands.literal("reload")
                     .executes(ctx -> advancementsReload(ctx, advancements, mobsRegistry, dungeonRegistry))))
+            .then(Commands.literal("crafting")
+                .then(Commands.literal("discover")
+                    .then(Commands.argument("id", StringArgumentType.word())
+                        .suggests((ctx, builder) -> suggestRecipes(crafting, builder))
+                        .executes(ctx -> craftingDiscover(ctx, crafting, craftingDiscovery,
+                            StringArgumentType.getString(ctx, "id"), null, false))
+                        .then(Commands.argument("player", StringArgumentType.word())
+                            .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                            .executes(ctx -> craftingDiscover(ctx, crafting, craftingDiscovery,
+                                StringArgumentType.getString(ctx, "id"),
+                                StringArgumentType.getString(ctx, "player"),
+                                false)))))
+                .then(Commands.literal("research")
+                    .then(Commands.argument("id", StringArgumentType.word())
+                        .suggests((ctx, builder) -> suggestRecipes(crafting, builder))
+                        .executes(ctx -> craftingDiscover(ctx, crafting, craftingDiscovery,
+                            StringArgumentType.getString(ctx, "id"), null, true))
+                        .then(Commands.argument("player", StringArgumentType.word())
+                            .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                            .executes(ctx -> craftingDiscover(ctx, crafting, craftingDiscovery,
+                                StringArgumentType.getString(ctx, "id"),
+                                StringArgumentType.getString(ctx, "player"),
+                                true)))))
+                .then(Commands.literal("validate")
+                    .executes(ctx -> craftingValidate(ctx, crafting))))
             .then(Commands.literal("give")
                 .then(Commands.literal("item")
                     .then(Commands.argument("item", StringArgumentType.word())
@@ -206,17 +210,18 @@ public final class DungeonsRebornCommand {
                                     IntegerArgumentType.getInteger(ctx, "amount")))))))))
             .then(EffectsCommand.createCommand(engine, yaml, bindings, editor, minions))
             .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore))
-            .then(ShopsCommand.createCommand(shops, shopSessions))
+            .then(ShopsCommand.createCommand(shops))
             .then(KitsCommand.createAdminCommand(kits))
             .then(ClassesCommand.createAdminCommand(classRegistry, classService, classSkills, classAbilityBindings))
-            .then(DungeonCommand.createAdminCommand(dungeonRegistry, dungeonQueue, dungeonSessions))
+            .then(DungeonCommand.createAdminCommand(dungeonRegistry, dungeonQueue, dungeonSessions, parties))
             .then(QuestsCommand.createAdminCommand(quests, questGivers, parties))
             .then(PartyCommand.createCommand(parties))
             .then(ChatCommand.createCommand(parties))
             .then(Commands.literal("upgrades")
-                .executes(ctx -> upgradesOpen(ctx, upgrades))
                 .then(Commands.literal("reload").executes(ctx -> upgradesReload(ctx, upgrades)))
-                .then(Commands.literal("inspect").executes(ctx -> upgradesInspect(ctx, upgrades)))
+                .then(Commands.literal("debug")
+                    .then(Commands.literal("scan").executes(ctx -> upgradesDebugScan(ctx, upgrades)))
+                    .then(Commands.literal("validate").executes(ctx -> upgradesDebugValidate(ctx, upgrades))))
                 .then(Commands.literal("give")
                     .then(Commands.argument("upgrade", StringArgumentType.word())
                         .suggests((ctx, builder) -> suggestUpgrades(upgrades, builder))
@@ -229,24 +234,17 @@ public final class DungeonsRebornCommand {
                                 StringArgumentType.getString(ctx, "upgrade"),
                                 StringArgumentType.getString(ctx, "player")))))))
             .then(Commands.literal("crafting")
-                .executes(ctx -> craftingTest(ctx, crafting, craftingSessions, advancements, quests))
                 .then(Commands.literal("info")
                     .then(Commands.argument("id", StringArgumentType.word())
                         .suggests((ctx, builder) -> suggestRecipes(crafting, builder))
                         .executes(ctx -> craftingInfo(ctx, crafting, StringArgumentType.getString(ctx, "id")))))
-                .then(Commands.literal("editor").executes(ctx -> craftingEditor(ctx, crafting, craftingSessions)))
                 .then(Commands.literal("reload").executes(ctx -> craftingReload(ctx, crafting))))
-        .then(GuiCommand.createCommand())
         .then(KitsCommand.createUserCommand(kits))
         .then(ClassesCommand.createUserCommand(classRegistry, classService, classSkills, classAbilityBindings))
-        .then(DungeonCommand.createUserCommand(dungeonRegistry, dungeonQueue, dungeonSessions))
+        .then(DungeonCommand.createUserCommand(dungeonRegistry, dungeonQueue, dungeonSessions, parties))
         .then(QuestsCommand.createUserCommand(quests, questGivers, parties))
         .then(PartyCommand.createCommand(parties))
-        .then(ChatCommand.createCommand(parties))
-        .then(Commands.literal("upgrades")
-            .executes(ctx -> upgradesOpen(ctx, upgrades)))
-        .then(Commands.literal("crafting")
-            .executes(ctx -> craftingTest(ctx, crafting, craftingSessions, advancements, quests)));
+        .then(ChatCommand.createCommand(parties));
   }
 
   private static int help(CommandContext<CommandSourceStack> ctx, String root) {
@@ -254,24 +252,14 @@ public final class DungeonsRebornCommand {
     var placeholders = Locales.placeholders("root", root);
     CommandMessages.send(sender, "messages.command.help.header", placeholders);
     CommandMessages.send(sender, "messages.command.help.root", placeholders);
-    CommandMessages.send(sender, "messages.command.help.hub", placeholders);
-    CommandMessages.send(sender, "messages.command.help.index", placeholders);
-    CommandMessages.send(sender, "messages.command.help.gui", placeholders);
     CommandMessages.send(sender, "messages.command.help.kits", placeholders);
     CommandMessages.send(sender, "messages.command.help.classes", placeholders);
-    CommandMessages.send(sender, "messages.command.help.classesSkills", placeholders);
     CommandMessages.send(sender, "messages.command.help.dungeon", placeholders);
-    CommandMessages.send(sender, "messages.command.help.dungeonStatus", placeholders);
     CommandMessages.send(sender, "messages.command.help.dungeonJoin", placeholders);
     CommandMessages.send(sender, "messages.command.help.dungeonLeave", placeholders);
-    CommandMessages.send(sender, "messages.command.help.quests", placeholders);
-    CommandMessages.send(sender, "messages.command.help.questsGiver", placeholders);
     CommandMessages.send(sender, "messages.command.help.party", placeholders);
-    CommandMessages.send(sender, "messages.command.help.partyGui", placeholders);
     CommandMessages.send(sender, "messages.command.help.partyChat", placeholders);
     CommandMessages.send(sender, "messages.command.help.partyMessage", placeholders);
-    CommandMessages.send(sender, "messages.command.help.upgrades", placeholders);
-    CommandMessages.send(sender, "messages.command.help.crafting", placeholders);
     return Command.SINGLE_SUCCESS;
   }
 
@@ -280,9 +268,9 @@ public final class DungeonsRebornCommand {
     var placeholders = Locales.placeholders("root", root);
     CommandMessages.send(sender, "messages.command.help.adminHeader", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminRoot", placeholders);
-    CommandMessages.send(sender, "messages.command.help.adminStatus", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminReload", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminLocaleReload", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminLocaleValidate", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminAdvancementsReload", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminGive", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminEffects", placeholders);
@@ -291,17 +279,17 @@ public final class DungeonsRebornCommand {
     CommandMessages.send(sender, "messages.command.help.adminItemsGive", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminKitsReload", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminClassesReload", placeholders);
-    CommandMessages.send(sender, "messages.command.help.adminClassesEditor", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminClassesValidate", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminClassesExport", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminClassesImport", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminDungeonReload", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminDungeonValidate", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminDungeonDebug", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminQuestsReload", placeholders);
-    CommandMessages.send(sender, "messages.command.help.adminQuestsEditor", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminUpgradesReload", placeholders);
-    CommandMessages.send(sender, "messages.command.help.adminUpgradesInspect", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminUpgradesGive", placeholders);
-    CommandMessages.send(sender, "messages.command.help.adminCraftingEditor", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminCraftingReload", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminCraftingValidate", placeholders);
     return Command.SINGLE_SUCCESS;
   }
 
@@ -318,6 +306,47 @@ public final class DungeonsRebornCommand {
       CommandMessages.send(sender, "messages.locale.reload.ok", Locales.placeholders("count", result.locales()));
     } else {
       CommandMessages.send(sender, "messages.locale.reload.errors", Locales.placeholders("errors", result.errors().size()));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int localeValidate(CommandContext<CommandSourceStack> ctx, LocaleService locales) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof org.bukkit.entity.Player player && !player.hasPermission("dungeonsreborn.locale.validate")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.locale.validate"));
+      return 1;
+    }
+    if (locales == null) {
+      CommandMessages.send(sender, "messages.locale.validate.unavailable");
+      return Command.SINGLE_SUCCESS;
+    }
+    LocaleService.CoverageResult result = locales.validateCoverage();
+    CommandMessages.send(sender, "messages.locale.validate.header",
+        Locales.placeholders("total", result.totalKeys()));
+    if (!result.hasMissing()) {
+      CommandMessages.send(sender, "messages.locale.validate.ok");
+      return Command.SINGLE_SUCCESS;
+    }
+    List<String> localesSorted = new ArrayList<>(result.missingByLocale().keySet());
+    localesSorted.sort(String::compareTo);
+    for (String locale : localesSorted) {
+      List<String> missing = result.missingByLocale().get(locale);
+      if (missing == null || missing.isEmpty()) {
+        continue;
+      }
+      CommandMessages.send(sender, "messages.locale.validate.localeHeader",
+          Locales.placeholders("locale", locale, "count", missing.size()));
+      int shown = Math.min(missing.size(), 10);
+      for (int i = 0; i < shown; i++) {
+        CommandMessages.send(sender, "messages.locale.validate.entry",
+            Locales.placeholders("key", missing.get(i)));
+      }
+      int remaining = missing.size() - shown;
+      if (remaining > 0) {
+        CommandMessages.send(sender, "messages.locale.validate.more",
+            Locales.placeholders("count", remaining));
+      }
     }
     return Command.SINGLE_SUCCESS;
   }
@@ -369,6 +398,7 @@ public final class DungeonsRebornCommand {
       plugin.reloadLogging();
       plugin.reloadRuntimeConfig();
       plugin.reloadScoreboardConfig();
+      plugin.reloadHeadRegistry();
     }
 
     LocaleService.ReloadResult localeResult = locales == null ? null : locales.reload();
@@ -460,194 +490,6 @@ public final class DungeonsRebornCommand {
     return result == null || result.errors() == null ? 0 : result.errors().size();
   }
 
-  private static int openAdmin(CommandContext<CommandSourceStack> ctx,
-      EditorServices editor,
-      MobYamlRegistry mobsYaml,
-      MobRegistry mobsRegistry,
-      QuestService quests,
-      ShopYamlRegistry shops,
-      CraftingYamlRegistry crafting,
-      CraftingGuiSessionManager craftingSessions,
-      ClassYamlRegistry classes,
-      UpgradeService upgrades,
-      DungeonYamlRegistry dungeons,
-      DungeonQueueService dungeonQueue,
-      DungeonSessionManager dungeonSessions) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.admin")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.admin"));
-      return Command.SINGLE_SUCCESS;
-    }
-    QuestYamlRegistry questYaml = quests == null ? null : quests.registry();
-    new AdminHubMenu(editor, mobsYaml, mobsRegistry, questYaml, shops, crafting, craftingSessions, classes, upgrades,
-        dungeons, dungeonQueue, dungeonSessions).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int status(CommandContext<CommandSourceStack> ctx) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.admin")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.admin"));
-      return Command.SINGLE_SUCCESS;
-    }
-    new SystemStatusMenu(SystemStatusStore.get()).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openHub(CommandContext<CommandSourceStack> ctx,
-      ClassYamlRegistry classRegistry,
-      ClassService classService,
-      ClassSkillService classSkills,
-      DungeonYamlRegistry dungeonRegistry,
-      DungeonQueueService dungeonQueue,
-      DungeonSessionManager dungeonSessions,
-      QuestService quests,
-      QuestGiverYamlRegistry questGivers,
-      PartyService parties,
-      CraftingYamlRegistry crafting,
-      CraftingGuiSessionManager craftingSessions,
-      AdvancementService advancements,
-      UpgradeService upgrades,
-      KitService kits,
-      MobRegistry mobsRegistry,
-      EffectsYamlAbilities yaml,
-      ShopYamlRegistry shops) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    new UserHubMenu(classRegistry, classService, classSkills,
-        dungeonRegistry, dungeonQueue, dungeonSessions,
-        quests, questGivers, parties, crafting, craftingSessions, advancements, upgrades, kits,
-        mobsRegistry, yaml, shops).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openMobIndex(CommandContext<CommandSourceStack> ctx, MobRegistry mobs) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (mobs == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new MobIndexMenu(mobs).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openItemIndex(CommandContext<CommandSourceStack> ctx, EffectsYamlAbilities yaml) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (yaml == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.itemsEditor")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new ItemIndexMenu(yaml).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openUpgradeIndex(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (upgrades == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.upgrades")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new UpgradeIndexMenu(upgrades).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openCraftablesIndex(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (crafting == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new CraftablesIndexMenu(crafting).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openShopIndex(CommandContext<CommandSourceStack> ctx, ShopYamlRegistry shops) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (shops == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shops")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new ShopIndexMenu(shops).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openQuestGiverIndex(CommandContext<CommandSourceStack> ctx, QuestGiverYamlRegistry questGivers) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (questGivers == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.questGivers")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new QuestGiverIndexMenu(questGivers).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int upgradesOpen(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof org.bukkit.entity.Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (upgrades == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.upgrades")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new UpgradeMergeMenu(upgrades).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
 
   private static int upgradesReload(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
     var sender = ctx.getSource().getSender();
@@ -672,7 +514,8 @@ public final class DungeonsRebornCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int upgradesInspect(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
+
+  private static int upgradesDebugScan(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
     var sender = ctx.getSource().getSender();
     var executor = ctx.getSource().getExecutor();
     if (!(executor instanceof org.bukkit.entity.Player player)) {
@@ -689,7 +532,67 @@ public final class DungeonsRebornCommand {
           Locales.placeholders("permission", "dungeonsreborn.upgrades.admin"));
       return Command.SINGLE_SUCCESS;
     }
-    new UpgradeInspectMenu(upgrades).open(player);
+    ItemStack item = player.getInventory().getItemInMainHand();
+    if (item == null || item.getType().isAir()) {
+      CommandMessages.send(sender, "messages.command.items.holdMainHand");
+      return Command.SINGLE_SUCCESS;
+    }
+    var records = ItemMarkers.getUpgradeRecords(item);
+    CommandMessages.send(sender, "messages.command.upgrades.debug.recordsHeader",
+        Locales.placeholders("count", String.valueOf(records.size())));
+    if (records.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.upgrades.debug.none");
+      return Command.SINGLE_SUCCESS;
+    }
+    for (String record : records) {
+      String status;
+      if (record == null || record.isBlank()) {
+        status = CommandMessages.text(sender, "messages.command.upgrades.debug.status.empty");
+      } else if (record.startsWith("vanilla:")) {
+        status = CommandMessages.text(sender, "messages.command.upgrades.debug.status.vanilla");
+      } else if (upgrades.registry().upgradeSpec(record) == null) {
+        status = CommandMessages.text(sender, "messages.command.upgrades.debug.status.missing");
+      } else {
+        status = CommandMessages.text(sender, "messages.command.upgrades.debug.status.ok");
+      }
+      CommandMessages.send(sender, "messages.command.upgrades.debug.entry",
+          Locales.placeholders("record", record == null ? "" : record, "status", status));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int upgradesDebugValidate(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
+    var sender = ctx.getSource().getSender();
+    var executor = ctx.getSource().getExecutor();
+    if (!(executor instanceof org.bukkit.entity.Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (upgrades == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.upgrades")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.upgrades.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.upgrades.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    ItemStack item = player.getInventory().getItemInMainHand();
+    if (item == null || item.getType().isAir()) {
+      CommandMessages.send(sender, "messages.command.items.holdMainHand");
+      return Command.SINGLE_SUCCESS;
+    }
+    var issues = upgrades.validateItemUpgrades(player, item);
+    CommandMessages.send(sender, "messages.command.upgrades.debug.validationHeader");
+    if (issues.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.upgrades.debug.validationNone");
+      return Command.SINGLE_SUCCESS;
+    }
+    for (String issue : issues) {
+      CommandMessages.send(sender, "messages.command.upgrades.debug.validationEntry",
+          Locales.placeholders("issue", issue));
+    }
     return Command.SINGLE_SUCCESS;
   }
 
@@ -844,18 +747,6 @@ public final class DungeonsRebornCommand {
     return builder.buildFuture();
   }
 
-  private static int craftingTest(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting,
-      CraftingGuiSessionManager craftingSessions, AdvancementService advancements, QuestService quests) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof org.bukkit.entity.Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    new CraftingTestMenu(crafting, craftingSessions, advancements, quests).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
   private static int craftingReload(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting) {
     var sender = ctx.getSource().getSender();
     if (crafting == null) {
@@ -873,6 +764,32 @@ public final class DungeonsRebornCommand {
         Locales.placeholders("path", crafting.recipesDir().getPath()));
     CommandMessages.send(sender, "messages.command.reload.craftingSummary",
         Locales.placeholders("loaded", result.loaded(), "errors", result.errors().size()));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int craftingValidate(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting) {
+    var sender = ctx.getSource().getSender();
+    if (crafting == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof org.bukkit.entity.Player player && !player.hasPermission("dungeonsreborn.crafting.editor")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.crafting.editor"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var errors = crafting.validate();
+    if (errors.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.crafting.validate.ok");
+      return Command.SINGLE_SUCCESS;
+    }
+    CommandMessages.send(sender, "messages.command.crafting.validate.errors",
+        Locales.placeholders("count", errors.size()));
+    for (String entry : errors) {
+      CommandMessages.send(sender, "messages.command.crafting.validate.entry",
+          Locales.placeholders("error", entry));
+    }
     return Command.SINGLE_SUCCESS;
   }
 
@@ -917,6 +834,60 @@ public final class DungeonsRebornCommand {
     if (!spec.permissions().isEmpty()) {
       CommandMessages.send(sender, "messages.command.crafting.info.permissions",
           Locales.placeholders("count", spec.permissions().size()));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int craftingDiscover(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting,
+      CraftingDiscoveryService discovery, String id, String targetName, boolean research) {
+    var sender = ctx.getSource().getSender();
+    if (crafting == null || discovery == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.crafting.editor")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.crafting.editor"));
+      return Command.SINGLE_SUCCESS;
+    }
+    Player target = targetName == null ? null : Bukkit.getPlayerExact(targetName);
+    if (target == null && sender instanceof Player player) {
+      target = player;
+    }
+    if (target == null) {
+      CommandMessages.send(sender, "messages.command.targetNotFound");
+      return Command.SINGLE_SUCCESS;
+    }
+    CraftingRecipeTemplate template = crafting.recipeTemplate(id);
+    if (template == null) {
+      CommandMessages.send(sender, "messages.command.crafting.unknown",
+          Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, crafting.recipes().keySet());
+      return Command.SINGLE_SUCCESS;
+    }
+    boolean changed;
+    if (research) {
+      changed = discovery.beginResearch(target.getUniqueId(), template.spec());
+      if (changed) {
+        CommandMessages.send(sender, "messages.command.crafting.researchStarted",
+            Locales.placeholders("id", template.spec().id(), "player", target.getName()));
+      } else {
+        CommandMessages.send(sender, "messages.command.crafting.researchAlready",
+            Locales.placeholders("id", template.spec().id(), "player", target.getName()));
+      }
+    } else {
+      changed = discovery.unlock(target.getUniqueId(), template.spec().id(), "admin");
+      if (changed) {
+        CommandMessages.send(sender, "messages.command.crafting.discovered",
+            Locales.placeholders("id", template.spec().id(), "player", target.getName()));
+      } else {
+        CommandMessages.send(sender, "messages.command.crafting.discoveryAlready",
+            Locales.placeholders("id", template.spec().id(), "player", target.getName()));
+      }
+    }
+    if (changed) {
+      discovery.save();
     }
     return Command.SINGLE_SUCCESS;
   }
@@ -1088,25 +1059,4 @@ public final class DungeonsRebornCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int craftingEditor(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting,
-      CraftingGuiSessionManager craftingSessions) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof org.bukkit.entity.Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.crafting.editor")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.crafting.editor"));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (crafting == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new CraftingRecipeEditorMenu(crafting, craftingSessions).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
 }

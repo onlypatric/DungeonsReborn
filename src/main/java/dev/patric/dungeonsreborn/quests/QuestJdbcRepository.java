@@ -14,7 +14,8 @@ import dev.patric.dungeonsreborn.progression.ProgressionDatabase;
 
 public final class QuestJdbcRepository implements QuestRepository {
   private static final String LOAD_QUESTS_SQL = """
-      SELECT quest_id, status, started_at, completed_at, cooldown_until
+      SELECT quest_id, status, started_at, completed_at, cooldown_until,
+             daily_count, weekly_count, daily_reset_at, weekly_reset_at
       FROM player_quests
       WHERE uuid = ?
       """;
@@ -24,13 +25,18 @@ public final class QuestJdbcRepository implements QuestRepository {
       WHERE uuid = ?
       """;
   private static final String UPSERT_QUEST_SQL = """
-      INSERT INTO player_quests (uuid, quest_id, status, started_at, completed_at, cooldown_until)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO player_quests (uuid, quest_id, status, started_at, completed_at, cooldown_until,
+                                 daily_count, weekly_count, daily_reset_at, weekly_reset_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(uuid, quest_id) DO UPDATE SET
         status = excluded.status,
         started_at = excluded.started_at,
         completed_at = excluded.completed_at,
-        cooldown_until = excluded.cooldown_until
+        cooldown_until = excluded.cooldown_until,
+        daily_count = excluded.daily_count,
+        weekly_count = excluded.weekly_count,
+        daily_reset_at = excluded.daily_reset_at,
+        weekly_reset_at = excluded.weekly_reset_at
       """;
   private static final String UPSERT_PROGRESS_SQL = """
       INSERT INTO player_quest_progress (uuid, quest_id, objective_index, progress)
@@ -62,8 +68,20 @@ public final class QuestJdbcRepository implements QuestRepository {
           long startedAt = rs.getLong(3);
           long completedAt = rs.getLong(4);
           long cooldownUntil = rs.getLong(5);
-          QuestStatus status = "COMPLETED".equalsIgnoreCase(statusRaw) ? QuestStatus.COMPLETED : QuestStatus.ACTIVE;
-          out.put(questId, new QuestPlayerQuest(questId, status, startedAt, completedAt, cooldownUntil, new int[0]));
+          int dailyCount = rs.getInt(6);
+          int weeklyCount = rs.getInt(7);
+          long dailyResetAt = rs.getLong(8);
+          long weeklyResetAt = rs.getLong(9);
+          QuestStatus status;
+          if ("COMPLETED".equalsIgnoreCase(statusRaw)) {
+            status = QuestStatus.COMPLETED;
+          } else if ("FAILED".equalsIgnoreCase(statusRaw)) {
+            status = QuestStatus.FAILED;
+          } else {
+            status = QuestStatus.ACTIVE;
+          }
+          out.put(questId, new QuestPlayerQuest(questId, status, startedAt, completedAt, cooldownUntil,
+              dailyCount, weeklyCount, dailyResetAt, weeklyResetAt, new int[0]));
         }
       }
     } catch (SQLException ex) {
@@ -79,7 +97,7 @@ public final class QuestJdbcRepository implements QuestRepository {
           int progress = rs.getInt(3);
           QuestPlayerQuest quest = out.get(questId);
           if (quest == null) {
-            quest = new QuestPlayerQuest(questId, QuestStatus.ACTIVE, 0L, 0L, 0L, new int[0]);
+            quest = new QuestPlayerQuest(questId, QuestStatus.ACTIVE, 0L, 0L, 0L, 0, 0, 0L, 0L, new int[0]);
             out.put(questId, quest);
           }
           quest.progress(index, progress);
@@ -104,6 +122,10 @@ public final class QuestJdbcRepository implements QuestRepository {
       statement.setLong(4, quest.startedAt());
       statement.setLong(5, quest.completedAt());
       statement.setLong(6, quest.cooldownUntil());
+      statement.setInt(7, quest.dailyCount());
+      statement.setInt(8, quest.weeklyCount());
+      statement.setLong(9, quest.dailyResetAt());
+      statement.setLong(10, quest.weeklyResetAt());
       statement.executeUpdate();
     } catch (SQLException ex) {
       logger.log(Level.WARNING, "[Quests] Failed to save quest state", ex);

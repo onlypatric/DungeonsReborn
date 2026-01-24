@@ -1,5 +1,6 @@
 package dev.patric.dungeonsreborn.gui.components.item;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -9,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiComponent;
 import dev.patric.dungeonsreborn.gui.GuiItem;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Label;
@@ -25,7 +27,7 @@ public final class ItemCompare implements Layout {
 
   private Function<Player, ItemStack> before = p -> null;
   private Function<Player, ItemStack> after = p -> null;
-  private GuiComponent arrow = new Label(GuiItems.named(Material.ARROW, Component.text("→")));
+  private GuiComponent arrow = new Label(GuiItems.head("RIGHT", GuiI18n.tr("gui.common.arrow"), List.of()));
 
   private ItemStack beforePlaceholder = GuiItem.of(Material.GRAY_STAINED_GLASS_PANE).displayName(Component.text(" ")).build();
   private ItemStack afterPlaceholder = beforePlaceholder;
@@ -77,4 +79,3 @@ public final class ItemCompare implements Layout {
     }
   }
 }
-

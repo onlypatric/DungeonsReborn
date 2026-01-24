@@ -21,7 +21,6 @@ import dev.patric.dungeonsreborn.mobs.MobSpawnerItems;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.locale.Locales;
-import dev.patric.dungeonsreborn.mobs.editor.menu.MobEditorListMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 
@@ -34,7 +33,6 @@ public final class MobsCommand {
     return Commands.literal("mobs")
         .executes(ctx -> help(ctx))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml)))
-        .then(Commands.literal("editor").executes(ctx -> editor(ctx, yaml, registry)))
         .then(Commands.literal("list").executes(ctx -> list(ctx, registry)))
         .then(Commands.literal("spawners").executes(ctx -> spawners(ctx, spawns)))
         .then(Commands.literal("loot")
@@ -494,25 +492,6 @@ public final class MobsCommand {
     }
     CommandMessages.send(sender, "messages.command.mobs.spawnerForced",
         Locales.placeholders("id", id));
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int editor(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, MobRegistry registry) {
-    if (yaml == null || registry == null) {
-      CommandMessages.send(ctx.getSource().getSender(), "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(ctx.getSource().getSender(), "labels.system.mobsEditor")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
-      CommandMessages.send(ctx.getSource().getSender(), "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.mobs.editor")) {
-      CommandMessages.send(player, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.mobs.editor"));
-      return Command.SINGLE_SUCCESS;
-    }
-    new MobEditorListMenu(yaml, registry).open(player);
     return Command.SINGLE_SUCCESS;
   }
 

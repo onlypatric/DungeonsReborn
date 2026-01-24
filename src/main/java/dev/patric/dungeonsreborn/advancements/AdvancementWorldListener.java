@@ -32,8 +32,12 @@ public final class AdvancementWorldListener implements Listener {
     if (player == null || !advancements.isEnabled()) {
       return;
     }
-    World world = player.getWorld();
-    if (worldAllowlist.isAllowed(world)) {
+    boolean allowed = advancements.isWorldAllowed(player, "root");
+    if (worldAllowlist != null) {
+      World world = player.getWorld();
+      allowed = allowed && worldAllowlist.isAllowed(world);
+    }
+    if (allowed) {
       advancements.grantRoot(player);
     }
   }

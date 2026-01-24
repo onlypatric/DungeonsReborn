@@ -23,6 +23,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.util.Vector;
+import org.bukkit.potion.PotionEffectType;
 
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
@@ -35,6 +37,7 @@ import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import dev.patric.dungeonsreborn.util.YamlValues;
+import net.kyori.adventure.text.Component;
 
 import net.kyori.adventure.bossbar.BossBar;
 
@@ -99,6 +102,7 @@ public final class MobYamlRegistry {
   private final Map<String, MobEggSpec> eggSpecs = new HashMap<>();
   private final Map<String, MobSpawnerBlockSpec> spawnerBlocks = new HashMap<>();
   private final Map<String, MobLootSpec> lootPools = new HashMap<>();
+  private final Map<String, MobStyleSpec> stylePresets = new HashMap<>();
   private List<String> lastErrors = List.of();
 
   public MobYamlRegistry(JavaPlugin plugin, EffectsEngine engine, EffectsYamlAbilities yamlAbilities,
@@ -313,6 +317,13 @@ public final class MobYamlRegistry {
     lootPools.putAll(nextLootPools);
     int loadedLootPools = nextLootPools.size();
 
+    Map<String, MobStyleSpec> nextStylePresets = new HashMap<>();
+    for (YamlSource source : sources) {
+      parseStylePresets(source.cfg(), nextStylePresets, errors, source.source());
+    }
+    stylePresets.clear();
+    stylePresets.putAll(nextStylePresets);
+
     Map<String, MobSpec> specs = new HashMap<>();
     for (YamlSource source : sources) {
       parseMobs(source.cfg(), specs, errors, source.source());
@@ -519,6 +530,21 @@ public final class MobYamlRegistry {
     if (template.groups() != null && !template.groups().isEmpty()) {
       node.set("groups", serializeSpawnerGroups(template.groups()));
     }
+    if (template.rules() != null && !template.rules().isEmpty()) {
+      node.set("rules", serializeSpawnRules(template.rules()));
+    }
+    if (template.maxAlivePerChunk() != null) {
+      if (template.maxAlivePerChunk() < 0) {
+        throw new IllegalArgumentException("spawn.maxAlivePerChunk must be >= 0");
+      }
+      node.set("maxAlivePerChunk", template.maxAlivePerChunk());
+    }
+    if (template.maxAlivePerPlayer() != null) {
+      if (template.maxAlivePerPlayer() < 0) {
+        throw new IllegalArgumentException("spawn.maxAlivePerPlayer must be >= 0");
+      }
+      node.set("maxAlivePerPlayer", template.maxAlivePerPlayer());
+    }
     if (template.respawnTicks() != null) {
       if (template.respawnTicks() < 0L) {
         throw new IllegalArgumentException("spawn.respawnTicks must be >= 0");
@@ -530,6 +556,18 @@ public final class MobYamlRegistry {
         throw new IllegalArgumentException("spawn.respawnJitterTicks must be >= 0");
       }
       node.set("respawnJitterTicks", template.respawnJitterTicks());
+    }
+    if (template.lifespanTicks() != null) {
+      if (template.lifespanTicks() < 0L) {
+        throw new IllegalArgumentException("spawn.lifespanTicks must be >= 0");
+      }
+      node.set("lifespanTicks", template.lifespanTicks());
+    }
+    if (template.spawnerDecayTicks() != null) {
+      if (template.spawnerDecayTicks() < 0L) {
+        throw new IllegalArgumentException("spawn.spawnerDecayTicks must be >= 0");
+      }
+      node.set("spawnerDecayTicks", template.spawnerDecayTicks());
     }
     if (template.radius() != null) {
       if (template.radius() < 0.0) {
@@ -729,12 +767,32 @@ public final class MobYamlRegistry {
     }
     Integer groupMaxAlive = node.contains("groupMaxAlive") ? node.getInt("groupMaxAlive") : null;
     List<MobSpawnGroupSpec> groups = parseSpawnerGroups(node.getMapList("groups"), base + ".groups");
+    MobSpawnRulesSpec rules = parseSpawnRules(node.get("rules"), base + ".rules");
+    Integer maxAlivePerChunk = node.contains("maxAlivePerChunk") ? node.getInt("maxAlivePerChunk") : null;
+    Integer maxAlivePerPlayer = node.contains("maxAlivePerPlayer") ? node.getInt("maxAlivePerPlayer") : null;
+    ConfigurationSection density = node.getConfigurationSection("density");
+    if (density != null) {
+      if (density.contains("maxAlivePerChunk")) {
+        maxAlivePerChunk = density.getInt("maxAlivePerChunk");
+      }
+      if (density.contains("maxAlivePerPlayer")) {
+        maxAlivePerPlayer = density.getInt("maxAlivePerPlayer");
+      }
+    }
     Long respawnTicks = node.contains("respawnTicks") ? node.getLong("respawnTicks") : null;
     Long respawnJitterTicks = node.contains("respawnJitterTicks") ? node.getLong("respawnJitterTicks") : null;
     if (node.contains("respawnJitterSeconds")) {
       respawnJitterTicks = Math.round(node.getDouble("respawnJitterSeconds") * 20.0);
     } else if (node.contains("respawnJitter")) {
       respawnJitterTicks = Math.round(node.getDouble("respawnJitter") * 20.0);
+    }
+    Long lifespanTicks = node.contains("lifespanTicks") ? node.getLong("lifespanTicks") : null;
+    if (lifespanTicks == null && node.contains("despawnTicks")) {
+      lifespanTicks = node.getLong("despawnTicks");
+    }
+    Long spawnerDecayTicks = node.contains("spawnerDecayTicks") ? node.getLong("spawnerDecayTicks") : null;
+    if (spawnerDecayTicks == null && node.contains("decayTicks")) {
+      spawnerDecayTicks = node.getLong("decayTicks");
     }
     Double radius = node.contains("radius") ? node.getDouble("radius") : null;
     Boolean allowBlockDamage = node.contains("allowBlockDamage") ? node.getBoolean("allowBlockDamage") : null;
@@ -830,6 +888,8 @@ public final class MobYamlRegistry {
         groups,
         respawnTicks,
         respawnJitterTicks,
+        lifespanTicks,
+        spawnerDecayTicks,
         radius,
         allowBlockDamage,
         activationRadius,
@@ -845,6 +905,9 @@ public final class MobYamlRegistry {
         tetherAction,
         tetherPullSpeed,
         tetherDespawnTicks,
+        maxAlivePerChunk,
+        maxAlivePerPlayer,
+        rules,
         hologramEnabled,
         hologramOffsetY,
         hologramFormat,
@@ -864,12 +927,20 @@ public final class MobYamlRegistry {
     }
 
     MobSpec.Builder builder = MobSpec.builder(id, type);
+    String tier = YamlValues.string(node, "tier", null);
+    if (tier != null) {
+      builder.tier(tier);
+    }
     String name = YamlValues.string(node, "name", null);
     if (name != null) {
       builder.displayName(name);
       builder.showName(node.getBoolean("showName", true));
     } else if (node.contains("showName")) {
       builder.showName(node.getBoolean("showName", false));
+    }
+    MobStyleSpec style = resolveStyleSpec(node, base, tier);
+    if (style != null) {
+      builder.style(style);
     }
 
     ConfigurationSection bossbar = node.getConfigurationSection("bossbar");
@@ -879,6 +950,14 @@ public final class MobYamlRegistry {
       BossBar.Overlay overlay = parseBossBarOverlay(YamlValues.string(bossbar, "overlay", "PROGRESS"), base + ".bossbar.overlay");
       MobBossBarAudience audience = parseBossBarAudience(YamlValues.string(bossbar, "audience", "ALL_PLAYERS"), base + ".bossbar.audience");
       builder.bossBar(new MobBossBarSpec(MobText.parse(title), color, overlay, audience));
+    }
+
+    MobModelSpec modelSpec = parseModelSpec(node.getConfigurationSection("model"), base + ".model");
+    if (modelSpec != null) {
+      builder.modelSpec(modelSpec);
+    }
+    if (node.contains("collidable")) {
+      builder.collidable(node.getBoolean("collidable"));
     }
 
     ConfigurationSection bossBroadcast = node.getConfigurationSection("bossBroadcast");
@@ -940,7 +1019,59 @@ public final class MobYamlRegistry {
       double damage = YamlValues.doubleValueStrict(raw, "damageMultiplier", 1.0);
       double speed = YamlValues.doubleValueStrict(raw, "speedMultiplier", 1.0);
       double follow = YamlValues.doubleValueStrict(raw, "followRangeMultiplier", 1.0);
-      builder.addVariant(new MobVariantSpec(Ids.normalize(variantId), weight, variantName, prefix, suffix, health, damage, speed, follow));
+      double scale = YamlValues.doubleValueStrict(raw, "scaleMultiplier",
+          YamlValues.doubleValueStrict(raw, "hitboxScale", 1.0));
+      Boolean collidable = raw.containsKey("collidable") ? YamlValues.bool(raw.get("collidable"), true) : null;
+      builder.addVariant(new MobVariantSpec(Ids.normalize(variantId), weight, variantName, prefix, suffix, health, damage,
+          speed, follow, scale, collidable));
+    }
+
+    List<Map<?, ?>> traits = node.getMapList("traits");
+    for (int i = 0; i < traits.size(); i++) {
+      Map<?, ?> raw = traits.get(i);
+      String traitId = YamlValues.string(raw, "id", "trait_" + i);
+      double weight = YamlValues.doubleValueStrict(raw, "weight", 1.0);
+      String traitName = YamlValues.string(raw, "name", null);
+      String prefix = YamlValues.string(raw, "namePrefix", null);
+      String suffix = YamlValues.string(raw, "nameSuffix", null);
+      double health = YamlValues.doubleValueStrict(raw, "healthMultiplier", 1.0);
+      double damage = YamlValues.doubleValueStrict(raw, "damageMultiplier", 1.0);
+      double speed = YamlValues.doubleValueStrict(raw, "speedMultiplier", 1.0);
+      double follow = YamlValues.doubleValueStrict(raw, "followRangeMultiplier", 1.0);
+      double scale = YamlValues.doubleValueStrict(raw, "scaleMultiplier", 1.0);
+      Map<DamageType, Double> traitResistances = new java.util.EnumMap<>(DamageType.class);
+      Object resistRaw = raw.get("resistances");
+      if (resistRaw instanceof Map<?, ?> resistMap) {
+        for (Map.Entry<?, ?> entry : resistMap.entrySet()) {
+          String key = entry.getKey() == null ? null : entry.getKey().toString();
+          if (key == null || key.isBlank()) {
+            continue;
+          }
+          DamageType resistType = parseDamageType(key, base + ".traits[" + i + "].resistances." + key);
+          double value = YamlValues.doubleValueStrict(resistMap, key, 1.0);
+          if (!Double.isFinite(value) || value < 0.0) {
+            throw new IllegalArgumentException(base + ".traits[" + i + "].resistances." + key + ": multiplier must be >= 0");
+          }
+          traitResistances.put(resistType, value);
+        }
+      }
+      builder.addTrait(new MobTraitSpec(Ids.normalize(traitId), weight, traitName, prefix, suffix, health, damage, speed, follow,
+          scale, java.util.Map.copyOf(traitResistances)));
+    }
+
+    ConfigurationSection composite = node.getConfigurationSection("composite");
+    if (composite != null) {
+      String mountId = YamlValues.string(composite, "mount", null);
+      String riderId = YamlValues.string(composite, "rider", null);
+      if (mountId == null || mountId.isBlank()) {
+        throw new IllegalArgumentException(base + ".composite.mount: missing mob id");
+      }
+      if (riderId == null || riderId.isBlank()) {
+        throw new IllegalArgumentException(base + ".composite.rider: missing mob id");
+      }
+      MobCompositeRole role = parseCompositeRole(YamlValues.string(composite, "role", "PRIMARY_MOUNT"), base + ".composite.role");
+      boolean keepAlive = composite.getBoolean("keepAliveTogether", true);
+      builder.composite(new MobCompositeSpec(Ids.normalize(mountId), Ids.normalize(riderId), role, keepAlive));
     }
 
     ConfigurationSection resistances = node.getConfigurationSection("resistances");
@@ -1072,12 +1203,100 @@ public final class MobYamlRegistry {
           .fleeSpeed(ai.getDouble("fleeSpeed", 0.35))
           .idleWanderRadius(ai.getDouble("idleWanderRadius", 6.0))
           .idleWanderIntervalTicks(ai.getLong("idleWanderIntervalTicks", 80L))
+          .roamRadius(ai.getDouble("roamRadius", 0.0))
           .kiteMinRange(ai.getDouble("kiteMinRange", 0.0))
           .kiteSpeed(ai.getDouble("kiteSpeed", 0.0))
-          .chaseSpeed(ai.getDouble("chaseSpeed", 0.25));
+          .chaseSpeed(ai.getDouble("chaseSpeed", 0.25))
+          .rageHealthRatio(ai.getDouble("rageHealthRatio", 0.0))
+          .rageSpeed(ai.getDouble("rageSpeed", 0.35))
+          .locomotionMode(parseLocomotionMode(YamlValues.string(ai, "locomotion", "GROUND"),
+              base + ".ai.locomotion"))
+          .avoidWater(ai.getBoolean("avoidWater", false))
+          .avoidLava(ai.getBoolean("avoidLava", false))
+          .preferGround(ai.getBoolean("preferGround", true));
       String mode = YamlValues.string(ai, "aggroTargetMode", "NEAREST_PLAYER");
       aiBuilder.aggroTargetMode(parseTargetMode(mode, base + ".ai.aggroTargetMode"));
+      String partyRule = YamlValues.string(ai, "partyRule", "NONE");
+      aiBuilder.partyRule(parsePartyRule(partyRule, base + ".ai.partyRule"));
+      List<Map<?, ?>> goals = ai.getMapList("goals");
+      for (int i = 0; i < goals.size(); i++) {
+        Map<?, ?> raw = goals.get(i);
+        String goalPath = base + ".ai.goals[" + i + "]";
+        aiBuilder.addGoal(parseAiGoal(raw, goalPath));
+      }
+      List<Map<?, ?>> guardPoints = ai.getMapList("guardPoints");
+      for (int i = 0; i < guardPoints.size(); i++) {
+        Map<?, ?> pointMap = guardPoints.get(i);
+        @SuppressWarnings("unused")
+        String pointPath = base + ".ai.guardPoints[" + i + "]";
+        double x = YamlValues.doubleValueStrict(pointMap, "x", 0.0);
+        double y = YamlValues.doubleValueStrict(pointMap, "y", 0.0);
+        double z = YamlValues.doubleValueStrict(pointMap, "z", 0.0);
+        aiBuilder.addGuardPoint(new Vector(x, y, z));
+      }
       builder.aiSpec(aiBuilder.build());
+    }
+
+    ConfigurationSection events = node.getConfigurationSection("events");
+    if (events != null) {
+      MobEventSpec.Builder eventBuilder = MobEventSpec.builder();
+      eventBuilder.onHit(parseEventAbility(events, "onHit", base + ".events.onHit", id));
+      eventBuilder.onHurt(parseEventAbility(events, "onHurt", base + ".events.onHurt", id));
+      eventBuilder.onTarget(parseEventAbility(events, "onTarget", base + ".events.onTarget", id));
+      eventBuilder.onKill(parseEventAbility(events, "onKill", base + ".events.onKill", id));
+      eventBuilder.onPhaseChange(parseEventAbility(events, "onPhaseChange", base + ".events.onPhaseChange", id));
+      eventBuilder.onDespawn(parseEventAbility(events, "onDespawn", base + ".events.onDespawn", id));
+      ConfigurationSection onIdle = events.getConfigurationSection("onIdle");
+      if (onIdle != null) {
+        String ability = parseEventAbility(onIdle, "ability", base + ".events.onIdle", id);
+        eventBuilder.onIdle(ability, onIdle.getLong("intervalTicks", 80L));
+      } else {
+        String ability = parseEventAbility(events, "onIdle", base + ".events.onIdle", id);
+        if (ability != null) {
+          eventBuilder.onIdle(ability, events.getLong("onIdleIntervalTicks", 80L));
+        }
+      }
+
+      ConfigurationSection onStuck = events.getConfigurationSection("onStuck");
+      if (onStuck != null) {
+        String ability = parseEventAbility(onStuck, "ability", base + ".events.onStuck", id);
+        eventBuilder.onStuck(ability, onStuck.getLong("intervalTicks", 60L),
+            onStuck.getDouble("distance", 0.35));
+      } else {
+        String ability = parseEventAbility(events, "onStuck", base + ".events.onStuck", id);
+        if (ability != null) {
+          eventBuilder.onStuck(ability, events.getLong("onStuckIntervalTicks", 60L),
+              events.getDouble("onStuckDistance", 0.35));
+        }
+      }
+
+      ConfigurationSection onNear = events.getConfigurationSection("onNear");
+      if (onNear != null) {
+        String ability = parseEventAbility(onNear, "ability", base + ".events.onNear", id);
+        eventBuilder.onNear(ability, onNear.getDouble("radius", 6.0), onNear.getLong("cooldownTicks", 40L));
+      } else {
+        String ability = parseEventAbility(events, "onNear", base + ".events.onNear", id);
+        if (ability != null) {
+          eventBuilder.onNear(ability, events.getDouble("onNearRadius", 6.0),
+              events.getLong("onNearCooldownTicks", 40L));
+        }
+      }
+
+      ConfigurationSection onSpawnTick = events.getConfigurationSection("onSpawnTick");
+      if (onSpawnTick != null) {
+        String ability = parseEventAbility(onSpawnTick, "ability", base + ".events.onSpawnTick", id);
+        eventBuilder.onSpawnTick(ability, onSpawnTick.getLong("intervalTicks", 20L));
+      } else {
+        String ability = parseEventAbility(events, "onSpawnTick", base + ".events.onSpawnTick", id);
+        if (ability != null) {
+          eventBuilder.onSpawnTick(ability, events.getLong("onSpawnTickIntervalTicks", 20L));
+        }
+      }
+
+      MobEventSpec built = eventBuilder.build();
+      if (!built.isEmpty()) {
+        builder.events(built);
+      }
     }
 
     ConfigurationSection attacks = node.getConfigurationSection("attacks");
@@ -1117,12 +1336,25 @@ public final class MobYamlRegistry {
     for (int i = 0; i < phases.size(); i++) {
       Map<?, ?> raw = phases.get(i);
       String path = base + ".phases[" + i + "]";
-      builder.addPhase(parsePhase(raw, path, id, i));
+      builder.addPhase(parsePhase(raw, path, id, i, tier));
     }
 
     MobManaDropSpec manaDrop = parseManaDrops(node, base + ".manaDrops");
     if (manaDrop != null && !manaDrop.isEmpty()) {
       builder.manaDrop(manaDrop);
+    }
+    MobManaDrainSpec manaDrain = parseManaDrain(node, base + ".manaDrain");
+    if (manaDrain != null && !manaDrain.isEmpty()) {
+      builder.manaDrain(manaDrain);
+    }
+
+    MobCombatSpec combat = parseCombat(node.getConfigurationSection("combat"), base + ".combat");
+    if (combat != null && !combat.isEmpty()) {
+      builder.combatSpec(combat);
+    }
+    List<Map<?, ?>> bonuses = node.getMapList("damageBonuses");
+    for (int i = 0; i < bonuses.size(); i++) {
+      builder.addDamageBonus(parseDamageBonus(bonuses.get(i), base + ".damageBonuses[" + i + "]"));
     }
 
     return builder.build();
@@ -1144,19 +1376,25 @@ public final class MobYamlRegistry {
     }
     MobAttackSpec.Builder builder = MobAttackSpec.builder(ability)
         .cooldownTicks(node.getLong("cooldownTicks", 40L))
+        .internalCooldownTicks(node.getLong("internalCooldownTicks", 0L))
         .trigger(parseTrigger(YamlValues.string(node, "trigger", "MELEE"), path + ".trigger"))
         .targetMode(parseTargetMode(YamlValues.string(node, "targetMode", "NEAREST_PLAYER"), path + ".targetMode"))
         .range(node.getDouble("range", 10.0))
         .chance(node.getDouble("chance", 1.0))
         .requireLineOfSight(node.getBoolean("requireLineOfSight", true))
-        .requireTarget(node.getBoolean("requireTarget", true));
+        .requireTarget(node.getBoolean("requireTarget", true))
+        .priorityWeight(node.getDouble("priorityWeight", 1.0));
+    ConfigurationSection aoe = node.getConfigurationSection("aoe");
+    if (aoe != null) {
+      builder.aoe(parseAttackAoE(aoe, path + ".aoe"));
+    }
     if (!engine.hasAbility(ability)) {
       throw new IllegalArgumentException(path + ".ability: ability not registered: " + ability);
     }
     return builder.build();
   }
 
-  private MobPhaseSpec parsePhase(Map<?, ?> raw, String path, String mobId, int index) {
+  private MobPhaseSpec parsePhase(Map<?, ?> raw, String path, String mobId, int index, String tier) {
     String id = YamlValues.string(raw, "id", "phase_" + (index + 1));
     double healthBelow = YamlValues.doubleValueStrict(raw, "healthBelow", YamlValues.doubleValueStrict(raw, "healthRatio", -1.0));
     if (healthBelow <= 0.0 || healthBelow > 1.0) {
@@ -1208,7 +1446,53 @@ public final class MobYamlRegistry {
         throw new IllegalArgumentException(path + ".passives: must be a list");
       }
     }
-    return new MobPhaseSpec(phaseId, healthBelow, main, secondary, passives);
+    ItemStack mainHand = null;
+    ItemStack offHand = null;
+    ItemStack head = null;
+    ItemStack chest = null;
+    ItemStack legs = null;
+    ItemStack feet = null;
+    Object equipmentRaw = raw.get("equipment");
+    if (equipmentRaw instanceof Map<?, ?> equipment) {
+      mainHand = itemFromEquipment(equipment.get("mainHand"), path + ".equipment.mainHand");
+      if (mainHand == null) {
+        mainHand = itemFromEquipment(equipment.get("mainhand"), path + ".equipment.mainhand");
+      }
+      offHand = itemFromEquipment(equipment.get("offHand"), path + ".equipment.offHand");
+      head = itemFromEquipment(equipment.get("head"), path + ".equipment.head");
+      chest = itemFromEquipment(equipment.get("chest"), path + ".equipment.chest");
+      legs = itemFromEquipment(equipment.get("legs"), path + ".equipment.legs");
+      feet = itemFromEquipment(equipment.get("feet"), path + ".equipment.feet");
+    }
+    Double scaleMultiplier = null;
+    if (raw.containsKey("scaleMultiplier") || raw.containsKey("scale") || raw.containsKey("hitboxScale")) {
+      double scale = YamlValues.doubleValueStrict(raw, "scaleMultiplier",
+          YamlValues.doubleValueStrict(raw, "hitboxScale", YamlValues.doubleValueStrict(raw, "scale", 1.0)));
+      if (!Double.isFinite(scale) || scale <= 0.0) {
+        throw new IllegalArgumentException(path + ".scaleMultiplier: must be > 0");
+      }
+      scaleMultiplier = scale;
+    }
+    Boolean collidable = raw.containsKey("collidable") ? YamlValues.bool(raw.get("collidable"), true) : null;
+    MobModelSpec modelSpec = null;
+    Object modelRaw = raw.get("model");
+    if (modelRaw instanceof ConfigurationSection section) {
+      modelSpec = parseModelSpec(section, path + ".model");
+    } else if (modelRaw instanceof Map<?, ?> modelMap) {
+      modelSpec = parseModelSpec(modelMap, path + ".model");
+    }
+    MobStyleSpec style = resolveStyleSpec(raw, path, tier);
+    return new MobPhaseSpec(phaseId, healthBelow, main, secondary, passives, mainHand, offHand, head, chest, legs, feet,
+        scaleMultiplier, collidable, modelSpec, style);
+  }
+
+  private static MobCompositeRole parseCompositeRole(String raw, String path) {
+    String key = raw == null ? "" : raw.trim().toUpperCase(Locale.ROOT);
+    return switch (key) {
+      case "PRIMARY_MOUNT", "MOUNT", "PRIMARYMOUNT" -> MobCompositeRole.PRIMARY_MOUNT;
+      case "PRIMARY_RIDER", "RIDER", "PRIMARYRIDER" -> MobCompositeRole.PRIMARY_RIDER;
+      default -> throw new IllegalArgumentException(path + ": invalid composite role " + raw);
+    };
   }
 
   private MobAttackSpec parseAttackMap(Map<?, ?> node, String path, String mobId, String attackKey) {
@@ -1247,6 +1531,8 @@ public final class MobYamlRegistry {
     if (mana == null) {
       return null;
     }
+    String resourceId = YamlValues.string(mana, "resource", "mana");
+    double cap = mana.getDouble("cap", 0.0);
     Object killerRaw = mana.get("killer");
     Object nearbyRaw = mana.get("nearby");
     MobManaDropSpec.MobManaRange killer = parseManaRange(killerRaw, path + ".killer");
@@ -1260,7 +1546,30 @@ public final class MobYamlRegistry {
     if (radius < 0.0) {
       throw new IllegalArgumentException(path + ".nearby.radius: must be >= 0");
     }
-    return new MobManaDropSpec(killer, nearby, radius);
+    MobManaDropSpec.MobManaStreak streak = parseManaStreak(mana.get("streak"), path + ".streak");
+    List<MobManaDropSpec.MobManaTier> tiers = parseManaTiers(mana.get("tiers"), path + ".tiers");
+    return new MobManaDropSpec(resourceId, killer, nearby, radius, cap, streak, tiers);
+  }
+
+  private MobManaDrainSpec parseManaDrain(ConfigurationSection node, String path) {
+    ConfigurationSection drain = node.getConfigurationSection("manaDrain");
+    if (drain == null) {
+      drain = node.getConfigurationSection("resourceDrain");
+    }
+    if (drain == null) {
+      return null;
+    }
+    String resourceId = YamlValues.string(drain, "resource", "mana");
+    double amount = drain.getDouble("amount", 0.0);
+    double chance = drain.getDouble("chance", 1.0);
+    long cooldownTicks = 0L;
+    if (drain.contains("cooldownTicks")) {
+      cooldownTicks = Math.max(0L, drain.getLong("cooldownTicks", 0L));
+    } else if (drain.contains("cooldownSeconds") || drain.contains("cooldown")) {
+      double seconds = drain.getDouble("cooldownSeconds", drain.getDouble("cooldown", 0.0));
+      cooldownTicks = Math.max(0L, Math.round(seconds * 20.0));
+    }
+    return new MobManaDrainSpec(resourceId, amount, chance, cooldownTicks);
   }
 
   private static MobManaDropSpec.MobManaRange parseManaRange(Object raw, String path) {
@@ -1282,6 +1591,58 @@ public final class MobYamlRegistry {
       return new MobManaDropSpec.MobManaRange(min, max);
     }
     throw new IllegalArgumentException(path + ": must be a number or object");
+  }
+
+  private static MobManaDropSpec.MobManaStreak parseManaStreak(Object raw, String path) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof ConfigurationSection sec) {
+      raw = sec.getValues(false);
+    }
+    if (!(raw instanceof Map<?, ?> map)) {
+      throw new IllegalArgumentException(path + ": must be an object");
+    }
+    int maxStacks = Math.max(0, YamlValues.intValue(map.get("maxStacks"), YamlValues.intValue(map.get("max"), 0)));
+    double multiplier = YamlValues.doubleValue(map.get("multiplier"), 0.0);
+    long windowTicks = Math.max(0L, YamlValues.longValue(map.get("windowTicks"), 0L));
+    if (windowTicks <= 0L && map.containsKey("windowSeconds")) {
+      windowTicks = Math.max(0L, Math.round(YamlValues.doubleValue(map.get("windowSeconds"), 0.0) * 20.0));
+    }
+    if (maxStacks <= 0 || multiplier <= 0.0) {
+      return null;
+    }
+    return new MobManaDropSpec.MobManaStreak(maxStacks, multiplier, windowTicks);
+  }
+
+  private static List<MobManaDropSpec.MobManaTier> parseManaTiers(Object raw, String path) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<?> list = raw instanceof List<?> items ? items : List.of(raw);
+    if (list.isEmpty()) {
+      return List.of();
+    }
+    List<MobManaDropSpec.MobManaTier> tiers = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      Object entry = list.get(i);
+      String entryPath = path + "[" + i + "]";
+      if (entry instanceof ConfigurationSection sec) {
+        entry = sec.getValues(false);
+      }
+      if (!(entry instanceof Map<?, ?> map)) {
+        throw new IllegalArgumentException(entryPath + ": must be an object");
+      }
+      double weight = YamlValues.doubleValue(map.get("weight"), 1.0);
+      double min = YamlValues.doubleValue(map.get("minMultiplier"), YamlValues.doubleValue(map.get("min"), 1.0));
+      double max = YamlValues.doubleValue(map.get("maxMultiplier"), YamlValues.doubleValue(map.get("max"), min));
+      if (map.containsKey("multiplier")) {
+        min = YamlValues.doubleValue(map.get("multiplier"), min);
+        max = min;
+      }
+      tiers.add(new MobManaDropSpec.MobManaTier(weight, min, max));
+    }
+    return List.copyOf(tiers);
   }
 
   private List<MobSpawnSpec> parseSpawns(YamlConfiguration cfg, Map<String, MobSpec> specs, List<String> errors, String source) {
@@ -1339,6 +1700,8 @@ public final class MobYamlRegistry {
         } else if (node.contains("respawnJitter")) {
           respawnJitterTicks = Math.round(node.getDouble("respawnJitter", 0.0) * 20.0);
         }
+        long lifespanTicks = node.getLong("lifespanTicks", node.getLong("despawnTicks", 0L));
+        long spawnerDecayTicks = node.getLong("spawnerDecayTicks", node.getLong("decayTicks", 0L));
         double radius = node.getDouble("radius", 0.0);
         double attackRadius = node.contains("attackRadius") ? node.getDouble("attackRadius") : 0.0;
         ConfigurationSection attack = node.getConfigurationSection("attack");
@@ -1423,6 +1786,12 @@ public final class MobYamlRegistry {
         if (respawnJitterTicks < 0L) {
           throw new IllegalArgumentException(base + ".respawnJitterTicks: must be >= 0");
         }
+        if (lifespanTicks < 0L) {
+          throw new IllegalArgumentException(base + ".lifespanTicks: must be >= 0");
+        }
+        if (spawnerDecayTicks < 0L) {
+          throw new IllegalArgumentException(base + ".spawnerDecayTicks: must be >= 0");
+        }
         if (radius < 0.0) {
           throw new IllegalArgumentException(base + ".radius: must be >= 0");
         }
@@ -1465,6 +1834,18 @@ public final class MobYamlRegistry {
         }
         boolean respectDifficulty = node.getBoolean("respectDifficulty", true);
         boolean respectGameRules = node.getBoolean("respectGameRules", true);
+        MobSpawnRulesSpec rules = parseSpawnRules(node.get("rules"), base + ".rules");
+        int maxAlivePerChunk = node.getInt("maxAlivePerChunk", 0);
+        int maxAlivePerPlayer = node.getInt("maxAlivePerPlayer", 0);
+        ConfigurationSection density = node.getConfigurationSection("density");
+        if (density != null) {
+          if (density.contains("maxAlivePerChunk")) {
+            maxAlivePerChunk = density.getInt("maxAlivePerChunk", maxAlivePerChunk);
+          }
+          if (density.contains("maxAlivePerPlayer")) {
+            maxAlivePerPlayer = density.getInt("maxAlivePerPlayer", maxAlivePerPlayer);
+          }
+        }
         if (activation != null) {
           if (activation.contains("respectDifficulty")) {
             respectDifficulty = activation.getBoolean("respectDifficulty", respectDifficulty);
@@ -1485,15 +1866,22 @@ public final class MobYamlRegistry {
         if (tetherDespawnTicks < 0L) {
           throw new IllegalArgumentException(base + ".tetherDespawnTicks: must be >= 0");
         }
+        if (maxAlivePerChunk < 0) {
+          throw new IllegalArgumentException(base + ".maxAlivePerChunk: must be >= 0");
+        }
+        if (maxAlivePerPlayer < 0) {
+          throw new IllegalArgumentException(base + ".maxAlivePerPlayer: must be >= 0");
+        }
         validateSpawnerGroups(groups, specs, base + ".groups");
         if ((mobId == null || mobId.isBlank()) && (groups == null || groups.isEmpty())) {
           throw new IllegalArgumentException(base + ".mob: missing mob id (no groups configured)");
         }
         out.add(new MobSpawnSpec(id, mobId == null ? "" : mobId, world, location, count, maxAlive, groupId, groupMaxAlive,
             groups, respawnTicks,
-            respawnJitterTicks, radius, allowBlockDamage, activationRadius, beamEnabled, beamParticle, beamStep,
+            respawnJitterTicks, lifespanTicks, spawnerDecayTicks, radius, allowBlockDamage, activationRadius, beamEnabled, beamParticle, beamStep,
             respectDifficulty, respectGameRules, attackRadius, attackIgnoreOutsideRadius, attackIgnorePlayers, tetherRadius,
             tetherAction == null ? MobSpawnTetherAction.NONE : tetherAction, tetherPullSpeed, tetherDespawnTicks,
+            maxAlivePerChunk, maxAlivePerPlayer, rules,
             hologramEnabled, hologramOffsetY, hologramFormat, enabled));
       } catch (Exception ex) {
         errors.add(base + ": " + ex.getMessage());
@@ -1851,6 +2239,24 @@ public final class MobYamlRegistry {
     return null;
   }
 
+  private ItemStack itemFromEquipment(Object raw, String path) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof ItemStack stack) {
+      return stack.getType() == Material.AIR ? null : stack.clone();
+    }
+    if (raw instanceof String str) {
+      Material material = parseMaterial(str, path);
+      return material == Material.AIR ? null : new ItemStack(material);
+    }
+    if (raw instanceof Map<?, ?> map) {
+      ItemStack item = itemFromMap(map, path);
+      return item == null || item.getType() == Material.AIR ? null : item;
+    }
+    return null;
+  }
+
   private static Material parseMaterial(String raw, String path) {
     try {
       return Material.valueOf(raw.trim().toUpperCase(Locale.ROOT));
@@ -1945,6 +2351,8 @@ public final class MobYamlRegistry {
     int rolls = loot.getInt("rolls", 1);
     int bonusRolls = loot.getInt("bonusRolls", 0);
     double luckMultiplier = loot.getDouble("luckMultiplier", 0.0);
+    boolean deterministic = loot.getBoolean("deterministic", false);
+    long seedSalt = parseSeedSalt(loot.get("seed"), base + ".seed");
     List<String> announceTiers = loot.getStringList("announceTiers");
     String announceTemplate = loot.getString("announceTemplate", null);
     List<Map<?, ?>> rawGuaranteed = loot.getMapList("guaranteed");
@@ -1953,8 +2361,11 @@ public final class MobYamlRegistry {
     }
     List<MobDropSpec> guaranteed = parseDrops(rawGuaranteed, base + ".guaranteed", true);
     List<MobDropSpec> drops = parseDrops(loot.getMapList("drops"), base + ".drops", false);
-    return new MobLootSpec(clearVanilla, guaranteed, drops, rolls, bonusRolls,
-        luckMultiplier, new java.util.LinkedHashSet<>(announceTiers), announceTemplate);
+    List<MobLootPoolRef> pools = parseLootPoolRefs(loot.getMapList("pools"), base + ".pools");
+    List<MobLootBundleSpec> bundles = parseLootBundles(loot.getMapList("bundles"), base + ".bundles");
+    MobLootRewardSpec rewards = parseLootRewards(loot.getConfigurationSection("rewards"), base + ".rewards");
+    return new MobLootSpec(clearVanilla, guaranteed, drops, pools, bundles, rewards, rolls, bonusRolls,
+        luckMultiplier, new java.util.LinkedHashSet<>(announceTiers), announceTemplate, deterministic, seedSalt);
   }
 
   private static boolean hasLootData(ConfigurationSection loot) {
@@ -1966,7 +2377,194 @@ public final class MobYamlRegistry {
         || loot.contains("luckMultiplier")
         || loot.contains("clearVanilla")
         || loot.contains("announceTiers")
-        || loot.contains("announceTemplate");
+        || loot.contains("announceTemplate")
+        || loot.contains("deterministic")
+        || loot.contains("seed")
+        || loot.contains("pools")
+        || loot.contains("bundles")
+        || loot.contains("rewards");
+  }
+
+  private void parseStylePresets(YamlConfiguration cfg, Map<String, MobStyleSpec> presets, List<String> errors,
+      String source) {
+    ConfigurationSection section = cfg.getConfigurationSection("stylePresets");
+    if (section == null) {
+      return;
+    }
+    for (String rawId : section.getKeys(false)) {
+      ConfigurationSection presetSec = section.getConfigurationSection(rawId);
+      if (presetSec == null) {
+        continue;
+      }
+      String id = Ids.normalize(rawId);
+      String base = prefix(source) + "stylePresets." + rawId;
+      try {
+        presets.put(id, parseStyleSpec(presetSec, base));
+      } catch (RuntimeException ex) {
+        errors.add(base + ": " + ex.getMessage());
+      }
+    }
+  }
+
+  private MobStyleSpec resolveStyleSpec(ConfigurationSection node, String base, String tier) {
+    if (node == null) {
+      return null;
+    }
+    String presetId = YamlValues.string(node, "stylePreset", null);
+    if (presetId == null && tier != null) {
+      presetId = tier;
+    }
+    MobStyleSpec preset = null;
+    if (presetId != null) {
+      MobStyleSpec resolved = stylePresets.get(Ids.normalize(presetId));
+      if (resolved == null) {
+        throw new IllegalArgumentException(base + ".stylePreset: unknown preset " + presetId);
+      }
+      preset = resolved;
+    }
+    ConfigurationSection styleSection = node.getConfigurationSection("style");
+    MobStyleSpec local = styleSection == null ? null : parseStyleSpec(styleSection, base + ".style");
+    if (preset == null) {
+      return local;
+    }
+    if (local == null) {
+      return preset;
+    }
+    Component nameplate = local.nameplate() != null ? local.nameplate() : preset.nameplate();
+    Boolean showName = local.showName() != null ? local.showName() : preset.showName();
+    MobBossBarSpec bossBar = local.bossBar() != null ? local.bossBar() : preset.bossBar();
+    return new MobStyleSpec(nameplate, showName, bossBar);
+  }
+
+  private MobStyleSpec resolveStyleSpec(Map<?, ?> raw, String base, String tier) {
+    if (raw == null) {
+      return null;
+    }
+    String presetId = YamlValues.string(raw, "stylePreset", null);
+    if (presetId == null && tier != null) {
+      presetId = tier;
+    }
+    MobStyleSpec preset = null;
+    if (presetId != null) {
+      MobStyleSpec resolved = stylePresets.get(Ids.normalize(presetId));
+      if (resolved == null) {
+        throw new IllegalArgumentException(base + ".stylePreset: unknown preset " + presetId);
+      }
+      preset = resolved;
+    }
+    MobStyleSpec local = null;
+    Object styleRaw = raw.get("style");
+    if (styleRaw instanceof ConfigurationSection section) {
+      local = parseStyleSpec(section, base + ".style");
+    } else if (styleRaw instanceof Map<?, ?> styleMap) {
+      local = parseStyleSpec(styleMap, base + ".style");
+    }
+    if (preset == null) {
+      return local;
+    }
+    if (local == null) {
+      return preset;
+    }
+    Component nameplate = local.nameplate() != null ? local.nameplate() : preset.nameplate();
+    Boolean showName = local.showName() != null ? local.showName() : preset.showName();
+    MobBossBarSpec bossBar = local.bossBar() != null ? local.bossBar() : preset.bossBar();
+    return new MobStyleSpec(nameplate, showName, bossBar);
+  }
+
+  private MobStyleSpec parseStyleSpec(ConfigurationSection section, String base) {
+    String name = YamlValues.string(section, "name", null);
+    Component nameplate = name == null ? null : MobText.parse(name);
+    Boolean showName = null;
+    if (section.contains("showName")) {
+      showName = section.getBoolean("showName");
+    } else if (name != null) {
+      showName = Boolean.TRUE;
+    }
+    MobBossBarSpec bossBar = parseStyleBossBar(section.getConfigurationSection("bossbar"),
+        base + ".bossbar");
+    return new MobStyleSpec(nameplate, showName, bossBar);
+  }
+
+  private MobStyleSpec parseStyleSpec(Map<?, ?> map, String base) {
+    String name = YamlValues.string(map, "name", null);
+    Component nameplate = name == null ? null : MobText.parse(name);
+    Boolean showName = null;
+    if (map.containsKey("showName")) {
+      showName = YamlValues.bool(map.get("showName"), true);
+    } else if (name != null) {
+      showName = Boolean.TRUE;
+    }
+    MobBossBarSpec bossBar = null;
+    Object bossRaw = map.get("bossbar");
+    if (bossRaw instanceof ConfigurationSection section) {
+      bossBar = parseStyleBossBar(section, base + ".bossbar");
+    } else if (bossRaw instanceof Map<?, ?> bossMap) {
+      bossBar = parseStyleBossBar(bossMap, base + ".bossbar");
+    }
+    return new MobStyleSpec(nameplate, showName, bossBar);
+  }
+
+  private MobBossBarSpec parseStyleBossBar(ConfigurationSection section, String base) {
+    if (section == null) {
+      return null;
+    }
+    if (section.contains("enabled") && !section.getBoolean("enabled", true)) {
+      return null;
+    }
+    String title = YamlValues.string(section, "title", null);
+    if (title == null || title.isBlank()) {
+      return null;
+    }
+    BossBar.Color color = parseBossBarColor(YamlValues.string(section, "color", "RED"), base + ".color");
+    BossBar.Overlay overlay = parseBossBarOverlay(YamlValues.string(section, "overlay", "PROGRESS"), base + ".overlay");
+    MobBossBarAudience audience = parseBossBarAudience(YamlValues.string(section, "audience", "ALL_PLAYERS"),
+        base + ".audience");
+    return new MobBossBarSpec(MobText.parse(title), color, overlay, audience);
+  }
+
+  private MobBossBarSpec parseStyleBossBar(Map<?, ?> map, String base) {
+    if (map == null) {
+      return null;
+    }
+    Boolean enabled = map.containsKey("enabled") ? YamlValues.bool(map.get("enabled"), true) : null;
+    if (enabled != null && !enabled) {
+      return null;
+    }
+    String title = YamlValues.string(map, "title", null);
+    if (title == null || title.isBlank()) {
+      return null;
+    }
+    BossBar.Color color = parseBossBarColor(YamlValues.string(map, "color", "RED"), base + ".color");
+    BossBar.Overlay overlay = parseBossBarOverlay(YamlValues.string(map, "overlay", "PROGRESS"), base + ".overlay");
+    MobBossBarAudience audience = parseBossBarAudience(YamlValues.string(map, "audience", "ALL_PLAYERS"),
+        base + ".audience");
+    return new MobBossBarSpec(MobText.parse(title), color, overlay, audience);
+  }
+
+  private MobModelSpec parseModelSpec(ConfigurationSection section, String path) {
+    if (section == null) {
+      return null;
+    }
+    String id = YamlValues.string(section, "id", YamlValues.string(section, "modelId", null));
+    if (id == null || id.isBlank()) {
+      return null;
+    }
+    String animation = YamlValues.string(section, "animation", YamlValues.string(section, "animationId", null));
+    double speed = section.getDouble("animationSpeed", 1.0);
+    return new MobModelSpec(id, animation, speed);
+  }
+
+  private MobModelSpec parseModelSpec(Map<?, ?> map, String path) {
+    if (map == null) {
+      return null;
+    }
+    String id = YamlValues.string(map, "id", YamlValues.string(map, "modelId", null));
+    if (id == null || id.isBlank()) {
+      return null;
+    }
+    String animation = YamlValues.string(map, "animation", YamlValues.string(map, "animationId", null));
+    double speed = YamlValues.doubleValue(map.get("animationSpeed"), 1.0);
+    return new MobModelSpec(id, animation, speed);
   }
 
   private static MobLootSpec mergeLootSpec(MobLootSpec pool, MobLootSpec local, ConfigurationSection loot) {
@@ -1975,6 +2573,9 @@ public final class MobYamlRegistry {
     int bonusRolls = loot.contains("bonusRolls") ? local.bonusRolls() : pool.bonusRolls();
     double luckMultiplier = loot.contains("luckMultiplier") ? local.luckMultiplier() : pool.luckMultiplier();
     String announceTemplate = loot.contains("announceTemplate") ? local.announceTemplate() : pool.announceTemplate();
+    boolean deterministic = loot.contains("deterministic") ? local.deterministic() : pool.deterministic();
+    long seedSalt = loot.contains("seed") ? local.seedSalt() : pool.seedSalt();
+    MobLootRewardSpec rewards = loot.contains("rewards") ? local.rewards() : pool.rewards();
     java.util.LinkedHashSet<String> announceTiers = new java.util.LinkedHashSet<>(pool.announceTiers());
     if (loot.contains("announceTiers")) {
       announceTiers.clear();
@@ -1984,8 +2585,77 @@ public final class MobYamlRegistry {
     guaranteed.addAll(local.guaranteed());
     List<MobDropSpec> drops = new ArrayList<>(pool.drops());
     drops.addAll(local.drops());
-    return new MobLootSpec(clearVanilla, guaranteed, drops, rolls, bonusRolls, luckMultiplier, announceTiers,
-        announceTemplate);
+    List<MobLootPoolRef> pools = new ArrayList<>(pool.pools());
+    pools.addAll(local.pools());
+    List<MobLootBundleSpec> bundles = new ArrayList<>(pool.bundles());
+    bundles.addAll(local.bundles());
+    return new MobLootSpec(clearVanilla, guaranteed, drops, pools, bundles, rewards, rolls, bonusRolls, luckMultiplier,
+        announceTiers, announceTemplate, deterministic, seedSalt);
+  }
+
+  private List<MobLootPoolRef> parseLootPoolRefs(List<Map<?, ?>> rawPools, String basePath) {
+    List<MobLootPoolRef> pools = new ArrayList<>();
+    for (int i = 0; i < rawPools.size(); i++) {
+      Map<?, ?> raw = rawPools.get(i);
+      String path = basePath + "[" + i + "]";
+      String poolId = YamlValues.string(raw, "id",
+          YamlValues.string(raw, "pool", YamlValues.string(raw, "lootPool", null)));
+      if (poolId == null || poolId.isBlank()) {
+        throw new IllegalArgumentException(path + ".id: missing loot pool id");
+      }
+      String normalized = Ids.normalize(poolId);
+      Integer rolls = readInt(raw.get("rolls"));
+      Integer bonusRolls = readInt(raw.get("bonusRolls"));
+      Double luckMultiplier = readDouble(raw.get("luckMultiplier"));
+      double chance = normalizeChance(
+          YamlValues.doubleValueStrict(raw, "chance", 100.0), path + ".chance");
+      Boolean deterministic = raw.containsKey("deterministic")
+          ? Boolean.valueOf(String.valueOf(raw.get("deterministic"))) : null;
+      Long seedSalt = raw.containsKey("seed") ? parseSeedSalt(raw.get("seed"), path + ".seed") : null;
+      MobDropConditions conditions = parseDropConditions(raw.get("conditions"), path + ".conditions");
+      pools.add(new MobLootPoolRef(normalized, rolls, bonusRolls, luckMultiplier, chance, deterministic, seedSalt,
+          conditions));
+    }
+    return pools;
+  }
+
+  private List<MobLootBundleSpec> parseLootBundles(List<Map<?, ?>> rawBundles, String basePath) {
+    List<MobLootBundleSpec> bundles = new ArrayList<>();
+    for (int i = 0; i < rawBundles.size(); i++) {
+      Map<?, ?> raw = rawBundles.get(i);
+      String path = basePath + "[" + i + "]";
+      List<MobDropSpec> drops = parseDrops(castMapList(raw.get("drops")), path + ".drops", false);
+      int rolls = YamlValues.intValueStrict(raw, "rolls", 1);
+      int bonusRolls = YamlValues.intValueStrict(raw, "bonusRolls", 0);
+      double chance = normalizeChance(
+          YamlValues.doubleValueStrict(raw, "chance", 100.0), path + ".chance");
+      MobDropConditions conditions = parseDropConditions(raw.get("conditions"), path + ".conditions");
+      bundles.add(new MobLootBundleSpec(drops, rolls, bonusRolls, chance, conditions));
+    }
+    return bundles;
+  }
+
+  private MobLootRewardSpec parseLootRewards(ConfigurationSection rewards, String base) {
+    if (rewards == null) {
+      return null;
+    }
+    int xp = Math.max(0, rewards.getInt("xp", 0));
+    int skillPoints = Math.max(0, rewards.getInt("skillPoints", rewards.getInt("skillpoints", 0)));
+    int tokens = Math.max(0, rewards.getInt("tokens", rewards.getInt("token", 0)));
+    List<ItemStack> rewardItems = new ArrayList<>();
+    List<Map<?, ?>> rawItems = rewards.getMapList("items");
+    for (int i = 0; i < rawItems.size(); i++) {
+      Map<?, ?> raw = rawItems.get(i);
+      String path = base + ".items[" + i + "]";
+      ItemStack item = itemFromMap(raw, path);
+      if (item == null) {
+        throw new IllegalArgumentException(path + ".item: missing item");
+      }
+      int amount = YamlValues.intValueStrict(raw, "amount", item.getAmount());
+      item.setAmount(Math.max(1, amount));
+      rewardItems.add(item);
+    }
+    return new MobLootRewardSpec(xp, skillPoints, tokens, rewardItems);
   }
 
   private List<MobDropSpec> parseDrops(List<Map<?, ?>> rawDrops, String basePath, boolean guaranteed) {
@@ -2000,6 +2670,8 @@ public final class MobYamlRegistry {
       String tier = YamlValues.string(raw, "tier", null);
       String tokenId = YamlValues.string(raw, "token", YamlValues.string(raw, "tokenTier", null));
       boolean tokenDrop = tokenId != null && !tokenId.isBlank();
+      MobDropConditions conditions = parseDropConditions(raw.get("conditions"), path + ".conditions");
+      int[] durabilityRange = parseDurabilityRange(raw, path, item);
       double chance = guaranteed ? 1.0 : normalizeChance(
           YamlValues.doubleValueStrict(raw, "chance", 100.0),
           path + ".chance");
@@ -2013,9 +2685,187 @@ public final class MobYamlRegistry {
         minAmount = YamlValues.intValueStrict(raw, "min", item.getAmount());
         maxAmount = YamlValues.intValueStrict(raw, "max", minAmount);
       }
-      drops.add(new MobDropSpec(item, tier, chance, minAmount, maxAmount, tokenDrop));
+      Integer minDamage = durabilityRange == null ? null : durabilityRange[0];
+      Integer maxDamage = durabilityRange == null ? null : durabilityRange[1];
+      drops.add(new MobDropSpec(item, tier, chance, minAmount, maxAmount, tokenDrop, conditions, minDamage, maxDamage));
     }
     return drops;
+  }
+
+  private static MobDropConditions parseDropConditions(Object raw, String path) {
+    if (raw == null) {
+      return MobDropConditions.none();
+    }
+    Map<String, Object> map = raw instanceof ConfigurationSection section ? section.getValues(false) : castMap(raw);
+    Integer minMob = readInt(map.get("minMobLevel"));
+    if (minMob == null) {
+      minMob = readInt(map.get("minLevel"));
+    }
+    Integer maxMob = readInt(map.get("maxMobLevel"));
+    if (maxMob == null) {
+      maxMob = readInt(map.get("maxLevel"));
+    }
+    java.util.Set<String> biomes = parseBiomeSet(map.get("biomes"));
+    if (biomes.isEmpty()) {
+      biomes = parseBiomeSet(map.get("biome"));
+    }
+    Integer minTime = readInt(map.get("minTime"));
+    Integer maxTime = readInt(map.get("maxTime"));
+    Double minLuck = readDouble(map.get("minLuck"));
+    Double maxLuck = readDouble(map.get("maxLuck"));
+    return new MobDropConditions(minMob, maxMob, biomes, minTime, maxTime, minLuck, maxLuck);
+  }
+
+  private static int[] parseDurabilityRange(Map<?, ?> raw, String path, ItemStack item) {
+    Object durabilityRaw = raw.get("durability");
+    if (durabilityRaw == null) {
+      durabilityRaw = raw.get("damage");
+    }
+    Integer min = null;
+    Integer max = null;
+    if (durabilityRaw instanceof Map<?, ?> range) {
+      min = readInt(range.get("min"));
+      max = readInt(range.get("max"));
+    } else if (durabilityRaw instanceof Number num) {
+      min = num.intValue();
+      max = min;
+    }
+    if (min == null && max == null) {
+      min = readInt(raw.get("durabilityMin"));
+      max = readInt(raw.get("durabilityMax"));
+    }
+    if (min == null && max == null) {
+      min = readInt(raw.get("damageMin"));
+      max = readInt(raw.get("damageMax"));
+    }
+    if (min == null && max == null) {
+      return null;
+    }
+    int maxDurability = item.getType().getMaxDurability();
+    if (maxDurability <= 0) {
+      throw new IllegalArgumentException(path + ".durability: item is not damageable");
+    }
+    int minVal = Math.max(0, min == null ? 0 : min);
+    int maxVal = Math.max(minVal, max == null ? minVal : max);
+    minVal = Math.min(minVal, maxDurability);
+    maxVal = Math.min(maxVal, maxDurability);
+    return new int[] { minVal, maxVal };
+  }
+
+  private static java.util.Set<String> parseBiomeSet(Object raw) {
+    if (raw == null) {
+      return java.util.Set.of();
+    }
+    java.util.Set<String> out = new java.util.LinkedHashSet<>();
+    if (raw instanceof List<?> list) {
+      for (Object entry : list) {
+        String value = entry == null ? null : String.valueOf(entry);
+        String normalized = normalizeBiome(value);
+        if (normalized != null) {
+          out.add(normalized);
+        }
+      }
+      return java.util.Set.copyOf(out);
+    }
+    String normalized = normalizeBiome(String.valueOf(raw));
+    if (normalized != null) {
+      out.add(normalized);
+    }
+    return java.util.Set.copyOf(out);
+  }
+
+  private static String normalizeBiome(String raw) {
+    if (raw == null) {
+      return null;
+    }
+    String trimmed = raw.trim();
+    if (trimmed.isEmpty()) {
+      return null;
+    }
+    String key = trimmed.toLowerCase(Locale.ROOT);
+    int idx = key.indexOf(':');
+    if (idx >= 0) {
+      key = key.substring(idx + 1);
+    }
+    return key;
+  }
+
+  private static Integer readInt(Object raw) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof Number num) {
+      return num.intValue();
+    }
+    try {
+      return Integer.parseInt(String.valueOf(raw));
+    } catch (NumberFormatException ex) {
+      return null;
+    }
+  }
+
+  private static Double readDouble(Object raw) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof Number num) {
+      return num.doubleValue();
+    }
+    try {
+      return Double.parseDouble(String.valueOf(raw));
+    } catch (NumberFormatException ex) {
+      return null;
+    }
+  }
+
+  private static long parseSeedSalt(Object raw, String path) {
+    if (raw == null) {
+      return 0L;
+    }
+    if (raw instanceof Number num) {
+      long value = num.longValue();
+      if (value < 0L) {
+        throw new IllegalArgumentException(path + ": seed must be >= 0");
+      }
+      return value;
+    }
+    String text = String.valueOf(raw).trim();
+    if (text.isEmpty()) {
+      return 0L;
+    }
+    try {
+      long value = Long.parseLong(text);
+      if (value < 0L) {
+        throw new IllegalArgumentException(path + ": seed must be >= 0");
+      }
+      return value;
+    } catch (NumberFormatException ex) {
+      return Math.abs(text.hashCode());
+    }
+  }
+
+  private static Map<String, Object> castMap(Object raw) {
+    if (!(raw instanceof Map<?, ?> mapRaw)) {
+      return java.util.Map.of();
+    }
+    Map<String, Object> out = new java.util.LinkedHashMap<>();
+    for (Map.Entry<?, ?> entry : mapRaw.entrySet()) {
+      out.put(String.valueOf(entry.getKey()), entry.getValue());
+    }
+    return out;
+  }
+
+  private static List<Map<?, ?>> castMapList(Object raw) {
+    if (!(raw instanceof List<?> listRaw)) {
+      return List.of();
+    }
+    List<Map<?, ?>> out = new ArrayList<>();
+    for (Object entry : listRaw) {
+      if (entry instanceof Map<?, ?> map) {
+        out.add(map);
+      }
+    }
+    return out;
   }
 
   private static double normalizeChance(double rawChance, String path) {
@@ -2029,20 +2879,21 @@ public final class MobYamlRegistry {
     return chance;
   }
 
-  private static Map<String, Object> castMap(Map<?, ?> map) {
-    Map<String, Object> out = new java.util.LinkedHashMap<>();
-    for (Map.Entry<?, ?> entry : map.entrySet()) {
-      out.put(String.valueOf(entry.getKey()), entry.getValue());
-    }
-    return out;
-  }
-
   private static MobAttackTrigger parseTrigger(String raw, String path) {
     String s = raw.trim().toUpperCase(Locale.ROOT);
     try {
       return MobAttackTrigger.valueOf(s);
     } catch (Exception ex) {
       throw new IllegalArgumentException(path + ": invalid trigger=" + raw);
+    }
+  }
+
+  private static MobPartyRule parsePartyRule(String raw, String path) {
+    String s = raw.trim().toUpperCase(Locale.ROOT);
+    try {
+      return MobPartyRule.valueOf(s);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid partyRule=" + raw);
     }
   }
 
@@ -2055,6 +2906,38 @@ public final class MobYamlRegistry {
     }
   }
 
+  private static MobAiGoalSpec parseAiGoal(Map<?, ?> raw, String path) {
+    String typeRaw = YamlValues.string(raw, "type", null);
+    if (typeRaw == null || typeRaw.isBlank()) {
+      throw new IllegalArgumentException(path + ".type: missing goal type");
+    }
+    MobAiGoalType type;
+    try {
+      type = MobAiGoalType.valueOf(typeRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ".type: invalid goal type=" + typeRaw);
+    }
+    int priority = YamlValues.intValueStrict(raw, "priority", 100);
+    double radius = YamlValues.doubleValueStrict(raw, "radius", 6.0);
+    double speed = YamlValues.doubleValueStrict(raw, "speed", 0.2);
+    long intervalTicks = YamlValues.longValueStrict(raw, "intervalTicks", 80L);
+    List<Vector> points = new ArrayList<>();
+    Object pointsRaw = raw.get("points");
+    if (pointsRaw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Object entry = list.get(i);
+        if (!(entry instanceof Map<?, ?> pointMap)) {
+          throw new IllegalArgumentException(path + ".points[" + i + "]: expected map");
+        }
+        double x = YamlValues.doubleValueStrict(pointMap, "x", 0.0);
+        double y = YamlValues.doubleValueStrict(pointMap, "y", 0.0);
+        double z = YamlValues.doubleValueStrict(pointMap, "z", 0.0);
+        points.add(new Vector(x, y, z));
+      }
+    }
+    return new MobAiGoalSpec(type, priority, radius, speed, intervalTicks, points);
+  }
+
   private static MobBossBarAudience parseBossBarAudience(String raw, String path) {
     String s = raw.trim().toUpperCase(Locale.ROOT);
     try {
@@ -2062,6 +2945,113 @@ public final class MobYamlRegistry {
     } catch (Exception ex) {
       throw new IllegalArgumentException(path + ": invalid audience=" + raw);
     }
+  }
+
+  private static MobLocomotionMode parseLocomotionMode(String raw, String path) {
+    String s = raw.trim().toUpperCase(Locale.ROOT);
+    try {
+      return MobLocomotionMode.valueOf(s);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid locomotion=" + raw);
+    }
+  }
+
+  private MobCombatSpec parseCombat(ConfigurationSection section, String path) {
+    if (section == null) {
+      return null;
+    }
+    MobCombatSpec.Builder builder = MobCombatSpec.builder()
+        .armorMultiplier(section.getDouble("armorMultiplier", 1.0))
+        .blockChance(section.getDouble("blockChance", 0.0))
+        .blockMultiplier(section.getDouble("blockMultiplier", 0.5))
+        .blockCooldownTicks(section.getLong("blockCooldownTicks", 40L));
+    List<String> immune = section.getStringList("immuneEffects");
+    for (String raw : immune) {
+      PotionEffectType type = parsePotionEffect(raw, path + ".immuneEffects");
+      builder.addImmuneEffect(type);
+    }
+    List<String> cleanse = section.getStringList("cleanseEffects");
+    for (String raw : cleanse) {
+      PotionEffectType type = parsePotionEffect(raw, path + ".cleanseEffects");
+      builder.addCleanseEffect(type);
+    }
+    return builder.build();
+  }
+
+  private MobDamageBonusSpec parseDamageBonus(Map<?, ?> raw, String path) {
+    String typeRaw = YamlValues.string(raw, "damageType", null);
+    if (typeRaw == null || typeRaw.isBlank()) {
+      throw new IllegalArgumentException(path + ".damageType: missing damageType");
+    }
+    DamageType type = parseDamageType(typeRaw, path + ".damageType");
+    String filterRaw = YamlValues.string(raw, "target", "ANY");
+    MobTargetFilter filter;
+    try {
+      filter = MobTargetFilter.valueOf(filterRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ".target: invalid target=" + filterRaw);
+    }
+    double multiplier = YamlValues.doubleValueStrict(raw, "multiplier", 1.0);
+    return new MobDamageBonusSpec(type, filter, multiplier);
+  }
+
+  private MobAttackAoESpec parseAttackAoE(ConfigurationSection section, String path) {
+    String shapeRaw = YamlValues.string(section, "shape", "SPHERE");
+    MobAttackAoEShape shape;
+    try {
+      shape = MobAttackAoEShape.valueOf(shapeRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ".shape: invalid shape=" + shapeRaw);
+    }
+    double radius = section.getDouble("radius", 3.0);
+    double height = section.getDouble("height", radius);
+    double angle = section.getDouble("angleDegrees", 90.0);
+    int maxTargets = section.getInt("maxTargets", 0);
+    String filterRaw = YamlValues.string(section, "filter", "ANY");
+    MobTargetFilter filter;
+    try {
+      filter = MobTargetFilter.valueOf(filterRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ".filter: invalid filter=" + filterRaw);
+    }
+    return new MobAttackAoESpec(shape, radius, height, angle, maxTargets, filter);
+  }
+
+  private PotionEffectType parsePotionEffect(String raw, String path) {
+    if (raw == null || raw.isBlank()) {
+      throw new IllegalArgumentException(path + ": empty potion effect");
+    }
+    String normalized = raw.trim().toLowerCase(Locale.ROOT);
+    org.bukkit.NamespacedKey key = normalized.contains(":")
+        ? org.bukkit.NamespacedKey.fromString(normalized)
+        : org.bukkit.NamespacedKey.minecraft(normalized);
+    PotionEffectType type = key == null ? null : org.bukkit.Registry.POTION_EFFECT_TYPE.get(key);
+    if (type == null) {
+      throw new IllegalArgumentException(path + ": invalid potion effect=" + raw);
+    }
+    return type;
+  }
+
+  private String parseEventAbility(ConfigurationSection section, String key, String path, String mobId) {
+    if (section == null || !section.contains(key)) {
+      return null;
+    }
+    Object raw = section.get(key);
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof String text) {
+      return text.isBlank() ? null : text;
+    }
+    if (raw instanceof Map<?, ?> map) {
+      Object abilityRaw = map.get("ability");
+      if (abilityRaw instanceof String text) {
+        return text.isBlank() ? null : text;
+      }
+    }
+    String scriptId = "mob:" + mobId + ":" + key;
+    Action action = yamlAbilities.compileScriptAction(raw, path + ".script", scriptId);
+    return registerScriptAbility(scriptId, action, path + ".script");
   }
 
   private static BossBar.Color parseBossBarColor(String raw, String path) {
@@ -2150,7 +3140,8 @@ public final class MobYamlRegistry {
       if (entries.isEmpty()) {
         continue;
       }
-      groups.add(new MobSpawnGroupSpec(chance, count, entries));
+      MobSpawnRulesSpec rules = parseSpawnRules(raw.get("rules"), entryBase + ".rules");
+      groups.add(new MobSpawnGroupSpec(chance, count, entries, rules));
     }
     return groups;
   }
@@ -2225,9 +3216,249 @@ public final class MobYamlRegistry {
         mobs.add(entryMap);
       }
       map.put("mobs", mobs);
+      if (group.rules() != null && !group.rules().isEmpty()) {
+        map.put("rules", serializeSpawnRules(group.rules()));
+      }
       out.add(map);
     }
     return out;
+  }
+
+  private MobSpawnRulesSpec parseSpawnRules(Object raw, String base) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof ConfigurationSection sec) {
+      return parseSpawnRulesSection(sec, base);
+    }
+    if (raw instanceof Map<?, ?> map) {
+      return parseSpawnRulesMap(map, base);
+    }
+    throw new IllegalArgumentException(base + ": rules must be a map");
+  }
+
+  private MobSpawnRulesSpec parseSpawnRulesSection(ConfigurationSection rules, String base) {
+    Set<NamespacedKey> allowBiomes = parseBiomeKeys(rules.get("biomes"), base + ".biomes");
+    if (allowBiomes == null) {
+      allowBiomes = parseBiomeKeys(rules.get("allowedBiomes"), base + ".allowedBiomes");
+    }
+    Set<NamespacedKey> denyBiomes = parseBiomeKeys(rules.get("excludeBiomes"), base + ".excludeBiomes");
+    if (denyBiomes == null) {
+      denyBiomes = parseBiomeKeys(rules.get("deniedBiomes"), base + ".deniedBiomes");
+    }
+    List<MobSpawnTimeWindow> timeWindows = parseTimeWindows(rules.get("time"), base + ".time");
+    if (timeWindows.isEmpty()) {
+      timeWindows = parseTimeWindows(rules.get("times"), base + ".times");
+    }
+    Integer minY = rules.contains("minY") ? rules.getInt("minY") : null;
+    Integer maxY = rules.contains("maxY") ? rules.getInt("maxY") : null;
+    List<MobSpawnRegionSpec> regions = parseRegions(rules.get("regions"), base + ".regions");
+    if (regions.isEmpty()) {
+      regions = parseRegions(rules.get("region"), base + ".region");
+    }
+    int minLevel = rules.getInt("minLevel", 0);
+    int maxLevel = rules.getInt("maxLevel", 0);
+    int minParty = rules.getInt("minPartySize", 0);
+    int maxParty = rules.getInt("maxPartySize", 0);
+    int minPlayers = rules.getInt("minPlayers", 0);
+    int maxPlayers = rules.getInt("maxPlayers", 0);
+    MobSpawnDungeonRule dungeonRule = MobSpawnDungeonRule.parse(rules.getString("dungeon"), base + ".dungeon");
+    return new MobSpawnRulesSpec(allowBiomes, denyBiomes, timeWindows, minY, maxY, regions,
+        minLevel, maxLevel, minParty, maxParty, minPlayers, maxPlayers, dungeonRule);
+  }
+
+  private MobSpawnRulesSpec parseSpawnRulesMap(Map<?, ?> rules, String base) {
+    Set<NamespacedKey> allowBiomes = parseBiomeKeys(rules.get("biomes"), base + ".biomes");
+    if (allowBiomes == null) {
+      allowBiomes = parseBiomeKeys(rules.get("allowedBiomes"), base + ".allowedBiomes");
+    }
+    Set<NamespacedKey> denyBiomes = parseBiomeKeys(rules.get("excludeBiomes"), base + ".excludeBiomes");
+    if (denyBiomes == null) {
+      denyBiomes = parseBiomeKeys(rules.get("deniedBiomes"), base + ".deniedBiomes");
+    }
+    List<MobSpawnTimeWindow> timeWindows = parseTimeWindows(rules.get("time"), base + ".time");
+    if (timeWindows.isEmpty()) {
+      timeWindows = parseTimeWindows(rules.get("times"), base + ".times");
+    }
+    Integer minY = rules.containsKey("minY") ? YamlValues.intValueStrict(rules, "minY", 0) : null;
+    Integer maxY = rules.containsKey("maxY") ? YamlValues.intValueStrict(rules, "maxY", 0) : null;
+    List<MobSpawnRegionSpec> regions = parseRegions(rules.get("regions"), base + ".regions");
+    if (regions.isEmpty()) {
+      regions = parseRegions(rules.get("region"), base + ".region");
+    }
+    int minLevel = YamlValues.intValue(rules.get("minLevel"), 0);
+    int maxLevel = YamlValues.intValue(rules.get("maxLevel"), 0);
+    int minParty = YamlValues.intValue(rules.get("minPartySize"), 0);
+    int maxParty = YamlValues.intValue(rules.get("maxPartySize"), 0);
+    int minPlayers = YamlValues.intValue(rules.get("minPlayers"), 0);
+    int maxPlayers = YamlValues.intValue(rules.get("maxPlayers"), 0);
+    MobSpawnDungeonRule dungeonRule = MobSpawnDungeonRule.parse(YamlValues.string(rules, "dungeon", null), base + ".dungeon");
+    return new MobSpawnRulesSpec(allowBiomes, denyBiomes, timeWindows, minY, maxY, regions,
+        minLevel, maxLevel, minParty, maxParty, minPlayers, maxPlayers, dungeonRule);
+  }
+
+  private Set<NamespacedKey> parseBiomeKeys(Object raw, String base) {
+    if (raw == null) {
+      return null;
+    }
+    Set<NamespacedKey> out = new HashSet<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Object item = list.get(i);
+        if (item instanceof String s) {
+          out.add(parseBiomeKey(s, base + "[" + i + "]"));
+        }
+      }
+    } else if (raw instanceof String s) {
+      out.add(parseBiomeKey(s, base));
+    }
+    return out.isEmpty() ? null : out;
+  }
+
+  private NamespacedKey parseBiomeKey(String raw, String path) {
+    if (raw == null || raw.isBlank()) {
+      throw new IllegalArgumentException(path + ": biome key is empty");
+    }
+    String normalized = raw.trim().toLowerCase(Locale.ROOT);
+    if (!normalized.contains(":")) {
+      normalized = "minecraft:" + normalized;
+    }
+    NamespacedKey key = NamespacedKey.fromString(normalized);
+    if (key == null) {
+      throw new IllegalArgumentException(path + ": invalid biome key " + raw);
+    }
+    return key;
+  }
+
+  private List<MobSpawnTimeWindow> parseTimeWindows(Object raw, String base) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<MobSpawnTimeWindow> out = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Object entry = list.get(i);
+        out.addAll(parseTimeWindow(entry, base + "[" + i + "]"));
+      }
+    } else {
+      out.addAll(parseTimeWindow(raw, base));
+    }
+    return out;
+  }
+
+  private List<MobSpawnTimeWindow> parseTimeWindow(Object raw, String base) {
+    if (raw instanceof Map<?, ?> map) {
+      int start = YamlValues.intValue(map.get("start"), 0);
+      int end = YamlValues.intValue(map.get("end"), 23999);
+      return List.of(new MobSpawnTimeWindow(start, end));
+    }
+    if (raw instanceof String s) {
+      String key = s.trim().toLowerCase(Locale.ROOT);
+      return switch (key) {
+        case "day" -> List.of(new MobSpawnTimeWindow(0, 12000));
+        case "night" -> List.of(new MobSpawnTimeWindow(13000, 23000));
+        case "dawn" -> List.of(new MobSpawnTimeWindow(23000, 23999));
+        case "dusk" -> List.of(new MobSpawnTimeWindow(12000, 13000));
+        default -> throw new IllegalArgumentException(base + ": unknown time window " + s);
+      };
+    }
+    return List.of();
+  }
+
+  private List<MobSpawnRegionSpec> parseRegions(Object raw, String base) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<MobSpawnRegionSpec> out = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        out.addAll(parseRegionEntry(list.get(i), base + "[" + i + "]"));
+      }
+    } else {
+      out.addAll(parseRegionEntry(raw, base));
+    }
+    return out;
+  }
+
+  private List<MobSpawnRegionSpec> parseRegionEntry(Object raw, String base) {
+    if (raw instanceof Map<?, ?> map) {
+      Map<?, ?> min = map.get("min") instanceof Map<?, ?> minMap ? minMap : null;
+      Map<?, ?> max = map.get("max") instanceof Map<?, ?> maxMap ? maxMap : null;
+      double minX = min != null ? YamlValues.doubleValue(min.get("x"), 0.0) : YamlValues.doubleValue(map.get("minX"), 0.0);
+      double minY = min != null ? YamlValues.doubleValue(min.get("y"), 0.0) : YamlValues.doubleValue(map.get("minY"), 0.0);
+      double minZ = min != null ? YamlValues.doubleValue(min.get("z"), 0.0) : YamlValues.doubleValue(map.get("minZ"), 0.0);
+      double maxX = max != null ? YamlValues.doubleValue(max.get("x"), 0.0) : YamlValues.doubleValue(map.get("maxX"), 0.0);
+      double maxY = max != null ? YamlValues.doubleValue(max.get("y"), 0.0) : YamlValues.doubleValue(map.get("maxY"), 0.0);
+      double maxZ = max != null ? YamlValues.doubleValue(max.get("z"), 0.0) : YamlValues.doubleValue(map.get("maxZ"), 0.0);
+      return List.of(MobSpawnRegionSpec.normalized(minX, minY, minZ, maxX, maxY, maxZ));
+    }
+    return List.of();
+  }
+
+  private Map<String, Object> serializeSpawnRules(MobSpawnRulesSpec rules) {
+    Map<String, Object> map = new LinkedHashMap<>();
+    if (rules.allowedBiomes() != null && !rules.allowedBiomes().isEmpty()) {
+      map.put("biomes", rules.allowedBiomes().stream().map(NamespacedKey::toString).toList());
+    }
+    if (rules.excludedBiomes() != null && !rules.excludedBiomes().isEmpty()) {
+      map.put("excludeBiomes", rules.excludedBiomes().stream().map(NamespacedKey::toString).toList());
+    }
+    if (rules.timeWindows() != null && !rules.timeWindows().isEmpty()) {
+      List<Map<String, Object>> times = new ArrayList<>();
+      for (MobSpawnTimeWindow window : rules.timeWindows()) {
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("start", window.startTick());
+        entry.put("end", window.endTick());
+        times.add(entry);
+      }
+      map.put("time", times);
+    }
+    if (rules.minY() != null) {
+      map.put("minY", rules.minY());
+    }
+    if (rules.maxY() != null) {
+      map.put("maxY", rules.maxY());
+    }
+    if (rules.regions() != null && !rules.regions().isEmpty()) {
+      List<Map<String, Object>> regions = new ArrayList<>();
+      for (MobSpawnRegionSpec region : rules.regions()) {
+        Map<String, Object> entry = new LinkedHashMap<>();
+        Map<String, Object> min = new LinkedHashMap<>();
+        Map<String, Object> max = new LinkedHashMap<>();
+        min.put("x", region.minX());
+        min.put("y", region.minY());
+        min.put("z", region.minZ());
+        max.put("x", region.maxX());
+        max.put("y", region.maxY());
+        max.put("z", region.maxZ());
+        entry.put("min", min);
+        entry.put("max", max);
+        regions.add(entry);
+      }
+      map.put("regions", regions);
+    }
+    if (rules.minPlayerLevel() > 0) {
+      map.put("minLevel", rules.minPlayerLevel());
+    }
+    if (rules.maxPlayerLevel() > 0) {
+      map.put("maxLevel", rules.maxPlayerLevel());
+    }
+    if (rules.minPartySize() > 0) {
+      map.put("minPartySize", rules.minPartySize());
+    }
+    if (rules.maxPartySize() > 0) {
+      map.put("maxPartySize", rules.maxPartySize());
+    }
+    if (rules.minPlayers() > 0) {
+      map.put("minPlayers", rules.minPlayers());
+    }
+    if (rules.maxPlayers() > 0) {
+      map.put("maxPlayers", rules.maxPlayers());
+    }
+    if (rules.dungeonRule() != null && rules.dungeonRule() != MobSpawnDungeonRule.ANY) {
+      map.put("dungeon", rules.dungeonRule().name().toLowerCase(Locale.ROOT));
+    }
+    return map;
   }
 
   private String registerScriptAbility(String abilityId, Action action, String path) {

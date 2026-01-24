@@ -1,0 +1,11 @@
+messages.upgrades.apply.conflict: <yellow>Il potenziamento sovrascrive uno slot esistente.</yellow>
+messages.upgrades.apply.denied: <red>Potenziamento non compatibile.</red>
+messages.upgrades.apply.notEnoughTokens: <red>Gettoni insufficienti.</red>
+messages.upgrades.apply.ok: <green>Potenziamento applicato:</green> <white>{upgrade}</white>
+messages.upgrades.apply.requirements: <red>Requisiti non soddisfatti.</red>
+messages.upgrades.apply.xpLocked: <red>Richiede livello {level} per applicare questo potenziamento.</red>
+messages.upgrades.merge.applied: <green>Upgrade applicato.</green>
+messages.upgrades.merge.error: <red>{error}</red>
+messages.upgrades.merge.missingInputs: <red>Metti un oggetto e un libro upgrade prima.</red>
+messages.upgrades.reload.errors: <red>Ricarica potenziamenti con {errors} errori. Controlla i log.</red>
+messages.upgrades.reload.ok: <green>Potenziamenti caricati:</green> <white>{count}</white>

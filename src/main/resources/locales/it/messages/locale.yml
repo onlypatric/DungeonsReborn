@@ -1,0 +1,3 @@
+messages.locale.missingKey: <yellow>Chiave locale mancante:</yellow> <white>{key}</white>
+messages.locale.reload.errors: <red>Ricarica lingue con {errors} errori. Controlla i log.</red>
+messages.locale.reload.ok: <green>Lingue caricate:</green> <white>{count}</white>

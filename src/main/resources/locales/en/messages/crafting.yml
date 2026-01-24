@@ -1,0 +1,21 @@
+messages.crafting.editor.inputRequired: Messages crafting editor inputRequired
+messages.crafting.editor.invalidId: Messages crafting editor invalidId
+messages.crafting.editor.missingId: Messages crafting editor missingId
+messages.crafting.editor.missingItem: Messages crafting editor missingItem
+messages.crafting.editor.missingOutput: Messages crafting editor missingOutput
+messages.crafting.editor.multipleOutputs: Messages crafting editor multipleOutputs
+messages.crafting.editor.multipleVariants: Messages crafting editor multipleVariants
+messages.crafting.editor.noInputs: Messages crafting editor noInputs
+messages.crafting.editor.notFound: Messages crafting editor notFound
+messages.crafting.editor.outputRequired: Messages crafting editor outputRequired
+messages.crafting.editor.registryMissing: Messages crafting editor registryMissing
+messages.crafting.editor.reloaded: Reloaded
+messages.crafting.editor.saveFailed: Messages crafting editor saveFailed
+messages.crafting.editor.saved: Saved
+messages.crafting.editor.tooManyIngredients: Messages crafting editor tooManyIngredients
+messages.crafting.editor.unsupportedIngredient: Messages crafting editor unsupportedIngredient
+messages.crafting.match.invalid: <red>Recipe invalid.</red>
+messages.crafting.match.none: <gray>No recipe matches.</gray>
+messages.crafting.reload.errors: <red>Recipe reload had {errors} errors. Check logs.</red>
+messages.crafting.reload.ok: <green>Recipes loaded:</green> <white>{count}</white>
+messages.crafting.result.taken: <green>Crafted:</green> <white>{item}</white>

@@ -15,6 +15,8 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly(files("lib/UltimateAdvancementAPI-Plugin-2.7.2.jar"))
     implementation("org.xerial:sqlite-jdbc:3.46.0.0")
+    testImplementation("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 }
 
 java {
@@ -26,6 +28,10 @@ java {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.release.set(21)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.processResources {

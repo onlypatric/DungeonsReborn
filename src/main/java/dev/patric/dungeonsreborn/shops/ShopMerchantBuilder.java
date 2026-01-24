@@ -24,8 +24,10 @@ public final class ShopMerchantBuilder {
     }
     Merchant merchant = Bukkit.createMerchant();
     List<MerchantRecipe> recipes = new ArrayList<>();
-    for (ShopTradeSpec trade : spec.trades()) {
-      MerchantRecipe recipe = buildRecipe(trade, tokenSpec, itemResolver, spec, stockManager, allowExperienceReward);
+    List<ShopTradeSpec> trades = spec.trades();
+    for (int i = 0; i < trades.size(); i++) {
+      ShopTradeSpec trade = trades.get(i);
+      MerchantRecipe recipe = buildRecipe(trade, i, tokenSpec, itemResolver, spec, stockManager, allowExperienceReward);
       if (recipe != null) {
         recipes.add(recipe);
       }
@@ -34,7 +36,7 @@ public final class ShopMerchantBuilder {
     return merchant;
   }
 
-  public static MerchantRecipe buildRecipe(ShopTradeSpec trade, ShopTokenSpec tokenSpec,
+  public static MerchantRecipe buildRecipe(ShopTradeSpec trade, int tradeIndex, ShopTokenSpec tokenSpec,
       Function<String, ItemStack> itemResolver, ShopSpec spec, ShopStockManager stockManager,
       boolean allowExperienceReward) {
     if (trade == null) {
@@ -44,11 +46,12 @@ public final class ShopMerchantBuilder {
     if (result == null) {
       return null;
     }
-    ItemStack previewResult = applyPreviewLore(result, trade.previewLore(), trade, spec, tokenSpec, stockManager);
+    ItemStack previewResult = applyPreviewLore(result, trade.previewLore(), trade, spec, tradeIndex, tokenSpec,
+        stockManager);
     int maxUses = trade.maxUses();
     MerchantRecipe recipe = new MerchantRecipe(previewResult, maxUses <= 0 ? Integer.MAX_VALUE : maxUses);
     recipe.setExperienceReward(allowExperienceReward && trade.experienceReward());
-    recipe.setPriceMultiplier(resolvePriceMultiplier(trade, spec, stockManager));
+    recipe.setPriceMultiplier(resolvePriceMultiplier(trade, spec, tradeIndex, stockManager, result));
     ShopIngredientSpec buyA = trade.buyA();
     ShopIngredientSpec buyB = trade.buyB();
     if (buyA != null) {
@@ -72,15 +75,17 @@ public final class ShopMerchantBuilder {
       return null;
     }
     return switch (ingredient.type()) {
-      case TOKEN, ITEM_ID, ITEMSTACK, MATERIAL -> ingredient.resolve(itemResolver, tokenSpec);
+      case TOKEN, ITEM_ID, ITEMSTACK, MATERIAL, TAG, CATEGORY, MATCHER, CURRENCY, XP, CUSTOM_XP ->
+          ingredient.resolve(itemResolver, tokenSpec);
     };
   }
 
-  private static float resolvePriceMultiplier(ShopTradeSpec trade, ShopSpec spec, ShopStockManager stockManager) {
+  private static float resolvePriceMultiplier(ShopTradeSpec trade, ShopSpec spec, int tradeIndex,
+      ShopStockManager stockManager, ItemStack result) {
     float base = trade.priceMultiplier();
     ShopDynamicPriceSpec dynamic = trade.dynamicPrice();
     if (dynamic == null) {
-      return base;
+      return applyItemMultipliers(base, trade, spec, result);
     }
     double min = dynamic.minMultiplier();
     double max = dynamic.maxMultiplier();
@@ -88,24 +93,41 @@ public final class ShopMerchantBuilder {
       max = min;
     }
     double computed = switch (dynamic.mode()) {
-      case STOCK -> computeStockMultiplier(spec, stockManager, min, max);
+      case STOCK -> computeStockMultiplier(spec, trade, tradeIndex, stockManager, min, max);
       case TIME -> computeTimeMultiplier(dynamic.periodSeconds(), min, max);
     };
     if (Double.isNaN(computed)) {
-      return base;
+      return applyItemMultipliers(base, trade, spec, result);
     }
-    return (float) computed;
+    return applyItemMultipliers((float) computed, trade, spec, result);
   }
 
-  private static double computeStockMultiplier(ShopSpec spec, ShopStockManager stockManager, double min, double max) {
-    if (spec == null || stockManager == null || spec.stock() == null || !spec.stock().enabled()) {
+  private static float applyItemMultipliers(float base, ShopTradeSpec trade, ShopSpec spec, ItemStack result) {
+    float mult = base;
+    if (trade != null && trade.priceModifiers() != null && !trade.priceModifiers().isEmpty()) {
+      mult *= trade.priceModifiers().multiplierFor(result);
+      return mult;
+    }
+    if (spec != null && spec.priceModifiers() != null && !spec.priceModifiers().isEmpty()) {
+      mult *= spec.priceModifiers().multiplierFor(result);
+    }
+    return mult;
+  }
+
+  private static double computeStockMultiplier(ShopSpec spec, ShopTradeSpec trade, int tradeIndex,
+      ShopStockManager stockManager, double min, double max) {
+    if (spec == null || stockManager == null) {
       return Double.NaN;
     }
-    int maxStock = spec.stock().max();
+    ShopStockSpec stock = trade != null && trade.stock() != null ? trade.stock() : spec.stock();
+    if (stock == null || !stock.enabled()) {
+      return Double.NaN;
+    }
+    int maxStock = stock.max();
     if (maxStock <= 0) {
       return Double.NaN;
     }
-    int currentStock = stockManager.currentStock(spec.id(), spec.stock());
+    int currentStock = stockManager.currentStock(spec.id(), tradeIndex, null, stock);
     if (currentStock < 0) {
       return Double.NaN;
     }
@@ -121,7 +143,7 @@ public final class ShopMerchantBuilder {
   }
 
   private static ItemStack applyPreviewLore(ItemStack result, List<String> previewLore, ShopTradeSpec trade,
-      ShopSpec spec, ShopTokenSpec tokenSpec, ShopStockManager stockManager) {
+      ShopSpec spec, int tradeIndex, ShopTokenSpec tokenSpec, ShopStockManager stockManager) {
     if (result == null) {
       return null;
     }
@@ -135,7 +157,7 @@ public final class ShopMerchantBuilder {
       lore.addAll(GuiMini.loreMm(previewLore));
     }
     appendTokenBreakdown(lore, trade);
-    appendStockLore(lore, spec, stockManager);
+    appendStockLore(lore, spec, trade, tradeIndex, stockManager);
     meta.lore(lore);
     copy.setItemMeta(meta);
     return copy;
@@ -172,15 +194,16 @@ public final class ShopMerchantBuilder {
     return Math.max(0, ingredient.amount());
   }
 
-  private static void appendStockLore(List<Component> lore, ShopSpec spec, ShopStockManager stockManager) {
+  private static void appendStockLore(List<Component> lore, ShopSpec spec, ShopTradeSpec trade, int tradeIndex,
+      ShopStockManager stockManager) {
     if (lore == null || spec == null || stockManager == null) {
       return;
     }
-    ShopStockSpec stock = spec.stock();
+    ShopStockSpec stock = trade != null && trade.stock() != null ? trade.stock() : spec.stock();
     if (stock == null || !stock.enabled()) {
       return;
     }
-    int current = stockManager.currentStock(spec.id(), stock);
+    int current = stockManager.currentStock(spec.id(), tradeIndex, null, stock);
     if (current < 0) {
       return;
     }

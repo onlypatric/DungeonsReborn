@@ -11,6 +11,9 @@ public final class MobAttackSpec {
   private final double chance;
   private final boolean requireLineOfSight;
   private final boolean requireTarget;
+  private final double priorityWeight;
+  private final long internalCooldownTicks;
+  private final MobAttackAoESpec aoeSpec;
   private final java.util.function.Consumer<MobCastContext> beforeCast;
   private final java.util.function.Consumer<MobCastContext> afterCast;
 
@@ -23,6 +26,9 @@ public final class MobAttackSpec {
     this.chance = builder.chance;
     this.requireLineOfSight = builder.requireLineOfSight;
     this.requireTarget = builder.requireTarget;
+    this.priorityWeight = builder.priorityWeight;
+    this.internalCooldownTicks = builder.internalCooldownTicks;
+    this.aoeSpec = builder.aoeSpec;
     this.beforeCast = builder.beforeCast;
     this.afterCast = builder.afterCast;
   }
@@ -59,6 +65,18 @@ public final class MobAttackSpec {
     return requireTarget;
   }
 
+  public double priorityWeight() {
+    return priorityWeight;
+  }
+
+  public long internalCooldownTicks() {
+    return internalCooldownTicks;
+  }
+
+  public MobAttackAoESpec aoeSpec() {
+    return aoeSpec;
+  }
+
   public java.util.function.Consumer<MobCastContext> beforeCast() {
     return beforeCast;
   }
@@ -80,6 +98,9 @@ public final class MobAttackSpec {
     private double chance = 1.0;
     private boolean requireLineOfSight = true;
     private boolean requireTarget = true;
+    private double priorityWeight = 1.0;
+    private long internalCooldownTicks;
+    private MobAttackAoESpec aoeSpec;
     private java.util.function.Consumer<MobCastContext> beforeCast = ctx -> {
     };
     private java.util.function.Consumer<MobCastContext> afterCast = ctx -> {
@@ -130,6 +151,27 @@ public final class MobAttackSpec {
 
     public Builder requireTarget(boolean requireTarget) {
       this.requireTarget = requireTarget;
+      return this;
+    }
+
+    public Builder priorityWeight(double priorityWeight) {
+      if (!Double.isFinite(priorityWeight) || priorityWeight <= 0.0) {
+        throw new IllegalArgumentException("priorityWeight must be > 0");
+      }
+      this.priorityWeight = priorityWeight;
+      return this;
+    }
+
+    public Builder internalCooldownTicks(long internalCooldownTicks) {
+      if (internalCooldownTicks < 0L) {
+        throw new IllegalArgumentException("internalCooldownTicks must be >= 0");
+      }
+      this.internalCooldownTicks = internalCooldownTicks;
+      return this;
+    }
+
+    public Builder aoe(MobAttackAoESpec aoeSpec) {
+      this.aoeSpec = aoeSpec;
       return this;
     }
 

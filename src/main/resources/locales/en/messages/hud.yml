@@ -1,0 +1,5 @@
+messages.hud.level: <gray>Level:</gray> <white>{level}</white>
+messages.hud.mana: <gray>Mana:</gray> <white>{mana}</white>
+messages.hud.skillPoints: <gray>Skill Points:</gray> <white>{points}</white>
+messages.hud.title: <gold><bold>DungeonsReborn</bold></gold>
+messages.hud.xp: <gray>Custom XP:</gray> <white>{xp}</white>

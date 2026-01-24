@@ -1,0 +1,51 @@
+messages.party.broadcast.chat: <gray>[Party]</gray> <white>{player}</white><gray>:</gray> <white>{message}</white>
+messages.party.broadcast.disbanded: <gray>[Party]</gray> <red>Disbanded by</red> <white>{actor}</white><red>.</red>
+messages.party.broadcast.join: <gray>[Party]</gray> <white>{player}</white> <gray>joined the party.</gray>
+messages.party.broadcast.kicked: <gray>[Party]</gray> <white>{player}</white> <gray>was kicked.</gray>
+messages.party.broadcast.leave: <gray>[Party]</gray> <white>{player}</white> <gray>left the party.</gray>
+messages.party.broadcast.newLeader: <gray>[Party]</gray> <white>{player}</white> <gray>is now the leader.</gray>
+messages.party.broadcast.roleChanged: <gray>[Party]</gray> <white>{player}</white> <gray>is now</gray> <white>{role}</white><gray>.</gray>
+messages.party.chat.False: <gray>Party chat disabled.</gray>
+messages.party.chat.True: <green>Party chat enabled.</green>
+messages.party.chat.false: 'False'
+messages.party.chat.true: 'True'
+messages.party.create: <green>Party created.</green>
+messages.party.disband: <red>Party disbanded.</red>
+messages.party.error.alreadyInParty: You are already in a party.
+messages.party.error.alreadyInYourParty: That player is already in your party.
+messages.party.error.inviteExpired: That invite has expired.
+messages.party.error.inviteLeaderNotFound: Invite from that leader not found.
+messages.party.error.inviteMissing: You have no pending party invites.
+messages.party.error.kickSelf: You cannot kick yourself.
+messages.party.error.messageEmpty: Message cannot be empty.
+messages.party.error.mustBeSameWorldLeader: You must be in the same world as the party leader.
+messages.party.error.notInParty: You are not in a party.
+messages.party.error.notLeader: Only the party leader can do that.
+messages.party.error.notPublic: Party is not accepting public requests.
+messages.party.error.onlyRpgWorld: Parties can only be used in RPG worlds.
+messages.party.error.partyMissing: That party no longer exists.
+messages.party.error.playersOnly: Only players can use party commands.
+messages.party.error.regionRestricted: Parties cannot be used in this region.
+messages.party.error.requestMissing: No pending request for that player.
+messages.party.error.requestPending: You already have a pending request.
+messages.party.error.sameWorld: Target player must be in the same world.
+messages.party.error.targetAlreadyInParty: That player is already in a party.
+messages.party.error.targetNotFound: Target player not found.
+messages.party.error.targetNotInParty: That player is not in your party.
+messages.party.full: <red>Party is full.</red>
+messages.party.invite: <yellow>{player}</yellow> <gray>invited you to a party.</gray>
+messages.party.join: <green>Joined party.</green>
+messages.party.kicked: <red>You were kicked from the party.</red>
+messages.party.leave: <gray>Left party.</gray>
+messages.party.request.hint: <gray>Use /dr party request accept {player} or /dr party request deny {player}.</gray>
+messages.party.request.received: <yellow>{player}</yellow> <gray>requested to join your party.</gray>
+messages.party.result.inviteSent: Invite sent to {player}.
+messages.party.result.kicked: Kicked {player}.
+messages.party.result.messageSent: Message sent.
+messages.party.result.publicOff: Party is now invite-only.
+messages.party.result.publicOn: Party is now public.
+messages.party.result.requestAccepted: Accepted request from {player}.
+messages.party.result.requestDenied: Denied request from {player}.
+messages.party.result.requestSent: Requested to join {leader}'s party.
+messages.party.result.roleChanged: '{player} is now {role}.'
+messages.party.result.transfer: Transferred leadership.

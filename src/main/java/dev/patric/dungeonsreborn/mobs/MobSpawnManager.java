@@ -30,6 +30,11 @@ import org.bukkit.util.Vector;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.party.Party;
+import dev.patric.dungeonsreborn.party.PartyService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
+import dev.patric.dungeonsreborn.dungeons.DungeonSessionManager;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -46,6 +51,7 @@ public final class MobSpawnManager implements Listener {
     private final Set<UUID> alive = new HashSet<>();
     private long nextSpawnTick;
     private final Map<UUID, Long> outOfBoundsSince = new HashMap<>();
+    private final Map<UUID, Long> spawnTicks = new HashMap<>();
     private UUID hologramId;
     private long nextHologramTick;
   }
@@ -76,6 +82,11 @@ public final class MobSpawnManager implements Listener {
   private Set<String> enabledWorlds = Set.of();
   private int maxSpawnersPerTick = 0;
   private int tickCursor = 0;
+  private PartyService partyService;
+  private CustomXpService customXpService;
+  private DungeonSessionManager dungeonSessions;
+  private MobSpawnerBlockStore spawnerBlockStore;
+  private MobYamlRegistry yamlRegistry;
   public MobSpawnManager(EffectsEngine engine, MobRegistry registry, ServiceLogger logger) {
     this.engine = Objects.requireNonNull(engine, "engine");
     this.registry = Objects.requireNonNull(registry, "registry");
@@ -86,6 +97,26 @@ public final class MobSpawnManager implements Listener {
 
   public void setDebugSpawns(boolean debugSpawns) {
     this.debugSpawns = debugSpawns;
+  }
+
+  public void setPartyService(PartyService partyService) {
+    this.partyService = partyService;
+  }
+
+  public void setCustomXpService(CustomXpService customXpService) {
+    this.customXpService = customXpService;
+  }
+
+  public void setDungeonSessions(DungeonSessionManager dungeonSessions) {
+    this.dungeonSessions = dungeonSessions;
+  }
+
+  public void setSpawnerBlockStore(MobSpawnerBlockStore spawnerBlockStore) {
+    this.spawnerBlockStore = spawnerBlockStore;
+  }
+
+  public void setYamlRegistry(MobYamlRegistry yamlRegistry) {
+    this.yamlRegistry = yamlRegistry;
   }
 
   public void reload(List<MobSpawnSpec> newSpawns, Set<String> enabledWorlds, boolean despawnOnReload) {
@@ -176,17 +207,30 @@ public final class MobSpawnManager implements Listener {
     }
     SpawnState state = states.computeIfAbsent(spec.id(), k -> new SpawnState());
     int alive = state.alive.size();
-    int max = spec.maxAlive() <= 0 ? Integer.MAX_VALUE : spec.maxAlive();
+    World world = Bukkit.getWorld(spec.worldName());
+    if (world == null) {
+      return false;
+    }
+    List<Player> nearbyPlayers = nearbyPlayers(world, spec);
+    if (nearbyPlayers.isEmpty()) {
+      return false;
+    }
+    if (!matchesRules(spec.rules(), world, spec.location(), nearbyPlayers)) {
+      return false;
+    }
+    int max = resolveDynamicMaxAlive(spec, nearbyPlayers.size());
     if (alive >= max) {
       return false;
     }
-    MobSpawnGroupSpec group = pickGroup(spec);
-    LivingEntity entity = spawn(spec, group);
+    Map<Long, Integer> chunkCounts = computeChunkCounts(state, world);
+    MobSpawnGroupSpec group = pickGroup(spec, world, spec.location(), nearbyPlayers);
+    LivingEntity entity = spawn(spec, group, nearbyPlayers, chunkCounts);
     if (entity == null) {
       return false;
     }
     state.alive.add(entity.getUniqueId());
     entityToSpawn.put(entity.getUniqueId(), spec.id());
+    state.spawnTicks.put(entity.getUniqueId(), engine.tickNow());
     scheduleNextSpawn(spec, state, engine.tickNow());
     return true;
   }
@@ -208,6 +252,9 @@ public final class MobSpawnManager implements Listener {
 
   private void tick() {
     if (spawnListCache.isEmpty()) {
+      return;
+    }
+    if (expireSpawners()) {
       return;
     }
     long now = engine.tickNow();
@@ -250,12 +297,18 @@ public final class MobSpawnManager implements Listener {
         updateHologram(spec, state, now);
         continue;
       }
-      if (!hasNearbyPlayers(world, spec)) {
+      List<Player> nearbyPlayers = nearbyPlayers(world, spec);
+      if (nearbyPlayers.isEmpty()) {
+        updateHologram(spec, state, now);
+        continue;
+      }
+      if (!matchesRules(spec.rules(), world, spec.location(), nearbyPlayers)) {
         updateHologram(spec, state, now);
         continue;
       }
       int alive = state.alive.size();
-      if (spec.maxAlive() > 0 && alive >= spec.maxAlive()) {
+      int maxAlive = resolveDynamicMaxAlive(spec, nearbyPlayers.size());
+      if (alive >= maxAlive) {
         continue;
       }
       int groupAlive = 0;
@@ -268,10 +321,10 @@ public final class MobSpawnManager implements Listener {
       if (state.nextSpawnTick > now) {
         continue;
       }
-      MobSpawnGroupSpec group = pickGroup(spec);
+      Map<Long, Integer> chunkCounts = computeChunkCounts(state, world);
+      MobSpawnGroupSpec group = pickGroup(spec, world, spec.location(), nearbyPlayers);
       int desiredCount = group != null && group.count() != null ? group.count() : spec.count();
-      int max = spec.maxAlive() <= 0 ? Integer.MAX_VALUE : spec.maxAlive();
-      int toSpawn = Math.min(desiredCount, max - alive);
+      int toSpawn = Math.min(desiredCount, maxAlive - alive);
       if (spec.groupId() != null && spec.groupMaxAlive() > 0) {
         toSpawn = Math.min(toSpawn, spec.groupMaxAlive() - groupAlive);
       }
@@ -279,10 +332,11 @@ public final class MobSpawnManager implements Listener {
         continue;
       }
       for (int j = 0; j < toSpawn; j++) {
-        LivingEntity entity = spawn(spec, group);
+        LivingEntity entity = spawn(spec, group, nearbyPlayers, chunkCounts);
         if (entity != null) {
           state.alive.add(entity.getUniqueId());
           entityToSpawn.put(entity.getUniqueId(), spec.id());
+          state.spawnTicks.put(entity.getUniqueId(), now);
           if (spec.groupId() != null && spec.groupMaxAlive() > 0) {
             groupAlive++;
           }
@@ -308,6 +362,7 @@ public final class MobSpawnManager implements Listener {
       SpawnState state = states.computeIfAbsent(spec.id(), k -> new SpawnState());
       pruneDead(state);
       enforceTether(spec, state, now);
+      enforceLifespan(spec, state, now);
     }
   }
 
@@ -317,9 +372,74 @@ public final class MobSpawnManager implements Listener {
       return entity == null || !entity.isValid();
     });
     state.outOfBoundsSince.keySet().retainAll(state.alive);
+    state.spawnTicks.keySet().retainAll(state.alive);
   }
 
-  private LivingEntity spawn(MobSpawnSpec spec, MobSpawnGroupSpec group) {
+  private void enforceLifespan(MobSpawnSpec spec, SpawnState state, long now) {
+    if (spec.lifespanTicks() <= 0L) {
+      return;
+    }
+    List<UUID> ids = new ArrayList<>(state.alive);
+    for (UUID id : ids) {
+      Long spawnedAt = state.spawnTicks.get(id);
+      if (spawnedAt == null) {
+        continue;
+      }
+      if (now - spawnedAt >= spec.lifespanTicks()) {
+        Entity entity = Bukkit.getEntity(id);
+        if (entity != null) {
+          entity.remove();
+        }
+        state.alive.remove(id);
+        state.spawnTicks.remove(id);
+        entityToSpawn.remove(id);
+      }
+    }
+  }
+
+  private boolean expireSpawners() {
+    if (spawnerBlockStore == null || yamlRegistry == null) {
+      return false;
+    }
+    long nowMs = System.currentTimeMillis();
+    List<String> expired = new ArrayList<>();
+    for (MobSpawnSpec spec : spawns.values()) {
+      if (spec.spawnerDecayTicks() <= 0L) {
+        continue;
+      }
+      MobSpawnerBlockStore.Entry entry = spawnerBlockStore.entryBySpawnId(spec.id());
+      if (entry == null || entry.createdAtMillis() <= 0L) {
+        continue;
+      }
+      long lifespanMs = Math.max(0L, spec.spawnerDecayTicks()) * 50L;
+      if (lifespanMs <= 0L) {
+        continue;
+      }
+      if (nowMs - entry.createdAtMillis() >= lifespanMs) {
+        expired.add(spec.id());
+      }
+    }
+    if (expired.isEmpty()) {
+      return false;
+    }
+    for (String spawnId : expired) {
+      MobSpawnerBlockStore.Entry entry = spawnerBlockStore.entryBySpawnId(spawnId);
+      if (entry != null) {
+        World world = Bukkit.getWorld(entry.world());
+        if (world != null) {
+          world.getBlockAt(entry.x(), entry.y(), entry.z()).setType(org.bukkit.Material.AIR);
+        }
+        spawnerBlockStore.removeBySpawnId(spawnId);
+      }
+      despawnSpawn(spawnId);
+      yamlRegistry.removeSpawn(spawnId);
+      logger.info("[Mobs] spawner: decayed id=" + spawnId);
+    }
+    return true;
+  }
+
+  private LivingEntity spawn(MobSpawnSpec spec, MobSpawnGroupSpec group, List<Player> nearbyPlayers,
+      Map<Long, Integer> chunkCounts) {
     World world = Bukkit.getWorld(spec.worldName());
     if (world == null) {
       logger.warn("[Mobs] spawn: unknown world " + spec.worldName() + " for spawn " + spec.id());
@@ -331,12 +451,27 @@ public final class MobSpawnManager implements Listener {
     if (spawnLoc == null) {
       spawnLoc = base;
     }
+    if (!matchesRules(spec.rules(), world, spawnLoc, nearbyPlayers)) {
+      return null;
+    }
+    if (group != null && !matchesRules(group.rules(), world, spawnLoc, nearbyPlayers)) {
+      return null;
+    }
+    if (spec.maxAlivePerChunk() > 0) {
+      long key = chunkKey(world, spawnLoc);
+      int chunkAlive = chunkCounts.getOrDefault(key, 0);
+      if (chunkAlive >= spec.maxAlivePerChunk()) {
+        return null;
+      }
+      chunkCounts.put(key, chunkAlive + 1);
+    }
     try {
       String mobId = resolveMobId(spec, group);
       if (spec.beamEnabled() && spec.beamParticle() != null) {
         spawnBeam(world, base, spawnLoc, spec.beamParticle(), spec.beamStep());
       }
       LivingEntity entity = registry.spawn(mobId, spawnLoc);
+      logSpawnEvent("spawn", spec, mobId, spawnLoc, entity);
       if (debugSpawns) {
         logger.debug("[Mobs] spawn: id=" + spec.id() + " mob=" + mobId
             + " world=" + spec.worldName() + " x=" + spawnLoc.getX() + " y=" + spawnLoc.getY() + " z=" + spawnLoc.getZ());
@@ -349,13 +484,16 @@ public final class MobSpawnManager implements Listener {
     }
   }
 
-  private MobSpawnGroupSpec pickGroup(MobSpawnSpec spec) {
+  private MobSpawnGroupSpec pickGroup(MobSpawnSpec spec, World world, Location location, List<Player> nearbyPlayers) {
     List<MobSpawnGroupSpec> groups = spec.groups();
     if (groups == null || groups.isEmpty()) {
       return null;
     }
     double total = 0.0;
     for (MobSpawnGroupSpec group : groups) {
+      if (!matchesRules(group.rules(), world, location, nearbyPlayers)) {
+        continue;
+      }
       total += Math.max(0.0, group.chance());
     }
     if (total <= 0.0) {
@@ -363,13 +501,18 @@ public final class MobSpawnManager implements Listener {
     }
     double roll = ThreadLocalRandom.current().nextDouble() * total;
     double acc = 0.0;
+    MobSpawnGroupSpec fallback = null;
     for (MobSpawnGroupSpec group : groups) {
+      if (!matchesRules(group.rules(), world, location, nearbyPlayers)) {
+        continue;
+      }
+      fallback = group;
       acc += Math.max(0.0, group.chance());
       if (roll <= acc) {
         return group;
       }
     }
-    return groups.get(groups.size() - 1);
+    return fallback;
   }
 
   private String resolveMobId(MobSpawnSpec spec, MobSpawnGroupSpec group) {
@@ -591,24 +734,170 @@ public final class MobSpawnManager implements Listener {
     return world.isChunkLoaded(chunkX, chunkZ);
   }
 
-  private boolean hasNearbyPlayers(World world, MobSpawnSpec spec) {
+  private List<Player> nearbyPlayers(World world, MobSpawnSpec spec) {
     double radius = spec.activationRadius();
     if (radius <= 0.0) {
-      return true;
+      return new ArrayList<>(world.getPlayers());
     }
     Location center = spec.location();
     if (center == null) {
-      return false;
+      return List.of();
     }
     center = center.clone();
     center.setWorld(world);
     double radiusSq = radius * radius;
+    List<Player> out = new ArrayList<>();
     for (Player player : world.getPlayers()) {
       if (player.getLocation().distanceSquared(center) <= radiusSq) {
-        return true;
+        out.add(player);
       }
     }
-    return false;
+    return out;
+  }
+
+  private int resolveDynamicMaxAlive(MobSpawnSpec spec, int nearbyPlayers) {
+    int base = spec.maxAlive() <= 0 ? 0 : spec.maxAlive();
+    int dynamic = base;
+    if (spec.maxAlivePerPlayer() > 0 && nearbyPlayers > 0) {
+      dynamic = Math.max(dynamic, spec.maxAlivePerPlayer() * nearbyPlayers);
+    }
+    return dynamic <= 0 ? Integer.MAX_VALUE : dynamic;
+  }
+
+  @SuppressWarnings("null")
+  private boolean matchesRules(MobSpawnRulesSpec rules, World world, Location location, List<Player> nearbyPlayers) {
+    if (rules == null || rules.isEmpty()) {
+      return true;
+    }
+    if (location == null || world == null) {
+      return false;
+    }
+    Location resolved = location.getWorld() == null ? location.clone() : location;
+    resolved.setWorld(world);
+    if (rules.dungeonRule() != null && rules.dungeonRule() != MobSpawnDungeonRule.ANY) {
+      boolean active = dungeonSessions != null && dungeonSessions.isActive();
+      if (rules.dungeonRule() == MobSpawnDungeonRule.REQUIRE_ACTIVE && !active) {
+        return false;
+      }
+      if (rules.dungeonRule() == MobSpawnDungeonRule.REQUIRE_INACTIVE && active) {
+        return false;
+      }
+    }
+    if (rules.timeWindows() != null && !rules.timeWindows().isEmpty()) {
+      long time = world.getTime();
+      boolean ok = false;
+      for (MobSpawnTimeWindow window : rules.timeWindows()) {
+        if (window.matches(time)) {
+          ok = true;
+          break;
+        }
+      }
+      if (!ok) {
+        return false;
+      }
+    }
+    if (rules.minY() != null && resolved.getBlockY() < rules.minY()) {
+      return false;
+    }
+    if (rules.maxY() != null && resolved.getBlockY() > rules.maxY()) {
+      return false;
+    }
+    if (rules.regions() != null && !rules.regions().isEmpty()) {
+      boolean matched = false;
+      for (MobSpawnRegionSpec region : rules.regions()) {
+        if (region.contains(resolved)) {
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        return false;
+      }
+    }
+    if (rules.allowedBiomes() != null && !rules.allowedBiomes().isEmpty()) {
+      org.bukkit.block.Biome biome = world.getBiome(resolved);
+      if (biome == null || biome.getKey() == null || !rules.allowedBiomes().contains(biome.getKey())) {
+        return false;
+      }
+    }
+    if (rules.excludedBiomes() != null && !rules.excludedBiomes().isEmpty()) {
+      org.bukkit.block.Biome biome = world.getBiome(resolved);
+      if (biome != null && biome.getKey() != null && rules.excludedBiomes().contains(biome.getKey())) {
+        return false;
+      }
+    }
+    int playerCount = nearbyPlayers == null ? 0 : nearbyPlayers.size();
+    if (rules.minPlayers() > 0 && playerCount < rules.minPlayers()) {
+      return false;
+    }
+    if (rules.maxPlayers() > 0 && playerCount > rules.maxPlayers()) {
+      return false;
+    }
+    if (rules.minPlayerLevel() > 0 || rules.maxPlayerLevel() > 0
+        || rules.minPartySize() > 0 || rules.maxPartySize() > 0) {
+      boolean matched = false;
+      for (Player player : nearbyPlayers) {
+        int level = resolvePlayerLevel(player);
+        if (rules.minPlayerLevel() > 0 && level < rules.minPlayerLevel()) {
+          continue;
+        }
+        if (rules.maxPlayerLevel() > 0 && level > rules.maxPlayerLevel()) {
+          continue;
+        }
+        int partySize = resolvePartySize(player);
+        if (rules.minPartySize() > 0 && partySize < rules.minPartySize()) {
+          continue;
+        }
+        if (rules.maxPartySize() > 0 && partySize > rules.maxPartySize()) {
+          continue;
+        }
+        matched = true;
+        break;
+      }
+      if (!matched) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private int resolvePlayerLevel(Player player) {
+    if (player == null) {
+      return 0;
+    }
+    if (customXpService != null) {
+      CustomXpProfile profile = customXpService.getOrCreate(player.getUniqueId());
+      return profile == null ? 0 : profile.level();
+    }
+    return player.getLevel();
+  }
+
+  private int resolvePartySize(Player player) {
+    if (partyService == null || player == null) {
+      return 1;
+    }
+    Party party = partyService.partyOf(player);
+    return party == null ? 1 : Math.max(1, party.size());
+  }
+
+  private Map<Long, Integer> computeChunkCounts(SpawnState state, World world) {
+    Map<Long, Integer> counts = new HashMap<>();
+    for (UUID id : state.alive) {
+      Entity entity = Bukkit.getEntity(id);
+      if (entity == null || !entity.isValid() || !entity.getWorld().equals(world)) {
+        continue;
+      }
+      long key = chunkKey(world, entity.getLocation());
+      counts.put(key, counts.getOrDefault(key, 0) + 1);
+    }
+    return counts;
+  }
+
+  private long chunkKey(World world, Location location) {
+    int chunkX = location.getBlockX() >> 4;
+    int chunkZ = location.getBlockZ() >> 4;
+    long worldKey = world.getUID().getMostSignificantBits() ^ world.getUID().getLeastSignificantBits();
+    return (worldKey << 32) ^ (((long) chunkX) << 16) ^ (chunkZ & 0xffffL);
   }
 
   @EventHandler
@@ -668,8 +957,29 @@ public final class MobSpawnManager implements Listener {
       MobSpawnSpec spec = spawns.get(spawnId);
       if (spec != null) {
         scheduleNextSpawn(spec, state, engine.tickNow());
+        logSpawnEvent("despawn", spec, MobMarkers.getMobId(entity), entity.getLocation(), entity);
       }
     }
+  }
+
+  private void logSpawnEvent(String event, MobSpawnSpec spec, String mobId, Location location, Entity entity) {
+    if (spec == null || event == null) {
+      return;
+    }
+    String world = spec.worldName();
+    String resolvedMob = mobId == null ? spec.mobId() : mobId;
+    String entityId = entity == null ? "none" : entity.getUniqueId().toString();
+    String x = location == null ? "0" : String.format(java.util.Locale.ROOT, "%.2f", location.getX());
+    String y = location == null ? "0" : String.format(java.util.Locale.ROOT, "%.2f", location.getY());
+    String z = location == null ? "0" : String.format(java.util.Locale.ROOT, "%.2f", location.getZ());
+    logger.debug("event=spawn_" + event
+        + " spawner=" + spec.id()
+        + " mob=" + resolvedMob
+        + " entity=" + entityId
+        + " world=" + world
+        + " x=" + x
+        + " y=" + y
+        + " z=" + z);
   }
 
   private String resolveSpawnId(Entity damager) {
@@ -711,6 +1021,7 @@ public final class MobSpawnManager implements Listener {
       }
       SpawnState state = states.computeIfAbsent(spawnId, k -> new SpawnState());
       state.alive.add(entity.getUniqueId());
+      state.spawnTicks.put(entity.getUniqueId(), engine.tickNow());
       entityToSpawn.put(entity.getUniqueId(), spawnId);
       restored++;
     }

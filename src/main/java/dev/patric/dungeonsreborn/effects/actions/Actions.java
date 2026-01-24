@@ -53,6 +53,7 @@ import dev.patric.dungeonsreborn.effects.math.Curves;
 import dev.patric.dungeonsreborn.effects.targeting.TargetAction;
 import dev.patric.dungeonsreborn.effects.targeting.TargetCondition;
 import dev.patric.dungeonsreborn.effects.targeting.Targeter;
+import dev.patric.dungeonsreborn.effects.targeting.Targeters;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
@@ -160,6 +161,65 @@ public final class Actions {
     return data;
   }
 
+  private static double lodFactor(CastContext ctx) {
+    if (ctx == null || ctx.engine() == null) {
+      return 1.0;
+    }
+    double lod = ctx.engine().particles().lodFactor();
+    if (!Double.isFinite(lod)) {
+      return 1.0;
+    }
+    return Math.max(0.0, lod);
+  }
+
+  private static int lodScaleCount(CastContext ctx, int value, int min) {
+    if (value <= 0) {
+      return value;
+    }
+    double lod = lodFactor(ctx);
+    if (lod <= 0.0) {
+      return 0;
+    }
+    int scaled = (int) Math.round(value * lod);
+    return Math.max(min, scaled);
+  }
+
+  private static double lodScaleStep(CastContext ctx, double step) {
+    double lod = lodFactor(ctx);
+    if (lod <= 0.0) {
+      return step;
+    }
+    double scaled = step / lod;
+    return Math.max(1e-6, scaled);
+  }
+
+  private static void logVfx(CastContext ctx, String action, Particle particle, int count) {
+    if (ctx == null || ctx.engine() == null) {
+      return;
+    }
+    ctx.engine().logVfxEvent(ctx, action, particle, count);
+  }
+
+  private static <T> java.util.List<T> downsampleList(java.util.List<T> list, int targetSize) {
+    if (list == null || list.isEmpty()) {
+      return list;
+    }
+    if (targetSize <= 0 || targetSize >= list.size()) {
+      return list;
+    }
+    if (targetSize == 1) {
+      return java.util.List.of(list.get(0));
+    }
+    java.util.ArrayList<T> sampled = new java.util.ArrayList<>(targetSize);
+    double step = (list.size() - 1) / (double) (targetSize - 1);
+    for (int i = 0; i < targetSize; i++) {
+      int idx = (int) Math.round(i * step);
+      idx = Math.max(0, Math.min(list.size() - 1, idx));
+      sampled.add(list.get(idx));
+    }
+    return sampled;
+  }
+
   public static Action particlesPoint(Particle particle, int count, double offset, double extra) {
     return particlesPoint(particle, count, offset, extra, null);
   }
@@ -170,8 +230,13 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_point", particle, scaledCount);
       Object resolved = resolveParticleData(data, ctx, ctx.origin());
-      ctx.engine().particles().emit(ctx.world(), ctx.origin(), particle, count, offset, offset, offset, extra, resolved);
+      ctx.engine().particles().emit(ctx.world(), ctx.origin(), particle, scaledCount, offset, offset, offset, extra, resolved);
     };
   }
 
@@ -345,6 +410,28 @@ public final class Actions {
         };
       }
     };
+  }
+
+  public static Action timelinePresetPulse(long durationTicks, long periodTicks, DoubleUnaryOperator easing,
+      BiConsumer<CastContext, Double> onTick) {
+    Objects.requireNonNull(easing, "easing");
+    Objects.requireNonNull(onTick, "onTick");
+    return animate(durationTicks, periodTicks, easing, onTick);
+  }
+
+  public static Action timelinePresetStagger(long startDelayTicks, long stepTicks, List<Action> actions) {
+    Objects.requireNonNull(actions, "actions");
+    if (actions.isEmpty()) {
+      return noop();
+    }
+    long step = Math.max(0L, stepTicks);
+    long at = Math.max(0L, startDelayTicks);
+    java.util.List<TimelineEntry> entries = new java.util.ArrayList<>(actions.size());
+    for (Action action : actions) {
+      entries.add(new TimelineEntry(at, action));
+      at += step;
+    }
+    return timeline(entries);
   }
 
   public static Action stateMachine(Action charge, Action sustain, Action release,
@@ -707,6 +794,13 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_line", particle, scaledCount);
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_line", particle, scaledCount);
       var pe = ctx.engine().particles();
       var dir = ctx.direction().clone();
       if (dir.lengthSquared() < 1e-9) {
@@ -715,10 +809,10 @@ public final class Actions {
       dir.normalize();
 
       var pos = ctx.origin().clone();
-      for (double d = 0.0; d <= length + 1e-9; d += step) {
+      for (double d = 0.0; d <= length + 1e-9; d += scaledStep) {
         Object resolved = resolveParticleData(data, ctx, pos);
-        pe.emit(ctx.world(), pos, particle, count, offset, offset, offset, extra, resolved);
-        pos.add(dir.getX() * step, dir.getY() * step, dir.getZ() * step);
+        pe.emit(ctx.world(), pos, particle, scaledCount, offset, offset, offset, extra, resolved);
+        pos.add(dir.getX() * scaledStep, dir.getY() * scaledStep, dir.getZ() * scaledStep);
       }
     };
   }
@@ -742,10 +836,15 @@ public final class Actions {
       @Override
       public ActionHandle executeWithHandle(CastContext ctx) {
         AtomicBoolean done = new AtomicBoolean(false);
+        int scaledCount = lodScaleCount(ctx, count, 1);
+        if (scaledCount <= 0) {
+          return ActionHandle.completed();
+        }
+        logVfx(ctx, "particles_physics", particle, scaledCount);
         var handle = ParticlePhysics.simulate(
             ctx,
             particle,
-            count,
+            scaledCount,
             velocity,
             spread,
             gravity,
@@ -816,6 +915,7 @@ public final class Actions {
 
       double length = ctx.origin().toVector().distance(end);
       var pe = ctx.engine().particles();
+      logVfx(ctx, "visualize_look_ray", lineParticle, 1);
 
       var pos = ctx.origin().clone();
       for (double d = 0.0; d <= length + 1e-9; d += step) {
@@ -865,6 +965,7 @@ public final class Actions {
       double length = ctx.origin().toVector().distance(end);
 
       var pe = ctx.engine().particles();
+      logVfx(ctx, "visualize_capsule_ray", ringParticle, 1);
       var pos = ctx.origin().clone();
       int points = Math.max(10, (int) Math.round(2 * Math.PI * radius * 6));
       points = Math.min(48, points);
@@ -1189,10 +1290,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_ring", particle, scaledCount);
       var pe = ctx.engine().particles();
       Vector n = ctx.direction();
-      ParticleShapes.ring(ctx.origin(), n, radius, points,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.ring(ctx.origin(), n, radius, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1212,9 +1319,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_arc", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.arc(ctx.origin(), ctx.direction(), radius, angleDegrees, points,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.arc(ctx.origin(), ctx.direction(), radius, angleDegrees, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1231,9 +1344,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_disk", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.disk(ctx.origin(), ctx.direction(), radius, rings, pointsPerRing,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.disk(ctx.origin(), ctx.direction(), radius, scaledRings, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1253,9 +1373,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_sphere_shell", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.sphereShell(ctx.origin(), radius, points,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.sphereShell(ctx.origin(), radius, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1275,9 +1401,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_sphere_filled", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.sphereFilled(ctx.origin(), radius, points,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.sphereFilled(ctx.origin(), radius, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1300,9 +1432,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_helix", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.helix(ctx.origin(), ctx.direction(), radius, length, turns, points,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.helix(ctx.origin(), ctx.direction(), radius, length, turns, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1335,6 +1473,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_bezier", particle, scaledCount);
+      double lod = lodFactor(ctx);
+      double scaledPointsPerMeter = pointsPerMeter * Math.max(0.0, lod);
+      int scaledMaxPoints = lodScaleCount(ctx, maxPoints, 1);
+      if (scaledPointsPerMeter <= 0.0 || scaledMaxPoints <= 0) {
+        return;
+      }
       var a = p0.apply(ctx);
       var b = p1.apply(ctx);
       var c = p2.apply(ctx);
@@ -1346,8 +1495,8 @@ public final class Actions {
         return;
       }
       var pe = ctx.engine().particles();
-      ParticleShapes.cubicBezier(a, b, c, d, pointsPerMeter, maxPoints,
-          loc -> pe.emit(a.getWorld(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.cubicBezier(a, b, c, d, scaledPointsPerMeter, scaledMaxPoints,
+          loc -> pe.emit(a.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1368,6 +1517,11 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_trail", particle, scaledCount);
       final long start = ctx.tick();
       final EffectsEngine.ScheduledHandle[] handle = new EffectsEngine.ScheduledHandle[1];
       handle[0] = ctx.engine().runRepeating(0L, periodTicks, () -> {
@@ -1384,7 +1538,7 @@ public final class Actions {
           handle[0].cancel();
           return;
         }
-        ctx.engine().particles().emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra);
+        ctx.engine().particles().emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra);
       });
       ctx.state().track(handle[0]);
     };
@@ -1418,6 +1572,113 @@ public final class Actions {
 
   public static Frames.FrameSpec frameWithOffsets(Frame frame, double forward, double right, double up) {
     return Frames.withOffsets(frame, forward, right, up);
+  }
+
+  public static Action attach(Action action, Frame frame, double forward, double right, double up) {
+    Objects.requireNonNull(action, "action");
+    Objects.requireNonNull(frame, "frame");
+    return attach(action, Frames.withOffsets(frame, forward, right, up));
+  }
+
+  public static Action attach(Action action, Frames.FrameSpec frameSpec) {
+    Objects.requireNonNull(action, "action");
+    Objects.requireNonNull(frameSpec, "frameSpec");
+    return ctx -> {
+      Location origin = frameSpec.location(ctx);
+      if (origin == null || origin.getWorld() == null) {
+        return;
+      }
+      Vector dir = frameSpec.frame().direction(ctx);
+      if (dir == null || dir.lengthSquared() < 1e-9) {
+        dir = ctx.direction().clone();
+      } else {
+        dir = dir.clone();
+      }
+      CastContext exec = new CastContext(
+          ctx.engine(),
+          ctx.plugin(),
+          ctx.castId(),
+          ctx.abilityId(),
+          ctx.tick(),
+          ctx.state(),
+          ctx.caster(),
+          origin.clone(),
+          dir.clone(),
+          ctx.itemInHand());
+      action.execute(exec);
+    };
+  }
+
+  public static Action follow(Action action, Frame frame, double forward, double right, double up,
+      long durationTicks, long periodTicks, double smoothing) {
+    Objects.requireNonNull(action, "action");
+    Objects.requireNonNull(frame, "frame");
+    return follow(action, Frames.withOffsets(frame, forward, right, up), durationTicks, periodTicks, smoothing);
+  }
+
+  public static Action follow(Action action, Frames.FrameSpec frameSpec,
+      long durationTicks, long periodTicks, double smoothing) {
+    Objects.requireNonNull(action, "action");
+    Objects.requireNonNull(frameSpec, "frameSpec");
+    if (durationTicks <= 0 || periodTicks <= 0) {
+      throw new IllegalArgumentException("durationTicks and periodTicks must be > 0");
+    }
+    double clamped = Math.max(0.0, Math.min(1.0, smoothing));
+    return new ActionWithHandle() {
+      @Override
+      public ActionHandle executeWithHandle(CastContext ctx) {
+        AtomicBoolean done = new AtomicBoolean(false);
+        final long start = ctx.engine().tickNow();
+        final Location[] last = new Location[1];
+        final EffectsEngine.ScheduledHandle[] handle = new EffectsEngine.ScheduledHandle[1];
+        handle[0] = ctx.engine().runRepeating(0L, periodTicks, () -> {
+          if (handle[0] == null || handle[0].isCancelled()) {
+            return;
+          }
+          long elapsed = ctx.engine().tickNow() - start;
+          if (elapsed >= durationTicks) {
+            handle[0].cancel();
+            done.set(true);
+            return;
+          }
+          Location target = frameSpec.location(ctx);
+          if (target == null || target.getWorld() == null) {
+            handle[0].cancel();
+            done.set(true);
+            return;
+          }
+          Location origin = target;
+          if (last[0] == null || clamped >= 1.0) {
+            last[0] = target.clone();
+          } else {
+            Location prev = last[0];
+            Location next = prev.clone().add(target.clone().subtract(prev).multiply(clamped));
+            last[0] = next;
+          }
+          origin = last[0];
+          Vector dir = frameSpec.frame().direction(ctx);
+          if (dir == null || dir.lengthSquared() < 1e-9) {
+            dir = ctx.direction().clone();
+          } else {
+            dir = dir.clone();
+          }
+          CastContext exec = new CastContext(
+              ctx.engine(),
+              ctx.plugin(),
+              ctx.castId(),
+              ctx.abilityId(),
+              ctx.tick(),
+              ctx.state(),
+              ctx.caster(),
+              origin.clone(),
+              dir.clone(),
+              ctx.itemInHand());
+          action.execute(exec);
+        });
+        ctx.state().track(handle[0]);
+        return scheduledHandle(handle[0], done);
+      }
+    };
   }
 
   public static Action message(Component message) {
@@ -1470,6 +1731,7 @@ public final class Actions {
   public static Action screenShake(int durationTicks, int amplifier, boolean ambient, boolean particles, boolean icon) {
     return ctx -> {
       if (ctx.caster() instanceof Player player) {
+        logVfx(ctx, "screen_shake", null, 0);
         screenShake(player, ctx.engine().cinematicSettings(), durationTicks, amplifier, ambient, particles, icon);
       }
     };
@@ -1491,6 +1753,7 @@ public final class Actions {
     Objects.requireNonNull(particle, "particle");
     return ctx -> {
       if (ctx.caster() instanceof Player player) {
+        logVfx(ctx, "screen_flash", particle, count);
         screenFlash(player, ctx.engine().cinematicSettings(), particle, count, offset, extra);
       }
     };
@@ -1729,9 +1992,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_cone", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), length, angleDegrees, rings, pointsPerRing,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), length, angleDegrees, scaledRings, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1753,9 +2023,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_cylinder", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), radius, height, rings, pointsPerRing,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), radius, height, scaledRings, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1774,9 +2051,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_line", particle, scaledCount);
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_box", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.boxOutline(ctx.origin(), xRadius, yRadius, zRadius, step,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.boxOutline(ctx.origin(), xRadius, yRadius, zRadius, scaledStep,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1796,9 +2080,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, pointsPerEdge, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_polygon", particle, scaledCount);
       var pe = ctx.engine().particles();
-      ParticleShapes.polygonOutline(ctx.origin(), normal, radius, sides, pointsPerEdge,
-          loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.polygonOutline(ctx.origin(), normal, radius, sides, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1825,6 +2115,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_spline", particle, scaledCount);
+      double lod = lodFactor(ctx);
+      double scaledPointsPerMeter = pointsPerMeter * Math.max(0.0, lod);
+      int scaledMaxPoints = lodScaleCount(ctx, maxPoints, 1);
+      if (scaledPointsPerMeter <= 0.0 || scaledMaxPoints <= 0) {
+        return;
+      }
       java.util.ArrayList<Location> pts = new java.util.ArrayList<>(controlPoints.size());
       for (var fn : controlPoints) {
         if (fn == null) {
@@ -1840,8 +2141,8 @@ public final class Actions {
         return;
       }
       var pe = ctx.engine().particles();
-      ParticleShapes.catmullRomSpline(pts, pointsPerMeter, maxPoints,
-          loc -> pe.emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.catmullRomSpline(pts, scaledPointsPerMeter, scaledMaxPoints,
+          loc -> pe.emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     };
   }
 
@@ -1897,7 +2198,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      java.util.List<Location> points = buildSplinePoints(controlPoints, pointsPerMeter, maxPoints, ctx);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double lod = lodFactor(ctx);
+      double scaledPointsPerMeter = pointsPerMeter * Math.max(0.0, lod);
+      int scaledMaxPoints = lodScaleCount(ctx, maxPoints, 1);
+      if (scaledPointsPerMeter <= 0.0 || scaledMaxPoints <= 0) {
+        return;
+      }
+      java.util.List<Location> points = buildSplinePoints(controlPoints, scaledPointsPerMeter, scaledMaxPoints, ctx);
       if (points.size() < 2) {
         return;
       }
@@ -1906,7 +2217,7 @@ public final class Actions {
         idx = Math.max(0, Math.min(points.size() - 1, idx));
         Location loc = points.get(idx);
         Object resolved = resolveParticleData(data, tickCtx, loc);
-        tickCtx.engine().particles().emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra, resolved);
+        tickCtx.engine().particles().emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolved);
       }).execute(ctx);
     };
   }
@@ -1932,11 +2243,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_shockwave", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       var center = ctx.origin().clone();
       var pe = ctx.engine().particles();
-        ParticleShapes.ring(center, new Vector(0, 1, 0), r, points,
-            loc -> pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
+      ParticleShapes.ring(center, new Vector(0, 1, 0), r, scaledPoints,
+          loc -> pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc)));
     });
   }
 
@@ -2011,10 +2328,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_ring", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       var center = ctx.origin().clone();
       var pe = ctx.engine().particles();
-      ParticleShapes.ring(center, new Vector(0, 1, 0), r, points, loc -> {
+      ParticleShapes.ring(center, new Vector(0, 1, 0), r, scaledPoints, loc -> {
         Object resolved = resolveParticleData(data, ctx, loc);
         if (startColor != null && endColor != null) {
           if (particle == Particle.DUST) {
@@ -2023,7 +2346,7 @@ public final class Actions {
             resolved = new Particle.DustTransition(startColor, endColor, size);
           }
         }
-        pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolved);
+        pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolved);
       });
     });
   }
@@ -2041,10 +2364,14 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      @SuppressWarnings("unused")
-      var pe = ctx.engine().particles();
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
-      ParticleShapes.ring(ctx.origin(), new Vector(0, 1, 0), radius, points, consumer);
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_ring", particle, scaledCount);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, scaledPoints);
+      ParticleShapes.ring(ctx.origin(), new Vector(0, 1, 0), radius, scaledPoints, consumer);
     };
   }
 
@@ -2061,6 +2388,12 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_box", particle, scaledCount);
+      double scaledStep = lodScaleStep(ctx, step);
       double length = startLength + (endLength - startLength) * t;
       if (length < 0) {
         return;
@@ -2071,9 +2404,9 @@ public final class Actions {
       }
       dir.normalize();
       Location pos = ctx.origin().clone();
-      for (double d = 0.0; d <= length + 1e-9; d += step) {
-        emitGradient(ctx, pos, particle, count, offset, extra, data, startColor, endColor, size, t);
-        pos.add(dir.getX() * step, dir.getY() * step, dir.getZ() * step);
+      for (double d = 0.0; d <= length + 1e-9; d += scaledStep) {
+        emitGradient(ctx, pos, particle, scaledCount, offset, extra, data, startColor, endColor, size, t);
+        pos.add(dir.getX() * scaledStep, dir.getY() * scaledStep, dir.getZ() * scaledStep);
       }
     });
   }
@@ -2091,17 +2424,22 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
       Vector dir = ctx.direction().clone();
       if (dir.lengthSquared() < 1e-9) {
         dir.setX(0).setY(0).setZ(1);
       }
       dir.normalize();
-      int totalPoints = (int) Math.floor(length / step) + 1;
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
+      int totalPoints = (int) Math.floor(length / scaledStep) + 1;
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
       Location pos = ctx.origin().clone();
-      for (double d = 0.0; d <= length + 1e-9; d += step) {
+      for (double d = 0.0; d <= length + 1e-9; d += scaledStep) {
         consumer.accept(pos);
-        pos.add(dir.getX() * step, dir.getY() * step, dir.getZ() * step);
+        pos.add(dir.getX() * scaledStep, dir.getY() * scaledStep, dir.getZ() * scaledStep);
       }
     };
   }
@@ -2122,12 +2460,18 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_arc", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.arc(ctx.origin(), new Vector(0, 1, 0), r, angleDegrees, points,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.arc(ctx.origin(), new Vector(0, 1, 0), r, angleDegrees, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2147,8 +2491,14 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
-      ParticleShapes.arc(ctx.origin(), new Vector(0, 1, 0), radius, angleDegrees, points, consumer);
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_arc", particle, scaledCount);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, scaledPoints);
+      ParticleShapes.arc(ctx.origin(), new Vector(0, 1, 0), radius, angleDegrees, scaledPoints, consumer);
     };
   }
 
@@ -2164,12 +2514,19 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_disk", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.disk(ctx.origin(), new Vector(0, 1, 0), r, rings, pointsPerRing,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.disk(ctx.origin(), new Vector(0, 1, 0), r, scaledRings, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2186,13 +2543,20 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_disk", particle, scaledCount);
       int totalPoints = 1;
-      for (int i = 1; i <= rings; i++) {
-        int pts = Math.max(6, (int) Math.round(pointsPerRing * (i / (double) rings)));
+      for (int i = 1; i <= scaledRings; i++) {
+        int pts = Math.max(6, (int) Math.round(scaledPoints * (i / (double) scaledRings)));
         totalPoints += pts;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
-      ParticleShapes.disk(ctx.origin(), new Vector(0, 1, 0), radius, rings, pointsPerRing, consumer);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
+      ParticleShapes.disk(ctx.origin(), new Vector(0, 1, 0), radius, scaledRings, scaledPoints, consumer);
     };
   }
 
@@ -2208,12 +2572,18 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_sphere_shell", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.sphereShell(ctx.origin(), r, points,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.sphereShell(ctx.origin(), r, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2230,8 +2600,14 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
-      ParticleShapes.sphereShell(ctx.origin(), radius, points, consumer);
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_sphere_shell", particle, scaledCount);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, scaledPoints);
+      ParticleShapes.sphereShell(ctx.origin(), radius, scaledPoints, consumer);
     };
   }
 
@@ -2247,12 +2623,18 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_sphere_filled", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.sphereFilled(ctx.origin(), r, points,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.sphereFilled(ctx.origin(), r, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2269,8 +2651,14 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
-      ParticleShapes.sphereFilled(ctx.origin(), radius, points, consumer);
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_sphere_filled", particle, scaledCount);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, scaledPoints);
+      ParticleShapes.sphereFilled(ctx.origin(), radius, scaledPoints, consumer);
     };
   }
 
@@ -2286,12 +2674,18 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_helix", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.helix(ctx.origin(), ctx.direction(), r, length, turns, points,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.helix(ctx.origin(), ctx.direction(), r, length, turns, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2305,8 +2699,14 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
-      ParticleShapes.helix(ctx.origin(), ctx.direction(), radius, length, turns, points, consumer);
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_helix", particle, scaledCount);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, scaledPoints);
+      ParticleShapes.helix(ctx.origin(), ctx.direction(), radius, length, turns, scaledPoints, consumer);
     };
   }
 
@@ -2322,12 +2722,19 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_cone", particle, scaledCount);
       double len = startLength + (endLength - startLength) * t;
       if (len < 0) {
         return;
       }
-      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), len, angleDegrees, rings, pointsPerRing,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), len, angleDegrees, scaledRings, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2341,9 +2748,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      int totalPoints = 1 + (rings * pointsPerRing);
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
-      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), length, angleDegrees, rings, pointsPerRing, consumer);
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_cone", particle, scaledCount);
+      int totalPoints = 1 + (scaledRings * scaledPoints);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
+      ParticleShapes.coneShell(ctx.origin(), ctx.direction(), length, angleDegrees, scaledRings, scaledPoints, consumer);
     };
   }
 
@@ -2359,12 +2773,19 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_cylinder", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), r, height, rings, pointsPerRing,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), r, height, scaledRings, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2378,9 +2799,16 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      int totalPoints = (rings + 1) * pointsPerRing;
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
-      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), radius, height, rings, pointsPerRing, consumer);
+      int scaledRings = lodScaleCount(ctx, rings, 1);
+      int scaledPoints = lodScaleCount(ctx, pointsPerRing, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledRings <= 0 || scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_cylinder", particle, scaledCount);
+      int totalPoints = (scaledRings + 1) * scaledPoints;
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
+      ParticleShapes.cylinderShell(ctx.origin(), new Vector(0, 1, 0), radius, height, scaledRings, scaledPoints, consumer);
     };
   }
 
@@ -2396,14 +2824,20 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_box", particle, scaledCount);
+      double scaledStep = lodScaleStep(ctx, step);
       double xr = startX + (endX - startX) * t;
       double yr = startY + (endY - startY) * t;
       double zr = startZ + (endZ - startZ) * t;
       if (xr < 0 || yr < 0 || zr < 0) {
         return;
       }
-      ParticleShapes.boxOutline(ctx.origin(), xr, yr, zr, step,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.boxOutline(ctx.origin(), xr, yr, zr, scaledStep,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2420,12 +2854,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      long px = (long) Math.ceil((2.0 * xRadius) / step) + 1L;
-      long py = (long) Math.ceil((2.0 * yRadius) / step) + 1L;
-      long pz = (long) Math.ceil((2.0 * zRadius) / step) + 1L;
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
+      long px = (long) Math.ceil((2.0 * xRadius) / scaledStep) + 1L;
+      long py = (long) Math.ceil((2.0 * yRadius) / scaledStep) + 1L;
+      long pz = (long) Math.ceil((2.0 * zRadius) / scaledStep) + 1L;
       int totalPoints = (int) Math.max(1L, 4L * (px + py + pz));
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
-      ParticleShapes.boxOutline(ctx.origin(), xRadius, yRadius, zRadius, step, consumer);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
+      ParticleShapes.boxOutline(ctx.origin(), xRadius, yRadius, zRadius, scaledStep, consumer);
     };
   }
 
@@ -2441,12 +2880,18 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, pointsPerEdge, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_morph_polygon", particle, scaledCount);
       double r = startRadius + (endRadius - startRadius) * t;
       if (r < 0) {
         return;
       }
-      ParticleShapes.polygonOutline(ctx.origin(), new Vector(0, 1, 0), r, sides, pointsPerEdge,
-          loc -> emitGradient(ctx, loc, particle, count, offset, extra, data, startColor, endColor, size, t));
+      ParticleShapes.polygonOutline(ctx.origin(), new Vector(0, 1, 0), r, sides, scaledPoints,
+          loc -> emitGradient(ctx, loc, particle, scaledCount, offset, extra, data, startColor, endColor, size, t));
     });
   }
 
@@ -2463,9 +2908,15 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
-      int totalPoints = sides * (pointsPerEdge + 1);
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
-      ParticleShapes.polygonOutline(ctx.origin(), new Vector(0, 1, 0), radius, sides, pointsPerEdge, consumer);
+      int scaledPoints = lodScaleCount(ctx, pointsPerEdge, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_polygon", particle, scaledCount);
+      int totalPoints = sides * (scaledPoints + 1);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
+      ParticleShapes.polygonOutline(ctx.origin(), new Vector(0, 1, 0), radius, sides, scaledPoints, consumer);
     };
   }
 
@@ -2484,6 +2935,17 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_bezier", particle, scaledCount);
+      double lod = lodFactor(ctx);
+      double scaledPointsPerMeter = pointsPerMeter * Math.max(0.0, lod);
+      int scaledMaxPoints = lodScaleCount(ctx, maxPoints, 2);
+      if (scaledPointsPerMeter <= 0.0 || scaledMaxPoints <= 0) {
+        return;
+      }
       Location a = p0.apply(ctx);
       Location b = p1.apply(ctx);
       Location c = p2.apply(ctx);
@@ -2496,9 +2958,9 @@ public final class Actions {
       Vector v2 = c.toVector();
       Vector v3 = d.toVector();
       double approxLen = Curves.approximateLengthCubicBezier(v0, v1, v2, v3, 24);
-      int points = (int) Math.ceil(approxLen * pointsPerMeter) + 1;
-      points = Math.max(2, Math.min(maxPoints, points));
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, points);
+      int points = (int) Math.ceil(approxLen * scaledPointsPerMeter) + 1;
+      points = Math.max(2, Math.min(scaledMaxPoints, points));
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, points);
       Location tmp = a.clone();
       for (int i = 0; i < points; i++) {
         double t = points == 1 ? 0.0 : (i / (double) (points - 1));
@@ -2519,6 +2981,17 @@ public final class Actions {
         return;
       }
       if (points.size() < 2) {
+        return;
+      }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_gradient_spline", particle, scaledCount);
+      double lod = lodFactor(ctx);
+      double scaledPointsPerMeter = pointsPerMeter * Math.max(0.0, lod);
+      int scaledMaxPoints = lodScaleCount(ctx, maxPoints, 2);
+      if (scaledPointsPerMeter <= 0.0 || scaledMaxPoints <= 0) {
         return;
       }
       int n = points.size();
@@ -2552,9 +3025,9 @@ public final class Actions {
       if (totalLen <= 1e-9) {
         return;
       }
-      int idealTotal = (int) Math.ceil(totalLen * pointsPerMeter) + 1;
+      int idealTotal = (int) Math.ceil(totalLen * scaledPointsPerMeter) + 1;
       idealTotal = Math.max(2, idealTotal);
-      int totalPoints = Math.min(maxPoints, idealTotal);
+      int totalPoints = Math.min(scaledMaxPoints, idealTotal);
       int[] segPoints = new int[segments];
       int allocated = 0;
       for (int i = 0; i < segments; i++) {
@@ -2577,7 +3050,7 @@ public final class Actions {
           allocated++;
         }
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, totalPoints);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, totalPoints);
       Location tmp = first.clone();
       for (int i = 0; i < segments; i++) {
         Vector p0 = p[Math.max(0, i - 1)];
@@ -2603,8 +3076,15 @@ public final class Actions {
       if (ctx.world() == null || points.isEmpty()) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_points", particle, scaledCount);
       var pe = ctx.engine().particles();
-      for (var fn : points) {
+      int targetSize = lodScaleCount(ctx, points.size(), 1);
+      var selected = downsampleList(points, targetSize);
+      for (var fn : selected) {
         Location loc = fn.apply(ctx);
         if (loc == null) {
           continue;
@@ -2614,7 +3094,7 @@ public final class Actions {
           loc.setWorld(ctx.world());
         }
         Object resolved = resolveParticleData(data, ctx, loc);
-        pe.emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra, resolved);
+        pe.emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolved);
       }
     };
   }
@@ -2627,6 +3107,11 @@ public final class Actions {
       if (ctx.world() == null || points.isEmpty()) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "particles_points_gradient", particle, scaledCount);
       var locations = new java.util.ArrayList<Location>(points.size());
       for (var fn : points) {
         Location loc = fn.apply(ctx);
@@ -2642,8 +3127,10 @@ public final class Actions {
       if (locations.isEmpty()) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, locations.size());
-      for (Location loc : locations) {
+      int targetSize = lodScaleCount(ctx, locations.size(), 1);
+      var selected = downsampleList(locations, targetSize);
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, selected.size());
+      for (Location loc : selected) {
         consumer.accept(loc);
       }
     };
@@ -2662,6 +3149,11 @@ public final class Actions {
         if (ctx.world() == null || points.isEmpty()) {
           return ActionHandle.completed();
         }
+        int scaledCount = lodScaleCount(ctx, count, 1);
+        if (scaledCount <= 0) {
+          return ActionHandle.completed();
+        }
+        logVfx(ctx, "particles_physics_points", particle, scaledCount);
         var origins = new java.util.ArrayList<Location>(points.size());
         for (var fn : points) {
           Location loc = fn.apply(ctx);
@@ -2677,11 +3169,16 @@ public final class Actions {
         if (origins.isEmpty()) {
           return ActionHandle.completed();
         }
+        int targetSize = lodScaleCount(ctx, origins.size(), 1);
+        var selected = downsampleList(origins, targetSize);
+        if (selected.isEmpty()) {
+          return ActionHandle.completed();
+        }
         var handle = ParticlePhysics.simulate(
             ctx,
             particle,
-            origins,
-            count,
+            selected,
+            scaledCount,
             velocity,
             spread,
             gravity,
@@ -2732,6 +3229,12 @@ public final class Actions {
       if (ctx.world() == null || points.size() < 2) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_polyline", particle, scaledCount);
       var list = new java.util.ArrayList<Location>(points.size());
       for (var fn : points) {
         Location loc = fn.apply(ctx);
@@ -2748,9 +3251,9 @@ public final class Actions {
         return;
       }
       var pe = ctx.engine().particles();
-      ParticleShapes.polyline(list, step, loc -> {
+      ParticleShapes.polyline(list, scaledStep, loc -> {
         Object resolved = resolveParticleData(data, ctx, loc);
-        pe.emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra, resolved);
+        pe.emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolved);
       });
     };
   }
@@ -2771,6 +3274,12 @@ public final class Actions {
         if (ctx.world() == null || points.size() < 2) {
           return ActionHandle.completed();
         }
+        int scaledCount = lodScaleCount(ctx, count, 1);
+        if (scaledCount <= 0) {
+          return ActionHandle.completed();
+        }
+        double scaledStep = lodScaleStep(ctx, step);
+        logVfx(ctx, "particles_physics_polyline", particle, scaledCount);
         var list = new java.util.ArrayList<Location>(points.size());
         for (var fn : points) {
           Location loc = fn.apply(ctx);
@@ -2786,7 +3295,7 @@ public final class Actions {
         if (list.size() < 2) {
           return ActionHandle.completed();
         }
-        var sampled = samplePolyline(list, step);
+        var sampled = samplePolyline(list, scaledStep);
         if (sampled.isEmpty()) {
           return ActionHandle.completed();
         }
@@ -2794,7 +3303,7 @@ public final class Actions {
             ctx,
             particle,
             sampled,
-            count,
+            scaledCount,
             velocity,
             spread,
             gravity,
@@ -2846,6 +3355,12 @@ public final class Actions {
       if (ctx.world() == null || points.size() < 2) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_polyline_gradient", particle, scaledCount);
       var list = new java.util.ArrayList<Location>(points.size());
       for (var fn : points) {
         Location loc = fn.apply(ctx);
@@ -2861,11 +3376,11 @@ public final class Actions {
       if (list.size() < 2) {
         return;
       }
-      var sampled = samplePolyline(list, step);
+      var sampled = samplePolyline(list, scaledStep);
       if (sampled.isEmpty()) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, sampled.size());
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, sampled.size());
       for (Location loc : sampled) {
         consumer.accept(loc);
       }
@@ -2883,6 +3398,12 @@ public final class Actions {
       if (ctx.world() == null || triangles.isEmpty()) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_mesh", particle, scaledCount);
       var tris = new java.util.ArrayList<Location[]>(triangles.size());
       for (var fn : triangles) {
         Location[] tri = fn.apply(ctx);
@@ -2900,10 +3421,12 @@ public final class Actions {
       if (tris.isEmpty()) {
         return;
       }
+      int targetTris = lodScaleCount(ctx, tris.size(), 1);
+      tris = new java.util.ArrayList<>(downsampleList(tris, targetTris));
       var pe = ctx.engine().particles();
-      ParticleShapes.mesh(tris, step, loc -> {
+      ParticleShapes.mesh(tris, scaledStep, loc -> {
         Object resolved = resolveParticleData(data, ctx, loc);
-        pe.emit(loc.getWorld(), loc, particle, count, offset, offset, offset, extra, resolved);
+        pe.emit(loc.getWorld(), loc, particle, scaledCount, offset, offset, offset, extra, resolved);
       });
     };
   }
@@ -2924,6 +3447,12 @@ public final class Actions {
         if (ctx.world() == null || triangles.isEmpty()) {
           return ActionHandle.completed();
         }
+        int scaledCount = lodScaleCount(ctx, count, 1);
+        if (scaledCount <= 0) {
+          return ActionHandle.completed();
+        }
+        double scaledStep = lodScaleStep(ctx, step);
+        logVfx(ctx, "particles_physics_mesh", particle, scaledCount);
         var tris = new java.util.ArrayList<Location[]>(triangles.size());
         for (var fn : triangles) {
           Location[] tri = fn.apply(ctx);
@@ -2941,7 +3470,9 @@ public final class Actions {
         if (tris.isEmpty()) {
           return ActionHandle.completed();
         }
-        var sampled = sampleMesh(tris, step);
+        int targetTris = lodScaleCount(ctx, tris.size(), 1);
+        tris = new java.util.ArrayList<>(downsampleList(tris, targetTris));
+        var sampled = sampleMesh(tris, scaledStep);
         if (sampled.isEmpty()) {
           return ActionHandle.completed();
         }
@@ -2949,7 +3480,7 @@ public final class Actions {
             ctx,
             particle,
             sampled,
-            count,
+            scaledCount,
             velocity,
             spread,
             gravity,
@@ -3001,6 +3532,12 @@ public final class Actions {
       if (ctx.world() == null || triangles.isEmpty()) {
         return;
       }
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCount <= 0) {
+        return;
+      }
+      double scaledStep = lodScaleStep(ctx, step);
+      logVfx(ctx, "particles_mesh_gradient", particle, scaledCount);
       var tris = new java.util.ArrayList<Location[]>(triangles.size());
       for (var fn : triangles) {
         Location[] tri = fn.apply(ctx);
@@ -3018,11 +3555,13 @@ public final class Actions {
       if (tris.isEmpty()) {
         return;
       }
-      var sampled = sampleMesh(tris, step);
+      int targetTris = lodScaleCount(ctx, tris.size(), 1);
+      tris = new java.util.ArrayList<>(downsampleList(tris, targetTris));
+      var sampled = sampleMesh(tris, scaledStep);
       if (sampled.isEmpty()) {
         return;
       }
-      var consumer = gradientConsumer(ctx, particle, count, offset, extra, data, from, to, size, sampled.size());
+      var consumer = gradientConsumer(ctx, particle, scaledCount, offset, extra, data, from, to, size, sampled.size());
       for (Location loc : sampled) {
         consumer.accept(loc);
       }
@@ -3048,15 +3587,21 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledCopies = lodScaleCount(ctx, copies, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledCopies <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_orbit", particle, scaledCount);
       double ang = (Math.PI * 2.0) * t;
       var pe = ctx.engine().particles();
       var center = ctx.origin().clone().add(0, 0.75, 0);
-      for (int i = 0; i < copies; i++) {
-        double a = ang + (Math.PI * 2.0) * (i / (double) copies);
+      for (int i = 0; i < scaledCopies; i++) {
+        double a = ang + (Math.PI * 2.0) * (i / (double) scaledCopies);
         Vector base = new Vector(radius, 0.0, 0.0);
         Vector rotated = ParticleTransforms.rotateAroundY(base, a);
         Location loc = center.clone().add(rotated);
-        pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc));
+        pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc));
       }
     });
   }
@@ -3083,17 +3628,23 @@ public final class Actions {
       if (ctx.world() == null) {
         return;
       }
+      int scaledPoints = lodScaleCount(ctx, points, 1);
+      int scaledCount = lodScaleCount(ctx, count, 1);
+      if (scaledPoints <= 0 || scaledCount <= 0) {
+        return;
+      }
+      logVfx(ctx, "preset_swirl", particle, scaledCount);
       var pe = ctx.engine().particles();
       var center = ctx.origin().clone().add(0, 0.25, 0);
       double ang = (Math.PI * 2.0) * (t * 2.0);
-      for (int i = 0; i < points; i++) {
-        double u = i / (double) points;
+      for (int i = 0; i < scaledPoints; i++) {
+        double u = i / (double) scaledPoints;
         double a = ang + (Math.PI * 2.0) * u;
         double y = u * height;
         Vector base = new Vector(radius, 0.0, 0.0);
         Vector rotated = ParticleTransforms.rotateAroundY(base, a);
         Location loc = center.clone().add(rotated).add(0, y, 0);
-        pe.emit(ctx.world(), loc, particle, count, offset, offset, offset, extra, resolveParticleData(data, ctx, loc));
+        pe.emit(ctx.world(), loc, particle, scaledCount, offset, offset, offset, extra, resolveParticleData(data, ctx, loc));
       }
     });
   }
@@ -3123,6 +3674,7 @@ public final class Actions {
         return;
       }
       double length = startLength + (endLength - startLength) * t;
+      logVfx(ctx, "preset_beam_chargeup", particle, count);
       var pe = ctx.engine().particles();
       var dir = ctx.direction().clone();
       if (dir.lengthSquared() < 1e-9) {
@@ -3190,6 +3742,24 @@ public final class Actions {
 
   public static Action raycastHitEntity(double maxDistance, double raySize, BiConsumer<CastContext, LivingEntity> onHit) {
     return raycastHitEntity(maxDistance, raySize, true, true, e -> true, onHit);
+  }
+
+  public static Action groundDamage(double radius, double maxDrop, boolean ignoreCaster,
+      java.util.function.Predicate<LivingEntity> filter, TargetAction<LivingEntity> onHit) {
+    if (radius <= 0) {
+      throw new IllegalArgumentException("radius must be > 0");
+    }
+    if (maxDrop < 0) {
+      throw new IllegalArgumentException("maxDrop must be >= 0");
+    }
+    Objects.requireNonNull(filter, "filter");
+    Objects.requireNonNull(onHit, "onHit");
+    return ctx -> {
+      Targeter<LivingEntity> targeter = Targeters.groundSphere(radius, maxDrop, ignoreCaster, filter);
+      for (LivingEntity target : targeter.select(ctx)) {
+        onHit.execute(ctx, target);
+      }
+    };
   }
 
   public static Action projectile(ProjectileSpec spec) {

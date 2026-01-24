@@ -10,6 +10,7 @@ public record ClassBonusSpec(
     int dexterity,
     int intelligence,
     int vitality,
+    String manaResourceId,
     double manaMaxBonus,
     double manaRegenBonus,
     List<ClassAttributeBonus> attributes,
@@ -18,7 +19,8 @@ public record ClassBonusSpec(
     Map<String, Double> attributeCaps
 ) {
   public static ClassBonusSpec empty() {
-    return new ClassBonusSpec(0, 0, 0, 0, 0.0, 0.0, List.of(), List.of(), Map.of(), Map.of());
+    return new ClassBonusSpec(0, 0, 0, 0, dev.patric.dungeonsreborn.effects.mana.ManaProvider.DEFAULT_RESOURCE,
+        0.0, 0.0, List.of(), List.of(), Map.of(), Map.of());
   }
 
   public List<ClassAttributeBonus> attributesOrEmpty() {

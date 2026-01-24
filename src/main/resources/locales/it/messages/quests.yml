@@ -1,0 +1,60 @@
+messages.quests.accept.active: <red>Missione gia attiva.</red>
+messages.quests.accept.completed: <red>Missione gia completata.</red>
+messages.quests.accept.cooldown: <red>Missione in ricarica per</red> <white>{time}</white>
+messages.quests.accept.denied: <red>Missione non disponibile.</red>
+messages.quests.accept.disabled: <red>Missione disabilitata.</red>
+messages.quests.accept.missingId: <red>ID missione richiesto.</red>
+messages.quests.accept.ok: <green>Missione accettata:</green> <white>{quest}</white>
+messages.quests.accept.partyLeaderOnly: <red>Solo il leader del party puo accettare questa missione.</red>
+messages.quests.accept.partyRequired: <red>Questa missione richiede un party.</red>
+messages.quests.accept.playersOnly: <red>Giocatore richiesto.</red>
+messages.quests.accept.repeatLimit: <red>Limite di ripetizione raggiunto.</red> <white>{time}</white>
+messages.quests.accept.unknown: <red>Missione sconosciuta:</red> <white>{id}</white>
+messages.quests.accept.worldDenied: <red>Le missioni si possono accettare solo nei mondi consentiti.</red>
+messages.quests.complete.ok: <green>Missione completata:</green> <white>{quest}</white>
+messages.quests.complete.party: <gold>Ricompense missione:</gold> <white>{quest}</white> <gray>assegnate a</gray> <white>{player}</white>
+messages.quests.complete.player: <gold>Missione completata:</gold> <white>{quest}</white>
+messages.quests.editor.invalidId: Messages quests editor invalidId
+messages.quests.fail.death: <red>Missione fallita:</red> <white>{quest}</white> <dark_gray>(morte)</dark_gray>
+messages.quests.fail.region: <red>Missione fallita:</red> <white>{quest}</white> <dark_gray>(uscito dall'area)</dark_gray>
+messages.quests.fail.timeout: <red>Missione fallita:</red> <white>{quest}</white> <dark_gray>(tempo scaduto)</dark_gray>
+messages.quests.objective.break: Rompi {target} ({current}/{required})
+messages.quests.objective.craft: Crea {target} ({current}/{required})
+messages.quests.objective.item: oggetto
+messages.quests.objective.kill: Uccidi {target} ({current}/{required})
+messages.quests.objective.place: Piazza {target} ({current}/{required})
+messages.quests.objective.recipe: ricetta {id}
+messages.quests.objective.target: obiettivo
+messages.quests.objective.use: Usa {target} ({current}/{required})
+messages.quests.objective.visit: Visita area ({current}/{required})
+messages.quests.progress: <yellow>Missione:</yellow> <white>{quest}</white> <gray>{objective}</gray>
+messages.quests.reload.errors: <red>Ricarica missioni con {errors} errori. Controlla i log.</red>
+messages.quests.reload.ok: <green>Missioni caricate:</green> <white>{count}</white>
+messages.quests.require.acceptRegion: Messages quests require acceptRegion
+messages.quests.require.acceptWorld: Messages quests require acceptWorld
+messages.quests.require.availability: Messages quests require availability
+messages.quests.require.branchLock: <red>Missione bloccata da:</red> <white>{quests}</white>
+messages.quests.require.class: Messages quests require class
+messages.quests.require.customXp: Messages quests require customXp
+messages.quests.require.faction: Messages quests require faction
+messages.quests.require.level: <red>Richiede livello {level}.</red>
+messages.quests.require.permission: Messages quests require permission
+messages.quests.require.questStage: Messages quests require questStage
+messages.quests.require.quests: '<red>Richiede missioni: {quests}</red>'
+messages.quests.require.rotationPool: <red>Missione non nella rotazione corrente.</red>
+messages.quests.require.skill: Messages quests require skill
+messages.quests.require.turnInAvailability: Messages quests require turnInAvailability
+messages.quests.require.turnInRegion: Messages quests require turnInRegion
+messages.quests.require.turnInWorld: Messages quests require turnInWorld
+messages.quests.rewards.rollWinner: <gold>Ricompense missione:</gold> <white>{quest}</white> <gray>vincitore</gray> <white>{player}</white>
+messages.quests.rewards.split: <gold>Ricompense missione:</gold> <white>{quest}</white> <gray>divise tra</gray> <white>{count}</white>
+  <gray>membri</gray>
+messages.quests.status.active: <green>Attiva</green>
+messages.quests.status.available: <aqua>Disponibile</aqua>
+messages.quests.status.completed: <gray>Completata</gray>
+messages.quests.status.cooldown: <yellow>Ricarica:</yellow> <white>{time}</white>
+messages.quests.status.failed: <red>Fallita</red>
+messages.quests.status.repeatLimit: <yellow>Limite ripetizione:</yellow> <white>{time}</white>
+messages.quests.yaml.entry: Entry
+messages.quests.yaml.header: Header
+messages.quests.yaml.none: None

@@ -13,6 +13,8 @@ import dev.patric.dungeonsreborn.classes.skills.SkillAbilityTrigger;
 import dev.patric.dungeonsreborn.classes.skills.SkillNodeSpec;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
+import dev.patric.dungeonsreborn.effects.integration.EventBinding;
+import dev.patric.dungeonsreborn.effects.integration.EventTrigger;
 import dev.patric.dungeonsreborn.effects.integration.InteractBinding;
 import dev.patric.dungeonsreborn.effects.integration.InteractTrigger;
 import dev.patric.dungeonsreborn.effects.integration.ItemMatcher;
@@ -25,6 +27,7 @@ public final class ClassAbilityBindings {
   private final EffectsBindings bindings;
   private final List<String> interactIds = new ArrayList<>();
   private final List<String> passiveIds = new ArrayList<>();
+  private final List<String> eventIds = new ArrayList<>();
 
   public ClassAbilityBindings(ClassYamlRegistry registry, ClassService classService, ClassSkillService skills,
       EffectsBindings bindings) {
@@ -57,8 +60,12 @@ public final class ClassAbilityBindings {
     for (String id : passiveIds) {
       bindings.unregisterPassive(id);
     }
+    for (String id : eventIds) {
+      bindings.unregisterEvent(id);
+    }
     interactIds.clear();
     passiveIds.clear();
+    eventIds.clear();
   }
 
   private void register(ClassSpec spec, SkillNodeSpec node, SkillAbilitySpec ability) {
@@ -71,7 +78,7 @@ public final class ClassAbilityBindings {
       if (current == null || !current.equals(spec.id())) {
         return false;
       }
-      return skills.isUnlocked(player.getUniqueId(), spec.id(), node.id());
+      return skills.rank(player.getUniqueId(), spec.id(), node.id()) > 0;
     };
 
     if (ability.trigger() == SkillAbilityTrigger.PASSIVE) {
@@ -85,6 +92,29 @@ public final class ClassAbilityBindings {
           EnumSet.of(EquipmentSlot.HAND));
       bindings.registerPassive(binding);
       passiveIds.add(bindingId);
+      return;
+    }
+
+    if (ability.trigger() == SkillAbilityTrigger.ON_HIT
+        || ability.trigger() == SkillAbilityTrigger.ON_KILL
+        || ability.trigger() == SkillAbilityTrigger.ON_DODGE
+        || ability.trigger() == SkillAbilityTrigger.ON_SPRINT) {
+      EventTrigger trigger = switch (ability.trigger()) {
+        case ON_HIT -> EventTrigger.ON_HIT;
+        case ON_KILL -> EventTrigger.ON_KILL;
+        case ON_DODGE -> EventTrigger.ON_DODGE;
+        case ON_SPRINT -> EventTrigger.ON_SPRINT;
+        default -> EventTrigger.ON_HIT;
+      };
+      EventBinding binding = new EventBinding(
+          bindingId,
+          Ids.normalize(ability.abilityId()),
+          trigger,
+          player -> matcher.matches(player, null),
+          ability.requireSneaking(),
+          ability.requiredPermission());
+      bindings.registerEvent(binding);
+      eventIds.add(bindingId);
       return;
     }
 

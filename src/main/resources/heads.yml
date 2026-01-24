@@ -1,0 +1,125 @@
+heads:
+  example_owner:
+    name: Example Owner Head
+    owner: Muffin299
+  example_texture:
+    name: Example Texture Head
+    texture: "BASE64_TEXTURE_HERE"
+  RIGHT_DOWN:
+    name: Right down
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZhZGQyZWZkNmFkNTFkYjU3MTQxYWFlY2U2NTVjZmMxMDgwNjZlNzZhNDBkZjBhZDllOGMwMWViYmE0MTFjMiJ9fX0="
+  LEFT_DOWN:
+    name: Left down
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTU3ZWJlZDI1ZWUzZjgwZDZiYTM3NWY4YTk0MDk1Y2Q4OTE3NzMyNzQ0MDljMGFjNzI4MzkwMDQxN2MzNTllYSJ9fX0="
+  RIGHT_UP:
+    name: Right up
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjI1MDkzMmU1ZDA2ZDUzMzBmZjVlYWEzYTY0ZjAzZTk5NTRlZTAwZjdkZTc4NTVkNmZkOTViNGIwMTdhNjVhOCJ9fX0="
+  LEFT_UP:
+    name: Left up
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWNhZmQzMDY3ZjhhZmJhYTU4MTQzMDM4YzMwNzVkNGU1NDI5OWZiNTkwNWNlZTU5NmQ1MTdjYzdkMTY5OWM0NCJ9fX0="
+  RIGHT:
+    name: Right
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWM5YzY3YTlmMTY4NWNkMWRhNDNlODQxZmU3ZWJiMTdmNmFmNmVhMTJhN2UxZjI3MjJmNWU3ZjA4OThkYjlmMyJ9fX0="
+  LEFT:
+    name: Left
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWExZWYzOThhMTdmMWFmNzQ3NzAxNDUxN2Y3ZjE0MWQ4ODZkZjQxYTMyYzczOGNjOGE4M2ZiNTAyOTdiZDkyMSJ9fX0="
+  UP:
+    name: Up
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNlMzZmY2IxZTVmNmIzNjUxN2ZiYmViOWNiZjRiMGMwNWMzMGQ4YmRiNTE1NDgyNGU2MGU2ZDU1MGY1MjhlOSJ9fX0="
+  DOWN:
+    name: Down
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM1YzFlZjEyN2Y1YzUyY2IzODlhOGFjNmRmM2Y2ZmM2NmNkMzdmMjYwOTRiM2UxZTc2ZDAxNzcxMTViYjA4ZiJ9fX0="
+  CONFIRM:
+    name: Confirm
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTBkZDIwZDI5ZDc3NmI3OWU0ODUyMDBhYmVkY2M2ZDk0YzExYmQ0Y2E1YjE0OWM2MGE0MDQxYzQ2NjhiYjZhOCJ9fX0="
+  CANCEL:
+    name: Cancel
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTRlYmY1NjA2YWM4M2E3NGMxY2I5ZjdlNTYwNGJlM2NlMjk3ODkyYTRjYTEwMDVjZTUxMGNhMjVlYmEyODg4In19fQ=="
+  TOKEN:
+    name: Token
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzOGUwYzhkYzU0N2Y0N2E1YWI3MTI0MGNhZDhhNzlmMTVkYjc1NDM3NzNkNzE3NTg4MmVmZDMzZmMyMTY0ZCJ9fX0="
+  COMPRESSED_TOKEN:
+    name: Compressed Token
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjEyNjBkNzg2MGQ4YzJkNmM3ZjVmNTc4YjAyOWMzNzVlNGM0NmNlY2IwNGMzYjAyYmE0MzFiOTJlMzVlNzUzNSJ9fX0="
+  TOKEN_PALLET:
+    name: Token Pallet
+    texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjhiNDJmODZlZmE1ZjBmMzk2YTQwZDc3MzU0OTQxNDMzM2QxYzgwMjY5ZDA1ODBiYjg0YTY0YWI2Yjk2N2Q2ZSJ9fX0="
+  NAV_FIRST:
+    name: Nav First
+    texture: ""
+  NAV_LAST:
+    name: Nav Last
+    texture: ""
+  NAV_PAGE:
+    name: Nav Page
+    texture: ""
+  STATE_SELECTED:
+    name: State Selected
+    texture: ""
+  STATE_UNSELECTED:
+    name: State Unselected
+    texture: ""
+  STATE_PERMISSION:
+    name: State Permission
+    texture: ""
+  STATE_REQUIREMENT:
+    name: State Requirement
+    texture: ""
+  FILTER_ON:
+    name: Filter On
+    texture: ""
+  FILTER_OFF:
+    name: Filter Off
+    texture: ""
+  SORT_ASC:
+    name: Sort Asc
+    texture: ""
+  SORT_DESC:
+    name: Sort Desc
+    texture: ""
+  ICON_GOLD:
+    name: Icon Gold
+    texture: ""
+  ICON_GEMS:
+    name: Icon Gems
+    texture: ""
+  ICON_CRYSTAL:
+    name: Icon Crystal
+    texture: ""
+  ICON_EXPORT:
+    name: Icon Export
+    texture: ""
+  ICON_IMPORT:
+    name: Icon Import
+    texture: ""
+  ICON_COPY:
+    name: Icon Copy
+    texture: ""
+  ICON_PASTE:
+    name: Icon Paste
+    texture: ""
+  ICON_GRAPH:
+    name: Icon Graph
+    texture: ""
+  ICON_NODE:
+    name: Icon Node
+    texture: ""
+  ICON_LINK:
+    name: Icon Link
+    texture: ""
+  ICON_PARENT:
+    name: Icon Parent
+    texture: ""
+  ICON_CHILD:
+    name: Icon Child
+    texture: ""
+  STATE_SUCCESS:
+    name: State Success
+    texture: ""
+  STATE_WARNING:
+    name: State Warning
+    texture: ""
+  STATE_ERROR:
+    name: State Error
+    texture: ""
+  

@@ -13,9 +13,6 @@ import dev.patric.dungeonsreborn.classes.ClassSpec;
 import dev.patric.dungeonsreborn.classes.ClassYamlRegistry;
 import dev.patric.dungeonsreborn.classes.skills.ClassSkillService;
 import dev.patric.dungeonsreborn.classes.skills.SkillNodeSpec;
-import dev.patric.dungeonsreborn.classes.editor.menu.ClassEditorListMenu;
-import dev.patric.dungeonsreborn.classes.menu.ClassSelectMenu;
-import dev.patric.dungeonsreborn.classes.menu.ClassSkillTreeMenu;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -41,11 +38,21 @@ public final class ClassesCommand {
 
   private static LiteralArgumentBuilder<CommandSourceStack> createCommand(ClassYamlRegistry yaml, ClassService service,
       ClassSkillService skills, ClassAbilityBindings abilityBindings, boolean includeAdmin) {
-    LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("classes")
-        .executes(ctx -> open(ctx, yaml, service, skills))
-        .then(Commands.literal("skills").executes(ctx -> skills(ctx, yaml, service, skills)));
+    LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("classes");
     if (includeAdmin) {
       builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml, abilityBindings)));
+      builder.then(Commands.literal("validate").executes(ctx -> validate(ctx, yaml)));
+      LiteralArgumentBuilder<CommandSourceStack> exportBuilder = Commands.literal("export")
+          .executes(ctx -> exportClasses(ctx, yaml, null));
+      exportBuilder.then(Commands.argument("name", StringArgumentType.word())
+          .executes(ctx -> exportClasses(ctx, yaml, StringArgumentType.getString(ctx, "name"))));
+      builder.then(exportBuilder);
+      LiteralArgumentBuilder<CommandSourceStack> importBuilder = Commands.literal("import");
+      importBuilder.then(Commands.argument("name", StringArgumentType.word())
+          .executes(ctx -> importClasses(ctx, yaml, StringArgumentType.getString(ctx, "name"), true))
+          .then(Commands.literal("replace")
+              .executes(ctx -> importClasses(ctx, yaml, StringArgumentType.getString(ctx, "name"), false))));
+      builder.then(importBuilder);
       LiteralArgumentBuilder<CommandSourceStack> nodesBuilder = Commands.literal("nodes")
           .executes(ctx -> nodes(ctx, yaml, service));
       nodesBuilder.then(Commands.argument("classId", StringArgumentType.word())
@@ -66,26 +73,8 @@ public final class ClassesCommand {
               StringArgumentType.getString(ctx, "classId"))));
       stateBuilder.then(statePlayer);
       builder.then(stateBuilder);
-      builder.then(Commands.literal("editor").executes(ctx -> editor(ctx, yaml)));
     }
     return builder;
-  }
-
-  private static int open(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml, ClassService service,
-      ClassSkillService skills) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (yaml == null || service == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.classes")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new ClassSelectMenu(yaml, service, skills).open(player);
-    return Command.SINGLE_SUCCESS;
   }
 
   private static int reload(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml,
@@ -112,51 +101,97 @@ public final class ClassesCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int editor(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml) {
+  private static int validate(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml) {
     var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
     if (yaml == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.classesRegistry")));
       return Command.SINGLE_SUCCESS;
     }
-    if (!player.hasPermission("dungeonsreborn.classes.editor")) {
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.classes.reload")) {
       CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.classes.editor"));
+          Locales.placeholders("permission", "dungeonsreborn.classes.reload"));
       return Command.SINGLE_SUCCESS;
     }
-    new ClassEditorListMenu(yaml).open(player);
+    ClassYamlRegistry.ReloadResult result = yaml.validate();
+    if (result.errors().isEmpty()) {
+      CommandMessages.send(sender, "messages.command.classes.validate.ok",
+          Locales.placeholders("count", String.valueOf(result.loaded())));
+    } else {
+      CommandMessages.send(sender, "messages.command.classes.validate.errors",
+          Locales.placeholders("count", String.valueOf(result.errors().size())));
+      for (String error : result.errors()) {
+        CommandMessages.send(sender, "messages.command.classes.validate.entry",
+            Locales.placeholders("error", error));
+      }
+    }
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int skills(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml, ClassService service,
-      ClassSkillService skills) {
+  private static int exportClasses(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml, String name) {
     var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (yaml == null || service == null || skills == null) {
+    if (yaml == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.classSkills")));
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.classesRegistry")));
       return Command.SINGLE_SUCCESS;
     }
-    String classId = service.currentClassId(player.getUniqueId());
-    if (classId == null) {
-      CommandMessages.send(sender, "messages.command.classes.selectFirst");
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.classes.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.classes.reload"));
       return Command.SINGLE_SUCCESS;
     }
-    ClassSpec spec = yaml.classSpec(classId);
-    if (spec == null) {
-      CommandMessages.send(sender, "messages.command.classes.missingSpec");
+    String resolved = (name == null || name.isBlank())
+        ? "classes_export_" + System.currentTimeMillis() + ".yml"
+        : (name.endsWith(".yml") ? name : name + ".yml");
+    java.io.File target = new java.io.File(yaml.exportDir(), resolved);
+    ClassYamlRegistry.ReloadResult result = yaml.exportTo(target);
+    if (result.errors().isEmpty()) {
+      CommandMessages.send(sender, "messages.command.classes.export.ok",
+          Locales.placeholders("path", target.getPath(), "count", String.valueOf(result.loaded())));
+    } else {
+      CommandMessages.send(sender, "messages.command.classes.export.errors",
+          Locales.placeholders("path", target.getPath(), "count", String.valueOf(result.errors().size())));
+      for (String error : result.errors()) {
+        CommandMessages.send(sender, "messages.command.classes.export.entry",
+            Locales.placeholders("error", error));
+      }
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int importClasses(CommandContext<CommandSourceStack> ctx, ClassYamlRegistry yaml, String name,
+      boolean merge) {
+    var sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.classesRegistry")));
       return Command.SINGLE_SUCCESS;
     }
-    new ClassSkillTreeMenu(spec, skills).open(player);
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.classes.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.classes.reload"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (name == null || name.isBlank()) {
+      CommandMessages.send(sender, "messages.command.classes.import.missing");
+      return Command.SINGLE_SUCCESS;
+    }
+    String resolved = name.endsWith(".yml") ? name : name + ".yml";
+    java.io.File source = new java.io.File(yaml.exportDir(), resolved);
+    ClassYamlRegistry.ReloadResult result = yaml.importFrom(source, merge);
+    if (!result.errors().isEmpty()) {
+      CommandMessages.send(sender, "messages.command.classes.import.errors",
+          Locales.placeholders("path", source.getPath(), "count", String.valueOf(result.errors().size())));
+      for (String error : result.errors()) {
+        CommandMessages.send(sender, "messages.command.classes.import.entry",
+            Locales.placeholders("error", error));
+      }
+      return Command.SINGLE_SUCCESS;
+    }
+    ClassYamlRegistry.ReloadResult reload = yaml.reload();
+    CommandMessages.send(sender, "messages.command.classes.import.ok",
+        Locales.placeholders("path", source.getPath(), "count", String.valueOf(result.loaded()),
+            "loaded", String.valueOf(reload.loaded()), "errors", String.valueOf(reload.errors().size())));
     return Command.SINGLE_SUCCESS;
   }
 
@@ -201,7 +236,8 @@ public final class ClassesCommand {
       if (node == null) {
         continue;
       }
-      sender.sendMessage(Component.text("- " + node.id()));
+      CommandMessages.send(sender, "messages.command.classes.nodes.nodeEntry",
+          Locales.placeholders("id", node.id()));
     }
     return Command.SINGLE_SUCCESS;
   }
@@ -258,7 +294,8 @@ public final class ClassesCommand {
     CommandMessages.send(sender, "messages.command.classes.state.unlocked",
         Locales.placeholders("count", String.valueOf(unlocked), "total", String.valueOf(totalNodes)));
     for (String nodeId : skills.unlockedNodes(target.getUniqueId(), spec.id())) {
-      sender.sendMessage(Component.text("- " + nodeId));
+      CommandMessages.send(sender, "messages.command.classes.nodes.nodeEntry",
+          Locales.placeholders("id", nodeId));
     }
     return Command.SINGLE_SUCCESS;
   }

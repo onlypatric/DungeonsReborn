@@ -6,9 +6,14 @@ import java.util.Objects;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
@@ -131,6 +136,125 @@ public final class ItemMatchers {
     Objects.requireNonNull(a, "a");
     Objects.requireNonNull(b, "b");
     return (player, item) -> a.matches(player, item) || b.matches(player, item);
+  }
+
+  public static ItemMatcher not(ItemMatcher matcher) {
+    Objects.requireNonNull(matcher, "matcher");
+    return (player, item) -> !matcher.matches(player, item);
+  }
+
+  public static ItemMatcher itemTag(String tag) {
+    Objects.requireNonNull(tag, "tag");
+    String needle = tag.trim();
+    return (player, item) -> {
+      if (item == null || item.getType().isAir()) {
+        return false;
+      }
+      List<String> tags = ItemMarkers.getItemTags(item);
+      for (String entry : tags) {
+        if (entry != null && entry.equalsIgnoreCase(needle)) {
+          return true;
+        }
+      }
+      return false;
+    };
+  }
+
+  public static ItemMatcher itemCategory(String category) {
+    Objects.requireNonNull(category, "category");
+    String needle = category.trim();
+    return (player, item) -> {
+      if (item == null || item.getType().isAir()) {
+        return false;
+      }
+      String current = ItemMarkers.getItemCategory(item);
+      return current != null && current.equalsIgnoreCase(needle);
+    };
+  }
+
+  public static <T, Z> ItemMatcher pdc(NamespacedKey key, PersistentDataType<T, Z> type, Z value) {
+    Objects.requireNonNull(key, "key");
+    Objects.requireNonNull(type, "type");
+    return (player, item) -> {
+      if (item == null || item.getType().isAir()) {
+        return false;
+      }
+      ItemMeta meta = item.getItemMeta();
+      if (meta == null) {
+        return false;
+      }
+      PersistentDataContainer container = meta.getPersistentDataContainer();
+      if (value == null) {
+        return container.has(key, type);
+      }
+      Z stored = container.get(key, type);
+      return Objects.equals(stored, value);
+    };
+  }
+
+  public static ItemMatcher durabilityRange(Integer min, Integer max, boolean remaining) {
+    return (player, item) -> {
+      if (item == null || item.getType().isAir()) {
+        return false;
+      }
+      ItemMeta meta = item.getItemMeta();
+      if (!(meta instanceof Damageable damageable)) {
+        return false;
+      }
+      int value;
+      if (remaining) {
+        int maxDurability = item.getType().getMaxDurability();
+        value = Math.max(0, maxDurability - damageable.getDamage());
+      } else {
+        value = Math.max(0, damageable.getDamage());
+      }
+      if (min != null && value < min) {
+        return false;
+      }
+      if (max != null && value > max) {
+        return false;
+      }
+      return true;
+    };
+  }
+
+  public static ItemMatcher attribute(Attribute attribute, AttributeModifier.Operation op, Double min, Double max) {
+    Objects.requireNonNull(attribute, "attribute");
+    return (player, item) -> {
+      if (item == null || item.getType().isAir()) {
+        return false;
+      }
+      ItemMeta meta = item.getItemMeta();
+      if (meta == null) {
+        return false;
+      }
+      var modifiers = meta.getAttributeModifiers(attribute);
+      if (modifiers == null || modifiers.isEmpty()) {
+        return false;
+      }
+      double sum = 0.0;
+      boolean matched = false;
+      for (AttributeModifier modifier : modifiers) {
+        if (modifier == null) {
+          continue;
+        }
+        if (op != null && modifier.getOperation() != op) {
+          continue;
+        }
+        matched = true;
+        sum += modifier.getAmount();
+      }
+      if (!matched) {
+        return false;
+      }
+      if (min != null && sum < min) {
+        return false;
+      }
+      if (max != null && sum > max) {
+        return false;
+      }
+      return true;
+    };
   }
 
   private static void stripAbilityLore(ItemStack item) {

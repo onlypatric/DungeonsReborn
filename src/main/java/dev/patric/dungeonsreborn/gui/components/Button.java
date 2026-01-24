@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.patric.dungeonsreborn.gui.GuiComponent;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.gui.Window;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -28,7 +29,7 @@ public class Button implements GuiComponent {
    * to register specific click handlers. When {@link #autoDescribeInLore(boolean)} is enabled (default), the bound clicks are
    * appended to the item's lore under a small "Controls" section.
    */
-  private static final Component DEFAULT_ACTION_DESCRIPTION = Component.text("Action");
+  private static final Component DEFAULT_ACTION_DESCRIPTION = GuiI18n.tr("gui.controls.action");
   private static final List<ClickType> DEFAULT_LORE_ORDER = List.of(
       ClickType.LEFT,
       ClickType.SHIFT_LEFT,
@@ -56,10 +57,10 @@ public class Button implements GuiComponent {
 
     static ControlsFormatter defaultFormatter() {
       return new ControlsFormat(
-          Component.text("Controls:"),
-          Component.text("• "),
-          Component.text(": "),
-          Component.text("  "),
+          GuiI18n.tr("gui.controls.header"),
+          GuiI18n.tr("gui.controls.bullet"),
+          GuiI18n.tr("gui.controls.separator"),
+          GuiI18n.tr("gui.controls.continuation"),
           true);
     }
   }
@@ -204,9 +205,9 @@ public class Button implements GuiComponent {
     }
     return controlsFormatter(new ControlsFormat(
         label,
-        Component.text("• "),
-        Component.text(": "),
-        Component.text("  "),
+        GuiI18n.tr("gui.controls.bullet"),
+        GuiI18n.tr("gui.controls.separator"),
+        GuiI18n.tr("gui.controls.continuation"),
         true));
   }
 
@@ -389,10 +390,10 @@ public class Button implements GuiComponent {
 
   private static String clickLabel(ClickType type) {
     return switch (type) {
-      case LEFT -> "Left-click";
-      case SHIFT_LEFT -> "Shift+Left-click";
-      case RIGHT -> "Right-click";
-      case SHIFT_RIGHT -> "Shift+Right-click";
+      case LEFT -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.click.left");
+      case SHIFT_LEFT -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.click.shift_left");
+      case RIGHT -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.click.right");
+      case SHIFT_RIGHT -> GuiI18n.str(GuiI18n.defaultLocale(), "gui.click.shift_right");
       default -> type.name();
     };
   }

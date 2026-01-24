@@ -1,0 +1,24 @@
+messages.kits.claim.already: <yellow>Kit gia riscattato.</yellow>
+messages.kits.claim.alreadyClaimed: Hai gia riscattato questo kit.
+messages.kits.claim.cooldown: Kit disponibile tra {time}.
+messages.kits.claim.denied: <red>Non puoi riscattare questo kit.</red>
+messages.kits.claim.missingId: ID kit mancante.
+messages.kits.claim.missingPermission: 'Permesso mancante: {permission}'
+messages.kits.claim.ok: <green>Kit riscattato:</green> <white>{kit}</white>
+messages.kits.claim.playersOnly: Solo i giocatori possono riscattare i kit.
+messages.kits.claim.success: 'Kit riscattato: {title}'
+messages.kits.claim.unknown: 'Kit sconosciuto: {id}'
+messages.kits.reload.errors: <red>Ricarica kit con {errors} errori. Controlla i log.</red>
+messages.kits.reload.ok: <green>Kit caricati:</green> <white>{count}</white>
+messages.kits.status.alreadyClaimed: Gia riscattato
+messages.kits.status.available: Disponibile
+messages.kits.status.cooldown: Disponibile tra {time}.
+messages.kits.status.unavailable: Non disponibile
+messages.kits.summary.claimedSimple: <green>Kit riscattato:</green> <white>{title}</white>
+messages.kits.summary.compressed: <gray>Compressi:</gray> <white>{amount}</white>
+messages.kits.summary.header: <gold><bold>Ricompense Kit</bold></gold>
+messages.kits.summary.items: <gray>Oggetti:</gray> <white>{count}</white>
+messages.kits.summary.kit: <gray>Kit:</gray> <white>{title}</white>
+messages.kits.summary.pallets: <gray>Pallet:</gray> <white>{amount}</white>
+messages.kits.summary.tokens: <gray>Gettoni:</gray> <white>{amount}</white>
+messages.kits.summary.xp: <gray>XP personalizzati:</gray> <white>{amount}</white>

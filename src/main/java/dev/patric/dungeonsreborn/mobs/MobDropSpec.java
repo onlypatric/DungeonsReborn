@@ -6,7 +6,7 @@ import java.util.Random;
 import org.bukkit.inventory.ItemStack;
 
 public record MobDropSpec(ItemStack item, String tier, double chance, int minAmount, int maxAmount,
-    boolean tokenDrop) {
+    boolean tokenDrop, MobDropConditions conditions, Integer minDamage, Integer maxDamage) {
   public MobDropSpec {
     Objects.requireNonNull(item, "item");
     if (tier != null && tier.isBlank()) {
@@ -26,6 +26,21 @@ public record MobDropSpec(ItemStack item, String tier, double chance, int minAmo
       if (minAmount > maxStack || maxAmount > maxStack) {
         throw new IllegalArgumentException("amount must be <= max stack size (" + maxStack + ")");
       }
+    }
+    if (conditions == null) {
+      conditions = MobDropConditions.none();
+    }
+    if (minDamage != null || maxDamage != null) {
+      int min = minDamage == null ? 0 : minDamage;
+      int max = maxDamage == null ? min : maxDamage;
+      if (min < 0 || max < 0) {
+        throw new IllegalArgumentException("durability range must be >= 0");
+      }
+      if (max < min) {
+        throw new IllegalArgumentException("durability max must be >= min");
+      }
+      minDamage = min;
+      maxDamage = max;
     }
   }
 

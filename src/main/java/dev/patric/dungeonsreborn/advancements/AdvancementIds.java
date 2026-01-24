@@ -4,6 +4,7 @@ import java.util.Locale;
 
 public final class AdvancementIds {
   private static final String NAMESPACE = "dungeonsreborn";
+  public static final int CURRENT_SCHEMA_VERSION = 1;
 
   private AdvancementIds() {
   }

@@ -24,6 +24,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
@@ -33,6 +35,7 @@ import io.papermc.paper.registry.RegistryKey;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import dev.patric.dungeonsreborn.util.YamlValues;
@@ -82,6 +85,8 @@ public final class UpgradeYamlRegistry {
 
   public ReloadResult reload() {
     List<String> errors = new ArrayList<>();
+    boolean safeMode = plugin.getConfig().getBoolean("upgrades.validation.safeMode", true);
+    boolean logWarnings = plugin.getConfig().getBoolean("upgrades.validation.logWarnings", true);
     File dir = upgradesDir();
     if (!dir.exists()) {
       dir.mkdirs();
@@ -106,25 +111,32 @@ public final class UpgradeYamlRegistry {
         errors.add(base + ": " + ex.getMessage());
       }
     }
-    if (errors.isEmpty()) {
+    if (errors.isEmpty() || safeMode) {
       upgrades.clear();
       upgrades.putAll(next);
     }
     if (!errors.isEmpty()) {
-      logger.warn("[Upgrades] YAML reload had " + errors.size() + " errors");
-      for (String e : errors) {
-        logger.warn("[Upgrades] YAML: " + e);
+      if (logWarnings) {
+        String label = safeMode ? "warnings" : "errors";
+        logger.warn("[Upgrades] YAML reload had " + errors.size() + " " + label);
+        for (String e : errors) {
+          logger.warn("[Upgrades] YAML: " + e);
+        }
+      }
+      if (!safeMode) {
+        logger.warn("[Upgrades] YAML reload aborted; enable upgrades.validation.safeMode to keep valid upgrades loaded.");
       }
     } else {
       logger.info("[Upgrades] YAML loaded " + next.size() + " upgrades");
     }
+    int loadedCount = (errors.isEmpty() || safeMode) ? next.size() : upgrades.size();
     SystemStatusStore.get().record(
         "upgrades",
         "Upgrades",
         upgradesDir().getPath(),
-        "upgrades=" + (errors.isEmpty() ? next.size() : upgrades.size()),
+        "upgrades=" + loadedCount,
         errors);
-    return new ReloadResult(errors.isEmpty() ? next.size() : upgrades.size(), errors);
+    return new ReloadResult(loadedCount, errors);
   }
 
   private void ensureDefaultUpgrades(File dir) {
@@ -196,32 +208,190 @@ public final class UpgradeYamlRegistry {
     UpgradeTargetSpec target = parseTarget(cfg.getConfigurationSection("target"), base, errors);
     UpgradeCompatibilitySpec compatibility = parseCompatibility(cfg.getConfigurationSection("compatibility"), base, errors);
     UpgradeLimitsSpec limits = parseLimits(cfg.getConfigurationSection("limits"), base, errors);
+    UpgradeProgressionSpec progression = parseProgression(cfg.getConfigurationSection("progression"), limits, base, errors);
+    UpgradeFusionSpec fusion = parseFusion(cfg.getConfigurationSection("fusion"), base, errors);
+    UpgradeSalvageSpec salvage = parseSalvage(cfg.getConfigurationSection("salvage"), base, errors);
     UpgradeBehaviorSpec behaviors = parseBehaviors(cfg.getConfigurationSection("behaviors"), base, errors);
     List<UpgradeSpellSpec> spells = parseSpells(cfg, base, errors);
     List<UpgradeModifierSpec> modifiers = parseModifiers(cfg.get("modifiers"), base + ".modifiers", errors);
     List<UpgradeAttributeSpec> attributes = parseAttributes(cfg.get("attributes"), base + ".attributes", errors);
     List<UpgradeEnchantSpec> enchants = parseEnchants(cfg.get("enchants"), base + ".enchants", errors);
 
-    UpgradeSpec spec = new UpgradeSpec(id, name, description, requirements, price, target, compatibility, limits, behaviors, allowUnsafe, modifiers, attributes, enchants, spells);
+    UpgradeSpec spec = new UpgradeSpec(id, name, description, requirements, price, target, compatibility, limits, progression,
+        fusion, salvage, behaviors, allowUnsafe, modifiers, attributes, enchants, spells);
     ItemStack template = buildUpgradeItem(cfg, spec, base, errors);
     if (template == null) {
       return null;
     }
-    return new UpgradeTemplate(spec, template);
+    Map<String, ItemStack> variants = parseUpgradeVariants(cfg, spec, base, errors);
+    return new UpgradeTemplate(spec, template, variants);
   }
 
   private ItemStack buildUpgradeItem(YamlConfiguration cfg, UpgradeSpec spec, String base, List<String> errors) {
-    ItemStack item = cfg.getItemStack("item");
+    ItemStack item = resolveUpgradeItem(cfg.get("item"), base + ".item", errors);
     if (item == null || item.getType().isAir()) {
-      item = new ItemStack(Material.ENCHANTED_BOOK);
-    } else if (item.getType() != Material.ENCHANTED_BOOK) {
-      errors.add(base + ".item: upgrade items must be ENCHANTED_BOOK (found " + item.getType().name() + ")");
       item = new ItemStack(Material.ENCHANTED_BOOK);
     }
     item = item.clone();
     ItemMarkers.setUpgradeId(item, spec.id());
     UpgradeLore.applyUpgradeBookLore(item, spec);
+    item = applyUpgradeVisuals(item, cfg.getConfigurationSection("visual"), base + ".visual", errors);
     return item;
+  }
+
+  private Map<String, ItemStack> parseUpgradeVariants(
+      YamlConfiguration cfg,
+      UpgradeSpec spec,
+      String base,
+      List<String> errors) {
+    Object raw = cfg.get("variants");
+    if (raw == null) {
+      raw = cfg.get("templates");
+    }
+    if (!(raw instanceof List<?> list)) {
+      return Map.of();
+    }
+    Map<String, ItemStack> variants = new LinkedHashMap<>();
+    int index = 0;
+    for (Object entry : list) {
+      String entryPath = base + ".variants[" + index + "]";
+      ItemStack item = null;
+      ConfigurationSection visual = null;
+      String id = null;
+      if (entry instanceof ConfigurationSection section) {
+        id = YamlValues.string(section.get("id"), null);
+        Object itemRaw = section.contains("item") ? section.get("item") : section;
+        item = resolveUpgradeItem(itemRaw, entryPath + ".item", errors);
+        visual = section.getConfigurationSection("visual");
+      } else if (entry instanceof Map<?, ?> map) {
+        Object idRaw = map.get("id");
+        if (idRaw != null) {
+          id = String.valueOf(idRaw);
+        }
+        Object itemRaw = map.containsKey("item") ? map.get("item") : map;
+        item = resolveUpgradeItem(itemRaw, entryPath + ".item", errors);
+        Object visualRaw = map.get("visual");
+        if (visualRaw instanceof ConfigurationSection section) {
+          visual = section;
+        }
+      } else {
+        item = resolveUpgradeItem(entry, entryPath, errors);
+      }
+      if (item == null || item.getType().isAir()) {
+        index++;
+        continue;
+      }
+      item = item.clone();
+      ItemMarkers.setUpgradeId(item, spec.id());
+      UpgradeLore.applyUpgradeBookLore(item, spec);
+      item = applyUpgradeVisuals(item, visual, entryPath + ".visual", errors);
+      if (id == null || id.isBlank()) {
+        id = "variant_" + index;
+      }
+      variants.put(Ids.normalize(id), item);
+      index++;
+    }
+    return variants.isEmpty() ? Map.of() : variants;
+  }
+
+  private ItemStack resolveUpgradeItem(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof ItemStack stack) {
+      return stack;
+    }
+    if (raw instanceof String materialRaw) {
+      Material material = Material.matchMaterial(materialRaw.trim());
+      if (material == null) {
+        errors.add(path + ": unknown material=" + materialRaw);
+        return null;
+      }
+      return new ItemStack(material);
+    }
+    if (raw instanceof ConfigurationSection section) {
+      ItemStack stack = section.getItemStack("item");
+      if (stack != null) {
+        return stack;
+      }
+      String materialRaw = YamlValues.string(section.get("material"), YamlValues.string(section.get("type"), null));
+      if (materialRaw == null || materialRaw.isBlank()) {
+        errors.add(path + ".material: missing material");
+        return null;
+      }
+      Material material = Material.matchMaterial(materialRaw);
+      if (material == null) {
+        errors.add(path + ".material: unknown material=" + materialRaw);
+        return null;
+      }
+      return new ItemStack(material);
+    }
+    if (raw instanceof Map<?, ?> map) {
+      Object materialRaw = map.containsKey("material") ? map.get("material") : map.get("type");
+      if (materialRaw == null) {
+        errors.add(path + ".material: missing material");
+        return null;
+      }
+      Material material = Material.matchMaterial(String.valueOf(materialRaw));
+      if (material == null) {
+        errors.add(path + ".material: unknown material=" + materialRaw);
+        return null;
+      }
+      return new ItemStack(material);
+    }
+    errors.add(path + ": expected item stack, material string, or object");
+    return null;
+  }
+
+  private ItemStack applyUpgradeVisuals(ItemStack item, ConfigurationSection visual, String path, List<String> errors) {
+    if (item == null || visual == null) {
+      return item;
+    }
+    ItemStack working = item;
+    ItemStack glinted = applyGlint(working, visual);
+    if (glinted != null) {
+      working = glinted;
+    }
+    ItemMeta meta = working.getItemMeta();
+    if (meta == null) {
+      return working;
+    }
+    String nameKey = YamlValues.string(visual.get("nameKey"), null);
+    String nameRaw = YamlValues.string(visual.get("name"), null);
+    if (nameKey != null && !nameKey.isBlank()) {
+      String name = Locales.text(null, nameKey);
+      if (name != null && !name.isBlank()) {
+        meta.displayName(UpgradeLore.parseRichText(name));
+      }
+    } else if (nameRaw != null && !nameRaw.isBlank()) {
+      meta.displayName(UpgradeLore.parseRichText(nameRaw));
+    }
+    if (visual.contains("customModelData") || visual.contains("custom_model_data")) {
+      int cmd = visual.getInt("customModelData", visual.getInt("custom_model_data", 0));
+      if (cmd < 0) {
+        errors.add(path + ".customModelData: must be >= 0");
+      } else {
+        setCustomModelData(meta, cmd);
+      }
+    }
+    working.setItemMeta(meta);
+    return working;
+  }
+
+  private ItemStack applyGlint(ItemStack item, ConfigurationSection visual) {
+    if (visual == null || !visual.contains("glint")) {
+      return item;
+    }
+    boolean enabled = visual.getBoolean("glint", false);
+    return dev.patric.dungeonsreborn.gui.GuiItem.of(item).glint(enabled).build();
+  }
+
+  private void setCustomModelData(ItemMeta meta, int value) {
+    if (meta == null) {
+      return;
+    }
+    CustomModelDataComponent component = meta.getCustomModelDataComponent();
+    component.setFloats(List.of((float) value));
   }
 
   private UpgradeRequirements parseRequirements(ConfigurationSection section) {
@@ -323,18 +493,50 @@ public final class UpgradeYamlRegistry {
     if (entry instanceof ConfigurationSection section) {
       String abilityRaw = YamlValues.string(section.get("ability"), null);
       String activatorRaw = YamlValues.string(section.get("activator"), YamlValues.string(section.get("activation"), null));
-      return parseSpellData(abilityRaw, activatorRaw, base, errors);
+      return parseSpellData(abilityRaw, activatorRaw, section, base, errors);
     }
     if (entry instanceof Map<?, ?> map) {
       String abilityRaw = YamlValues.string(map.get("ability"), null);
       String activatorRaw = YamlValues.string(map.get("activator"), YamlValues.string(map.get("activation"), null));
-      return parseSpellData(abilityRaw, activatorRaw, base, errors);
+      return parseSpellData(abilityRaw, activatorRaw, map, base, errors);
     }
     errors.add(base + ": expected map for spell entry");
     return null;
   }
 
-  private UpgradeSpellSpec parseSpellData(String abilityRaw, String activatorRaw, String base, List<String> errors) {
+  private UpgradeSpellSpec parseSpellData(String abilityRaw, String activatorRaw, ConfigurationSection section, String base,
+      List<String> errors) {
+    long cooldownTicks = resolveCooldownTicks(section);
+    Integer manaCost = resolveInt(section, "manaCost", "mana");
+    Integer durabilityCost = resolveInt(section, "durabilityCost", "durability", "damage");
+    Integer consumeAmount = resolveInt(section, "consumeAmount", "consume", "amount");
+    String scopeRaw = YamlValues.string(section.get("cooldownScope"), YamlValues.string(section.get("cooldown_scope"), null));
+    boolean requireSneaking = resolveBool(section, "requireSneaking", "sneaking", "requireSneak");
+    boolean requireSprinting = resolveBool(section, "requireSprinting", "sprinting", "requireSprint");
+    boolean requireAirborne = resolveBool(section, "requireAirborne", "airborne");
+    boolean requireOnGround = resolveBool(section, "requireOnGround", "onGround", "grounded");
+    return parseSpellData(abilityRaw, activatorRaw, cooldownTicks, manaCost, durabilityCost, consumeAmount, scopeRaw,
+        requireSneaking, requireSprinting, requireAirborne, requireOnGround, base, errors);
+  }
+
+  private UpgradeSpellSpec parseSpellData(String abilityRaw, String activatorRaw, Map<?, ?> map, String base,
+      List<String> errors) {
+    long cooldownTicks = resolveCooldownTicks(map);
+    Integer manaCost = resolveInt(map, "manaCost", "mana");
+    Integer durabilityCost = resolveInt(map, "durabilityCost", "durability", "damage");
+    Integer consumeAmount = resolveInt(map, "consumeAmount", "consume", "amount");
+    String scopeRaw = YamlValues.string(map.get("cooldownScope"), YamlValues.string(map.get("cooldown_scope"), null));
+    boolean requireSneaking = resolveBool(map, "requireSneaking", "sneaking", "requireSneak");
+    boolean requireSprinting = resolveBool(map, "requireSprinting", "sprinting", "requireSprint");
+    boolean requireAirborne = resolveBool(map, "requireAirborne", "airborne");
+    boolean requireOnGround = resolveBool(map, "requireOnGround", "onGround", "grounded");
+    return parseSpellData(abilityRaw, activatorRaw, cooldownTicks, manaCost, durabilityCost, consumeAmount, scopeRaw,
+        requireSneaking, requireSprinting, requireAirborne, requireOnGround, base, errors);
+  }
+
+  private UpgradeSpellSpec parseSpellData(String abilityRaw, String activatorRaw, long cooldownTicks, Integer manaCost,
+      Integer durabilityCost, Integer consumeAmount, String scopeRaw, boolean requireSneaking, boolean requireSprinting,
+      boolean requireAirborne, boolean requireOnGround, String base, List<String> errors) {
     if (abilityRaw == null || abilityRaw.isBlank()) {
       errors.add(base + ".ability: missing ability id");
       return null;
@@ -352,11 +554,90 @@ public final class UpgradeYamlRegistry {
     }
     try {
       UpgradeActivator activator = UpgradeActivator.parse(activatorRaw, base + ".activator");
-      return new UpgradeSpellSpec(abilityId, activator);
+      UpgradeCooldownScope scope = UpgradeCooldownScope.parse(scopeRaw, base + ".cooldownScope");
+      Long cooldown = cooldownTicks <= 0 ? null : cooldownTicks;
+      return new UpgradeSpellSpec(abilityId, activator, cooldown, manaCost, durabilityCost, consumeAmount, scope,
+          requireSneaking, requireSprinting, requireAirborne, requireOnGround);
     } catch (Exception ex) {
       errors.add(ex.getMessage());
       return null;
     }
+  }
+
+  private static long resolveCooldownTicks(ConfigurationSection section) {
+    long cooldown = YamlValues.longValue(section.get("cooldownTicks"), 0L);
+    if (cooldown <= 0) {
+      double seconds = YamlValues.doubleValue(section.get("cooldownSeconds"), 0.0);
+      if (seconds > 0) {
+        cooldown = Math.round(seconds * 20.0);
+      }
+    }
+    if (cooldown <= 0) {
+      double seconds = YamlValues.doubleValue(section.get("cooldown"), 0.0);
+      if (seconds > 0) {
+        cooldown = Math.round(seconds * 20.0);
+      }
+    }
+    return cooldown;
+  }
+
+  private static long resolveCooldownTicks(Map<?, ?> map) {
+    long cooldown = YamlValues.longValue(map.get("cooldownTicks"), 0L);
+    if (cooldown <= 0) {
+      double seconds = YamlValues.doubleValue(map.get("cooldownSeconds"), 0.0);
+      if (seconds > 0) {
+        cooldown = Math.round(seconds * 20.0);
+      }
+    }
+    if (cooldown <= 0) {
+      double seconds = YamlValues.doubleValue(map.get("cooldown"), 0.0);
+      if (seconds > 0) {
+        cooldown = Math.round(seconds * 20.0);
+      }
+    }
+    return cooldown;
+  }
+
+  private static Integer resolveInt(ConfigurationSection section, String... keys) {
+    for (String key : keys) {
+      if (section.contains(key)) {
+        int value = YamlValues.intValue(section.get(key), 0);
+        if (value > 0) {
+          return value;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static Integer resolveInt(Map<?, ?> map, String... keys) {
+    for (String key : keys) {
+      if (map.containsKey(key)) {
+        int value = YamlValues.intValue(map.get(key), 0);
+        if (value > 0) {
+          return value;
+        }
+      }
+    }
+    return null;
+  }
+
+  private static boolean resolveBool(ConfigurationSection section, String... keys) {
+    for (String key : keys) {
+      if (section.contains(key) && YamlValues.bool(section.get(key), false)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean resolveBool(Map<?, ?> map, String... keys) {
+    for (String key : keys) {
+      if (map.containsKey(key) && YamlValues.bool(map.get(key), false)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private UpgradeTargetSpec parseTarget(ConfigurationSection section, String base, List<String> errors) {
@@ -403,7 +684,66 @@ public final class UpgradeYamlRegistry {
       }
       abilityTags.add(normalized);
     }
-    return new UpgradeTargetSpec(List.copyOf(abilityIds), List.copyOf(abilityTags));
+    List<String> itemIds = new ArrayList<>();
+    List<String> rawItemIds = readStringList(section.get("itemIds"));
+    if (rawItemIds.isEmpty()) {
+      rawItemIds = readStringList(section.get("items"));
+    }
+    if (rawItemIds.isEmpty()) {
+      rawItemIds = readStringList(section.get("item"));
+    }
+    for (String raw : rawItemIds) {
+      if (raw == null || raw.isBlank()) {
+        continue;
+      }
+      try {
+        itemIds.add(Ids.normalize(raw));
+      } catch (Exception ex) {
+        errors.add(base + ".target.itemIds: invalid id " + raw);
+      }
+    }
+    List<String> itemTags = new ArrayList<>();
+    List<String> rawItemTags = readStringList(section.get("itemTags"));
+    if (rawItemTags.isEmpty()) {
+      rawItemTags = readStringList(section.get("itemTag"));
+    }
+    for (String raw : rawItemTags) {
+      if (raw == null || raw.isBlank()) {
+        continue;
+      }
+      try {
+        itemTags.add(Ids.normalize(raw));
+      } catch (Exception ex) {
+        errors.add(base + ".target.itemTags: invalid tag " + raw);
+      }
+    }
+    List<String> itemCategories = new ArrayList<>();
+    List<String> rawCategories = readStringList(section.get("itemCategories"));
+    if (rawCategories.isEmpty()) {
+      rawCategories = readStringList(section.get("itemCategory"));
+    }
+    if (rawCategories.isEmpty()) {
+      rawCategories = readStringList(section.get("categories"));
+    }
+    if (rawCategories.isEmpty()) {
+      rawCategories = readStringList(section.get("category"));
+    }
+    for (String raw : rawCategories) {
+      if (raw == null || raw.isBlank()) {
+        continue;
+      }
+      try {
+        itemCategories.add(Ids.normalize(raw));
+      } catch (Exception ex) {
+        errors.add(base + ".target.itemCategories: invalid category " + raw);
+      }
+    }
+    return new UpgradeTargetSpec(
+        List.copyOf(abilityIds),
+        List.copyOf(abilityTags),
+        List.copyOf(itemIds),
+        List.copyOf(itemTags),
+        List.copyOf(itemCategories));
   }
 
   private UpgradeCompatibilitySpec parseCompatibility(ConfigurationSection section, String base, List<String> errors) {
@@ -414,7 +754,18 @@ public final class UpgradeYamlRegistry {
     Set<String> denyItems = normalizeIds(readStringList(section.get("denyItems")), base + ".compatibility.denyItems", errors);
     Set<Material> allowMaterials = parseMaterials(readStringList(section.get("allowMaterials")), base + ".compatibility.allowMaterials", errors);
     Set<Material> denyMaterials = parseMaterials(readStringList(section.get("denyMaterials")), base + ".compatibility.denyMaterials", errors);
-    return new UpgradeCompatibilitySpec(allowItems, denyItems, allowMaterials, denyMaterials);
+    Set<String> groups = normalizeIds(readStringList(section.get("groups")), base + ".compatibility.groups", errors);
+    if (groups.isEmpty()) {
+      groups = normalizeIds(readStringList(section.get("group")), base + ".compatibility.group", errors);
+    }
+    if (groups.isEmpty()) {
+      groups = normalizeIds(readStringList(section.get("incompatibilityGroups")), base + ".compatibility.incompatibilityGroups", errors);
+    }
+    if (groups.isEmpty()) {
+      groups = normalizeIds(readStringList(section.get("incompatibilityGroup")), base + ".compatibility.incompatibilityGroup", errors);
+    }
+    int priority = section.getInt("priority", 0);
+    return new UpgradeCompatibilitySpec(allowItems, denyItems, allowMaterials, denyMaterials, groups, priority);
   }
 
   private UpgradeBehaviorSpec parseBehaviors(ConfigurationSection section, String base, List<String> errors) {
@@ -503,6 +854,9 @@ public final class UpgradeYamlRegistry {
     int tier = YamlValues.intValue(section.get("tier"), 1);
     int maxTier = YamlValues.intValue(section.get("maxTier"), 0);
     int maxPerItem = YamlValues.intValue(section.get("maxPerItem"), 0);
+    int maxCopies = YamlValues.intValue(section.get("maxCopies"), 0);
+    double diminishingFactor = YamlValues.doubleValue(section.get("diminishingFactor"), 1.0);
+    double diminishingFloor = YamlValues.doubleValue(section.get("diminishingFloor"), 0.0);
     if (tier < 1) {
       errors.add(base + ".limits.tier: must be >= 1");
       tier = 1;
@@ -515,11 +869,147 @@ public final class UpgradeYamlRegistry {
       errors.add(base + ".limits.maxPerItem: must be >= 0");
       maxPerItem = 0;
     }
+    if (maxCopies < 0) {
+      errors.add(base + ".limits.maxCopies: must be >= 0");
+      maxCopies = 0;
+    }
+    if (!Double.isFinite(diminishingFactor) || diminishingFactor <= 0.0) {
+      errors.add(base + ".limits.diminishingFactor: must be > 0");
+      diminishingFactor = 1.0;
+    }
+    if (!Double.isFinite(diminishingFloor) || diminishingFloor < 0.0) {
+      errors.add(base + ".limits.diminishingFloor: must be >= 0");
+      diminishingFloor = 0.0;
+    }
     if (maxTier > 0 && tier > maxTier) {
       errors.add(base + ".limits.tier: cannot exceed maxTier (" + maxTier + ")");
       tier = maxTier;
     }
-    return new UpgradeLimitsSpec(category, exclusive, tier, maxTier, maxPerItem);
+    return new UpgradeLimitsSpec(category, exclusive, tier, maxTier, maxPerItem, maxCopies, diminishingFactor,
+        diminishingFloor);
+  }
+
+  private UpgradeProgressionSpec parseProgression(ConfigurationSection section, UpgradeLimitsSpec limits, String base,
+      List<String> errors) {
+    if (section == null) {
+      return UpgradeProgressionSpec.none();
+    }
+    String category = YamlValues.string(section.get("category"), null);
+    int tier = YamlValues.intValue(section.get("tier"), limits == null ? 1 : limits.tier());
+    if (tier < 1) {
+      errors.add(base + ".progression.tier: must be >= 1");
+      tier = 1;
+    }
+    boolean requirePreviousTier = YamlValues.bool(section.get("requirePreviousTier"),
+        YamlValues.bool(section.get("requirePrevious"), false));
+    boolean consumePreviousTier = YamlValues.bool(section.get("consumePreviousTier"),
+        YamlValues.bool(section.get("consumePrevious"), false));
+    List<String> requires = normalizeIdList(readStringList(section.get("requires")), base + ".progression.requires", errors);
+    List<String> consumes = normalizeIdList(readStringList(section.get("consumes")), base + ".progression.consumes", errors);
+    if ((category == null || category.isBlank()) && limits != null && limits.category() != null) {
+      category = limits.category();
+    }
+    return new UpgradeProgressionSpec(category, tier, requirePreviousTier, consumePreviousTier, requires, consumes);
+  }
+
+  private UpgradeFusionSpec parseFusion(ConfigurationSection section, String base, List<String> errors) {
+    if (section == null) {
+      return UpgradeFusionSpec.none();
+    }
+    UpgradePriceSpec price = parsePrice(section.getConfigurationSection("price"), base + ".fusion", errors);
+    double successChance = YamlValues.doubleValue(section.get("successChance"),
+        YamlValues.doubleValue(section.get("success"), 1.0));
+    boolean consumeOnFail = YamlValues.bool(section.get("consumeOnFail"), true);
+    boolean destroyTargetOnFail = YamlValues.bool(section.get("destroyTargetOnFail"), false);
+    String downgradeTo = YamlValues.string(section.get("downgradeTo"), null);
+    if (successChance < 0.0 || successChance > 1.0 || !Double.isFinite(successChance)) {
+      errors.add(base + ".fusion.successChance: must be between 0 and 1");
+      successChance = 1.0;
+    }
+    return new UpgradeFusionSpec(price, successChance, consumeOnFail, destroyTargetOnFail, downgradeTo);
+  }
+
+  private UpgradeSalvageSpec parseSalvage(ConfigurationSection section, String base, List<String> errors) {
+    if (section == null) {
+      return UpgradeSalvageSpec.none();
+    }
+    UpgradePriceSpec tokens = parsePrice(section.getConfigurationSection("tokens"), base + ".salvage", errors);
+    List<UpgradeSalvageItemSpec> items = parseSalvageItems(section.get("items"), base + ".salvage.items", errors);
+    return new UpgradeSalvageSpec(tokens, items);
+  }
+
+  private List<UpgradeSalvageItemSpec> parseSalvageItems(Object raw, String base, List<String> errors) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<UpgradeSalvageItemSpec> out = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      int index = 0;
+      for (Object entry : list) {
+        String entryBase = base + "[" + index + "]";
+        UpgradeSalvageItemSpec spec = parseSalvageItem(entry, entryBase, errors);
+        if (spec != null) {
+          out.add(spec);
+        }
+        index++;
+      }
+      return out;
+    }
+    UpgradeSalvageItemSpec spec = parseSalvageItem(raw, base, errors);
+    return spec == null ? List.of() : List.of(spec);
+  }
+
+  private UpgradeSalvageItemSpec parseSalvageItem(Object raw, String base, List<String> errors) {
+    if (raw instanceof ConfigurationSection section) {
+      String itemRaw = YamlValues.string(section.get("item"), YamlValues.string(section.get("itemId"), null));
+      int amount = YamlValues.intValue(section.get("amount"), 1);
+      return buildSalvageItem(itemRaw, amount, base, errors);
+    }
+    if (raw instanceof Map<?, ?> map) {
+      String itemRaw = YamlValues.string(map.get("item"), YamlValues.string(map.get("itemId"), null));
+      int amount = YamlValues.intValue(map.get("amount"), 1);
+      return buildSalvageItem(itemRaw, amount, base, errors);
+    }
+    if (raw instanceof String str) {
+      return buildSalvageItem(str, 1, base, errors);
+    }
+    errors.add(base + ": expected item salvage entry");
+    return null;
+  }
+
+  private UpgradeSalvageItemSpec buildSalvageItem(String itemRaw, int amount, String base, List<String> errors) {
+    if (itemRaw == null || itemRaw.isBlank()) {
+      errors.add(base + ".item: missing item id");
+      return null;
+    }
+    if (amount <= 0) {
+      errors.add(base + ".amount: must be > 0");
+      return null;
+    }
+    try {
+      return new UpgradeSalvageItemSpec(Ids.normalize(itemRaw), amount);
+    } catch (Exception ex) {
+      errors.add(base + ".item: invalid id (" + ex.getMessage() + ")");
+      return null;
+    }
+  }
+
+  private List<String> normalizeIdList(List<String> raw, String base, List<String> errors) {
+    if (raw == null || raw.isEmpty()) {
+      return List.of();
+    }
+    List<String> out = new ArrayList<>(raw.size());
+    for (String entry : raw) {
+      if (entry == null || entry.isBlank()) {
+        continue;
+      }
+      try {
+        out.add(Ids.normalize(entry));
+      } catch (Exception ex) {
+        errors.add(base + ": invalid id " + entry);
+      }
+    }
+    return out;
   }
 
   private List<UpgradeModifierSpec> parseModifiers(Object raw, String path, List<String> errors) {
@@ -726,15 +1216,8 @@ public final class UpgradeYamlRegistry {
       errors.add(entryPath + ".type: missing effect type");
       return null;
     }
-    NamespacedKey key = NamespacedKey.fromString(typeRaw.trim().toLowerCase(Locale.ROOT));
-    if (key == null) {
-      errors.add(entryPath + ".type: invalid effect key " + typeRaw);
-      return null;
-    }
-    var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT);
-    PotionEffectType type = registry.get(key);
+    PotionEffectType type = parsePotionEffect(typeRaw, entryPath + ".type", errors);
     if (type == null) {
-      errors.add(entryPath + ".type: unknown effect " + typeRaw);
       return null;
     }
     int duration = YamlValues.intValue(map.get("duration"), YamlValues.intValue(map.get("durationTicks"), 40));
@@ -874,16 +1357,89 @@ public final class UpgradeYamlRegistry {
   }
 
   private Enchantment parseEnchantment(String raw, String path, List<String> errors) {
-    String keyRaw = raw.trim().toLowerCase(Locale.ROOT);
-    if (!keyRaw.contains(":")) {
-      keyRaw = "minecraft:" + keyRaw;
+    String normalized = raw.trim().toLowerCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+    List<String> candidates = new ArrayList<>();
+    if (normalized.contains(":")) {
+      candidates.add(normalized);
+    } else {
+      candidates.add("minecraft:" + normalized);
     }
-    NamespacedKey key = NamespacedKey.fromString(keyRaw);
-    Enchantment enchant = key == null ? null : RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
-    if (enchant == null) {
-      errors.add(path + ": unknown enchant=" + raw);
+    var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT);
+    for (String candidate : candidates) {
+      NamespacedKey key = NamespacedKey.fromString(candidate);
+      Enchantment enchant = key == null ? null : registry.get(key);
+      if (enchant != null) {
+        return enchant;
+      }
     }
-    return enchant;
+    String needle = normalized;
+    if (needle.contains(":")) {
+      String[] parts = needle.split(":", 2);
+      needle = parts.length == 2 ? parts[1] : needle;
+    }
+    String needleUnderscore = needle.replace('.', '_');
+    String needleDot = needle.replace('_', '.');
+    if (registry != null) {
+      for (Enchantment enchant : registry) {
+        NamespacedKey key = enchant.getKey();
+        if (key == null) {
+          continue;
+        }
+        String keyPath = key.getKey().toLowerCase(Locale.ROOT);
+        String keyUnderscore = keyPath.replace('.', '_');
+        String keyDot = keyPath.replace('_', '.');
+        if (keyPath.equals(needle) || keyPath.equals(needleUnderscore) || keyPath.equals(needleDot)
+            || keyUnderscore.equals(needle) || keyUnderscore.equals(needleUnderscore) || keyUnderscore.equals(needleDot)
+            || keyDot.equals(needle) || keyDot.equals(needleUnderscore) || keyDot.equals(needleDot)) {
+          return enchant;
+        }
+      }
+    }
+    errors.add(path + ": unknown enchant=" + raw);
+    return null;
+  }
+
+  private PotionEffectType parsePotionEffect(String raw, String path, List<String> errors) {
+    String normalized = raw.trim().toLowerCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+    List<String> candidates = new ArrayList<>();
+    if (normalized.contains(":")) {
+      candidates.add(normalized);
+    } else {
+      candidates.add("minecraft:" + normalized);
+    }
+    var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT);
+    for (String candidate : candidates) {
+      NamespacedKey key = NamespacedKey.fromString(candidate);
+      PotionEffectType type = key == null ? null : registry.get(key);
+      if (type != null) {
+        return type;
+      }
+    }
+    String needle = normalized;
+    if (needle.contains(":")) {
+      String[] parts = needle.split(":", 2);
+      needle = parts.length == 2 ? parts[1] : needle;
+    }
+    String needleUnderscore = needle.replace('.', '_');
+    String needleDot = needle.replace('_', '.');
+    if (registry != null) {
+      for (PotionEffectType type : registry) {
+        NamespacedKey key = type.getKey();
+        if (key == null) {
+          continue;
+        }
+        String keyPath = key.getKey().toLowerCase(Locale.ROOT);
+        String keyUnderscore = keyPath.replace('.', '_');
+        String keyDot = keyPath.replace('_', '.');
+        if (keyPath.equals(needle) || keyPath.equals(needleUnderscore) || keyPath.equals(needleDot)
+            || keyUnderscore.equals(needle) || keyUnderscore.equals(needleUnderscore) || keyUnderscore.equals(needleDot)
+            || keyDot.equals(needle) || keyDot.equals(needleUnderscore) || keyDot.equals(needleDot)) {
+          return type;
+        }
+      }
+    }
+    errors.add(path + ": unknown effect " + raw);
+    return null;
   }
 
   private static Map<String, Object> castMap(Object raw, String path, List<String> errors) {

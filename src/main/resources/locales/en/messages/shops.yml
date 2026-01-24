@@ -1,0 +1,29 @@
+messages.shops.open.denied: <red>You cannot access this shop.</red>
+messages.shops.open.disabled: Disabled
+messages.shops.open.missingId: Messages shops open missingId
+messages.shops.open.missingPermission: '<red>Missing permission: {perm}</red>'
+messages.shops.open.ok: <gray>Opening shop...</gray>
+messages.shops.open.unavailable: <red>This shop is not available right now.</red>
+messages.shops.open.unknown: Unknown
+messages.shops.open.worldDenied: <red>Shops are disabled in this world.</red>
+messages.shops.reload.errors: <red>Shop reload had {errors} errors. Check logs.</red>
+messages.shops.reload.ok: <green>Shops loaded:</green> <white>{count}</white>
+messages.shops.token.give: <green>Tokens given:</green> <white>{amount}</white>
+messages.shops.trade.busy: <red>Trade already in progress.</red>
+messages.shops.trade.cooldown: Cooldown
+messages.shops.trade.disabled: Disabled
+messages.shops.trade.invalid: <red>Trade invalid.</red>
+messages.shops.trade.missingItems: <red>Missing required items.</red>
+messages.shops.trade.missingPermission: '<red>Missing permission: {perm}</red>'
+messages.shops.trade.missingShop: Messages shops trade missingShop
+messages.shops.trade.noFunds: <red>Not enough items or tokens.</red>
+messages.shops.trade.ok: <green>Trade completed.</green>
+messages.shops.trade.outOfStock: <red>Out of stock.</red>
+messages.shops.trade.requiresClass: <red>Requires class {class}.</red>
+messages.shops.trade.requiresCustomXp: <red>Requires custom XP {required}.</red>
+messages.shops.trade.requiresFaction: <red>Requires faction {faction} (rank {rank}).</red>
+messages.shops.trade.requiresLevel: <red>Requires level {level}.</red>
+messages.shops.trade.requiresQuest: <red>Requires quest {quest} ({status}).</red>
+messages.shops.trade.requiresRegion: <red>Requires a specific region.</red>
+messages.shops.trade.unavailable: <red>This trade is not available right now.</red>
+messages.shops.trade.worldDenied: <red>Shops are disabled in this world.</red>

@@ -19,7 +19,8 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 
 public final class MobSpawnerBlockStore {
-  public record Entry(String blockId, String spawnId, String mobId, String world, int x, int y, int z) {
+  public record Entry(String blockId, String spawnId, String mobId, String world, int x, int y, int z,
+                      String ownerId, long createdAtMillis) {
   }
 
   private final File file;
@@ -57,7 +58,9 @@ public final class MobSpawnerBlockStore {
       String spawnId = node.getString("spawnId", null);
       String mobId = node.getString("mobId", null);
       String blockId = node.getString("blockId", null);
-      entries.put(keyFor(world, x, y, z), new Entry(blockId, spawnId, mobId, world, x, y, z));
+      String ownerId = node.getString("ownerId", null);
+      long createdAt = node.getLong("createdAtMillis", 0L);
+      entries.put(keyFor(world, x, y, z), new Entry(blockId, spawnId, mobId, world, x, y, z, ownerId, createdAt));
     }
   }
 
@@ -80,6 +83,12 @@ public final class MobSpawnerBlockStore {
       if (entry.blockId() != null) {
         node.set("blockId", entry.blockId());
       }
+      if (entry.ownerId() != null) {
+        node.set("ownerId", entry.ownerId());
+      }
+      if (entry.createdAtMillis() > 0L) {
+        node.set("createdAtMillis", entry.createdAtMillis());
+      }
     }
     try {
       file.getParentFile().mkdirs();
@@ -96,7 +105,7 @@ public final class MobSpawnerBlockStore {
     return entries.get(keyFor(block.getWorld(), block.getX(), block.getY(), block.getZ()));
   }
 
-  public void upsert(Block block, String blockId, String spawnId, String mobId) {
+  public void upsert(Block block, String blockId, String spawnId, String mobId, String ownerId) {
     if (block == null || block.getWorld() == null) {
       return;
     }
@@ -108,7 +117,9 @@ public final class MobSpawnerBlockStore {
         world,
         block.getX(),
         block.getY(),
-        block.getZ());
+        block.getZ(),
+        normalizeOrNull(ownerId),
+        System.currentTimeMillis());
     entries.put(keyFor(world, block.getX(), block.getY(), block.getZ()), entry);
     save();
   }
@@ -138,6 +149,19 @@ public final class MobSpawnerBlockStore {
     return null;
   }
 
+  public Entry entryBySpawnId(String spawnId) {
+    if (spawnId == null || spawnId.isBlank()) {
+      return null;
+    }
+    String normalized = Ids.normalize(spawnId);
+    for (Entry entry : entries.values()) {
+      if (normalized.equals(entry.spawnId())) {
+        return entry;
+      }
+    }
+    return null;
+  }
+
   public List<Entry> entries() {
     return new ArrayList<>(entries.values());
   }
@@ -160,6 +184,12 @@ public final class MobSpawnerBlockStore {
       }
       if (entry.mobId() != null) {
         MobSpawnerMarkers.setSpawnerMobId(block, entry.mobId());
+      }
+      if (entry.ownerId() != null) {
+        try {
+          MobSpawnerMarkers.setSpawnerOwner(block, java.util.UUID.fromString(entry.ownerId()));
+        } catch (IllegalArgumentException ex) {
+        }
       }
       restored++;
     }

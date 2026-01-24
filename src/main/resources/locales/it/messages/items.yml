@@ -1,0 +1,11 @@
+messages.items.editor.exists: Messages items editor exists
+messages.items.editor.holdItem: Messages items editor holdItem
+messages.items.editor.invalidId: Messages items editor invalidId
+messages.items.editor.locked: Messages items editor locked
+messages.items.editor.noEdit: Messages items editor noEdit
+messages.items.editor.notSet: Messages items editor notSet
+messages.items.editor.reloaded: Messages items editor reloaded
+messages.items.editor.setItemFirst: Messages items editor setItemFirst
+messages.items.editor.yamlMissing: Messages items editor yamlMissing
+messages.items.editor.yamlReload.errors: Messages items editor yamlReload errors
+messages.items.editor.yamlReload.ok: Messages items editor yamlReload ok

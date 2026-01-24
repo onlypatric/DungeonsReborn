@@ -98,6 +98,75 @@ public final class Frames {
     };
   }
 
+  public static Frame entityEyes(LivingEntity entity) {
+    Objects.requireNonNull(entity, "entity");
+    return new Frame() {
+      @Override
+      public Location location(CastContext ctx) {
+        if (entity instanceof Player player) {
+          return player.getEyeLocation();
+        }
+        Location base = entity.getLocation();
+        return base.add(0.0, entity.getHeight() * 0.9, 0.0);
+      }
+
+      @Override
+      public Vector direction(CastContext ctx) {
+        if (entity instanceof Player player) {
+          return player.getEyeLocation().getDirection();
+        }
+        return entity.getLocation().getDirection();
+      }
+    };
+  }
+
+  public static Frame entityHead(LivingEntity entity) {
+    return entityEyes(entity);
+  }
+
+  public static Frame entityMainHand(LivingEntity entity) {
+    return entityHand(entity, false);
+  }
+
+  public static Frame entityOffHand(LivingEntity entity) {
+    return entityHand(entity, true);
+  }
+
+  private static Frame entityHand(LivingEntity entity, boolean offHand) {
+    Objects.requireNonNull(entity, "entity");
+    return new Frame() {
+      @Override
+      public Location location(CastContext ctx) {
+        Location base = entity.getLocation();
+        Vector dir = base.getDirection();
+        if (dir.lengthSquared() < 1e-9) {
+          dir = new Vector(0, 0, 1);
+        }
+        dir.normalize();
+        Vector right = dir.clone().crossProduct(new Vector(0, 1, 0));
+        if (right.lengthSquared() < 1e-9) {
+          right = new Vector(1, 0, 0);
+        } else {
+          right.normalize();
+        }
+        double side = offHand ? 0.35 : -0.35;
+        Location out = base.clone().add(0.0, entity.getHeight() * 0.75, 0.0);
+        out.add(right.multiply(side));
+        out.add(dir.multiply(0.2));
+        return out;
+      }
+
+      @Override
+      public Vector direction(CastContext ctx) {
+        Vector dir = entity.getLocation().getDirection();
+        if (dir.lengthSquared() < 1e-9) {
+          dir = new Vector(0, 0, 1);
+        }
+        return dir.normalize();
+      }
+    };
+  }
+
   public static Frame dynamic(Supplier<Location> location, Supplier<Vector> direction) {
     Objects.requireNonNull(location, "location");
     Objects.requireNonNull(direction, "direction");

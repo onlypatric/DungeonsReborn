@@ -18,12 +18,28 @@
 # - If a phase defines `attacks` or `passives`, it overrides the base ones.
 #
 # Mana drops:
+# - resource: resource id to reward (default "mana").
+# - cap: maximum amount applied per player per kill.
 # - killer: mana given to the killer (min/max or fixed number).
 # - nearby: mana given to players within `radius`.
+# - streak: optional scaling for kill streaks (maxStacks, multiplier, windowTicks/windowSeconds).
+# - tiers: optional rarity tiers with weighted multipliers.
 # - Example:
 #     manaDrops:
+#       resource: mana
+#       cap: 20
 #       killer: { min: 8, max: 16 }
 #       nearby: { radius: 6, min: 2, max: 5 }
+#       streak:
+#         maxStacks: 5
+#         multiplier: 0.1
+#         windowSeconds: 12
+#       tiers:
+#         - weight: 80
+#           minMultiplier: 0.9
+#           maxMultiplier: 1.1
+#         - weight: 20
+#           multiplier: 1.6
 #
 # Loot:
 # - Use percentage chances per entry and optional guaranteed drops.

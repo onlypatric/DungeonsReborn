@@ -1,0 +1,60 @@
+messages.quests.accept.active: <red>Quest already active.</red>
+messages.quests.accept.completed: <red>Quest already completed.</red>
+messages.quests.accept.cooldown: <red>Quest on cooldown for</red> <white>{time}</white>
+messages.quests.accept.denied: <red>Quest not available.</red>
+messages.quests.accept.disabled: <red>Quest is currently disabled.</red>
+messages.quests.accept.missingId: <red>Quest id is required.</red>
+messages.quests.accept.ok: <green>Quest accepted:</green> <white>{quest}</white>
+messages.quests.accept.partyLeaderOnly: <red>Only the party leader can accept this quest.</red>
+messages.quests.accept.partyRequired: <red>Quest requires a party.</red>
+messages.quests.accept.playersOnly: <red>Player required.</red>
+messages.quests.accept.repeatLimit: <red>Repeat limit reached.</red> <white>{time}</white>
+messages.quests.accept.unknown: <red>Unknown quest id:</red> <white>{id}</white>
+messages.quests.accept.worldDenied: <red>Quests can only be accepted in allowed worlds.</red>
+messages.quests.complete.ok: <green>Quest complete:</green> <white>{quest}</white>
+messages.quests.complete.party: <gold>Quest rewards:</gold> <white>{quest}</white> <gray>awarded to</gray> <white>{player}</white>
+messages.quests.complete.player: <gold>Quest completed:</gold> <white>{quest}</white>
+messages.quests.editor.invalidId: Messages quests editor invalidId
+messages.quests.fail.death: <red>Quest failed:</red> <white>{quest}</white> <dark_gray>(death)</dark_gray>
+messages.quests.fail.region: <red>Quest failed:</red> <white>{quest}</white> <dark_gray>(left region)</dark_gray>
+messages.quests.fail.timeout: <red>Quest failed:</red> <white>{quest}</white> <dark_gray>(time limit)</dark_gray>
+messages.quests.objective.break: Break {target} ({current}/{required})
+messages.quests.objective.craft: Craft {target} ({current}/{required})
+messages.quests.objective.item: item
+messages.quests.objective.kill: Kill {target} ({current}/{required})
+messages.quests.objective.place: Place {target} ({current}/{required})
+messages.quests.objective.recipe: recipe {id}
+messages.quests.objective.target: target
+messages.quests.objective.use: Use {target} ({current}/{required})
+messages.quests.objective.visit: Visit region ({current}/{required})
+messages.quests.progress: <yellow>Quest:</yellow> <white>{quest}</white> <gray>{objective}</gray>
+messages.quests.reload.errors: <red>Quests reload had {errors} errors. Check logs.</red>
+messages.quests.reload.ok: <green>Quests loaded:</green> <white>{count}</white>
+messages.quests.require.acceptRegion: <red>Quest not available in this region.</red>
+messages.quests.require.acceptWorld: <red>Quest not available in this world.</red>
+messages.quests.require.availability: <red>Quest not available at this time.</red>
+messages.quests.require.branchLock: <red>Quest branch locked by:</red> <white>{quests}</white>
+messages.quests.require.class: <red>Requires class:</red> <white>{class}</white>
+messages.quests.require.customXp: <red>Requires custom XP:</red> <white>{required}</white>
+messages.quests.require.faction: <red>Requires faction</red> <white>{faction}</white> <red>rank</red> <white>{rank}</white>
+messages.quests.require.level: <red>Requires level {level}.</red>
+messages.quests.require.permission: <red>Missing permission:</red> <white>{permission}</white>
+messages.quests.require.questStage: <red>Requires quest stage:</red> <white>{stages}</white>
+messages.quests.require.quests: '<red>Requires quests: {quests}</red>'
+messages.quests.require.rotationPool: <red>Quest not in the current rotation.</red>
+messages.quests.require.skill: <red>Requires skill nodes:</red> <white>{skill}</white>
+messages.quests.require.turnInAvailability: <red>Quest cannot be turned in at this time.</red>
+messages.quests.require.turnInRegion: <red>Quest must be turned in in a specific region.</red>
+messages.quests.require.turnInWorld: <red>Quest must be turned in in a different world.</red>
+messages.quests.rewards.rollWinner: <gold>Quest rewards:</gold> <white>{quest}</white> <gray>roll winner</gray> <white>{player}</white>
+messages.quests.rewards.split: <gold>Quest rewards:</gold> <white>{quest}</white> <gray>split across</gray> <white>{count}</white>
+  <gray>members</gray>
+messages.quests.status.active: <green>Active</green>
+messages.quests.status.available: <aqua>Available</aqua>
+messages.quests.status.completed: <gray>Completed</gray>
+messages.quests.status.cooldown: <yellow>Cooldown:</yellow> <white>{time}</white>
+messages.quests.status.failed: <red>Failed</red>
+messages.quests.status.repeatLimit: <yellow>Repeat limit:</yellow> <white>{time}</white>
+messages.quests.yaml.entry: Entry
+messages.quests.yaml.header: Header
+messages.quests.yaml.none: None

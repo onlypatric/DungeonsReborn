@@ -212,10 +212,12 @@ public final class VirtualList<T> {
       State<T> state = state(p);
       resolve(p, state);
       boolean enabled = state.page > 0;
-      Material mat = enabled ? Material.ARROW : Material.GRAY_DYE;
       Component name = tr(p, "gui.list.prev.title");
       Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
-      return GuiItems.named(mat, name, List.of(lore));
+      if (enabled) {
+        return GuiItems.head("LEFT", name, List.of(lore));
+      }
+      return GuiItems.named(Material.GRAY_DYE, name, List.of(lore));
       });
       left(tr(null, "gui.list.prev.action"), ctx -> {
         State<T> state = state(ctx.player());
@@ -247,10 +249,12 @@ public final class VirtualList<T> {
       State<T> state = state(p);
       resolve(p, state);
       boolean enabled = state.page + 1 < Math.max(1, state.lastTotalPages);
-      Material mat = enabled ? Material.ARROW : Material.GRAY_DYE;
       Component name = tr(p, "gui.list.next.title");
       Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
-      return GuiItems.named(mat, name, List.of(lore));
+      if (enabled) {
+        return GuiItems.head("RIGHT", name, List.of(lore));
+      }
+      return GuiItems.named(Material.GRAY_DYE, name, List.of(lore));
       });
       left(tr(null, "gui.list.next.action"), ctx -> {
         State<T> state = state(ctx.player());

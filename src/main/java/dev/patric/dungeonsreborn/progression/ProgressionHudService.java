@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
+import dev.patric.dungeonsreborn.effects.mana.ManaUiSettings;
 import dev.patric.dungeonsreborn.classes.ClassBonusService;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
@@ -268,6 +269,8 @@ public final class ProgressionHudService {
       double maxMana,
       String classId) {
     List<String> out = new ArrayList<>();
+    boolean showMana = effectsEngine.manaUiConfig().scoreboardEnabled()
+        && effectsEngine.manaUiSettings().enabled(player, ManaUiSettings.Flag.SCOREBOARD);
     Map<String, String> placeholders = new HashMap<>();
     placeholders.put("level", formatCompact(xpSnapshot.level));
     placeholders.put("xp", formatCompact(xpSnapshot.points));
@@ -284,6 +287,9 @@ public final class ProgressionHudService {
     placeholders.put("world", player.getWorld().getName());
     for (String template : layout.lines()) {
       if (template == null) {
+        continue;
+      }
+      if (!showMana && isManaLine(template)) {
         continue;
       }
       String rendered = replacePlaceholders(template, placeholders);
@@ -322,6 +328,10 @@ public final class ProgressionHudService {
       out = out.replace("{" + key + "}", value);
     }
     return out;
+  }
+
+  private static boolean isManaLine(String template) {
+    return template.contains("{mana}") || template.contains("{mana_max}") || template.contains("{mana_percent}");
   }
 
   private record Layout(boolean enabled, long updateTicks, Component titleComponent, List<String> lines) {

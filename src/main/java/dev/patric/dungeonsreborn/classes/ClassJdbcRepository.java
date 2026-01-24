@@ -12,7 +12,7 @@ import dev.patric.dungeonsreborn.progression.ProgressionDatabase;
 
 public final class ClassJdbcRepository implements ClassSelectionRepository {
   private static final String SELECT_SQL = """
-      SELECT class_id
+      SELECT class_id, last_update
       FROM player_classes
       WHERE uuid = ?
       """;
@@ -25,6 +25,10 @@ public final class ClassJdbcRepository implements ClassSelectionRepository {
       DELETE FROM player_classes
       WHERE uuid = ?
       """;
+  private static final String HISTORY_SQL = """
+      INSERT INTO player_class_history (uuid, from_class, to_class, changed_at, reason)
+      VALUES (?, ?, ?, ?, ?)
+      """;
 
   private final ProgressionDatabase database;
   private final Logger logger;
@@ -36,6 +40,11 @@ public final class ClassJdbcRepository implements ClassSelectionRepository {
 
   @Override
   public Optional<String> load(UUID uuid) {
+    return loadSelection(uuid).map(Selection::classId);
+  }
+
+  @Override
+  public Optional<Selection> loadSelection(UUID uuid) {
     if (uuid == null || database.connection() == null) {
       return Optional.empty();
     }
@@ -46,7 +55,11 @@ public final class ClassJdbcRepository implements ClassSelectionRepository {
           return Optional.empty();
         }
         String classId = rs.getString(1);
-        return classId == null || classId.isBlank() ? Optional.empty() : Optional.of(classId);
+        if (classId == null || classId.isBlank()) {
+          return Optional.empty();
+        }
+        long lastUpdate = rs.getLong(2);
+        return Optional.of(new Selection(classId, lastUpdate));
       }
     } catch (SQLException ex) {
       logger.log(Level.WARNING, "[Classes] Failed to load class selection", ex);
@@ -66,6 +79,23 @@ public final class ClassJdbcRepository implements ClassSelectionRepository {
       statement.executeUpdate();
     } catch (SQLException ex) {
       logger.log(Level.WARNING, "[Classes] Failed to save class selection", ex);
+    }
+  }
+
+  @Override
+  public void recordHistory(UUID uuid, String fromClassId, String toClassId, long whenMillis, String reason) {
+    if (uuid == null || toClassId == null || database.connection() == null) {
+      return;
+    }
+    try (PreparedStatement statement = database.connection().prepareStatement(HISTORY_SQL)) {
+      statement.setString(1, uuid.toString());
+      statement.setString(2, fromClassId);
+      statement.setString(3, toClassId);
+      statement.setLong(4, Math.max(0L, whenMillis));
+      statement.setString(5, reason == null ? "switch" : reason);
+      statement.executeUpdate();
+    } catch (SQLException ex) {
+      logger.log(Level.WARNING, "[Classes] Failed to record class history", ex);
     }
   }
 

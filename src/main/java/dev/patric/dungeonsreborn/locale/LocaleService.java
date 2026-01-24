@@ -30,22 +30,55 @@ public final class LocaleService {
   public record ReloadResult(int locales, List<String> errors) {
   }
 
+  public record CoverageResult(int totalKeys, Map<String, List<String>> missingByLocale) {
+    public boolean hasMissing() {
+      for (List<String> keys : missingByLocale.values()) {
+        if (!keys.isEmpty()) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   private final JavaPlugin plugin;
   private final ServiceLogger logger;
   private final MiniMessage miniMessage = MiniMessage.miniMessage();
   private final Map<String, Map<String, String>> bundles = new HashMap<>();
   private final Set<String> missingLogged = ConcurrentHashMap.newKeySet();
   private static final List<String> DEFAULT_LOCALE_FILES = List.of(
-      "gui.yml",
+      "advancements.yml",
+      "bindings.yml",
+      "cancel.yml",
       "labels.yml",
-      "messages.yml",
-      "meta.yml",
+      "messages/advancements.yml",
+      "messages/bindings.yml",
+      "messages/classes.yml",
+      "messages/command.yml",
+      "messages/common.yml",
+      "messages/crafting.yml",
+      "messages/dungeons.yml",
+      "messages/effects.yml",
+      "messages/hud.yml",
+      "messages/input.yml",
+      "messages/items.yml",
+      "messages/kits.yml",
+      "messages/locale.yml",
+      "messages/mana.yml",
+      "messages/mobs.yml",
+      "messages/noPermission.yml",
+      "messages/party.yml",
+      "messages/quests.yml",
+      "messages/shop.yml",
+      "messages/shops.yml",
+      "messages/system.yml",
+      "messages/upgrades.yml",
       "tokens.yml"
   );
   private static final Pattern EMPTY_KEY_LINE = Pattern.compile("^\\s*(?:''|\"\"|):\\s*.*$");
   private String defaultLocale = "en";
   private Set<String> enabledLocales = Set.of("en");
-  @SuppressWarnings("unused")
+  private boolean allowPlayerOverrides = false;
   private Map<UUID, String> playerOverrides = new HashMap<>();
 
   public LocaleService(JavaPlugin plugin, ServiceLogger logger) {
@@ -59,6 +92,7 @@ public final class LocaleService {
     ConfigurationSection cfg = plugin.getConfig().getConfigurationSection("locales");
     String configuredDefault = cfg == null ? "en" : cfg.getString("default", "en");
     defaultLocale = normalizeLocale(configuredDefault);
+    allowPlayerOverrides = cfg != null && cfg.getBoolean("allowPlayerOverrides", false);
     List<String> enabled = cfg == null ? List.of() : cfg.getStringList("enabled");
     if (enabled.isEmpty()) {
       enabledLocales = new HashSet<>(List.of(defaultLocale));
@@ -136,6 +170,10 @@ public final class LocaleService {
     if (!bundles.containsKey(defaultLocale)) {
       errors.add("locales.default: " + defaultLocale + " not loaded");
     }
+    int seeded = seedMissingDefaultLocaleKeys();
+    if (seeded > 0) {
+      logger.warn("[Locales] default locale missing " + seeded + " keys (seeded)");
+    }
     if (!errors.isEmpty()) {
       logger.warn("[Locales] reload had " + errors.size() + " errors");
       for (String error : errors) {
@@ -151,12 +189,73 @@ public final class LocaleService {
     return defaultLocale;
   }
 
+  public boolean allowPlayerOverrides() {
+    return allowPlayerOverrides;
+  }
+
+  public CoverageResult validateCoverage() {
+    Set<String> allKeys = new HashSet<>();
+    for (Map<String, String> bundle : bundles.values()) {
+      allKeys.addAll(bundle.keySet());
+    }
+    Map<String, List<String>> missingByLocale = new HashMap<>();
+    for (Map.Entry<String, Map<String, String>> entry : bundles.entrySet()) {
+      List<String> missing = new ArrayList<>();
+      for (String key : allKeys) {
+        if (!entry.getValue().containsKey(key)) {
+          missing.add(key);
+        }
+      }
+      missing.sort(String::compareTo);
+      missingByLocale.put(entry.getKey(), missing);
+    }
+    return new CoverageResult(allKeys.size(), missingByLocale);
+  }
+
   public Set<String> enabledLocales() {
     return Collections.unmodifiableSet(enabledLocales);
   }
 
+  public String overrideFor(UUID playerId) {
+    if (playerId == null) {
+      return null;
+    }
+    return playerOverrides.get(playerId);
+  }
+
+  public boolean setPlayerOverride(UUID playerId, String locale) {
+    if (playerId == null || !allowPlayerOverrides) {
+      return false;
+    }
+    String normalized = normalizeLocale(locale);
+    if (normalized.isBlank() || !enabledLocales.contains(normalized)) {
+      return false;
+    }
+    playerOverrides.put(playerId, normalized);
+    savePlayerOverrides();
+    return true;
+  }
+
+  public boolean clearPlayerOverride(UUID playerId) {
+    if (playerId == null || !allowPlayerOverrides) {
+      return false;
+    }
+    if (playerOverrides.remove(playerId) == null) {
+      return false;
+    }
+    savePlayerOverrides();
+    return true;
+  }
+
   public String localeFor(Player player) {
-    return defaultLocale;
+    if (player == null) {
+      return defaultLocale;
+    }
+    if (!allowPlayerOverrides) {
+      return defaultLocale;
+    }
+    String override = playerOverrides.get(player.getUniqueId());
+    return override == null || override.isBlank() ? defaultLocale : override;
   }
 
   public String text(Player player, String key) {
@@ -182,7 +281,7 @@ public final class LocaleService {
 
   public Component component(String locale, String key, Map<String, String> placeholders) {
     String raw = text(locale, key, placeholders);
-    return miniMessage.deserialize(raw);
+    return dev.patric.dungeonsreborn.util.TextStyles.noItalic(miniMessage.deserialize(raw));
   }
 
   private String lookup(String locale, String key) {
@@ -407,5 +506,46 @@ public final class LocaleService {
       }
     }
     return out.toString();
+  }
+
+  private int seedMissingDefaultLocaleKeys() {
+    Map<String, String> defaultBundle = bundles.get(defaultLocale);
+    if (defaultBundle == null || bundles.isEmpty()) {
+      return 0;
+    }
+    Set<String> allKeys = new HashSet<>();
+    for (Map<String, String> bundle : bundles.values()) {
+      allKeys.addAll(bundle.keySet());
+    }
+    int added = 0;
+    for (String key : allKeys) {
+      if (!defaultBundle.containsKey(key)) {
+        defaultBundle.put(key, humanizeKey(key));
+        added++;
+      }
+    }
+    return added;
+  }
+
+  private void savePlayerOverrides() {
+    ConfigurationSection cfg = plugin.getConfig().getConfigurationSection("locales");
+    if (cfg == null) {
+      cfg = plugin.getConfig().createSection("locales");
+    }
+    ConfigurationSection overrides = cfg.getConfigurationSection("playerOverrides");
+    if (overrides == null) {
+      overrides = cfg.createSection("playerOverrides");
+    } else {
+      for (String key : overrides.getKeys(false)) {
+        overrides.set(key, null);
+      }
+    }
+    for (Map.Entry<UUID, String> entry : playerOverrides.entrySet()) {
+      if (entry.getKey() == null || entry.getValue() == null || entry.getValue().isBlank()) {
+        continue;
+      }
+      overrides.set(entry.getKey().toString(), entry.getValue());
+    }
+    plugin.saveConfig();
   }
 }

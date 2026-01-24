@@ -38,10 +38,12 @@ import org.bukkit.inventory.view.AnvilView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.gui.GuiI18n;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public final class GuiManager implements Listener {
@@ -145,7 +147,7 @@ public final class GuiManager implements Listener {
 
     public ItemPickRequest(Component prompt, Duration timeout, InventoryHolder requiredTopHolder, BiConsumer<Player, ItemStack> onPick) {
       this(prompt, timeout, requiredTopHolder, false, item -> item != null && !item.getType().isAir(),
-          Component.text("Please click a valid item."), onPick, player -> {
+          GuiI18n.tr("gui.itemPicker.invalid"), onPick, player -> {
           }, player -> {
           });
     }
@@ -403,7 +405,8 @@ public final class GuiManager implements Listener {
         + " timeout=" + request.timeout().toSeconds() + "s");
     player.sendMessage(request.prompt());
     if (!request.cancelWord().isBlank()) {
-      player.sendMessage(Component.text("§7Type §f" + request.cancelWord() + " §7to cancel."));
+      player.sendMessage(GuiI18n.tr(player, "gui.textInput.cancelHint",
+          Placeholder.unparsed("cancel", request.cancelWord())));
     }
     pendingText.put(player.getUniqueId(), request);
 

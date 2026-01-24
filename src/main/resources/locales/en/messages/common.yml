@@ -1,0 +1,18 @@
+messages.common.False: <red>No</red>
+messages.common.True: <green>Yes</green>
+messages.common.back: <gray>Back</gray>
+messages.common.cancel: <gray>Cancelled.</gray>
+messages.common.close: <gray>Close</gray>
+messages.common.confirm: <yellow>Confirm</yellow>
+messages.common.deleted: <green>Deleted.</green>
+messages.common.error: <red>Error.</red>
+messages.common.invalidId: <red>Invalid id:</red> <white>{id}</white>
+messages.common.loading: <gray>Loading...</gray>
+messages.common.no: 'No'
+messages.common.noPermission: <red>You do not have permission.</red>
+messages.common.notFound: <red>Not found:</red> <white>{id}</white>
+messages.common.playersOnly: <red>This command is for players only.</red>
+messages.common.prefix: '<gold>[DungeonsReborn]</gold> '
+messages.common.saved: <green>Saved.</green>
+messages.common.updated: <green>Updated.</green>
+messages.common.yes: 'Yes'

@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class ProgressionDatabase implements AutoCloseable {
-  private static final int TARGET_SCHEMA_VERSION = 8;
+  private static final int TARGET_SCHEMA_VERSION = 15;
 
   private final File file;
   private final Logger logger;
@@ -96,6 +96,13 @@ public final class ProgressionDatabase implements AutoCloseable {
       case 6 -> migrateV6();
       case 7 -> migrateV7();
       case 8 -> migrateV8();
+      case 9 -> migrateV9();
+      case 10 -> migrateV10();
+      case 11 -> migrateV11();
+      case 12 -> migrateV12();
+      case 13 -> migrateV13();
+      case 14 -> migrateV14();
+      case 15 -> migrateV15();
       default -> throw new SQLException("Unknown migration version " + version);
     }
   }
@@ -208,6 +215,95 @@ public final class ProgressionDatabase implements AutoCloseable {
             points INTEGER NOT NULL,
             level INTEGER NOT NULL,
             last_update INTEGER NOT NULL
+          )
+          """);
+    }
+  }
+
+  private void migrateV9() throws SQLException {
+    addColumn("player_quests", "daily_count", "INTEGER NOT NULL DEFAULT 0");
+    addColumn("player_quests", "weekly_count", "INTEGER NOT NULL DEFAULT 0");
+    addColumn("player_quests", "daily_reset_at", "INTEGER NOT NULL DEFAULT 0");
+    addColumn("player_quests", "weekly_reset_at", "INTEGER NOT NULL DEFAULT 0");
+  }
+
+  private void migrateV10() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS party_state (
+            party_id TEXT PRIMARY KEY,
+            leader_uuid TEXT NOT NULL,
+            world_name TEXT NOT NULL,
+            world_key TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+          )
+          """);
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS party_members (
+            party_id TEXT NOT NULL,
+            member_uuid TEXT NOT NULL,
+            joined_at INTEGER NOT NULL,
+            PRIMARY KEY (party_id, member_uuid)
+          )
+          """);
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS party_invites (
+            target_uuid TEXT PRIMARY KEY,
+            party_id TEXT NOT NULL,
+            leader_uuid TEXT NOT NULL,
+            leader_name TEXT NOT NULL,
+            expires_at INTEGER NOT NULL
+          )
+          """);
+    }
+  }
+
+  private void migrateV11() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS party_roles (
+            party_id TEXT NOT NULL,
+            member_uuid TEXT NOT NULL,
+            role TEXT NOT NULL,
+            PRIMARY KEY (party_id, member_uuid)
+          )
+          """);
+    }
+  }
+
+  private void migrateV12() throws SQLException {
+    addColumn("party_state", "public_open", "INTEGER NOT NULL DEFAULT 0");
+  }
+
+  private void migrateV13() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS player_class_history (
+            uuid TEXT NOT NULL,
+            from_class TEXT,
+            to_class TEXT NOT NULL,
+            changed_at INTEGER NOT NULL,
+            reason TEXT NOT NULL
+          )
+          """);
+    }
+  }
+
+  private void migrateV14() throws SQLException {
+    addColumn("player_class_skills", "rank", "INTEGER NOT NULL DEFAULT 1");
+  }
+
+  private void migrateV15() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute("""
+          CREATE TABLE IF NOT EXISTS player_class_presets (
+            uuid TEXT NOT NULL,
+            class_id TEXT NOT NULL,
+            preset_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            nodes TEXT NOT NULL,
+            updated_at INTEGER NOT NULL,
+            PRIMARY KEY (uuid, class_id, preset_id)
           )
           """);
     }

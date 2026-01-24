@@ -1,0 +1,19 @@
+messages.kits.claim.alreadyClaimed: You have already claimed this kit.
+messages.kits.claim.cooldown: Kit available in {time}.
+messages.kits.claim.missingId: Missing kit id.
+messages.kits.claim.missingPermission: 'Missing permission: {permission}'
+messages.kits.claim.playersOnly: Only players can claim kits.
+messages.kits.claim.success: 'Claimed kit: {title}'
+messages.kits.claim.unknown: 'Unknown kit: {id}'
+messages.kits.status.alreadyClaimed: Messages kits status alreadyClaimed
+messages.kits.status.available: Available
+messages.kits.status.cooldown: Cooldown
+messages.kits.status.unavailable: Unavailable
+messages.kits.summary.claimedSimple: <green>Claimed kit:</green> <white>{title}</white>
+messages.kits.summary.compressed: <gray>Compressed:</gray> <white>{amount}</white>
+messages.kits.summary.header: <gold><bold>Kit Rewards</bold></gold>
+messages.kits.summary.items: <gray>Items:</gray> <white>{count}</white>
+messages.kits.summary.kit: <gray>Kit:</gray> <white>{title}</white>
+messages.kits.summary.pallets: <gray>Pallets:</gray> <white>{amount}</white>
+messages.kits.summary.tokens: <gray>Tokens:</gray> <white>{amount}</white>
+messages.kits.summary.xp: <gray>Custom XP:</gray> <white>{amount}</white>

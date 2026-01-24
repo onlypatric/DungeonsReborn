@@ -12,7 +12,8 @@ import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.locale.Locales;
 
 public record ClassSpec(String id, boolean enabled, String nameKey, String descriptionKey, Component name,
-    List<Component> description, ItemStack icon, ClassUnlockSpec unlock, SkillTreeSpec skillTree, ClassBonusSpec bonuses) {
+    List<Component> description, ItemStack icon, ClassUnlockSpec unlock, SkillTreeSpec skillTree, ClassBonusSpec bonuses,
+    List<ClassConditionalBonusSpec> conditionalBonuses) {
   public Component displayName() {
     return name == null ? Component.text(id) : name;
   }
@@ -49,5 +50,9 @@ public record ClassSpec(String id, boolean enabled, String nameKey, String descr
 
   public ClassBonusSpec bonusesOrEmpty() {
     return bonuses == null ? ClassBonusSpec.empty() : bonuses;
+  }
+
+  public List<ClassConditionalBonusSpec> conditionalBonusesOrEmpty() {
+    return conditionalBonuses == null ? List.of() : conditionalBonuses;
   }
 }

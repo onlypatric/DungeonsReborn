@@ -49,12 +49,20 @@ public final class ServiceLogManager {
     return new ServiceLogger(this, ServiceLogCategory.SHOPS);
   }
 
+  public ServiceLogger parties() {
+    return new ServiceLogger(this, ServiceLogCategory.PARTY);
+  }
+
   public ServiceLogger dungeons() {
     return new ServiceLogger(this, ServiceLogCategory.DUNGEONS);
   }
 
   public ServiceLogger locales() {
     return new ServiceLogger(this, ServiceLogCategory.LOCALES);
+  }
+
+  public ServiceLogger advancements() {
+    return new ServiceLogger(this, ServiceLogCategory.ADVANCEMENTS);
   }
 
   public void reloadFromConfig(ConfigurationSection section) {

@@ -1,0 +1,2 @@
+messages.bindings.reload.errors: <red>Bindings reload had {errors} errors. Check logs.</red>
+messages.bindings.reload.ok: <green>Bindings loaded:</green> <white>{count}</white>

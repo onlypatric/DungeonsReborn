@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 public record SkillTreeSpec(List<SkillNodeSpec> nodes, List<SkillEdgeSpec> edges,
-    int respecTokens, int respecPoints) {
+    List<SkillSynergySpec> synergies, int respecTokens, int respecPoints) {
   public static SkillTreeSpec empty() {
-    return new SkillTreeSpec(List.of(), List.of(), 0, 0);
+    return new SkillTreeSpec(List.of(), List.of(), List.of(), 0, 0);
   }
 
   public Map<String, SkillNodeSpec> nodeIndex() {
@@ -20,5 +20,9 @@ public record SkillTreeSpec(List<SkillNodeSpec> nodes, List<SkillEdgeSpec> edges
       }
     }
     return out;
+  }
+
+  public List<SkillSynergySpec> synergiesOrEmpty() {
+    return synergies == null ? List.of() : synergies;
   }
 }

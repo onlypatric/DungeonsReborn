@@ -8,14 +8,22 @@ import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
-import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 
 public final class CraftingInventoryPlanner {
   private CraftingInventoryPlanner() {
   }
 
   public static Map<Integer, Integer> plan(ItemStack[] storage, CraftingRecipeVariant variant) {
-    List<CraftingIngredientSpec> inputs = variant.inputs();
+    List<CraftingIngredientSpec> inputs = new ArrayList<>(variant.inputs());
+    if (inputs.isEmpty()) {
+      for (CraftingSlotIngredientSpec slot : variant.slots()) {
+        inputs.add(slot.ingredient());
+      }
+    }
+    return plan(storage, inputs);
+  }
+
+  public static Map<Integer, Integer> plan(ItemStack[] storage, List<CraftingIngredientSpec> inputs) {
     if (inputs.isEmpty()) {
       return null;
     }
@@ -109,21 +117,13 @@ public final class CraftingInventoryPlanner {
   }
 
   private static boolean matches(CraftingIngredientSpec ingredient, ItemStack stack) {
-    if (stack == null || stack.getType().isAir()) {
-      return false;
-    }
-    return switch (ingredient.type()) {
-      case ANY -> true;
-      case ITEM_ID -> ingredient.itemId() != null && ingredient.itemId().equals(ItemMarkers.getItemId(stack));
-      case TAG -> ingredient.tag() != null && ItemMarkers.has(stack, ingredient.tag());
-      case MATERIAL -> ingredient.material() != null && stack.getType() == ingredient.material();
-      case CATEGORY -> ingredient.category().matches(stack.getType());
-    };
+    return ingredient.matches(stack);
   }
 
   private static int specificity(CraftingMatchType type) {
     return switch (type) {
       case ITEM_ID -> 5;
+      case UPGRADE_ID -> 5;
       case TAG -> 4;
       case MATERIAL -> 3;
       case CATEGORY -> 2;

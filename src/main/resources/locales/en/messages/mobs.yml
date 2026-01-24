@@ -1,0 +1,16 @@
+messages.mobs.damage.xpLocked: <red>Requires level {level} to damage this mob.</red>
+messages.mobs.egg.cooldown: <red>Egg on cooldown ({ticks}t)</red>
+messages.mobs.egg.missingPermission: '<red>Missing permission: {perm}</red>'
+messages.mobs.egg.noTarget: <red>No target block found.</red>
+messages.mobs.egg.spawnFailed: '<red>Failed to spawn: {message}</red>'
+messages.mobs.spawner.createFailed: '<red>Failed to create spawner: {message}</red>'
+messages.mobs.spawner.created: <green>Spawner created:</green> <white>{id}</white>
+messages.mobs.spawner.entryNotFound: '<red>Spawner entry not found: {id}</red>'
+messages.mobs.spawner.mobMismatch: '<red>Spawner mob mismatch: {mob}</red>'
+messages.mobs.spawner.mustPlaceSpawner: <red>Spawner items must be placed as a spawner block.</red>
+messages.mobs.spawner.removed: <green>Spawner removed:</green> <white>{id}</white>
+messages.mobs.spawner.unknownBlockId: '<red>Unknown spawner block id: {id}</red>'
+messages.mobs.spawner.unknownMobId: '<red>Unknown mob id: {id}</red>'
+messages.mobs.yaml.entry: Entry
+messages.mobs.yaml.header: Header
+messages.mobs.yaml.none: None

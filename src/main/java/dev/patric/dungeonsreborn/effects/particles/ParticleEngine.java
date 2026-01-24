@@ -61,6 +61,15 @@ public final class ParticleEngine {
   private int maxQueuedRequestsPerTick = 25_000;
   private int maxParticlesPerPlayerPerTick = 900;
   private double quality = 1.0;
+  private double minQuality = 0.25;
+  private double maxQuality = 1.0;
+  private double qualityStepDown = 0.1;
+  private double qualityStepUp = 0.05;
+  private long qualityCooldownTicks = 20L;
+  private long lastQualityAdjustTick = -1L;
+  private boolean autoQualityEnabled = true;
+  private double defaultPlayerQuality = 1.0;
+  private final Map<UUID, Double> playerQuality = new HashMap<>();
   private double defaultRange = 48.0;
   private long droppedRequestsThisTick;
   private long lastFlushNanos;
@@ -98,11 +107,106 @@ public final class ParticleEngine {
     if (!Double.isFinite(quality)) {
       throw new IllegalArgumentException("quality must be finite");
     }
-    this.quality = Math.max(0.0, quality);
+    this.quality = clampQuality(quality);
   }
 
   public double quality() {
     return quality;
+  }
+
+  public double lodFactor() {
+    return quality;
+  }
+
+  public void setQualityBounds(double min, double max) {
+    if (!Double.isFinite(min) || !Double.isFinite(max) || min < 0.0 || max < min) {
+      throw new IllegalArgumentException("invalid quality bounds");
+    }
+    minQuality = min;
+    maxQuality = max;
+    quality = clampQuality(quality);
+  }
+
+  public void setQualitySteps(double stepDown, double stepUp, long cooldownTicks) {
+    if (!Double.isFinite(stepDown) || !Double.isFinite(stepUp) || stepDown < 0.0 || stepUp < 0.0) {
+      throw new IllegalArgumentException("quality steps must be finite and >= 0");
+    }
+    if (cooldownTicks < 0) {
+      throw new IllegalArgumentException("cooldownTicks must be >= 0");
+    }
+    qualityStepDown = stepDown;
+    qualityStepUp = stepUp;
+    qualityCooldownTicks = cooldownTicks;
+  }
+
+  public void setAutoQualityEnabled(boolean enabled) {
+    autoQualityEnabled = enabled;
+  }
+
+  public boolean autoQualityEnabled() {
+    return autoQualityEnabled;
+  }
+
+  public void autoAdjustQuality(long tickNow) {
+    if (!autoQualityEnabled) {
+      return;
+    }
+    boolean dropped = lastFlushParticlesDroppedByBudget > 0 || lastDroppedRequestsByQueueCap > 0;
+    if (dropped) {
+      if (qualityStepDown > 0.0) {
+        quality = clampQuality(quality - qualityStepDown);
+      }
+      lastQualityAdjustTick = tickNow;
+      return;
+    }
+    if (quality >= maxQuality || qualityStepUp <= 0.0) {
+      return;
+    }
+    if (lastQualityAdjustTick >= 0 && tickNow - lastQualityAdjustTick < qualityCooldownTicks) {
+      return;
+    }
+    quality = clampQuality(quality + qualityStepUp);
+    lastQualityAdjustTick = tickNow;
+  }
+
+  private double clampQuality(double value) {
+    double clamped = Math.max(minQuality, Math.min(maxQuality, value));
+    return Math.max(0.0, clamped);
+  }
+
+  public void setDefaultPlayerQuality(double quality) {
+    if (!Double.isFinite(quality) || quality < 0.0) {
+      throw new IllegalArgumentException("quality must be finite and >= 0");
+    }
+    defaultPlayerQuality = quality;
+  }
+
+  public double defaultPlayerQuality() {
+    return defaultPlayerQuality;
+  }
+
+  public double playerQuality(UUID playerId) {
+    if (playerId == null) {
+      return defaultPlayerQuality;
+    }
+    return playerQuality.getOrDefault(playerId, defaultPlayerQuality);
+  }
+
+  public void setPlayerQuality(UUID playerId, double quality) {
+    if (playerId == null) {
+      return;
+    }
+    if (!Double.isFinite(quality) || quality < 0.0) {
+      throw new IllegalArgumentException("quality must be finite and >= 0");
+    }
+    playerQuality.put(playerId, quality);
+  }
+
+  public void clearPlayerQuality(UUID playerId) {
+    if (playerId == null) {
+      return;
+    }
+    playerQuality.remove(playerId);
   }
 
   public void setDefaultRange(double range) {
@@ -209,6 +313,13 @@ public final class ParticleEngine {
         }
 
         int sendCount = r.count();
+        double perPlayerQuality = playerQuality(player.getUniqueId());
+        if (perPlayerQuality > 0.0 && perPlayerQuality != 1.0) {
+          sendCount = (int) Math.round(sendCount * perPlayerQuality);
+          sendCount = Math.max(1, sendCount);
+        } else if (perPlayerQuality <= 0.0) {
+          sendCount = 0;
+        }
         if (used != null) {
           int already = used.getOrDefault(player.getUniqueId(), 0);
           int remaining = maxParticlesPerPlayerPerTick - already;
@@ -249,9 +360,9 @@ public final class ParticleEngine {
     return new Stats(
         queue.size(),
         maxQueuedRequestsPerTick,
-        maxParticlesPerPlayerPerTick,
-        quality,
-        defaultRange,
+      maxParticlesPerPlayerPerTick,
+      quality,
+      defaultRange,
         lastFlushNanos,
         lastFlushRequests,
         lastFlushParticlesSent,

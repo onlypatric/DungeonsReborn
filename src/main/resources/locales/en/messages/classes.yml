@@ -1,0 +1,50 @@
+messages.classes.editor.icon.missing: Missing
+messages.classes.editor.invalidId: Messages classes editor invalidId
+messages.classes.editor.invalidQuestId: Messages classes editor invalidQuestId
+messages.classes.reload.errors: <red>Classes reload had {errors} errors. Check logs.</red>
+messages.classes.reload.ok: <green>Classes loaded:</green> <white>{count}</white>
+messages.classes.select.alreadySelected: <yellow>Class already selected.</yellow>
+messages.classes.select.consumeCurrenciesFailed: <red>Failed to consume required currency.</red>
+messages.classes.select.consumeFailed: <red>Failed to consume tokens.</red>
+messages.classes.select.consumeItemsFailed: <red>Failed to consume required items.</red>
+messages.classes.select.cooldown: <red>Class switch on cooldown for</red> <white>{seconds}</white> <red>seconds.</red>
+messages.classes.select.disabled: <red>Class is currently disabled.</red>
+messages.classes.select.invalid: <red>Invalid class selection.</red>
+messages.classes.select.locked: <red>Class locked.</red>
+messages.classes.select.ok: <green>Class selected:</green> <white>{class}</white>
+messages.classes.select.requiresCurrencies: <red>Requires currency:</red> <white>{currencies}</white>
+messages.classes.select.requiresItems: <red>Requires items:</red> <white>{items}</white>
+messages.classes.select.requiresLevel: <red>Requires level {level}.</red>
+messages.classes.select.requiresQuests: <red>Quest requirements not met.</red>
+messages.classes.select.requiresTokens: <red>Requires {tokens} tokens.</red>
+messages.classes.select.unknown: <red>Unknown class:</red> <white>{id}</white>
+messages.classes.select.worldDenied: <red>Classes are disabled in this world.</red>
+messages.classes.skills.alreadyUnlocked: <yellow>Already unlocked.</yellow>
+messages.classes.skills.classRequired: <red>Select this class before unlocking skills.</red>
+messages.classes.skills.invalid: <red>Invalid skill.</red>
+messages.classes.skills.maxRank: <yellow>Already at max rank.</yellow>
+messages.classes.skills.missingPrereqs: <red>Missing prerequisites:</red> <white>{nodes}</white>
+messages.classes.skills.notEnoughPoints: <red>Not enough skill points.</red>
+messages.classes.skills.open: <gray>Opening skill path...</gray>
+messages.classes.skills.preset.applied: <green>Applied preset:</green> <white>{preset}</white>
+messages.classes.skills.preset.deleted: <green>Deleted preset:</green> <white>{preset}</white>
+messages.classes.skills.preset.disabled: <red>Presets are disabled.</red>
+messages.classes.skills.preset.limit: <red>Preset limit reached.</red>
+messages.classes.skills.preset.missing: <red>Preset not found.</red>
+messages.classes.skills.preset.saved: <green>Saved preset:</green> <white>{preset}</white>
+messages.classes.skills.reset.disabled: <red>Skill tree reset is disabled.</red>
+messages.classes.skills.reset.none: <yellow>No skills to reset.</yellow>
+messages.classes.skills.reset.notActiveClass: <red>You can only reset your active class.</red>
+messages.classes.skills.reset.ok: <green>Reset skill tree.</green> <white>Refunded {points} points.</white>
+messages.classes.skills.respec.dependents: <red>Remove dependent nodes first:</red> <white>{nodes}</white>
+messages.classes.skills.respec.disabled: <red>Respec is disabled.</red>
+messages.classes.skills.respec.notActiveClass: <red>You can only respec your active class.</red>
+messages.classes.skills.respec.notEnoughPoints: <red>Not enough skill points to respec.</red>
+messages.classes.skills.respec.notEnoughTokens: <red>Not enough tokens to respec.</red>
+messages.classes.skills.respec.notUnlocked: <red>Skill not unlocked.</red>
+messages.classes.skills.respec.ok: <green>Respecced</green> <white>{id}</white>
+messages.classes.skills.unlocked: <green>Unlocked</green> <white>{id}</white>
+messages.classes.skills.worldDenied: <red>Skills are disabled in this world.</red>
+messages.classes.yaml.entry: Entry
+messages.classes.yaml.header: Header
+messages.classes.yaml.none: None

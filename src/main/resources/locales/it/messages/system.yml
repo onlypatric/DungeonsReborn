@@ -1,0 +1,6 @@
+messages.system.reload.errors: <red>Ricarica con {errors} errori. Controlla i log.</red>
+messages.system.reload.ok: <green>Ricarica completata.</green>
+messages.system.status.errors: <red>Alcuni sistemi hanno errori.</red>
+messages.system.status.ok: <green>Tutti i sistemi OK.</green>
+messages.system.status.title: <white><bold>Stato Sistema</bold></white>
+messages.system.status.warnings: <yellow>Alcuni sistemi hanno avvisi.</yellow>

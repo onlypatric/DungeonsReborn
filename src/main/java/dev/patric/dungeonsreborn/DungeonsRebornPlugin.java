@@ -8,17 +8,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.sql.SQLException;
 import java.time.Duration;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.configuration.ConfigurationSection;
 
 import dev.patric.dungeonsreborn.commands.DungeonsRebornCommand;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
+import dev.patric.dungeonsreborn.crafting.CraftingDiscoveryService;
 import dev.patric.dungeonsreborn.dungeons.DungeonProgressJdbcRepository;
 import dev.patric.dungeonsreborn.dungeons.DungeonProgressRepository;
 import dev.patric.dungeonsreborn.dungeons.DungeonQueueService;
@@ -27,8 +30,17 @@ import dev.patric.dungeonsreborn.dungeons.DungeonSessionListener;
 import dev.patric.dungeonsreborn.dungeons.DungeonYamlRegistry;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
 import dev.patric.dungeonsreborn.effects.integration.ItemSyncListener;
-import dev.patric.dungeonsreborn.effects.mana.ManaSessionListener;
+import dev.patric.dungeonsreborn.effects.items.HeadRegistry;
+import dev.patric.dungeonsreborn.effects.items.ItemHookListener;
+import dev.patric.dungeonsreborn.effects.items.ItemTemplateCompiler;
 import dev.patric.dungeonsreborn.effects.mana.ManaDropListener;
+import dev.patric.dungeonsreborn.effects.mana.ManaPickupListener;
+import dev.patric.dungeonsreborn.effects.mana.ManaSessionListener;
+import dev.patric.dungeonsreborn.effects.mana.ManaSourcesConfig;
+import dev.patric.dungeonsreborn.effects.mana.ManaStorageService;
+import dev.patric.dungeonsreborn.effects.mana.ManaUiConfig;
+import dev.patric.dungeonsreborn.effects.mana.ManaUiSettings;
+import dev.patric.dungeonsreborn.effects.mana.ResourceRuleSet;
 import dev.patric.dungeonsreborn.effects.mana.SessionManaProvider;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.config.YamlVarsSessionListener;
@@ -46,6 +58,8 @@ import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.kits.KitJdbcRepository;
 import dev.patric.dungeonsreborn.kits.KitService;
 import dev.patric.dungeonsreborn.kits.KitYamlRegistry;
+import dev.patric.dungeonsreborn.logging.AdvancementAuditLog;
+import dev.patric.dungeonsreborn.logging.PartyAuditLog;
 import dev.patric.dungeonsreborn.logging.ServiceLogManager;
 import dev.patric.dungeonsreborn.locale.LocaleService;
 import dev.patric.dungeonsreborn.locale.Locales;
@@ -54,10 +68,13 @@ import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockListener;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore;
+import dev.patric.dungeonsreborn.mobs.MobPersistenceStore;
+import dev.patric.dungeonsreborn.mobs.editor.MobDebugOverlayService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.shops.ShopSessionManager;
 import dev.patric.dungeonsreborn.shops.ShopOpenListener;
 import dev.patric.dungeonsreborn.shops.ShopTradeListener;
+import dev.patric.dungeonsreborn.shops.ShopTradeAuditLog;
 import dev.patric.dungeonsreborn.shops.ShopTradeMetrics;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.shops.ShopStockManager;
@@ -78,6 +95,7 @@ import dev.patric.dungeonsreborn.progression.custom.CustomXpRepository;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.gui.GuiManager;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
+import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.style.GuiStyles;
 import dev.patric.dungeonsreborn.system.SharedTickScheduler;
 import dev.patric.dungeonsreborn.util.WorldAllowlist;
@@ -87,14 +105,23 @@ import dev.patric.dungeonsreborn.classes.ClassAbilityBindings;
 import dev.patric.dungeonsreborn.classes.ClassService;
 import dev.patric.dungeonsreborn.classes.ClassYamlRegistry;
 import dev.patric.dungeonsreborn.classes.skills.ClassSkillJdbcRepository;
+import dev.patric.dungeonsreborn.classes.skills.ClassSkillPresetJdbcRepository;
 import dev.patric.dungeonsreborn.classes.skills.ClassSkillService;
 import dev.patric.dungeonsreborn.advancements.AdvancementService;
 import dev.patric.dungeonsreborn.advancements.AdvancementXpListener;
 import dev.patric.dungeonsreborn.advancements.AdvancementWorldListener;
 import dev.patric.dungeonsreborn.advancements.BossAdvancementListener;
+import dev.patric.dungeonsreborn.party.PartyAssistRules;
+import dev.patric.dungeonsreborn.party.PartyAuraService;
 import dev.patric.dungeonsreborn.party.PartyChatListener;
+import dev.patric.dungeonsreborn.party.PartyLootShareMode;
 import dev.patric.dungeonsreborn.party.PartyListener;
+import dev.patric.dungeonsreborn.party.PartyJdbcRepository;
+import dev.patric.dungeonsreborn.party.PartyRepository;
 import dev.patric.dungeonsreborn.party.PartyService;
+import dev.patric.dungeonsreborn.party.PartyShareMode;
+import dev.patric.dungeonsreborn.quests.QuestRegion;
+import dev.patric.dungeonsreborn.quests.QuestRewardShareMode;
 import dev.patric.dungeonsreborn.quests.QuestGiverYamlRegistry;
 import dev.patric.dungeonsreborn.quests.QuestJdbcRepository;
 import dev.patric.dungeonsreborn.quests.QuestListener;
@@ -102,11 +129,17 @@ import dev.patric.dungeonsreborn.quests.QuestService;
 import dev.patric.dungeonsreborn.quests.QuestYamlRegistry;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 
 public final class DungeonsRebornPlugin extends JavaPlugin {
     private EffectsEngine effectsEngine;
     private EffectsBindings effectsBindings;
     private EffectsYamlAbilities yamlAbilities;
+    private HeadRegistry headRegistry;
     private EditorDraftStore editorDraftStore;
     private EditorLockManager editorLockManager;
     private EditorAuditLogger editorAuditLogger;
@@ -114,20 +147,27 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private EditorServices editorServices;
     private MobRegistry mobRegistry;
     private MobSpawnManager mobSpawnManager;
+    private MobDebugOverlayService mobDebugOverlayService;
     private MobYamlRegistry mobYamlRegistry;
     private MobSpawnerBlockStore spawnerBlockStore;
+    private MobPersistenceStore mobPersistenceStore;
+    private boolean mobPersistenceEnabled;
     private MinionManager minionManager;
     private ServiceLogManager serviceLog;
     private LocaleService localeService;
     private SharedTickScheduler sharedTicks;
     private CraftingYamlRegistry craftingRecipes;
     private CraftingGuiSessionManager craftingSessions;
+    private CraftingDiscoveryService craftingDiscovery;
     private UpgradeYamlRegistry upgradeRegistry;
     private UpgradeService upgradeService;
     private ShopYamlRegistry shopRegistry;
     private ShopSessionManager shopSessions;
     private ShopStockManager shopStocks;
     private ShopTradeMetrics shopMetrics;
+    private ShopTradeAuditLog shopTradeAuditLog;
+    private AdvancementAuditLog advancementAuditLog;
+    private PartyAuditLog partyAuditLog;
     private QuestYamlRegistry questRegistry;
     private QuestGiverYamlRegistry questGiverRegistry;
     private QuestService questService;
@@ -146,7 +186,16 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private ClassAbilityBindings classAbilityBindings;
     private AdvancementService advancementService;
     private PartyService partyService;
-    private double partyAssistRadius;
+    private PartyRepository partyRepository;
+    private PartyAssistRules partyAssistRules;
+    private PartyShareMode partyXpShareMode = PartyShareMode.NONE;
+    private boolean partyXpRequireAssist = true;
+    private PartyLootShareMode partyLootShareMode = PartyLootShareMode.NONE;
+    private boolean partyLootRequireAssist = true;
+    private PartyAuraService partyAuraService;
+    private BukkitTask partyAuraTask;
+    private ManaStorageService manaStorage;
+    private ManaSourcesConfig manaSources;
     private DungeonYamlRegistry dungeonRegistry;
     private DungeonQueueService dungeonQueue;
     private DungeonProgressRepository dungeonProgress;
@@ -154,10 +203,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     private AdvancementService initAdvancements() {
         try {
-            if (Bukkit.getPluginManager().getPlugin("UltimateAdvancementAPI") == null) {
-                getLogger().warning("[Advancements] UltimateAdvancementAPI not installed, skipping.");
-                return null;
-            }
             AdvancementService service = new AdvancementService(this);
             if (service.enable()) {
                 return service;
@@ -179,6 +224,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Locales.install(localeService);
         GuiI18n.setDefaultLocale(Locale.forLanguageTag(localeService.defaultLocale()));
         advancementService = initAdvancements();
+        advancementAuditLog = new AdvancementAuditLog(this, serviceLog.advancements());
+        if (advancementService != null) {
+            advancementService.setAuditLog(advancementAuditLog);
+        }
         sharedTicks = new SharedTickScheduler(this, getLogger());
         sharedTicks.start();
         worldAllowlist = WorldAllowlist.fromConfig(getConfig());
@@ -200,19 +249,80 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         GuiStyles.installButtonDefaults();
         int partyMaxSize = getConfig().getInt("party.maxSize", 5);
         int inviteSeconds = getConfig().getInt("party.inviteSeconds", 30);
-        partyAssistRadius = getConfig().getDouble("party.assistRadius", 24.0);
-        partyService = new PartyService(this::isWorldAllowed, partyMaxSize, Duration.ofSeconds(inviteSeconds));
+        double assistBase = getConfig().getDouble("party.assistRadius", 24.0);
+        double assistScale = getConfig().getDouble("party.assistRadiusScalePerMember", 0.0);
+        double assistMax = getConfig().getDouble("party.assistRadiusMax", 0.0);
+        partyAssistRules = new PartyAssistRules(assistBase, assistScale, assistMax);
+        partyXpShareMode = PartyShareMode.fromString(getConfig().getString("party.xpShare.mode", "NONE"),
+            PartyShareMode.NONE);
+        partyXpRequireAssist = getConfig().getBoolean("party.xpShare.requireAssist", true);
+        partyLootShareMode = PartyLootShareMode.fromString(getConfig().getString("party.lootShare.mode", "NONE"),
+            PartyLootShareMode.NONE);
+        partyLootRequireAssist = getConfig().getBoolean("party.lootShare.requireAssist", true);
+        String worldPolicyRaw = getConfig().getString("party.worldPolicy", "SAME_WORLD");
+        PartyService.WorldPolicy worldPolicy = PartyService.WorldPolicy.fromString(worldPolicyRaw,
+            PartyService.WorldPolicy.SAME_WORLD);
+        List<QuestRegion> partyAllowRegions = readPartyRegions("party.regionRestrictions.allow");
+        List<QuestRegion> partyDenyRegions = readPartyRegions("party.regionRestrictions.deny");
+        partyService = new PartyService(this::isWorldAllowed, partyMaxSize, Duration.ofSeconds(inviteSeconds),
+            worldPolicy, partyAllowRegions, partyDenyRegions, partyRepository);
+        partyAuditLog = new PartyAuditLog(this, serviceLog.parties());
+        partyService.setAuditLog(partyAuditLog);
         Bukkit.getPluginManager().registerEvents(new PartyListener(partyService), this);
         Bukkit.getPluginManager().registerEvents(new PartyChatListener(this, partyService), this);
+        boolean partyBuffsEnabled = getConfig().getBoolean("party.buffs.enabled", false);
+        if (partyBuffsEnabled) {
+            long buffPeriod = getConfig().getLong("party.buffs.periodTicks", 40L);
+            double buffRadius = getConfig().getDouble("party.buffs.radius", assistBase);
+            double buffScale = getConfig().getDouble("party.buffs.radiusScalePerMember", 0.0);
+            double buffMax = getConfig().getDouble("party.buffs.radiusMax", 0.0);
+            boolean buffRequireAssist = getConfig().getBoolean("party.buffs.requireAssist", true);
+            PartyAuraService.CenterMode centerMode = PartyAuraService.CenterMode.fromString(
+                getConfig().getString("party.buffs.center", "LEADER"), PartyAuraService.CenterMode.LEADER);
+            List<PotionEffect> buffEffects = readPartyBuffEffects(buffPeriod);
+            partyAuraService = new PartyAuraService(partyService,
+                new PartyAssistRules(buffRadius, buffScale, buffMax),
+                buffEffects, buffRequireAssist, centerMode);
+            if (!buffEffects.isEmpty() && buffPeriod > 0L) {
+                partyAuraTask = Bukkit.getScheduler().runTaskTimer(this, partyAuraService, buffPeriod, buffPeriod);
+            }
+        }
 
         effectsEngine = EffectsEngine.init(this, serviceLog.effects());
-        SessionManaProvider manaProvider = new SessionManaProvider(100.0);
+        double baseMana = getConfig().getDouble("mana.base", 100.0);
+        ResourceRuleSet manaRules = ResourceRuleSet.fromConfig(getConfig(), baseMana);
+        manaSources = ManaSourcesConfig.fromConfig(getConfig());
+        SessionManaProvider manaProvider = new SessionManaProvider(manaRules);
         effectsEngine.setManaProvider(manaProvider);
-        effectsEngine.enableManaRegen(20L, 5.0);
-        Bukkit.getPluginManager().registerEvents(new ManaSessionListener(manaProvider), this);
-        Bukkit.getPluginManager().registerEvents(new ManaDropListener(effectsEngine), this);
+        long regenPeriod = getConfig().getLong("mana.regen.periodTicks", 20L);
+        double regenAmount = getConfig().getDouble("mana.regen.baseAmount", 5.0);
+        effectsEngine.enableManaRegen(regenPeriod, regenAmount);
+        long regenDelay = getConfig().getLong("mana.regen.delayAfterCastTicks", 0L);
+        long combatDelay = getConfig().getLong("mana.regen.combatDelayTicks", 0L);
+        effectsEngine.setManaRegenDelays(regenDelay, combatDelay);
+        double maxRegenPerTick = getConfig().getDouble("mana.antiExploit.maxRegenPerTick", 0.0);
+        double maxGainPerTick = getConfig().getDouble("mana.antiExploit.maxGainPerTick", 0.0);
+        effectsEngine.setManaAntiExploit(maxRegenPerTick, maxGainPerTick);
+        effectsEngine.setManaTimedGrant(manaSources.timed().enabled(),
+            manaSources.timed().periodTicks(), manaSources.timed().amount(), manaSources.timed().resourceId());
+        ManaUiConfig manaUiConfig = ManaUiConfig.fromConfig(getConfig());
+        effectsEngine.setManaUiConfig(manaUiConfig);
+        ConfigurationSection manaUiDefaults = getConfig().getConfigurationSection("mana.ui.defaults");
+        if (manaUiDefaults != null) {
+            ManaUiSettings uiSettings = effectsEngine.manaUiSettings();
+            uiSettings.setDefault(ManaUiSettings.Flag.ACTIONBAR, manaUiDefaults.getBoolean("actionbar", true));
+            uiSettings.setDefault(ManaUiSettings.Flag.WARNINGS, manaUiDefaults.getBoolean("warnings", true));
+            uiSettings.setDefault(ManaUiSettings.Flag.SCOREBOARD, manaUiDefaults.getBoolean("scoreboard", true));
+        }
+        boolean manaPersistence = getConfig().getBoolean("mana.persistence.enabled", true);
+        manaStorage = new ManaStorageService(this);
+        Bukkit.getPluginManager().registerEvents(new ManaSessionListener(manaProvider, manaStorage, manaPersistence), this);
+        Bukkit.getPluginManager().registerEvents(new ManaDropListener(effectsEngine, manaSources.kills()), this);
+        Bukkit.getPluginManager().registerEvents(new ManaPickupListener(effectsEngine, manaSources.pickups()), this);
         Bukkit.getPluginManager().registerEvents(new DamageMechanicsListener(effectsEngine), this);
         mobRegistry = new MobRegistry(effectsEngine);
+        mobRegistry.setCraftingDiscoveryService(craftingDiscovery);
+        mobRegistry.setLogger(serviceLog.mobs());
         mobRegistry.setMaxActivePerTick(getConfig().getInt("mobs.performance.maxTickMobs", 0));
         mobRegistry.setCustomXpService(customXpService);
         mobRegistry.configureXpGating(
@@ -220,15 +330,22 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             getConfig().getString("mobs.xpGating.bypassPermission", ""),
             getConfig().getInt("mobs.xpGating.messageCooldownTicks", 40));
         mobRegistry.setWorldAllowedPredicate(this::isWorldAllowed);
+        mobRegistry.setPartyService(partyService);
+        mobRegistry.setPartyShareRules(partyXpShareMode, partyXpRequireAssist, partyLootShareMode,
+            partyLootRequireAssist, partyAssistRules);
         if (advancementService != null && advancementService.isEnabled()) {
             mobRegistry.setAdvancementService(advancementService);
         }
         Bukkit.getPluginManager().registerEvents(mobRegistry, this);
         mobSpawnManager = new MobSpawnManager(effectsEngine, mobRegistry, serviceLog.mobs());
+        mobSpawnManager.setPartyService(partyService);
+        mobSpawnManager.setCustomXpService(customXpService);
         mobRegistry.setSpawnManager(mobSpawnManager);
+        mobDebugOverlayService = new MobDebugOverlayService(effectsEngine, mobRegistry);
         Bukkit.getPluginManager().registerEvents(mobSpawnManager, this);
         minionManager = new MinionManager(effectsEngine, mobRegistry);
         mobRegistry.setMinionManager(minionManager);
+        minionManager.setMaxPerOwner(getConfig().getInt("minions.limits.maxPerOwner", 0));
         Bukkit.getPluginManager().registerEvents(minionManager, this);
         registerProgressionHooks();
 
@@ -237,10 +354,16 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         effectsBindings = new EffectsBindings(effectsEngine);
         Bukkit.getPluginManager().registerEvents(effectsBindings, this);
 
+        headRegistry = new HeadRegistry(this, getLogger());
+        headRegistry.reload();
+        ItemTemplateCompiler.setHeadRegistry(headRegistry);
+        GuiItems.setHeadRegistry(headRegistry);
+
         yamlAbilities = new EffectsYamlAbilities(this, effectsEngine, effectsBindings, serviceLog.effects(), serviceLog.bindings());
         yamlAbilities.reload();
         Bukkit.getPluginManager().registerEvents(new YamlVarsSessionListener(yamlAbilities), this);
         Bukkit.getPluginManager().registerEvents(new ItemSyncListener(yamlAbilities), this);
+        Bukkit.getPluginManager().registerEvents(new ItemHookListener(effectsEngine, yamlAbilities), this);
         yamlAbilities.syncOnlineItems();
         editorDraftStore = new EditorDraftStore(this, serviceLog.effects());
         editorAuditLogger = new EditorAuditLogger(serviceLog.effects());
@@ -263,12 +386,15 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         shopSessions = new ShopSessionManager(shopRegistry, shopStocks, !customXpActive, serviceLog.shops());
         shopMetrics = new ShopTradeMetrics(this, serviceLog.shops());
         shopMetrics.load();
+        shopSessions.setTradeServices(shopMetrics, advancementService, customXpService, shopTradeXpReward);
+        shopTradeAuditLog = new ShopTradeAuditLog(this, serviceLog.shops());
+        shopSessions.setAuditLog(shopTradeAuditLog);
         Bukkit.getPluginManager().registerEvents(new ShopOpenListener(shopSessions), this);
         Bukkit.getPluginManager().registerEvents(
             new ShopTradeListener(shopRegistry, shopSessions, shopStocks, shopMetrics, advancementService,
                 customXpService, shopTradeXpReward, serviceLog.shops()), this);
 
-        questRegistry = new QuestYamlRegistry(this, getLogger(), yamlAbilities::itemTemplate);
+        questRegistry = new QuestYamlRegistry(this, getLogger(), this::resolveQuestItem);
         questRegistry.reload();
         questGiverRegistry = new QuestGiverYamlRegistry(this, getLogger());
         questGiverRegistry.reload();
@@ -279,10 +405,28 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 progressionService,
                 customXpService,
                 shopRegistry,
-                yamlAbilities::itemTemplate,
-                this::isWorldAllowed);
+                this::resolveQuestItem,
+                this::isWorldAllowed,
+                effectsEngine.manaProvider(),
+                manaSources == null ? null : manaSources.quests(),
+                craftingDiscovery,
+                mobRegistry,
+                partyService);
+            QuestRewardShareMode questRewardMode = QuestRewardShareMode.fromString(
+                getConfig().getString("quests.party.rewards.mode", "NONE"),
+                QuestRewardShareMode.NONE);
+            boolean questRewardRequireAssist = getConfig().getBoolean("quests.party.rewards.requireAssist", true);
+            boolean questLockRequireLeader = getConfig().getBoolean("quests.party.lock.requireLeader", true);
+            boolean questLockAutoAcceptMembers = getConfig().getBoolean("quests.party.lock.autoAcceptMembers", true);
+            boolean questLockShareCompletion = getConfig().getBoolean("quests.party.lock.shareCompletion", true);
+            questService.setPartyRules(partyAssistRules, questRewardMode, questRewardRequireAssist,
+                questLockRequireLeader, questLockAutoAcceptMembers, questLockShareCompletion);
             questService.loadOnlinePlayers();
-            Bukkit.getPluginManager().registerEvents(new QuestListener(questService, partyService, partyAssistRadius), this);
+            double questAssistRadius = partyAssistRules == null ? 0.0 : partyAssistRules.baseRadius();
+            Bukkit.getPluginManager().registerEvents(new QuestListener(questService, partyService, questAssistRadius), this);
+        }
+        if (shopSessions != null) {
+            shopSessions.setRequirementServices(questService, classService, null);
         }
 
         if (upgradeRegistry == null) {
@@ -293,15 +437,34 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, shopRegistry, mobRegistry, mobSpawnManager, serviceLog.mobs());
         mobYamlRegistry.setUpgradeRegistry(upgradeRegistry);
         mobYamlRegistry.reload();
+        if (minionManager != null) {
+            minionManager.restorePersistentMinions();
+        }
+        mobRegistry.setLootPoolResolver(mobYamlRegistry::lootPool);
         if (advancementService != null && advancementService.isEnabled()) {
             Bukkit.getPluginManager().registerEvents(new BossAdvancementListener(mobRegistry, advancementService), this);
         }
         spawnerBlockStore = new MobSpawnerBlockStore(getDataFolder(), serviceLog.mobs());
         spawnerBlockStore.load();
         spawnerBlockStore.rehydrateMarkers();
+        mobSpawnManager.setSpawnerBlockStore(spawnerBlockStore);
+        mobSpawnManager.setYamlRegistry(mobYamlRegistry);
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
+        boolean spawnerOwnershipEnabled = getConfig().getBoolean("mobs.spawners.ownership.enabled", false);
+        boolean spawnerAdminOnly = getConfig().getBoolean("mobs.spawners.ownership.adminOnly", false);
+        String spawnerAdminPermission = getConfig().getString("mobs.spawners.ownership.adminPermission", "dungeonsreborn.spawner.admin");
         Bukkit.getPluginManager().registerEvents(
-            new MobSpawnerBlockListener(mobYamlRegistry, mobRegistry, mobSpawnManager, spawnerBlockStore, serviceLog.mobs()), this);
+            new MobSpawnerBlockListener(mobYamlRegistry, mobRegistry, mobSpawnManager, spawnerBlockStore, serviceLog.mobs(),
+                spawnerOwnershipEnabled, spawnerAdminOnly, spawnerAdminPermission), this);
+
+        mobPersistenceEnabled = getConfig().getBoolean("mobs.persistence.enabled", false);
+        mobPersistenceStore = new MobPersistenceStore(getDataFolder(), serviceLog.mobs());
+        if (mobPersistenceEnabled) {
+            int restored = mobRegistry.restoreSnapshots(mobPersistenceStore.load());
+            if (restored > 0) {
+                getLogger().info("[Mobs] Restored " + restored + " persistent mobs");
+            }
+        }
 
         kitRegistry = new KitYamlRegistry(this, getLogger());
         kitRegistry.reload();
@@ -313,22 +476,52 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         classRegistry = new ClassYamlRegistry(this, getLogger());
         classRegistry.reload();
         if (progressionDatabase != null && progressionService != null) {
+            long classSwitchCooldown = getConfig().getLong("classes.switching.cooldownSeconds", 0L);
+            java.util.Set<String> classLockouts = new java.util.HashSet<>();
+            for (String world : getConfig().getStringList("classes.switching.lockoutWorlds")) {
+                if (world != null && !world.isBlank()) {
+                    classLockouts.add(world.trim().toLowerCase(java.util.Locale.ROOT));
+                }
+            }
             classService = new ClassService(
                 classRegistry,
                 new ClassJdbcRepository(progressionDatabase, getLogger()),
                 progressionService,
                 shopRegistry,
+                questService,
                 this::isWorldAllowed,
-                getLogger());
+                getLogger(),
+                classSwitchCooldown,
+                classLockouts);
+        }
+        if (shopSessions != null) {
+            shopSessions.setRequirementServices(questService, classService, null);
         }
         if (progressionDatabase != null && progressionService != null && classService != null) {
+            boolean resetEnabled = getConfig().getBoolean("classes.reset.enabled", false);
+            int resetTokenCost = Math.max(0, getConfig().getInt("classes.reset.tokenCost", 0));
+            double resetRefund = Math.max(0.0, getConfig().getDouble("classes.reset.refundRatio", 1.0));
+            boolean respecEnabled = getConfig().getBoolean("classes.respec.enabled", true);
+            double respecTokenMultiplier = getConfig().getDouble("classes.respec.tokenMultiplier", 1.0);
+            double respecPointMultiplier = getConfig().getDouble("classes.respec.pointMultiplier", 1.0);
+            double respecRefund = getConfig().getDouble("classes.respec.refundRatio", 1.0);
+            int respecMaxTokenCost = Math.max(0, getConfig().getInt("classes.respec.maxTokenCost", 0));
+            int respecMaxPointCost = Math.max(0, getConfig().getInt("classes.respec.maxPointCost", 0));
+            int respecMaxRefund = Math.max(0, getConfig().getInt("classes.respec.maxRefundPoints", 0));
             classSkillService = new ClassSkillService(
                 classService,
                 progressionService,
                 new ClassSkillJdbcRepository(progressionDatabase, getLogger()),
+                new ClassSkillPresetJdbcRepository(progressionDatabase, getLogger()),
                 shopRegistry,
                 this::isWorldAllowed,
-                getLogger());
+                getLogger(),
+                new ClassSkillService.ResetPolicy(resetEnabled, resetTokenCost, resetRefund),
+                new ClassSkillService.RespecPolicy(respecEnabled, respecTokenMultiplier, respecPointMultiplier,
+                    respecRefund, respecMaxTokenCost, respecMaxPointCost, respecMaxRefund));
+        }
+        if (questService != null) {
+            questService.setRequirementServices(classService, classSkillService, null);
         }
         if (classService != null && effectsEngine != null) {
             classBonusService = new ClassBonusService(this, classService, classSkillService, effectsEngine,
@@ -353,6 +546,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         dungeonQueue = new DungeonQueueService(this, dungeonRegistry, dungeonProgress, worldAllowlist, serviceLog.dungeons());
         dungeonSessions = new DungeonSessionManager(this, dungeonRegistry, dungeonProgress, dungeonQueue, mobRegistry,
             shopRegistry, progressionService, advancementService, serviceLog.dungeons());
+        mobSpawnManager.setDungeonSessions(dungeonSessions);
         dungeonQueue.setSessionManager(dungeonSessions);
         if (sharedTicks != null) {
             sharedTicks.schedule("dungeonQueue", 20L, dungeonQueue::tick);
@@ -378,6 +572,14 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         craftingRecipes = new CraftingYamlRegistry(this, serviceLog.effects(), this::resolveCraftingItem);
         ensureDefaultCraftingRecipes();
         craftingRecipes.reload();
+        craftingDiscovery = new CraftingDiscoveryService(this, serviceLog.effects(), craftingRecipes);
+        craftingDiscovery.load();
+        craftingDiscovery.loadOnlinePlayers();
+        if (sharedTicks != null) {
+            sharedTicks.schedule("craftingDiscovery", 20L, craftingDiscovery::tick);
+        } else {
+            Bukkit.getScheduler().runTaskTimer(this, craftingDiscovery::tick, 20L, 20L);
+        }
         craftingSessions = new CraftingGuiSessionManager();
         Bukkit.getPluginManager().registerEvents(craftingSessions, this);
 
@@ -394,9 +596,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobYamlRegistry,
                     mobRegistry,
                     mobSpawnManager,
+                    mobDebugOverlayService,
                     spawnerBlockStore,
                     craftingRecipes,
                     craftingSessions,
+                    craftingDiscovery,
                     advancementService,
                     upgradeService,
                     shopRegistry,
@@ -428,9 +632,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobYamlRegistry,
                     mobRegistry,
                     mobSpawnManager,
+                    mobDebugOverlayService,
                     spawnerBlockStore,
                     craftingRecipes,
                     craftingSessions,
+                    craftingDiscovery,
                     advancementService,
                     upgradeService,
                     shopRegistry,
@@ -462,9 +668,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobYamlRegistry,
                     mobRegistry,
                     mobSpawnManager,
+                    mobDebugOverlayService,
                     spawnerBlockStore,
                     craftingRecipes,
                     craftingSessions,
+                    craftingDiscovery,
                     advancementService,
                     upgradeService,
                     shopRegistry,
@@ -488,6 +696,22 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     }
 
     private ItemStack resolveCraftingItem(String id) {
+        if (shopRegistry != null) {
+            ItemStack token = shopRegistry.resolveTokenItem(id);
+            if (token != null) {
+                return token;
+            }
+        }
+        if (upgradeRegistry != null) {
+            ItemStack upgrade = upgradeRegistry.upgradeItem(id);
+            if (upgrade != null) {
+                return upgrade;
+            }
+        }
+        return yamlAbilities == null ? null : yamlAbilities.itemTemplate(id);
+    }
+
+    private ItemStack resolveQuestItem(String id) {
         if (shopRegistry != null) {
             ItemStack token = shopRegistry.resolveTokenItem(id);
             if (token != null) {
@@ -594,6 +818,11 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             progressionService.shutdown();
             progressionService = null;
         }
+        if (partyAuraTask != null) {
+            partyAuraTask.cancel();
+            partyAuraTask = null;
+        }
+        partyAuraService = null;
         if (customXpService != null) {
             customXpService.shutdown();
             customXpService = null;
@@ -606,6 +835,17 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             effectsEngine.shutdown();
             effectsEngine = null;
         }
+        if (mobPersistenceStore != null && mobRegistry != null && mobPersistenceEnabled) {
+            mobPersistenceStore.save(mobRegistry.snapshots());
+        }
+        if (manaStorage != null) {
+            manaStorage.saveNow();
+            manaStorage = null;
+        }
+        if (craftingDiscovery != null) {
+            craftingDiscovery.save();
+            craftingDiscovery = null;
+        }
         effectsBindings = null;
         yamlAbilities = null;
         editorDraftStore = null;
@@ -616,6 +856,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobRegistry = null;
         mobSpawnManager = null;
         mobYamlRegistry = null;
+        mobPersistenceStore = null;
         minionManager = null;
         craftingRecipes = null;
         craftingSessions = null;
@@ -628,6 +869,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             shopMetrics.saveNow();
         }
         shopMetrics = null;
+        shopTradeAuditLog = null;
+        partyAuditLog = null;
         questRegistry = null;
         questGiverRegistry = null;
         questService = null;
@@ -641,7 +884,12 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         classService = null;
         worldAllowlist = null;
         partyService = null;
-        partyAssistRadius = 0.0;
+        partyRepository = null;
+        partyAssistRules = null;
+        partyXpShareMode = PartyShareMode.NONE;
+        partyXpRequireAssist = true;
+        partyLootShareMode = PartyLootShareMode.NONE;
+        partyLootRequireAssist = true;
         if (advancementService != null) {
             advancementService.disable();
             advancementService = null;
@@ -665,6 +913,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             progressionDatabase = null;
             return;
         }
+        partyRepository = new PartyJdbcRepository(progressionDatabase, getLogger());
         ProgressionRepository repository = new ProgressionJdbcRepository(progressionDatabase, getLogger());
         ProgressionCurve curve = ProgressionCurve.fromConfig(getConfig().getConfigurationSection("progression.levelCurve"));
         int skillPointsPerXp = getConfig().getInt("progression.skillPoints.perXp", 0);
@@ -698,6 +947,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (progressionService == null || mobRegistry == null) {
             return;
         }
+        mobRegistry.setProgressionService(progressionService);
         if (progressionStats == null && effectsEngine != null) {
             progressionStats = new ProgressionStatService(this, progressionService, effectsEngine, this::isWorldAllowed, getConfig());
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -711,7 +961,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(new ProgressionHudListener(progressionHud), this);
         }
         Bukkit.getPluginManager().registerEvents(
-            new ProgressionMobKillListener(progressionService, customXpService, mobRegistry, partyService, partyAssistRadius), this);
+            new ProgressionMobKillListener(progressionService, customXpService, mobRegistry, partyService,
+                partyAssistRules, partyXpShareMode, partyXpRequireAssist), this);
     }
 
     public MobRegistry mobRegistry() {
@@ -724,6 +975,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public MinionManager minionManager() {
         return minionManager;
+    }
+
+    public PartyService partyService() {
+        return partyService;
     }
 
     public ServiceLogManager serviceLog() {
@@ -760,6 +1015,117 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (progressionHud != null) {
             progressionHud.reloadConfig();
         }
+    }
+
+    private List<QuestRegion> readPartyRegions(String path) {
+        Object raw = getConfig().get(path);
+        if (raw == null) {
+            return List.of();
+        }
+        List<QuestRegion> regions = new ArrayList<>();
+        if (raw instanceof ConfigurationSection section) {
+            QuestRegion region = parsePartyRegion(section.getValues(false));
+            if (region != null) {
+                regions.add(region);
+            }
+        } else if (raw instanceof Map<?, ?> map) {
+            QuestRegion region = parsePartyRegion(map);
+            if (region != null) {
+                regions.add(region);
+            }
+        } else if (raw instanceof List<?> list) {
+            for (Object entry : list) {
+                if (entry instanceof ConfigurationSection entrySection) {
+                    QuestRegion region = parsePartyRegion(entrySection.getValues(false));
+                    if (region != null) {
+                        regions.add(region);
+                    }
+                } else if (entry instanceof Map<?, ?> entryMap) {
+                    QuestRegion region = parsePartyRegion(entryMap);
+                    if (region != null) {
+                        regions.add(region);
+                    }
+                }
+            }
+        }
+        return List.copyOf(regions);
+    }
+
+    private List<PotionEffect> readPartyBuffEffects(long periodTicks) {
+        List<Map<?, ?>> raw = getConfig().getMapList("party.buffs.effects");
+        if (raw == null || raw.isEmpty()) {
+            return List.of();
+        }
+        int duration = (int) Math.min(Integer.MAX_VALUE, Math.max(40L, periodTicks * 2L));
+        List<PotionEffect> effects = new ArrayList<>();
+        for (Map<?, ?> entry : raw) {
+            if (entry == null) {
+                continue;
+            }
+            Object typeRaw = entry.get("type");
+            PotionEffectType type = resolvePotionEffectType(typeRaw == null ? null : typeRaw.toString());
+            if (type == null) {
+                continue;
+            }
+            int amplifier = 0;
+            Object ampRaw = entry.get("amplifier");
+            if (ampRaw instanceof Number number) {
+                amplifier = Math.max(0, number.intValue());
+            }
+            boolean ambient = entry.get("ambient") instanceof Boolean b ? b : true;
+            boolean particles = entry.get("particles") instanceof Boolean b ? b : true;
+            boolean icon = entry.get("icon") instanceof Boolean b ? b : true;
+            effects.add(new PotionEffect(type, duration, amplifier, ambient, particles, icon));
+        }
+        return effects;
+    }
+
+    private PotionEffectType resolvePotionEffectType(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        String id = raw.trim().toLowerCase(Locale.ROOT);
+        NamespacedKey key = NamespacedKey.fromString(id);
+        if (key == null) {
+            key = NamespacedKey.minecraft(id);
+        }
+        return Registry.POTION_EFFECT_TYPE.get(key);
+    }
+
+    private QuestRegion parsePartyRegion(Map<?, ?> map) {
+        if (map == null || map.isEmpty()) {
+            return null;
+        }
+        String world = stringValue(map.get("world"));
+        if (world == null || world.isBlank()) {
+            return null;
+        }
+        double x = doubleValue(map.get("x"), 0.0);
+        double y = doubleValue(map.get("y"), 0.0);
+        double z = doubleValue(map.get("z"), 0.0);
+        double radius = doubleValue(map.get("radius"), 0.0);
+        return new QuestRegion(world, x, y, z, radius);
+    }
+
+    private String stringValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        return value.toString();
+    }
+
+    private double doubleValue(Object value, double fallback) {
+        if (value instanceof Number number) {
+            return number.doubleValue();
+        }
+        if (value instanceof String text) {
+            try {
+                return Double.parseDouble(text);
+            } catch (NumberFormatException ignored) {
+                return fallback;
+            }
+        }
+        return fallback;
     }
 
     private void logStartupSummary() {
@@ -803,6 +1169,16 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     public void reloadRuntimeConfig() {
         reloadWorldAllowlist();
         applyDebugFlags();
+    }
+
+    public void reloadHeadRegistry() {
+        if (headRegistry != null) {
+            headRegistry.reload();
+        }
+    }
+
+    public HeadRegistry headRegistry() {
+        return headRegistry;
     }
 
     private void applyDebugFlags() {

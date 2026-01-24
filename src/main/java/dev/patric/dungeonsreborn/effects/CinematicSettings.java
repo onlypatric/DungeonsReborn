@@ -11,7 +11,8 @@ public final class CinematicSettings {
   public enum Flag {
     SHAKE,
     FLASH,
-    OVERLAY
+    OVERLAY,
+    DEBUG_OVERLAY
   }
 
   private final EnumMap<Flag, Boolean> defaults = new EnumMap<>(Flag.class);
@@ -19,7 +20,7 @@ public final class CinematicSettings {
 
   public CinematicSettings() {
     for (Flag flag : Flag.values()) {
-      defaults.put(flag, Boolean.TRUE);
+      defaults.put(flag, flag == Flag.DEBUG_OVERLAY ? Boolean.FALSE : Boolean.TRUE);
     }
   }
 

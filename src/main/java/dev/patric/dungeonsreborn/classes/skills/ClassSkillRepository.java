@@ -1,12 +1,18 @@
 package dev.patric.dungeonsreborn.classes.skills;
 
-import java.util.Set;
 import java.util.UUID;
 
 public interface ClassSkillRepository {
-  Set<String> load(UUID uuid, String classId);
+  java.util.Map<String, Integer> load(UUID uuid, String classId);
 
-  void add(UUID uuid, String classId, String nodeId);
+  default int rank(UUID uuid, String classId, String nodeId) {
+    if (nodeId == null) {
+      return 0;
+    }
+    return load(uuid, classId).getOrDefault(nodeId, 0);
+  }
+
+  void setRank(UUID uuid, String classId, String nodeId, int rank);
 
   void remove(UUID uuid, String classId, String nodeId);
 

@@ -1,0 +1,137 @@
+messages.command.adminGive.hint: <yellow>Usa:</yellow> <white>{command}</white>
+messages.command.classes.missingSpec: <red>Dati della classe mancanti.</red>
+messages.command.classes.nodes.entry: <gray>-</gray> <white>{id}</white> <dark_gray>({count} nodi)</dark_gray>
+messages.command.classes.nodes.header: <gold>Nodi per</gold> <white>{id}</white> <dark_gray>({count})</dark_gray>
+messages.command.classes.nodes.headerAll: <gold>Nodi classe</gold>
+messages.command.classes.nodes.unknown: <red>Classe sconosciuta:</red> <white>{id}</white>
+messages.command.classes.selectFirst: <red>Seleziona prima una classe.</red>
+messages.command.classes.state.header: <gold>Stato classe</gold> <dark_gray>-</dark_gray> <white>{player}</white> <gray>({id})</gray>
+messages.command.classes.state.noClass: <red>{player} non ha selezionato una classe.</red>
+messages.command.classes.state.playerMissing: <red>Giocatore non trovato:</red> <white>{player}</white>
+messages.command.classes.state.points: <gray>Punti:</gray> <white>{unspent}</white> <dark_gray>liberi</dark_gray> <gray>/</gray>
+  <white>{spent}</white> <dark_gray>spesi</dark_gray> <gray>(</gray><white>{total}</white><gray>)</gray>
+messages.command.classes.state.unknownClass: <red>Classe sconosciuta:</red> <white>{id}</white>
+messages.command.classes.state.unlocked: <gray>Nodi sbloccati:</gray> <white>{count}</white><gray>/</gray><white>{total}</white>
+messages.command.closestMatch: <yellow>Intendevi:</yellow> <white>{suggestion}</white>
+messages.command.crafting.given: <green>Output ricetta dato</green> <white>{id}</white> <green>a</green> <white>{player}</white>
+messages.command.crafting.info.cooldown: <gray>Ricarica:</gray> <white>{seconds}</white><gray>s</gray>
+messages.command.crafting.info.description: <gray>Descrizione:</gray> <white>{description}</white>
+messages.command.crafting.info.header: <gold><bold>Ricetta</bold></gold> <white>{id}</white>
+messages.command.crafting.info.name: <gray>Nome:</gray> <white>{name}</white>
+messages.command.crafting.info.outputs: <gray>Uscite:</gray> <white>{count}</white>
+messages.command.crafting.info.permissions: <gray>Permessi:</gray> <white>{count}</white>
+messages.command.crafting.info.variants: <gray>Varianti:</gray> <white>{count}</white>
+messages.command.crafting.outputMissing: <red>Ricetta senza output:</red> <white>{id}</white>
+messages.command.crafting.unknown: <red>Ricetta sconosciuta:</red> <white>{id}</white>
+messages.command.dungeons.abortedReload: Messages command dungeons abortedReload
+messages.command.dungeons.active: Active
+messages.command.dungeons.queued: Queued
+messages.command.dungeons.validate.entry: Entry
+messages.command.dungeons.validate.errors: Errors
+messages.command.dungeons.validate.ok: Ok
+messages.command.effects.mana.state.details: Messages command effects mana state details
+messages.command.help.adminAdvancementsReload: <gray>/{root} admin advancements reload</gray> <dark_gray>- ricarica avanzamenti</dark_gray>
+messages.command.help.adminClassesExport: <gray>/{root} admin classes export [name]</gray> <dark_gray>- esporta classes.yml</dark_gray>
+messages.command.help.adminClassesImport: <gray>/{root} admin classes import &lt;name&gt; [replace]</gray> <dark_gray>- importa
+  classes.yml</dark_gray>
+messages.command.help.adminClassesReload: <gray>/{root} admin classes reload</gray> <dark_gray>- ricarica classi</dark_gray>
+messages.command.help.adminClassesValidate: <gray>/{root} admin classes validate</gray> <dark_gray>- valida classes.yml</dark_gray>
+messages.command.help.adminCraftingReload: <gray>/{root} admin crafting reload</gray> <dark_gray>- ricarica ricette</dark_gray>
+messages.command.help.adminCraftingValidate: <gray>/{root} admin crafting validate</gray> <dark_gray>- valida ricette</dark_gray>
+messages.command.help.adminDungeonDebug: <gray>/{root} admin dungeon debug ...</gray> <dark_gray>- debug dungeon</dark_gray>
+messages.command.help.adminDungeonReload: <gray>/{root} admin dungeon reload</gray> <dark_gray>- ricarica dungeon</dark_gray>
+messages.command.help.adminDungeonValidate: <gray>/{root} admin dungeon validate</gray> <dark_gray>- valida dungeon</dark_gray>
+messages.command.help.adminEffects: <gray>/{root} admin effects ...</gray> <dark_gray>- comandi effetti</dark_gray>
+messages.command.help.adminGive: <gray>/{root} admin give ...</gray> <dark_gray>- strumenti give admin</dark_gray>
+messages.command.help.adminHeader: <gold><bold>DungeonsReborn</bold></gold> <gray>Comandi Admin</gray>
+messages.command.help.adminItemsGive: <gray>/{root} admin items give &lt;id&gt; [player] [amount]</gray> <dark_gray>- dai
+  oggetto</dark_gray>
+messages.command.help.adminKitsReload: <gray>/{root} admin kits reload</gray> <dark_gray>- ricarica kit</dark_gray>
+messages.command.help.adminLocaleReload: <gray>/{root} admin locale reload</gray> <dark_gray>- ricarica lingue</dark_gray>
+messages.command.help.adminMobs: <gray>/{root} admin mobs ...</gray> <dark_gray>- comandi mob</dark_gray>
+messages.command.help.adminQuestsReload: <gray>/{root} admin quests reload</gray> <dark_gray>- ricarica missioni</dark_gray>
+messages.command.help.adminReload: <gray>/{root} admin reload</gray> <dark_gray>- ricarica tutti i dati</dark_gray>
+messages.command.help.adminRoot: <gray>/{root} admin</gray> <dark_gray>- apri hub admin</dark_gray>
+messages.command.help.adminShops: <gray>/{root} admin shops ...</gray> <dark_gray>- comandi negozi</dark_gray>
+messages.command.help.adminUpgradesGive: <gray>/{root} admin upgrades give &lt;id&gt; [player]</gray> <dark_gray>- dai potenziamento</dark_gray>
+messages.command.help.adminUpgradesReload: <gray>/{root} admin upgrades reload</gray> <dark_gray>- ricarica potenziamenti</dark_gray>
+messages.command.help.classes: <gray>/{root} classes</gray> <dark_gray>- menu classi</dark_gray>
+messages.command.help.dungeon: <gray>/{root} dungeon</gray> <dark_gray>- coda dungeon</dark_gray>
+messages.command.help.dungeonJoin: <gray>/{root} dungeon queue join &lt;level&gt;</gray> <dark_gray>- entra in coda</dark_gray>
+messages.command.help.dungeonLeave: <gray>/{root} dungeon queue leave</gray> <dark_gray>- esci dalla coda</dark_gray>
+messages.command.help.header: <gold><bold>DungeonsReborn</bold></gold> <gray>Comandi</gray>
+messages.command.help.kits: <gray>/{root} kits ...</gray> <dark_gray>- comandi kit</dark_gray>
+messages.command.help.party: <gray>/{root} party</gray> <dark_gray>- menu party</dark_gray>
+messages.command.help.partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- chat party</dark_gray>
+messages.command.help.partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- messaggio party</dark_gray>
+messages.command.help.root: <gray>/{root}</gray> <dark_gray>- apri hub utente</dark_gray>
+messages.command.kits.list.entry: Entry
+messages.command.kits.list.header: Header
+messages.command.missingPermission: <red>Permesso mancante:</red> <white>{permission}</white>
+messages.command.mobs.help.dump: Dump
+messages.command.mobs.help.editor: Editor
+messages.command.mobs.help.egg: Egg
+messages.command.mobs.help.header: Header
+messages.command.mobs.help.list: List
+messages.command.mobs.help.lootInfo: Info bottino
+messages.command.mobs.help.lootList: Pool bottino
+messages.command.mobs.help.reload: Reload
+messages.command.mobs.help.spawn: Spawn
+messages.command.mobs.help.spawners: Spawners
+messages.command.mobs.loot.entry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.loot.header: <gold><bold>Pool Bottino</bold></gold> <gray>({count})</gray>
+messages.command.mobs.loot.info.clearVanilla: <gray>Rimuovi drop vanilla:</gray> <white>{value}</white>
+messages.command.mobs.loot.info.drops: <gray>Voci drop:</gray> <white>{count}</white>
+messages.command.mobs.loot.info.guaranteed: <gray>Oggetti garantiti:</gray> <white>{count}</white>
+messages.command.mobs.loot.info.header: <gold><bold>Pool Bottino</bold></gold> <white>{id}</white>
+messages.command.mobs.loot.info.rolls: <gray>Tiri:</gray> <white>{rolls}</white> <gray>Bonus:</gray> <white>{bonus}</white>
+messages.command.mobs.loot.none: <gray>Nessun pool bottino configurato.</gray>
+messages.command.mobs.loot.unknown: <red>Pool bottino sconosciuto:</red> <white>{id}</white>
+messages.command.mobs.snapshot.header: Header
+messages.command.mobs.snapshot.hp: Hp
+messages.command.mobs.snapshot.owner: Owner
+messages.command.mobs.snapshot.pos: Pos
+messages.command.mobs.snapshot.variant: Variant
+messages.command.mobs.snapshot.world: World
+messages.command.mobs.spawned: Spawned
+messages.command.party.admin.cleanup: <green>Pulizia completata.</green> <gray>Inviti</gray> <white>{invites}</white> <gray>Richieste</gray>
+  <white>{requests}</white> <gray>Party</gray> <white>{parties}</white>
+messages.command.party.admin.disbanded: <green>Party sciolto.</green>
+messages.command.party.admin.info.header: <gold>Party</gold> <white>{id}</white>
+messages.command.party.admin.info.invites: <gray>Inviti:</gray> <white>{count}</white>
+messages.command.party.admin.info.leader: <gray>Leader:</gray> <white>{leader}</white>
+messages.command.party.admin.info.member: <gray>-</gray> <white>{player}</white> <dark_gray>({role})</dark_gray> <gray>online:</gray>
+  <white>{online}</white>
+messages.command.party.admin.info.members: <gray>Membri</gray> <dark_gray>({count})</dark_gray>
+messages.command.party.admin.info.public: <gray>Pubblico:</gray> <white>{public}</white>
+messages.command.party.admin.info.requests: <gray>Richieste:</gray> <white>{count}</white>
+messages.command.party.admin.info.world: <gray>Mondo:</gray> <white>{world}</white>
+messages.command.party.admin.list.entry: <gray>-</gray> <white>{id}</white> <gray>leader</gray> <white>{leader}</white> <gray>dimensione</gray>
+  <white>{size}</white> <gray>pubblico</gray> <white>{public}</white> <gray>mondo</gray> <white>{world}</white>
+messages.command.party.admin.list.header: <gold>Party</gold> <gray>({count})</gray>
+messages.command.party.inviteHint: Messages command party inviteHint
+messages.command.party.inviteReceived: Messages command party inviteReceived
+messages.command.reload.allErrors: <red>Ricarica completata con {errors} errori. Controlla i log.</red>
+messages.command.reload.allOk: <green>Tutti i sistemi ricaricati.</green>
+messages.command.reload.dir: Dir
+messages.command.reload.file: File
+messages.command.result.error: Error
+messages.command.shops.give: Give
+messages.command.shops.help.give: Give
+messages.command.shops.help.info: Info
+messages.command.shops.help.list: List
+messages.command.shops.help.reload: Reload
+messages.command.shops.help.token: Gettone
+messages.command.shops.info.header: Header
+messages.command.shops.info.permission: Permission
+messages.command.shops.info.stock: Stock
+messages.command.shops.info.title: Title
+messages.command.shops.info.trades: Trades
+messages.command.shops.list.entry: Entry
+messages.command.shops.list.header: Header
+messages.command.shops.tokenGive: <green>Gettoni dati</green> <white>x{amount}</white> <green>a</green> <white>{player}</white>
+messages.command.shops.tokenUnknown: <red>Tier gettone sconosciuto:</red> <white>{id}</white>
+messages.command.shops.unknown: Unknown
+messages.command.systemUnavailable: Messages command systemUnavailable
+messages.command.unknownUpgrade: Messages command unknownUpgrade
+messages.command.upgradeGiven: Messages command upgradeGiven

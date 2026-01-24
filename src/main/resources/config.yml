@@ -10,13 +10,17 @@ logging:
   bindings: INFO
   upgrades: INFO
   shops: INFO
+  party: INFO
   dungeons: INFO
   locales: INFO
+  advancements: INFO
 
 # Locale settings.
 locales:
   # Default locale code used for all players unless overridden.
   default: it
+  # Allow per-player locale overrides from locales.playerOverrides.
+  allowPlayerOverrides: false
   # Enabled locales that will be loaded.
   enabled:
     - en
@@ -30,6 +34,33 @@ debug:
     waveLogs: false
   mobs:
     spawnLogs: false
+
+# Advancement system settings.
+advancements:
+  worlds:
+    # Global allow/deny list for advancements. Empty allow list means all worlds allowed.
+    allow: []
+    deny: []
+    # Per-category overrides for world gating.
+    categories:
+      bosses:
+        allow: []
+        deny: []
+      dungeons:
+        allow: []
+        deny: []
+      mobKills:
+        allow: []
+        deny: []
+      xpLevels:
+        allow: []
+        deny: []
+      xpTotals:
+        allow: []
+        deny: []
+      tokens:
+        allow: []
+        deny: []
 
 # Mob performance controls.
 mobs:
@@ -60,8 +91,82 @@ upgrades:
   lore:
     # Maximum number of lines for bind targets in upgrade book lore (0 = unlimited).
     maxTargetLines: 10
-    # Text for truncated lines. {remaining} is replaced with the number of hidden entries.
-    moreFormat: "... {remaining} more"
+    # Control which lore sections appear and in what order.
+    composition:
+      book:
+        order:
+          - name
+          - activation
+          - category
+          - limits
+          - requirements
+          - price
+          - modifiers
+          - behaviors
+          - compatibility
+          - conflicts
+          - attributes
+          - enchants
+          - description
+          - hint
+        sections:
+          name: true
+          activation: true
+          category: true
+          limits: true
+          requirements: true
+          price: true
+          modifiers: true
+          behaviors: true
+          compatibility: true
+          conflicts: true
+          attributes: true
+          enchants: true
+          description: true
+          hint: true
+      applied:
+        order:
+          - header
+          - details
+          - totals
+        sections:
+          header: true
+          details: true
+          totals: true
+  scaling:
+    # Enable global scaling for upgrade effects.
+    enabled: false
+    # Base multiplier applied to upgrades when scaling is enabled.
+    defaultMultiplier: 1.0
+    # World-specific scaling multipliers.
+    worlds:
+      world: 1.0
+    # Optional region multipliers applied when a player is inside the region.
+    # Each entry: world, x, y, z, radius, multiplier.
+    regions: []
+    level:
+      # Scale based on player level (uses custom XP when enabled).
+      enabled: false
+      # Level used as the neutral baseline.
+      baseLevel: 1
+      # Multiplier change per level above/below baseLevel.
+      perLevel: 0.0
+      # Clamp for the level multiplier.
+      minMultiplier: 0.5
+      maxMultiplier: 2.0
+  validation:
+    # Keep valid upgrades loaded even when some YAML entries fail to validate.
+    safeMode: true
+    # Log validation warnings when safeMode is enabled.
+    logWarnings: true
+  tuningPresets:
+    # Active tuning preset key.
+    active: medium
+    # Preset multipliers applied to upgrades.
+    presets:
+      low: 0.85
+      medium: 1.0
+      high: 1.15
 
 # Progression settings (vanilla XP is used as the point system).
 progression:
@@ -127,6 +232,164 @@ progression:
     perLevel: 0.0
     # Extra max mana per intelligence point.
     perIntelligence: 0.0
+    regen:
+      # Base regen amount (flat) used by the engine.
+      baseAmount: 5.0
+      # Regen period in ticks.
+      periodTicks: 20
+      # Disable regen for a period after spending mana.
+      delayAfterCastTicks: 0
+      # Disable regen for a period after combat.
+      combatDelayTicks: 0
+    antiExploit:
+      # Cap regen gained per tick (0 disables).
+      maxRegenPerTick: 0.0
+      # Cap mana gained per tick from sources (0 disables).
+      maxGainPerTick: 0.0
+    # Minimum mana requirements applied globally to abilities (0 disables).
+    minToCast: 0.0
+    # Minimum mana percent (0-1) applied globally (0 disables).
+    minToCastPct: 0.0
+    ui:
+      defaults:
+        actionbar: true
+        warnings: true
+        scoreboard: true
+      actionbar:
+        enabled: true
+        template: "<aqua>{resource}</aqua> <white>{current}</white>/<gray>{max}</gray> <dark_gray>({percent}%)</dark_gray>"
+      warnings:
+        enabled: true
+        thresholdPercent: 25.0
+        cooldownTicks: 100
+        messageKey: messages.mana.low
+      scoreboard:
+        enabled: true
+    persistence:
+      # Persist mana across sessions instead of resetting on join.
+      enabled: true
+    sources:
+      kills:
+        enabled: true
+        resource: mana
+        mode: log_max_health
+        multiplier: 1.0
+        min: 0.0
+        max: 0.0
+      quests:
+        enabled: true
+        resource: mana
+      pickups:
+        enabled: false
+        resource: mana
+        consume: true
+        amount: 0.0
+        scaleByStack: true
+        itemIds: {}
+        materials: {}
+      timed:
+        enabled: false
+        resource: mana
+        periodTicks: 0
+        amount: 0.0
+
+# Class system settings.
+classes:
+  switching:
+    # Cooldown in seconds between class changes (0 = no cooldown).
+    cooldownSeconds: 0
+    # Worlds where class switching is locked out (world name or key).
+    lockoutWorlds: []
+  reset:
+    # Enable full skill tree reset (manual/admin-driven).
+    enabled: false
+    # Token cost to reset the tree.
+    tokenCost: 0
+    # Refund ratio for spent points (1.0 = full refund).
+    refundRatio: 1.0
+  respec:
+    # Enable per-node respecs and preset swaps.
+    enabled: true
+    # Multipliers applied to tree respec costs.
+    tokenMultiplier: 1.0
+    pointMultiplier: 1.0
+    # Refund ratio for respec refunds (1.0 = full refund).
+    refundRatio: 1.0
+    # Optional caps (0 = no cap).
+    maxTokenCost: 0
+    maxPointCost: 0
+    maxRefundPoints: 0
+  presets:
+    # Maximum presets per class (0 = unlimited).
+    maxPerClass: 5
+  conditionalBonuses:
+    # Enable conditional class bonuses by world/region.
+    enabled: true
+  validation:
+    # Keep valid classes loaded even when some YAML entries fail to validate.
+    safeMode: true
+    # Log validation warnings when safeMode is enabled.
+    logWarnings: true
+  tuning:
+    # Active tuning profile name (pve/pvp/custom).
+    profile: pve
+    # Global tuning profiles applied to class bonuses.
+    profiles:
+      pve:
+        defaults:
+          # Fallback multipliers for each section.
+          stat: 1.0
+          manaMax: 1.0
+          manaRegen: 1.0
+          attribute: 1.0
+          resistance: 1.0
+          cap: 1.0
+        # Per-stat multipliers.
+        stats: {}
+        # Mana multipliers for class bonuses.
+        mana:
+          max: 1.0
+          regen: 1.0
+        # Attribute multipliers keyed by attribute id (e.g. generic.attack_damage).
+        attributes: {}
+        # Resistance multipliers keyed by damage type (e.g. FIRE, MAGIC).
+        resistances: {}
+        # Attribute cap multipliers keyed by attribute id.
+        caps: {}
+      pvp:
+        defaults:
+          stat: 1.0
+          manaMax: 1.0
+          manaRegen: 1.0
+          attribute: 1.0
+          resistance: 1.0
+          cap: 1.0
+        stats: {}
+        mana:
+          max: 1.0
+          regen: 1.0
+        attributes: {}
+        resistances: {}
+        caps: {}
+    # Optional per-class overrides per profile.
+    classes: {}
+
+# Resource pools (mana, stamina, focus, etc).
+resources:
+  mana:
+    base: 100.0
+    hardCap: 0.0
+    softCap: 0.0
+    overflowDecay: 0.0
+    regenMode: flat
+    regenFlat: 0.0
+    regenPercent: 0.0
+    regenMultiplier: 1.0
+    costMultiplier: 1.0
+    conversions: {}
+  worldOverrides: {}
+  # Region overrides: list of {resource, world, x, y, z, radius, regenMultiplier, costMultiplier, ...}.
+  regionOverrides: []
 
 
 # Global world allowlist for RPG systems.
@@ -149,3 +412,60 @@ party:
   inviteSeconds: 30
   # Assist radius for party kill credit (blocks).
   assistRadius: 24.0
+  # Extra radius per additional party member (scaled from base radius).
+  assistRadiusScalePerMember: 0.0
+  # Optional hard cap for assist radius (0 disables cap).
+  assistRadiusMax: 0.0
+  # XP sharing rules for party kills.
+  xpShare:
+    # NONE, FULL, or SPLIT.
+    mode: NONE
+    # Require members to be within assist radius.
+    requireAssist: true
+  # Loot sharing rules for mob rewards.
+  lootShare:
+    # NONE, LEADER_ONLY, DUPLICATE, or SPLIT.
+    mode: NONE
+    # Require members to be within assist radius.
+    requireAssist: true
+  # Party-wide buffs/auras.
+  buffs:
+    enabled: false
+    periodTicks: 40
+    # LEADER or EACH_MEMBER.
+    center: LEADER
+    # Require members to be within aura radius.
+    requireAssist: true
+    radius: 16.0
+    radiusScalePerMember: 0.0
+    radiusMax: 0.0
+    effects:
+      - type: SPEED
+        amplifier: 0
+        ambient: true
+        particles: true
+        icon: true
+  # World policy: SAME_WORLD, LEADER_WORLD, or ANY_ALLOWED.
+  worldPolicy: SAME_WORLD
+  # Optional region restrictions for party actions (create/invite/accept).
+  regionRestrictions:
+    # Allowed regions (empty means no allowlist restriction).
+    allow: []
+    # Denied regions (empty means no denylist restriction).
+    deny: []
+
+# Quest party rules (only applies to quests with partyLocked: true).
+quests:
+  party:
+    lock:
+      # Require party leader to accept party-locked quests.
+      requireLeader: true
+      # Auto-accept party-locked quests for nearby members when leader accepts.
+      autoAcceptMembers: true
+      # When a party member completes a party-locked quest, complete it for party members too.
+      shareCompletion: true
+    rewards:
+      # NONE, LEADER_ONLY, ROLL, or SPLIT.
+      mode: NONE
+      # Require members to be within assist radius to be eligible for shared rewards.
+      requireAssist: true

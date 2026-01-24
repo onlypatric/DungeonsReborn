@@ -1,0 +1,12 @@
+messages.items.editor.exists: <red>Item already exists:</red> <white>{id}</white>
+messages.items.editor.holdItem: <red>Hold an item in your main hand.</red>
+messages.items.editor.invalidId: <red>Invalid id:</red> <white>{reason}</white>
+messages.items.editor.locked: <red>Item is locked by</red> <white>{name}</white>
+messages.items.editor.noEdit: <red>You cannot edit items.</red>
+messages.items.editor.notSet: <red>Item is not set.</red>
+messages.items.editor.reloaded: <green>Items reloaded.</green>
+messages.items.editor.setItemFirst: <red>Set an item first.</red>
+messages.items.editor.yamlMissing: <red>YAML loader is not available.</red>
+messages.items.editor.yamlReload.errors: <yellow>Reloaded with {count} errors. Check server logs.</yellow>
+messages.items.editor.yamlReload.ok: <green>Reloaded YAML. Abilities:</green> <white>{abilities}</white> <gray>Item bindings:</gray>
+  <white>{bindings}</white>

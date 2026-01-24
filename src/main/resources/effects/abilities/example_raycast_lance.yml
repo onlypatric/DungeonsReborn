@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  example_raycast_lance:
+    name: <blue>Arc Lance</blue>
+    description: <gray>Raycast strike that punishes one target.</gray>
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: CRIT
+          count: 10
+          offset: 0.1
+          extra: 0.0
+        -
+          type: for_each_target
+          targeter:
+            type: look_ray
+            maxDistance: 18.0
+            raySize: 0.35
+            stopOnBlock: true
+            ignoreCaster: true
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage_typed
+                amount: 10.0
+                damageType: ARCANE
+                damageCause: DIRECT
+                ignoreResistance: false
+                policy: hostile_default
+                mode: FLAT
+              -
+                type: potion
+                effect: SLOWNESS
+                durationTicks: 80
+                amplifier: 0
+          mode: each
+          originAt: origin

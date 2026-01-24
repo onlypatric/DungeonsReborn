@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -17,6 +18,11 @@ public final class PartyListener implements Listener {
   @EventHandler
   public void onQuit(PlayerQuitEvent event) {
     parties.handleQuit(event.getPlayer());
+  }
+
+  @EventHandler
+  public void onJoin(PlayerJoinEvent event) {
+    parties.handleJoin(event.getPlayer());
   }
 
   @EventHandler

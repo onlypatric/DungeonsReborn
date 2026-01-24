@@ -11,14 +11,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.entity.Player;
 
-import dev.patric.dungeonsreborn.menus.QuestGiverMenu;
-import dev.patric.dungeonsreborn.menus.QuestLogMenu;
-import dev.patric.dungeonsreborn.quests.QuestGiverSpec;
 import dev.patric.dungeonsreborn.quests.QuestGiverYamlRegistry;
 import dev.patric.dungeonsreborn.quests.QuestService;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.party.PartyService;
-import dev.patric.dungeonsreborn.quests.editor.menu.QuestEditorListMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -40,12 +36,6 @@ public final class QuestsCommand {
   private static LiteralArgumentBuilder<CommandSourceStack> createCommand(QuestService quests,
       QuestGiverYamlRegistry givers, PartyService parties, boolean includeAdmin) {
     var builder = Commands.literal("quests")
-        .executes(ctx -> openLog(ctx, quests))
-        .then(Commands.literal("log").executes(ctx -> openLog(ctx, quests)))
-        .then(Commands.literal("giver")
-            .then(Commands.argument("id", StringArgumentType.word())
-                .suggests((ctx, builderSuggestion) -> suggestGivers(givers, builderSuggestion))
-                .executes(ctx -> openGiver(ctx, quests, givers, parties, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.literal("accept")
             .then(Commands.argument("id", StringArgumentType.word())
                 .suggests((ctx, builderSuggestion) -> suggestQuests(quests, builderSuggestion))
@@ -55,25 +45,8 @@ public final class QuestsCommand {
             .executes(ctx -> accept(ctx, quests, parties, StringArgumentType.getString(ctx, "id"))));
     if (includeAdmin) {
       builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, quests, givers)));
-      builder.then(Commands.literal("editor").executes(ctx -> openEditor(ctx, quests)));
     }
     return builder;
-  }
-
-  private static int openLog(CommandContext<CommandSourceStack> ctx, QuestService quests) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (quests == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.quests")));
-      return Command.SINGLE_SUCCESS;
-    }
-    new QuestLogMenu(quests).open(player);
-    return Command.SINGLE_SUCCESS;
   }
 
   private static int accept(CommandContext<CommandSourceStack> ctx, QuestService quests, PartyService parties, String questId) {
@@ -136,27 +109,6 @@ public final class QuestsCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int openEditor(CommandContext<CommandSourceStack> ctx, QuestService quests) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (quests == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.quests")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.quests.editor")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.quests.editor"));
-      return Command.SINGLE_SUCCESS;
-    }
-    new QuestEditorListMenu(quests.registry()).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
   private static CompletableFuture<Suggestions> suggestQuests(QuestService quests, SuggestionsBuilder builder) {
     if (quests == null) {
       return builder.buildFuture();
@@ -167,37 +119,4 @@ public final class QuestsCommand {
     return builder.buildFuture();
   }
 
-  private static int openGiver(CommandContext<CommandSourceStack> ctx, QuestService quests, QuestGiverYamlRegistry givers,
-      PartyService parties, String id) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (quests == null || givers == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.questGivers")));
-      return Command.SINGLE_SUCCESS;
-    }
-    QuestGiverSpec spec = givers.giver(id);
-    if (spec == null) {
-      CommandMessages.send(sender, "messages.command.quests.unknownGiver",
-          Locales.placeholders("id", id));
-      CommandMessages.sendClosestMatch(sender, id, givers.givers().keySet());
-      return Command.SINGLE_SUCCESS;
-    }
-    new QuestGiverMenu(quests, spec, parties).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static CompletableFuture<Suggestions> suggestGivers(QuestGiverYamlRegistry givers, SuggestionsBuilder builder) {
-    if (givers == null) {
-      return builder.buildFuture();
-    }
-    for (String id : givers.givers().keySet()) {
-      builder.suggest(id);
-    }
-    return builder.buildFuture();
-  }
 }

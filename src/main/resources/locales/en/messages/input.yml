@@ -1,0 +1,4 @@
+messages.input.cancelled: <gray>Input cancelled.</gray>
+messages.input.invalid: <red>Invalid input.</red>
+messages.input.prompt: <gray>Type your input, or</gray> <yellow>{cancel}</yellow> <gray>to cancel.</gray>
+messages.input.timeout: <red>Input timed out.</red>

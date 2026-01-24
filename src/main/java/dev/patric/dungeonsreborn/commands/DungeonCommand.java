@@ -10,9 +10,9 @@ import org.bukkit.entity.Player;
 import dev.patric.dungeonsreborn.dungeons.DungeonQueueService;
 import dev.patric.dungeonsreborn.dungeons.DungeonSessionManager;
 import dev.patric.dungeonsreborn.dungeons.DungeonYamlRegistry;
-import dev.patric.dungeonsreborn.dungeons.menu.DungeonQueueMenu;
-import dev.patric.dungeonsreborn.dungeons.menu.DungeonStatusMenu;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.party.Party;
+import dev.patric.dungeonsreborn.party.PartyService;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 
@@ -21,29 +21,25 @@ public final class DungeonCommand {
   }
 
   public static LiteralArgumentBuilder<CommandSourceStack> createUserCommand(DungeonYamlRegistry registry,
-      DungeonQueueService queue, DungeonSessionManager sessions) {
-    return createCommand(registry, queue, sessions, false);
+      DungeonQueueService queue, DungeonSessionManager sessions, PartyService parties) {
+    return createCommand(registry, queue, sessions, parties, false);
   }
 
   public static LiteralArgumentBuilder<CommandSourceStack> createAdminCommand(DungeonYamlRegistry registry,
-      DungeonQueueService queue, DungeonSessionManager sessions) {
-    return createCommand(registry, queue, sessions, true);
+      DungeonQueueService queue, DungeonSessionManager sessions, PartyService parties) {
+    return createCommand(registry, queue, sessions, parties, true);
   }
 
   private static LiteralArgumentBuilder<CommandSourceStack> createCommand(DungeonYamlRegistry registry,
-      DungeonQueueService queue, DungeonSessionManager sessions, boolean includeAdmin) {
+      DungeonQueueService queue, DungeonSessionManager sessions, PartyService parties, boolean includeAdmin) {
     var builder = Commands.literal("dungeon")
-        .executes(ctx -> open(ctx, registry, queue))
-        .then(Commands.literal("status")
-            .executes(ctx -> openStatus(ctx, registry, queue, sessions)))
         .then(Commands.literal("queue")
             .then(Commands.literal("join")
                 .then(Commands.argument("level", IntegerArgumentType.integer(1))
                     .suggests((ctx, suggestionsBuilder) -> suggestLevels(registry, suggestionsBuilder))
-                    .executes(ctx -> join(ctx, queue, IntegerArgumentType.getInteger(ctx, "level")))))
+                    .executes(ctx -> join(ctx, queue, parties, IntegerArgumentType.getInteger(ctx, "level")))))
             .then(Commands.literal("leave").executes(ctx -> leave(ctx, queue)))
-            .then(Commands.literal("status").executes(ctx -> status(ctx, registry, queue))))
-        .then(Commands.literal("gui").executes(ctx -> open(ctx, registry, queue)));
+            .then(Commands.literal("status").executes(ctx -> status(ctx, registry, queue))));
     if (includeAdmin) {
       builder.then(Commands.literal("reload").executes(ctx -> reload(ctx, registry, queue, sessions)));
       builder.then(Commands.literal("validate").executes(ctx -> validate(ctx, registry)));
@@ -61,46 +57,8 @@ public final class DungeonCommand {
     return builder;
   }
 
-  private static int open(CommandContext<CommandSourceStack> ctx, DungeonYamlRegistry registry, DungeonQueueService queue) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (registry == null || queue == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!isConfigured(sender, registry)) {
-      return Command.SINGLE_SUCCESS;
-    }
-    new DungeonQueueMenu(registry, queue).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int openStatus(CommandContext<CommandSourceStack> ctx, DungeonYamlRegistry registry,
-      DungeonQueueService queue, DungeonSessionManager sessions) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (registry == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!isConfigured(sender, registry)) {
-      return Command.SINGLE_SUCCESS;
-    }
-    new DungeonStatusMenu(registry, queue, sessions).open(player);
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int join(CommandContext<CommandSourceStack> ctx, DungeonQueueService queue, int level) {
+  private static int join(CommandContext<CommandSourceStack> ctx, DungeonQueueService queue, PartyService parties,
+      int level) {
     var sender = ctx.getSource().getSender();
     var executor = ctx.getSource().getExecutor();
     if (!(executor instanceof Player player)) {
@@ -110,6 +68,26 @@ public final class DungeonCommand {
     if (queue == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
           Locales.placeholders("system", CommandMessages.text(sender, "labels.system.dungeons")));
+      return Command.SINGLE_SUCCESS;
+    }
+    Party party = parties == null ? null : parties.partyOf(player);
+    if (party != null && party.leader() != null && party.leader().equals(player.getUniqueId())) {
+      java.util.List<Player> members = new java.util.ArrayList<>();
+      for (java.util.UUID memberId : party.members()) {
+        Player member = org.bukkit.Bukkit.getPlayer(memberId);
+        if (member != null) {
+          members.add(member);
+        }
+      }
+      var result = queue.joinParty(player, members, level);
+      if (result.success()) {
+        for (Player member : members) {
+          member.sendMessage(Locales.component(member, "messages.dungeons.queue.result.queued",
+              Locales.placeholders("level", level)));
+        }
+      } else {
+        player.sendMessage(result.message());
+      }
       return Command.SINGLE_SUCCESS;
     }
     var result = queue.join(player, level);

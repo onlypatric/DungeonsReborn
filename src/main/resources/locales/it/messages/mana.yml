@@ -1,0 +1,2 @@
+messages.mana.insufficient: <red>Mana insufficiente ({resource}).</red> <gray>Servono {cost}.</gray>
+messages.mana.low: <red>Mana basso ({resource}):</red> <white>{current}/{max}</white> <gray>({percent}%)</gray>

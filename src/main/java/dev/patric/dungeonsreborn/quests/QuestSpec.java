@@ -11,6 +11,18 @@ public record QuestSpec(
     QuestRewards rewards,
     List<QuestObjectiveSpec> objectives,
     long cooldownSeconds,
-    QuestRotation rotation
+    QuestRotation rotation,
+    QuestRepeatSpec repeat,
+    long progressThrottleSeconds,
+    QuestPartyShareSpec partyShare,
+    boolean partyLocked,
+    String rotationPool,
+    String branchId,
+    QuestBranchLock branchLock,
+    QuestFailSpec fail,
+    QuestVisibilitySpec visibility,
+    List<String> categories,
+    String tier,
+    List<String> tags
 ) {
 }

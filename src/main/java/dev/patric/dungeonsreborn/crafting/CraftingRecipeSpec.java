@@ -9,8 +9,12 @@ public final class CraftingRecipeSpec {
   private final String description;
   private final List<String> permissions;
   private final double cooldownSeconds;
+  private final List<CraftingRequirementSpec> requirements;
+  private final List<CraftingCostSpec> costs;
   private final List<CraftingRecipeVariant> variants;
   private final List<CraftingOutputSpec> outputs;
+  private final CraftingHookSpec hooks;
+  private final CraftingDiscoverySpec discovery;
   private final String scriptFile;
   private final String scriptInline;
 
@@ -19,8 +23,12 @@ public final class CraftingRecipeSpec {
                             String description,
                             List<String> permissions,
                             double cooldownSeconds,
+                            List<CraftingRequirementSpec> requirements,
+                            List<CraftingCostSpec> costs,
                             List<CraftingRecipeVariant> variants,
                             List<CraftingOutputSpec> outputs,
+                            CraftingHookSpec hooks,
+                            CraftingDiscoverySpec discovery,
                             String scriptFile,
                             String scriptInline) {
     this.id = Objects.requireNonNull(id, "id");
@@ -28,8 +36,12 @@ public final class CraftingRecipeSpec {
     this.description = description == null ? "" : description;
     this.permissions = List.copyOf(permissions == null ? List.of() : permissions);
     this.cooldownSeconds = Math.max(0.0, cooldownSeconds);
+    this.requirements = List.copyOf(requirements == null ? List.of() : requirements);
+    this.costs = List.copyOf(costs == null ? List.of() : costs);
     this.variants = List.copyOf(Objects.requireNonNull(variants, "variants"));
     this.outputs = List.copyOf(Objects.requireNonNull(outputs, "outputs"));
+    this.hooks = hooks;
+    this.discovery = discovery == null ? CraftingDiscoverySpec.empty() : discovery;
     this.scriptFile = scriptFile;
     this.scriptInline = scriptInline;
   }
@@ -54,6 +66,14 @@ public final class CraftingRecipeSpec {
     return cooldownSeconds;
   }
 
+  public List<CraftingRequirementSpec> requirements() {
+    return requirements;
+  }
+
+  public List<CraftingCostSpec> costs() {
+    return costs;
+  }
+
   public List<CraftingRecipeVariant> variants() {
     return variants;
   }
@@ -64,6 +84,14 @@ public final class CraftingRecipeSpec {
 
   public CraftingOutputSpec output() {
     return outputs.isEmpty() ? null : outputs.get(0);
+  }
+
+  public CraftingHookSpec hooks() {
+    return hooks;
+  }
+
+  public CraftingDiscoverySpec discovery() {
+    return discovery;
   }
 
   public String scriptFile() {

@@ -5,10 +5,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import java.util.concurrent.CompletableFuture;
 
-import dev.patric.dungeonsreborn.menus.ShopEditorListMenu;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.shops.ShopItems;
-import dev.patric.dungeonsreborn.shops.ShopSessionManager;
 import dev.patric.dungeonsreborn.shops.ShopSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -26,7 +24,7 @@ public final class ShopsCommand {
   private ShopsCommand() {
   }
 
-  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(ShopYamlRegistry shops, ShopSessionManager sessions) {
+  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(ShopYamlRegistry shops) {
     return Commands.literal("shop")
         .executes(ctx -> help(ctx))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, shops)))
@@ -44,10 +42,6 @@ public final class ShopsCommand {
                     .executes(ctx -> give(ctx, shops,
                         StringArgumentType.getString(ctx, "id"),
                         StringArgumentType.getString(ctx, "player"))))))
-        .then(Commands.literal("open")
-            .then(Commands.argument("id", StringArgumentType.word())
-                .suggests((ctx, builder) -> suggestShopIds(shops, builder))
-                .executes(ctx -> open(ctx, shops, sessions, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.literal("token")
             .executes(ctx -> giveToken(ctx, shops, 1, null))
             .then(Commands.argument("amount", IntegerArgumentType.integer(1))
@@ -57,7 +51,7 @@ public final class ShopsCommand {
                     .executes(ctx -> giveToken(ctx, shops,
                         IntegerArgumentType.getInteger(ctx, "amount"),
                         StringArgumentType.getString(ctx, "player"))))))
-        .then(Commands.literal("editor").executes(ctx -> editor(ctx, shops)));
+        ;
   }
 
   private static int help(CommandContext<CommandSourceStack> ctx) {
@@ -66,9 +60,7 @@ public final class ShopsCommand {
     CommandMessages.send(sender, "messages.command.shops.help.list");
     CommandMessages.send(sender, "messages.command.shops.help.info");
     CommandMessages.send(sender, "messages.command.shops.help.give");
-    CommandMessages.send(sender, "messages.command.shops.help.open");
     CommandMessages.send(sender, "messages.command.shops.help.token");
-    CommandMessages.send(sender, "messages.command.shops.help.editor");
     return Command.SINGLE_SUCCESS;
   }
 
@@ -90,30 +82,6 @@ public final class ShopsCommand {
         Locales.placeholders("path", shops.file().getPath()));
     CommandMessages.send(sender, "messages.command.shops.reloadSummary",
         Locales.placeholders("loaded", result.loaded(), "errors", result.errors().size()));
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int open(CommandContext<CommandSourceStack> ctx, ShopYamlRegistry shops,
-      ShopSessionManager sessions, String id) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof org.bukkit.entity.Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (shops == null || sessions == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shops")));
-      return Command.SINGLE_SUCCESS;
-    }
-    ShopSpec spec = shops.shop(id);
-    if (spec == null) {
-      CommandMessages.send(sender, "messages.command.shops.unknown",
-          Locales.placeholders("id", id));
-      CommandMessages.sendClosestMatch(sender, id, shops.shops().keySet());
-      return Command.SINGLE_SUCCESS;
-    }
-    sessions.openShop(player, id, "command");
     return Command.SINGLE_SUCCESS;
   }
 
@@ -252,27 +220,6 @@ public final class ShopsCommand {
     }
     CommandMessages.send(sender, "messages.command.shops.tokenGive",
         Locales.placeholders("amount", clamped, "player", target.getName()));
-    return Command.SINGLE_SUCCESS;
-  }
-
-  private static int editor(CommandContext<CommandSourceStack> ctx, ShopYamlRegistry shops) {
-    var sender = ctx.getSource().getSender();
-    var executor = ctx.getSource().getExecutor();
-    if (!(executor instanceof org.bukkit.entity.Player player)) {
-      CommandMessages.send(sender, "messages.common.playersOnly");
-      return Command.SINGLE_SUCCESS;
-    }
-    if (shops == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shopRegistry")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (!player.hasPermission("dungeonsreborn.shop.admin")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.shop.admin"));
-      return Command.SINGLE_SUCCESS;
-    }
-    new ShopEditorListMenu(shops).open(player);
     return Command.SINGLE_SUCCESS;
   }
 

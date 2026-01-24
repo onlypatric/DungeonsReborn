@@ -49,4 +49,8 @@ public final class Conditions {
     }
     return ctx -> ctx.caster().getScoreboardTags().contains(tag);
   }
+
+  public static Condition casterLacksTag(String tag) {
+    return ctx -> !casterHasTag(tag).test(ctx);
+  }
 }

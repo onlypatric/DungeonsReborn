@@ -2,17 +2,25 @@ package dev.patric.dungeonsreborn.effects.integration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
@@ -26,12 +34,15 @@ import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeSpellBindingSpec;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
+import dev.patric.dungeonsreborn.effects.upgrades.UpgradeActivator;
 
 public final class EffectsBindings implements Listener {
   private final EffectsEngine engine;
   private final List<InteractBinding> interactBindings = new ArrayList<>();
   private final List<PassiveBinding> passiveBindings = new ArrayList<>();
+  private final List<EventBinding> eventBindings = new ArrayList<>();
   private final java.util.Map<java.util.UUID, Long> lastHandledInteractTickByPlayer = new java.util.HashMap<>();
   private static final long PASSIVE_TICK_PERIOD = 1L;
   private static final long ITEM_PASSIVE_PERIOD = 20L;
@@ -57,6 +68,15 @@ public final class EffectsBindings implements Listener {
   public boolean unregisterPassive(String bindingId) {
     Objects.requireNonNull(bindingId, "bindingId");
     return passiveBindings.removeIf(b -> b.id().equals(bindingId));
+  }
+
+  public void registerEvent(EventBinding binding) {
+    eventBindings.add(Objects.requireNonNull(binding, "binding"));
+  }
+
+  public boolean unregisterEvent(String bindingId) {
+    Objects.requireNonNull(bindingId, "bindingId");
+    return eventBindings.removeIf(b -> b.id().equals(bindingId));
   }
 
   public void register(AbilitySpec spec) {
@@ -130,6 +150,50 @@ public final class EffectsBindings implements Listener {
     return Collections.unmodifiableList(passiveBindings);
   }
 
+  public List<EventBinding> eventBindings() {
+    return Collections.unmodifiableList(eventBindings);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onHit(EntityDamageByEntityEvent event) {
+    Player attacker = resolvePlayerAttacker(event.getDamager());
+    if (attacker == null) {
+      return;
+    }
+    if (!(event.getFinalDamage() > 0.0)) {
+      return;
+    }
+    triggerEvent(EventTrigger.ON_HIT, attacker);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR)
+  public void onDodge(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
+    }
+    if (!event.isCancelled() && event.getFinalDamage() > 0.0) {
+      return;
+    }
+    triggerEvent(EventTrigger.ON_DODGE, player);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onKill(EntityDeathEvent event) {
+    Player killer = event.getEntity().getKiller();
+    if (killer == null) {
+      return;
+    }
+    triggerEvent(EventTrigger.ON_KILL, killer);
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onSprint(PlayerToggleSprintEvent event) {
+    if (!event.isSprinting()) {
+      return;
+    }
+    triggerEvent(EventTrigger.ON_SPRINT, event.getPlayer());
+  }
+
   private void tickPassives() {
     if (passiveBindings.isEmpty()) {
       tickItemPassives();
@@ -163,25 +227,84 @@ public final class EffectsBindings implements Listener {
     tickItemPassives();
   }
 
+  private void triggerEvent(EventTrigger trigger, Player player) {
+    if (eventBindings.isEmpty()) {
+      return;
+    }
+    for (EventBinding binding : eventBindings) {
+      if (binding.trigger() != trigger) {
+        continue;
+      }
+      if (binding.requireSneaking() && !player.isSneaking()) {
+        continue;
+      }
+      if (binding.requiredPermission() != null && !player.hasPermission(binding.requiredPermission())) {
+        continue;
+      }
+      if (!binding.playerPredicate().test(player)) {
+        continue;
+      }
+      try {
+        engine.cast(binding.abilityId(), player);
+      } catch (IllegalArgumentException ex) {
+        if (engine.isDebugEnabled()) {
+          engine.debug("event ability invalid: " + binding.abilityId() + " (" + ex.getMessage() + ")");
+        }
+      }
+    }
+  }
+
+  private static Player resolvePlayerAttacker(Entity damager) {
+    if (damager instanceof Player player) {
+      return player;
+    }
+    if (damager instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
+      return player;
+    }
+    return null;
+  }
+
   private void tickItemPassives() {
     long now = engine.tickNow();
     if ((now % ITEM_PASSIVE_PERIOD) != 0L) {
       return;
     }
     for (Player player : Bukkit.getOnlinePlayers()) {
-      ItemStack[] items = {
-          player.getInventory().getItemInMainHand(),
-          player.getInventory().getItemInOffHand(),
-          player.getInventory().getHelmet(),
-          player.getInventory().getChestplate(),
-          player.getInventory().getLeggings(),
-          player.getInventory().getBoots()
+      EquipmentSlot[] slots = {
+          EquipmentSlot.HAND,
+          EquipmentSlot.OFF_HAND,
+          EquipmentSlot.HEAD,
+          EquipmentSlot.CHEST,
+          EquipmentSlot.LEGS,
+          EquipmentSlot.FEET
       };
-      for (ItemStack item : items) {
+      for (EquipmentSlot slot : slots) {
+        ItemStack item = itemForSlot(player, slot);
         if (item == null || item.getType().isAir()) {
           continue;
         }
+        List<UpgradeSpellBindingSpec> upgradeBindings = upgradeBindingsFor(item, UpgradeActivator.PASSIVE);
+        HashSet<String> upgradeAbilityIds = collectUpgradeAbilityIds(upgradeBindings);
+        for (UpgradeSpellBindingSpec binding : upgradeBindings) {
+          if (!matchesUpgradeConditions(player, binding)) {
+            continue;
+          }
+          if (!tryStartUpgradeCooldown(player, item, binding)) {
+            continue;
+          }
+          if (!engine.hasAbility(binding.abilityId())) {
+            if (engine.isDebugEnabled()) {
+              engine.debug("item passive ability not registered: " + binding.abilityId());
+            }
+            continue;
+          }
+          castWithItem(player, binding.abilityId(), item, true, binding);
+          applyUpgradeConsume(player, slot, item, binding);
+        }
         for (String abilityId : ItemMarkers.getStringList(item, ItemMarkers.PASSIVE_ABILITIES)) {
+          if (upgradeAbilityIds.contains(abilityId)) {
+            continue;
+          }
           try {
             if (!engine.hasAbility(abilityId)) {
               if (engine.isDebugEnabled()) {
@@ -201,6 +324,11 @@ public final class EffectsBindings implements Listener {
   }
 
   private void castWithItem(Player player, String abilityId, ItemStack item, boolean allowSecondary) {
+    castWithItem(player, abilityId, item, allowSecondary, null);
+  }
+
+  private void castWithItem(Player player, String abilityId, ItemStack item, boolean allowSecondary,
+      UpgradeSpellBindingSpec binding) {
     if (!engine.hasAbility(abilityId)) {
       if (engine.isDebugEnabled()) {
         engine.debug("item ability not registered: " + abilityId);
@@ -213,7 +341,7 @@ public final class EffectsBindings implements Listener {
     List<UpgradeStatusEffectSpec> effects = UpgradeStatusEffectSpec.parseRecords(
         ItemMarkers.getUpgradeStatusEffects(item));
     engine.castWithContext(abilityId, player, origin, direction, item,
-        ctx -> applyUpgradeState(ctx, item, effects));
+        ctx -> applyUpgradeState(ctx, item, effects, binding));
     if (allowSecondary && !secondary.isEmpty()) {
       for (String secondaryId : secondary) {
         if (secondaryId.equals(abilityId)) {
@@ -224,7 +352,8 @@ public final class EffectsBindings implements Listener {
     }
   }
 
-  private void applyUpgradeState(CastContext ctx, ItemStack item, List<UpgradeStatusEffectSpec> effects) {
+  private void applyUpgradeState(CastContext ctx, ItemStack item, List<UpgradeStatusEffectSpec> effects,
+      UpgradeSpellBindingSpec binding) {
     java.util.Map<String, Double> modifiers = ItemMarkers.getUpgradeModifiers(item);
     for (UpgradeModifierType type : UpgradeModifierType.values()) {
       double value = modifiers.getOrDefault(type.key(), type.defaultValue());
@@ -232,6 +361,118 @@ public final class EffectsBindings implements Listener {
     }
     if (effects != null && !effects.isEmpty()) {
       ctx.variables().put(Vars.UPGRADE_STATUS_EFFECTS, effects);
+    }
+    if (binding != null) {
+      if (binding.manaCost() != null && binding.manaCost() > 0) {
+        ctx.variables().put("upgrade_mana_mult", 0.0);
+        ctx.variables().put("upgrade_mana_add", binding.manaCost().doubleValue());
+      }
+      if (binding.cooldownTicks() != null && binding.cooldownTicks() > 0) {
+        ctx.variables().put("upgrade_cooldown_mult", 0.0);
+        ctx.variables().put("upgrade_cooldown_add", binding.cooldownTicks().doubleValue());
+      }
+    }
+  }
+
+  private static List<UpgradeSpellBindingSpec> upgradeBindingsFor(ItemStack item, UpgradeActivator activator) {
+    if (item == null || activator == null) {
+      return List.of();
+    }
+    List<UpgradeSpellBindingSpec> bindings = UpgradeSpellBindingSpec.parseRecords(
+        ItemMarkers.getUpgradeSpellBindings(item));
+    if (bindings.isEmpty()) {
+      return List.of();
+    }
+    ArrayList<UpgradeSpellBindingSpec> out = new ArrayList<>();
+    for (UpgradeSpellBindingSpec binding : bindings) {
+      if (binding.activator() == activator) {
+        out.add(binding);
+      }
+    }
+    return out;
+  }
+
+  private static HashSet<String> collectUpgradeAbilityIds(List<UpgradeSpellBindingSpec> bindings) {
+    if (bindings == null || bindings.isEmpty()) {
+      return new HashSet<>();
+    }
+    HashSet<String> out = new HashSet<>();
+    for (UpgradeSpellBindingSpec binding : bindings) {
+      out.add(binding.abilityId());
+    }
+    return out;
+  }
+
+  private static boolean matchesUpgradeConditions(Player player, UpgradeSpellBindingSpec binding) {
+    if (binding.requireSneaking() && !player.isSneaking()) {
+      return false;
+    }
+    if (binding.requireSprinting() && !player.isSprinting()) {
+      return false;
+    }
+    boolean onGround = isOnGround(player);
+    if (binding.requireAirborne() && onGround) {
+      return false;
+    }
+    if (binding.requireOnGround() && !onGround) {
+      return false;
+    }
+    return true;
+  }
+
+  private static boolean isOnGround(Player player) {
+    if (player == null) {
+      return false;
+    }
+    Block block = player.getLocation().getBlock();
+    if (block.getType().isSolid()) {
+      return true;
+    }
+    Block below = block.getRelative(BlockFace.DOWN);
+    return below.getType().isSolid();
+  }
+
+  private boolean tryStartUpgradeCooldown(Player player, ItemStack item, UpgradeSpellBindingSpec binding) {
+    if (binding.cooldownTicks() == null || binding.cooldownTicks() <= 0) {
+      return true;
+    }
+    String key = upgradeCooldownKey(item, binding);
+    return engine.tryStartCooldown(player.getUniqueId(), key, binding.cooldownTicks());
+  }
+
+  private static String upgradeCooldownKey(ItemStack item, UpgradeSpellBindingSpec binding) {
+    String base = "upgrade_spell:" + binding.abilityId() + ":" + binding.activator().name();
+    return switch (binding.cooldownScope()) {
+      case PER_PLAYER -> base;
+      case PER_UPGRADE -> "upgrade:" + binding.upgradeId() + ":" + base;
+      case PER_ITEM -> "upgrade_item:" + ItemMarkers.getOrCreateItemInstanceId(item) + ":" + base;
+    };
+  }
+
+  private void applyUpgradeConsume(Player player, EquipmentSlot slot, ItemStack item, UpgradeSpellBindingSpec binding) {
+    Integer durability = binding.durabilityCost();
+    Integer consume = binding.consumeAmount();
+    if ((durability == null || durability <= 0) && (consume == null || consume <= 0)) {
+      return;
+    }
+    if (slot != null && slot != EquipmentSlot.HAND && slot != EquipmentSlot.OFF_HAND) {
+      return;
+    }
+    int amount = consume == null || consume <= 0 ? 0 : consume;
+    if (durability != null && durability > 0) {
+      consumeDurability(player, slot == null ? EquipmentSlot.HAND : slot, item, durability);
+      return;
+    }
+    ItemConsumeMode mode = ItemMarkers.getConsumeMode(item);
+    if (mode == ItemConsumeMode.NONE) {
+      mode = ItemConsumeMode.STACK;
+    }
+    EquipmentSlot hand = slot == null ? EquipmentSlot.HAND : slot;
+    switch (mode) {
+      case STACK -> consumeStack(player, hand, item, amount);
+      case DURABILITY -> consumeDurability(player, hand, item, amount);
+      default -> {
+      }
     }
   }
 
@@ -259,12 +500,6 @@ public final class EffectsBindings implements Listener {
 
   @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
   public void onInteract(PlayerInteractEvent event) {
-    if (engine.isDebugEnabled()) {
-      engine.debug("interact: action=" + event.getAction()
-          + " hand=" + (event.getHand() == null ? "null" : event.getHand().name())
-          + " player=" + event.getPlayer().getName());
-    }
-
     // Ignore off-hand duplicates (OFF_HAND often fires a second identical interact).
     if (event.getHand() == EquipmentSlot.OFF_HAND) {
       return;
@@ -295,6 +530,8 @@ public final class EffectsBindings implements Listener {
     boolean castAny = false;
     boolean shouldCancel = false;
     boolean boundRightClick = false;
+    boolean useDefaultConsume = false;
+    ArrayList<UpgradeSpellBindingSpec> customConsumes = new ArrayList<>();
 
     // Item-bound ability list (ability set) - pragmatic ExecutableItems-style binding.
     // This runs before explicit InteractBindings so items can be configured without registering Java bindings.
@@ -303,17 +540,60 @@ public final class EffectsBindings implements Listener {
         boolean sneaking = player.isSneaking();
         NamespacedKey key;
         List<String> ids;
+        List<UpgradeSpellBindingSpec> upgradeBindings;
         if (rightClick) {
           key = sneaking ? ItemMarkers.SHIFT_RIGHT_CLICK_ABILITIES : ItemMarkers.RIGHT_CLICK_ABILITIES;
           ids = ItemMarkers.getStringList(item, key);
+          upgradeBindings = upgradeBindingsFor(item, sneaking ? UpgradeActivator.SHIFT_RIGHT_CLICK : UpgradeActivator.RIGHT_CLICK);
           if (ids.isEmpty() && sneaking) {
             ids = ItemMarkers.getStringList(item, ItemMarkers.RIGHT_CLICK_ABILITIES);
+            if (upgradeBindings.isEmpty()) {
+              upgradeBindings = upgradeBindingsFor(item, UpgradeActivator.RIGHT_CLICK);
+            }
           }
         } else {
           key = sneaking ? ItemMarkers.SHIFT_LEFT_CLICK_ABILITIES : ItemMarkers.LEFT_CLICK_ABILITIES;
           ids = ItemMarkers.getStringList(item, key);
+          upgradeBindings = upgradeBindingsFor(item, sneaking ? UpgradeActivator.SHIFT_LEFT_CLICK : UpgradeActivator.LEFT_CLICK);
           if (ids.isEmpty() && sneaking) {
             ids = ItemMarkers.getStringList(item, ItemMarkers.LEFT_CLICK_ABILITIES);
+            if (upgradeBindings.isEmpty()) {
+              upgradeBindings = upgradeBindingsFor(item, UpgradeActivator.LEFT_CLICK);
+            }
+          }
+        }
+        HashSet<String> upgradeAbilityIds = collectUpgradeAbilityIds(upgradeBindings);
+        if (!upgradeAbilityIds.isEmpty() && !ids.isEmpty()) {
+          ArrayList<String> filtered = new ArrayList<>(ids);
+          filtered.removeIf(upgradeAbilityIds::contains);
+          ids = filtered;
+        }
+        if (!upgradeBindings.isEmpty()) {
+          if (rightClick) {
+            boundRightClick = true;
+          }
+          event.setCancelled(true);
+          for (UpgradeSpellBindingSpec binding : upgradeBindings) {
+            if (!matchesUpgradeConditions(player, binding)) {
+              continue;
+            }
+            if (!tryStartUpgradeCooldown(player, item, binding)) {
+              continue;
+            }
+            if (!engine.hasAbility(binding.abilityId())) {
+              continue;
+            }
+            try {
+              castWithItem(player, binding.abilityId(), item, true, binding);
+              castAny = true;
+              if ((binding.durabilityCost() != null && binding.durabilityCost() > 0)
+                  || (binding.consumeAmount() != null && binding.consumeAmount() > 0)) {
+                customConsumes.add(binding);
+              } else {
+                useDefaultConsume = true;
+              }
+            } catch (IllegalArgumentException ex) {
+            }
           }
         }
         if (!ids.isEmpty()) {
@@ -324,17 +604,12 @@ public final class EffectsBindings implements Listener {
           for (String abilityId : ids) {
             try {
               if (!engine.hasAbility(abilityId)) {
-                if (engine.isDebugEnabled()) {
-                  engine.debug("item ability not registered: " + abilityId);
-                }
                 continue;
               }
               castWithItem(player, abilityId, item, true);
               castAny = true;
+              useDefaultConsume = true;
             } catch (IllegalArgumentException ex) {
-              if (engine.isDebugEnabled()) {
-                engine.debug("item ability invalid: " + abilityId + " (" + ex.getMessage() + ")");
-              }
             }
           }
         }
@@ -363,6 +638,7 @@ public final class EffectsBindings implements Listener {
       }
       castWithItem(player, binding.abilityId(), item, true);
       castAny = true;
+      useDefaultConsume = true;
     }
     if (castAny && shouldCancel) {
       event.setCancelled(true);
@@ -373,7 +649,15 @@ public final class EffectsBindings implements Listener {
       event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
     }
     if (castAny && item != null) {
-      consumeItem(player, event.getHand(), item);
+      if (useDefaultConsume) {
+        consumeItem(player, event.getHand(), item);
+      }
+      if (!customConsumes.isEmpty()) {
+        EquipmentSlot slot = event.getHand();
+        for (UpgradeSpellBindingSpec binding : customConsumes) {
+          applyUpgradeConsume(player, slot, item, binding);
+        }
+      }
     }
   }
 

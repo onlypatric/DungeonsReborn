@@ -37,4 +37,5 @@
 #         count: 1
 #     cooldownSeconds: 0
 #     rotation: none | daily | weekly
+schemaVersion: 2
 quests: {}

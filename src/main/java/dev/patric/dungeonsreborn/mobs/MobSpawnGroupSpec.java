@@ -5,5 +5,6 @@ import java.util.List;
 public record MobSpawnGroupSpec(
     double chance,
     Integer count,
-    List<MobSpawnGroupEntry> mobs) {
+    List<MobSpawnGroupEntry> mobs,
+    MobSpawnRulesSpec rules) {
 }

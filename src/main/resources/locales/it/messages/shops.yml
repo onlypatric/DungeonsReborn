@@ -1,0 +1,29 @@
+messages.shops.open.denied: <red>Non puoi accedere a questo negozio.</red>
+messages.shops.open.disabled: Disabled
+messages.shops.open.missingId: Messages shops open missingId
+messages.shops.open.missingPermission: '<red>Permesso mancante: {perm}</red>'
+messages.shops.open.ok: <gray>Apertura negozio...</gray>
+messages.shops.open.unavailable: <red>Questo negozio non è disponibile ora.</red>
+messages.shops.open.unknown: Unknown
+messages.shops.open.worldDenied: <red>I negozi sono disabilitati in questo mondo.</red>
+messages.shops.reload.errors: <red>Ricarica negozi con {errors} errori. Controlla i log.</red>
+messages.shops.reload.ok: <green>Negozi caricati:</green> <white>{count}</white>
+messages.shops.token.give: <green>Gettoni dati:</green> <white>{amount}</white>
+messages.shops.trade.busy: <red>Scambio gia in corso.</red>
+messages.shops.trade.cooldown: Cooldown
+messages.shops.trade.disabled: Disabled
+messages.shops.trade.invalid: <red>Scambio non valido.</red>
+messages.shops.trade.missingItems: <red>Oggetti richiesti mancanti.</red>
+messages.shops.trade.missingPermission: '<red>Permesso mancante: {perm}</red>'
+messages.shops.trade.missingShop: Messages shops trade missingShop
+messages.shops.trade.noFunds: <red>Non hai abbastanza oggetti o gettoni.</red>
+messages.shops.trade.ok: <green>Scambio completato.</green>
+messages.shops.trade.outOfStock: <red>Esaurito.</red>
+messages.shops.trade.requiresClass: <red>Richiede classe {class}.</red>
+messages.shops.trade.requiresCustomXp: <red>Richiede XP personalizzati {required}.</red>
+messages.shops.trade.requiresFaction: <red>Richiede fazione {faction} (rango {rank}).</red>
+messages.shops.trade.requiresLevel: <red>Richiede livello {level}.</red>
+messages.shops.trade.requiresQuest: <red>Richiede quest {quest} ({status}).</red>
+messages.shops.trade.requiresRegion: <red>Richiede una regione specifica.</red>
+messages.shops.trade.unavailable: <red>Questo scambio non è disponibile ora.</red>
+messages.shops.trade.worldDenied: <red>I negozi sono disabilitati in questo mondo.</red>

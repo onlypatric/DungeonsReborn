@@ -11,7 +11,7 @@ import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.locale.Locales;
 
 public record SkillNodeSpec(String id, Component name, List<Component> description, ItemStack icon, SkillNodeType type,
-    int cost, List<String> requires, SkillStatSpec stat, SkillAttributeSpec attribute, SkillPotionSpec potion,
+    int cost, int maxRank, List<String> requires, SkillStatSpec stat, SkillAttributeSpec attribute, SkillPotionSpec potion,
     SkillAbilitySpec ability, String nameKey, String descriptionKey) {
   public Component displayName() {
     return name == null ? Component.text(id) : name;
@@ -49,5 +49,9 @@ public record SkillNodeSpec(String id, Component name, List<Component> descripti
 
   public SkillAbilitySpec abilityOrNull() {
     return ability;
+  }
+
+  public int maxRankOrDefault() {
+    return maxRank <= 0 ? 1 : maxRank;
   }
 }

@@ -1,0 +1,309 @@
+messages.command.adminGive.hint: <yellow>Use:</yellow> <white>{command}</white>
+messages.command.classes.missingSpec: <red>Class data is missing.</red>
+messages.command.classes.nodes.entry: <gray>-</gray> <white>{id}</white> <dark_gray>({count} nodes)</dark_gray>
+messages.command.classes.nodes.header: <gold>Nodes for</gold> <white>{id}</white> <dark_gray>({count})</dark_gray>
+messages.command.classes.nodes.headerAll: <gold>Class nodes</gold>
+messages.command.classes.nodes.nodeEntry: <gray>-</gray> <white>{id}</white>
+messages.command.classes.nodes.unknown: <red>Unknown class:</red> <white>{id}</white>
+messages.command.classes.selectFirst: <red>Select a class first.</red>
+messages.command.classes.state.header: <gold>Class state</gold> <dark_gray>-</dark_gray> <white>{player}</white> <gray>({id})</gray>
+messages.command.classes.state.noClass: <red>{player} has no class selected.</red>
+messages.command.classes.state.playerMissing: <red>Player not found:</red> <white>{player}</white>
+messages.command.classes.state.points: <gray>Points:</gray> <white>{unspent}</white> <dark_gray>unspent</dark_gray> <gray>/</gray>
+  <white>{spent}</white> <dark_gray>spent</dark_gray> <gray>(</gray><white>{total}</white><gray>)</gray>
+messages.command.classes.state.unknownClass: <red>Unknown class:</red> <white>{id}</white>
+messages.command.classes.state.unlocked: <gray>Unlocked nodes:</gray> <white>{count}</white><gray>/</gray><white>{total}</white>
+messages.command.closestMatch: <yellow>Did you mean:</yellow> <white>{suggestion}</white>
+messages.command.crafting.given: <green>Given recipe output</green> <white>{id}</white> <green>to</green> <white>{player}</white>
+messages.command.crafting.info.cooldown: <gray>Cooldown:</gray> <white>{seconds}</white><gray>s</gray>
+messages.command.crafting.info.description: <gray>Description:</gray> <white>{description}</white>
+messages.command.crafting.info.header: <gold><bold>Recipe</bold></gold> <white>{id}</white>
+messages.command.crafting.info.name: <gray>Name:</gray> <white>{name}</white>
+messages.command.crafting.info.outputs: <gray>Outputs:</gray> <white>{count}</white>
+messages.command.crafting.info.permissions: <gray>Permissions:</gray> <white>{count}</white>
+messages.command.crafting.info.variants: <gray>Variants:</gray> <white>{count}</white>
+messages.command.crafting.outputMissing: <red>Recipe has no output:</red> <white>{id}</white>
+messages.command.crafting.unknown: <red>Unknown recipe:</red> <white>{id}</white>
+messages.command.dungeons.abortedReload: Messages command dungeons abortedReload
+messages.command.dungeons.active: Active
+messages.command.dungeons.queued: Queued
+messages.command.dungeons.validate.entry: Entry
+messages.command.dungeons.validate.errors: Errors
+messages.command.dungeons.validate.ok: Ok
+messages.command.effects.abilityInvalid: <red>Invalid ability id:</red> <white>{message}</white>
+messages.command.effects.abilityNoSpec: <red>No spec found for:</red> <white>{id}</white>
+messages.command.effects.abilityUnknown: <red>Unknown ability:</red> <white>{id}</white>
+messages.command.effects.bind.add: <green>Bound</green> <white>{id}</white> <green>to held item</green> <gray>({key})</gray>
+messages.command.effects.bind.clear: <green>Cleared bindings</green> <gray>({key})</gray> <green>on held item</green>
+messages.command.effects.bind.clearAll: <green>Cleared all bindings on held item</green>
+messages.command.effects.bind.list.left: <gray>Left-click abilities:</gray> <white>{value}</white>
+messages.command.effects.bind.list.none: (none)
+messages.command.effects.bind.list.right: <gray>Right-click abilities:</gray> <white>{value}</white>
+messages.command.effects.bind.remove: <green>Unbound</green> <white>{id}</white> <green>from held item</green> <gray>({key})</gray>
+messages.command.effects.bindingsMissing: <red>Bindings integration not installed.</red>
+messages.command.effects.cast.error: <red>{message}</red>
+messages.command.effects.cast.failed: <red>Cast failed:</red> <white>{error}</white>
+messages.command.effects.cast.success: <green>Cast</green> <white>{ability}</white> <green>on</green> <white>{player}</white>
+  <gray>(castId={castId}, tick={tick})</gray>
+messages.command.effects.consoleNeedsPlayer: <red>Console must specify a player.</red>
+messages.command.effects.debug: <green>Effects debug</green> <white>{status}</white>
+messages.command.effects.debugScript: <green>Effects script debug</green> <white>{status}</white>
+messages.command.effects.debugScriptTrace: <green>Effects script trace</green> <white>{status}</white>
+messages.command.effects.explain.line: <gray>{line}</gray>
+messages.command.effects.explain.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>
+messages.command.effects.help.bindAdd: <gray>/dr effects bind add &lt;right|left&gt; &lt;ability&gt;</gray>
+messages.command.effects.help.bindClear: <gray>/dr effects bind clear &lt;right|left|all&gt;</gray>
+messages.command.effects.help.bindList: <gray>/dr effects bind list</gray>
+messages.command.effects.help.bindRemove: <gray>/dr effects bind remove &lt;right|left&gt; &lt;ability&gt;</gray>
+messages.command.effects.help.cast: <gray>/dr effects cast &lt;ability&gt; [player]</gray>
+messages.command.effects.help.debug: '<gray>/dr effects debug &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'
+messages.command.effects.help.debugScript: '<gray>/dr effects debug script &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'
+messages.command.effects.help.debugScriptTrace: '<gray>/dr effects debug script trace &lt;on|off&gt;</gray> <dark_gray>(current:
+  {status})</dark_gray>'
+messages.command.effects.help.explain: <gray>/dr effects explain &lt;right|left&gt;</gray>
+messages.command.effects.help.info: <gray>/dr effects info &lt;ability&gt;</gray>
+messages.command.effects.help.itemDiff: <gray>/dr effects item diff [itemId]</gray>
+messages.command.effects.help.itemInspect: <gray>/dr effects item inspect &lt;itemId&gt;</gray>
+messages.command.effects.help.itemReport: <gray>/dr effects item report</gray>
+messages.command.effects.help.lint: <gray>/dr effects lint [script]</gray>
+messages.command.effects.help.list: <gray>/dr effects list</gray>
+messages.command.effects.help.loggingReload: <gray>/dr effects logging reload</gray> <dark_gray>(reload logging levels)</dark_gray>
+messages.command.effects.help.mana: <gray>/dr effects mana &lt;show|set|add|max&gt;</gray>
+messages.command.effects.help.minions: <gray>/dr effects minions &lt;recall|dismiss|mode|list|stats|test&gt;</gray>
+messages.command.effects.help.particlesBudget: '<gray>/dr effects particles budget &lt;maxPerPlayerTick&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'
+messages.command.effects.help.particlesQuality: '<gray>/dr effects particles quality &lt;multiplier&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'
+messages.command.effects.help.particlesQueue: '<gray>/dr effects particles queue &lt;maxRequestsPerTick&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'
+messages.command.effects.help.particlesRange: '<gray>/dr effects particles range &lt;blocks&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'
+messages.command.effects.help.particlesStats: <gray>/dr effects particles stats</gray>
+messages.command.effects.help.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>
+messages.command.effects.help.reload: <gray>/dr effects reload</gray> <dark_gray>(reload YAML abilities)</dark_gray>
+messages.command.effects.help.scriptRun: <gray>/dr effects script run &lt;file&gt;</gray>
+messages.command.effects.help.scriptStats: <gray>/dr effects script stats</gray>
+messages.command.effects.help.stats: <gray>/dr effects stats</gray>
+messages.command.effects.help.tag: <gray>/dr effects tag &lt;on|off&gt;</gray> <dark_gray>(tags held item with {marker})</dark_gray>
+messages.command.effects.help.timings: <gray>/dr effects timings &lt;last [player]|cast &lt;uuid&gt;&gt;</gray>
+messages.command.effects.help.types: <gray>/dr effects types &lt;actions|targeters|conditions&gt;</gray>
+messages.command.effects.info.ability: <green>Ability</green> <white>{id}</white>
+messages.command.effects.info.cooldown: <gray>Cooldown:</gray> <white>{ticks}t</white> <dark_gray>(key={key})</dark_gray>
+messages.command.effects.info.costs: <gray>Costs:</gray> <white>{count}</white>
+messages.command.effects.info.interacts: <gray>Interact triggers:</gray> <white>{count}</white>
+messages.command.effects.info.label.description: 'Description: '
+messages.command.effects.info.label.name: 'Name: '
+messages.command.effects.info.requirements: <gray>Requirements:</gray> <white>{count}</white>
+messages.command.effects.invalidUuid: <red>Invalid UUID.</red>
+messages.command.effects.items.diff.entry: <gray>-</gray> <white>{diff}</white>
+messages.command.effects.items.diff.header: <gold>[Items]</gold> <white>Diff for</white> <yellow>{id}</yellow>
+messages.command.effects.items.diff.none: <green>No differences detected.</green>
+messages.command.effects.items.heldMissingId: <red>Held item has no item_id; provide an itemId argument.</red>
+messages.command.effects.items.inspect.affixPool: <gray>affix pool:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.baseStats: <gray>base stats:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.durability: <gray>durability:</gray> <white>{min}-{max}</white>
+messages.command.effects.items.inspect.header: <gold>[Items]</gold> <white>{id}</white> <gray>(v{version})</gray>
+messages.command.effects.items.inspect.hooks: <gray>hooks:</gray> <white>{count}</white>
+messages.command.effects.items.inspect.loreLines: <gray>lore lines:</gray> <white>{count}</white>
+messages.command.effects.items.inspect.material: <gray>material:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.name: <gray>name:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.rarity: <gray>rarity:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.rolledAffixes: <gray>rolled affixes:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.rolledStats: <gray>rolled stats:</gray> <white>{value}</white>
+messages.command.effects.items.inspect.tier: <gray>tier:</gray> <white>{id}</white> <gray>scale=</gray><white>{scale}</white>
+messages.command.effects.items.report.entry: <gray>-</gray> <white>{error}</white>
+messages.command.effects.items.report.header: <gold>[Items]</gold> <white>Validation report</white>
+messages.command.effects.items.report.more: <gray>... +{count} more</gray>
+messages.command.effects.items.report.none: <green>No item template errors recorded in last reload.</green>
+messages.command.effects.items.unknown: <red>Unknown item template:</red> <white>{id}</white>
+messages.command.effects.lint.errorEntry: <red>-</red> <white>{error}</white>
+messages.command.effects.lint.header: <gold>[Effects]</gold> <white>DSL lint</white>
+messages.command.effects.lint.more: <gray>... +{count} more</gray>
+messages.command.effects.lint.summary: <gray>Scripts:</gray> <white>{scripts}</white> <gray>Errors:</gray> <white>{errors}</white>
+messages.command.effects.list.header: <green>Abilities</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+messages.command.effects.list.none: <gray>No abilities registered.</gray>
+messages.command.effects.loggingReload.ok: <green>Reloaded logging levels from config.yml</green>
+messages.command.effects.loggingReload.unavailable: <red>Logging configuration not available.</red>
+messages.command.effects.mana.add: <green>Mana:</green> <white>{current}</white><gray>/</gray><white>{max}</white>
+messages.command.effects.mana.max: <green>Mana max set to</green> <white>{max}</white>
+messages.command.effects.mana.missingProvider: <red>No mana provider installed.</red>
+messages.command.effects.mana.pulse: <green>Pulse scheduled:</green> <white>resource={resource}</white> <gray>amount=</gray><white>{amount}</white>
+  <gray>times=</gray><white>{times}</white> <gray>period=</gray><white>{period}t</white>
+messages.command.effects.mana.set: <green>Mana set to</green> <white>{current}</white><gray>/</gray><white>{max}</white>
+messages.command.effects.mana.show: <aqua>Mana:</aqua> <white>{current}</white><gray>/</gray><white>{max}</white>
+messages.command.effects.mana.state.details: ' base={base} bonus={bonus} classBonus={classBonus} regen={regen} classRegen={classRegen}'
+messages.command.effects.mana.state.entry: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green>
+messages.command.effects.mana.state.entryDetailed: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green><dark_gray>{details}</dark_gray>
+messages.command.effects.mana.state.header: <aqua>Resources for {player}:</aqua>
+messages.command.effects.mana.stats.antiExploit: <gray>- antiExploit:</gray> <white>gainCapPerTick={capPerTick}</white>
+messages.command.effects.mana.stats.header: <aqua>Mana stats:</aqua>
+messages.command.effects.mana.stats.regen: <gray>- regen:</gray> <white>period={period}</white> <gray>amount=</gray><white>{amount}</white>
+  <gray>delayCast=</gray><white>{delayCast}</white> <gray>delayCombat=</gray><white>{delayCombat}</white> <gray>capPerTick=</gray><white>{capPerTick}</white>
+messages.command.effects.mana.stats.timed: <gray>- timed:</gray> <white>enabled={enabled}</white> <gray>period=</gray><white>{period}</white>
+  <gray>amount=</gray><white>{amount}</white> <gray>resource=</gray><white>{resource}</white>
+messages.command.effects.minions.dismissed: <gray>Dismissed minions:</gray> <white>{count}</white>
+messages.command.effects.minions.listEntry: <white>-</white> <white>{owner}</white> <gray>x</gray><white>{count}</white>
+messages.command.effects.minions.listHeader: <gray>Active minions by owner:</gray>
+messages.command.effects.minions.mode: <gray>Minion mode set to</gray> <white>{mode}</white>
+messages.command.effects.minions.none: <gray>No active minions.</gray>
+messages.command.effects.minions.recalled: <gray>Recalled minions:</gray> <white>{count}</white>
+messages.command.effects.minions.statsActive: <gray>- active:</gray> <green>{count}</green>
+messages.command.effects.minions.statsDespawned: <gray>- despawned:</gray> <green>{count}</green>
+messages.command.effects.minions.statsHeader: <gray>Minion stats</gray>
+messages.command.effects.minions.statsSpawned: <gray>- spawned:</gray> <green>{count}</green>
+messages.command.effects.minions.test: <gray>Summoned test minions:</gray> <white>{mob}</white>
+messages.command.effects.particles.budget: <green>Particles budget set to</green> <white>{value}</white> <gray>per player
+  per tick</gray>
+messages.command.effects.particles.quality: <green>Particles quality set to</green> <white>{value}</white>
+messages.command.effects.particles.queue: <green>Particles queue cap set to</green> <white>{value}</white> <gray>requests
+  per tick</gray>
+messages.command.effects.particles.range: <green>Particles default range set to</green> <white>{value}</white>
+messages.command.effects.particles.stats.flush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>
+  <gray>sent=</gray><white>{sent}</white> <gray>dropped(budget)=</gray><white>{droppedBudget}</white> <gray>dropped(queue)=</gray><white>{droppedQueue}</white>
+messages.command.effects.particles.stats.header: <gold>[Effects]</gold> <white>Particles stats</white>
+messages.command.effects.particles.stats.queue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{maxQueued}</white>
+  <gray>budget=</gray><white>{budget}</white> <gray>quality=</gray><white>{quality}</white> <gray>range=</gray><white>{range}</white>
+messages.command.effects.playerNotFound: <red>Player not found.</red>
+messages.command.effects.playerNotOnline: <red>Player not online.</red>
+messages.command.effects.reload.errorEntry: <red>-</red> <white>{error}</white>
+messages.command.effects.reload.file: <gray>File:</gray> <white>{path}</white>
+messages.command.effects.reload.more: <gray>... +{count} more</gray>
+messages.command.effects.reload.summary: <green>Reloaded YAML abilities:</green> <white>{abilities}</white> <green>loaded,
+  item bindings:</green> <white>{bindings}</white> <green>, errors:</green> <white>{errors}</white>
+messages.command.effects.reload.updated: <green>Updated</green> <white>{count}</white> <green>items for online players.</green>
+messages.command.effects.script.error: <red>Script error:</red> <white>{message}</white>
+messages.command.effects.script.playersOnly: <red>Only players can run scripts.</red>
+messages.command.effects.script.run: <green>Ran script:</green> <white>{path}</white>
+messages.command.effects.script.stats.entry: <gray>-</gray> <white>{id}</white> <gray>exec=</gray><white>{execs}</white> <gray>avg=</gray><white>{avgMs}</white>
+  <gray>errors=</gray><white>{errors}</white>
+messages.command.effects.script.stats.header: <gold>[Effects]</gold> <white>Script metrics (top {count})</white>
+messages.command.effects.script.stats.none: <gray>No script metrics recorded.</gray>
+messages.command.effects.stats.header: <gold>[Effects]</gold> <white>Engine stats</white>
+messages.command.effects.stats.particlesFlush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>
+  <gray>sent=</gray><white>{sent}</white> <gray>dropped(budget)=</gray><white>{droppedBudget}</white> <gray>dropped(queue)=</gray><white>{droppedQueue}</white>
+messages.command.effects.stats.particlesHeader: <gold>[Effects]</gold> <white>Particles</white>
+messages.command.effects.stats.particlesQueue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{max}</white>
+  <gray>quality=</gray><white>{quality}</white> <gray>range=</gray><white>{range}</white>
+messages.command.effects.stats.scheduled: <gray>scheduled:</gray> <white>tick={tick}</white> <gray>rt=</gray><white>{rt}</white>
+messages.command.effects.stats.tick: <gray>tick=</gray><white>{tick}</white> <gray>lastTick=</gray><white>{lastTickMs}ms</white>
+messages.command.effects.stats.tracked: <gray>tracked:</gray> <white>casts={casts}</white> <gray>cooldowns=</gray><white>{cooldowns}</white>
+  <gray>immunities=</gray><white>{immunities}</white>
+messages.command.effects.status.False: false
+messages.command.effects.status.True: true
+messages.command.effects.status.disabled: disabled
+messages.command.effects.status.enabled: enabled
+messages.command.effects.status.unavailable: unavailable
+messages.command.effects.tag: <green>Tag</green> <white>{status}</white> <green>on held item</green>
+messages.command.effects.timings.entry: <white>{key}</white><gray>:</gray> <white>{ms}ms</white> <dark_gray>({count}x, avg
+  {avg}ms)</dark_gray>
+messages.command.effects.timings.header: <green>Timings for</green> <white>{ability}</white> <gray>(castId={castId})</gray>
+messages.command.effects.timings.noCastRecord: <gray>No cast record found.</gray>
+messages.command.effects.timings.none: <gray>No timings recorded for castId={castId} (wrap actions with Actions.timed(...)).</gray>
+messages.command.effects.timings.total: <gray>Total recorded:</gray> <white>{ms}ms</white> <dark_gray>({keys} keys)</dark_gray>
+messages.command.effects.types.actions: <green>Action types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+messages.command.effects.types.conditions: <green>Condition types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+messages.command.effects.types.targeters: <green>Targeter types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+messages.command.effects.types.unknown: <red>Unknown kind.</red>
+messages.command.effects.yamlMissing: <red>YAML loader not installed.</red>
+messages.command.help.adminAdvancementsReload: <gray>/{root} admin advancements reload</gray> <dark_gray>- reload advancements</dark_gray>
+messages.command.help.adminClassesExport: <gray>/{root} admin classes export [name]</gray> <dark_gray>- export classes.yml</dark_gray>
+messages.command.help.adminClassesImport: <gray>/{root} admin classes import &lt;name&gt; [replace]</gray> <dark_gray>- import
+  classes.yml</dark_gray>
+messages.command.help.adminClassesReload: <gray>/{root} admin classes reload</gray> <dark_gray>- reload classes</dark_gray>
+messages.command.help.adminClassesValidate: <gray>/{root} admin classes validate</gray> <dark_gray>- validate classes.yml</dark_gray>
+messages.command.help.adminCraftingReload: <gray>/{root} admin crafting reload</gray> <dark_gray>- reload recipes</dark_gray>
+messages.command.help.adminCraftingValidate: <gray>/{root} admin crafting validate</gray> <dark_gray>- validate recipes</dark_gray>
+messages.command.help.adminDungeonDebug: <gray>/{root} admin dungeon debug ...</gray> <dark_gray>- debug dungeons</dark_gray>
+messages.command.help.adminDungeonReload: <gray>/{root} admin dungeon reload</gray> <dark_gray>- reload dungeons</dark_gray>
+messages.command.help.adminDungeonValidate: <gray>/{root} admin dungeon validate</gray> <dark_gray>- validate dungeons</dark_gray>
+messages.command.help.adminEffects: <gray>/{root} admin effects ...</gray> <dark_gray>- effects commands</dark_gray>
+messages.command.help.adminGive: <gray>/{root} admin give ...</gray> <dark_gray>- admin give utilities</dark_gray>
+messages.command.help.adminHeader: <gold><bold>DungeonsReborn</bold></gold> <gray>Admin Commands</gray>
+messages.command.help.adminItemsGive: <gray>/{root} admin items give &lt;id&gt; [player] [amount]</gray> <dark_gray>- give
+  item</dark_gray>
+messages.command.help.adminKitsReload: <gray>/{root} admin kits reload</gray> <dark_gray>- reload kits</dark_gray>
+messages.command.help.adminLocaleReload: <gray>/{root} admin locale reload</gray> <dark_gray>- reload locales</dark_gray>
+messages.command.help.adminLocaleValidate: <gray>/{root} admin locale validate</gray> <dark_gray>- validate locale coverage</dark_gray>
+messages.command.help.adminMobs: <gray>/{root} admin mobs ...</gray> <dark_gray>- mobs commands</dark_gray>
+messages.command.help.adminQuestsReload: <gray>/{root} admin quests reload</gray> <dark_gray>- reload quests</dark_gray>
+messages.command.help.adminReload: <gray>/{root} admin reload</gray> <dark_gray>- reload all plugin data</dark_gray>
+messages.command.help.adminRoot: <gray>/{root} admin</gray> <dark_gray>- open admin hub</dark_gray>
+messages.command.help.adminShops: <gray>/{root} admin shops ...</gray> <dark_gray>- shops commands</dark_gray>
+messages.command.help.adminUpgradesGive: <gray>/{root} admin upgrades give &lt;id&gt; [player]</gray> <dark_gray>- give upgrade</dark_gray>
+messages.command.help.adminUpgradesReload: <gray>/{root} admin upgrades reload</gray> <dark_gray>- reload upgrades</dark_gray>
+messages.command.help.classes: <gray>/{root} classes</gray> <dark_gray>- open class menu</dark_gray>
+messages.command.help.dungeon: <gray>/{root} dungeon</gray> <dark_gray>- open dungeon queue</dark_gray>
+messages.command.help.dungeonJoin: <gray>/{root} dungeon queue join &lt;level&gt;</gray> <dark_gray>- queue level</dark_gray>
+messages.command.help.dungeonLeave: <gray>/{root} dungeon queue leave</gray> <dark_gray>- leave queue</dark_gray>
+messages.command.help.header: <gold><bold>DungeonsReborn</bold></gold> <gray>Commands</gray>
+messages.command.help.kits: <gray>/{root} kits ...</gray> <dark_gray>- kits commands</dark_gray>
+messages.command.help.party: <gray>/{root} party</gray> <dark_gray>- party menu</dark_gray>
+messages.command.help.partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- toggle party chat</dark_gray>
+messages.command.help.partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- party chat message</dark_gray>
+messages.command.help.root: <gray>/{root}</gray> <dark_gray>- open user hub</dark_gray>
+messages.command.items.holdMainHand: <red>Hold an item in your main hand.</red>
+messages.command.kits.list.entry: Entry
+messages.command.kits.list.header: Header
+messages.command.missingPermission: <red>Missing permission:</red> <white>{permission}</white>
+messages.command.mobs.help.dump: Dump
+messages.command.mobs.help.editor: Editor
+messages.command.mobs.help.egg: Egg
+messages.command.mobs.help.header: Header
+messages.command.mobs.help.list: List
+messages.command.mobs.help.lootInfo: Loot info
+messages.command.mobs.help.lootList: Loot pools
+messages.command.mobs.help.reload: Reload
+messages.command.mobs.help.spawn: Spawn
+messages.command.mobs.help.spawners: Spawners
+messages.command.mobs.loot.entry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.loot.header: <gold><bold>Loot Pools</bold></gold> <gray>({count})</gray>
+messages.command.mobs.loot.info.clearVanilla: <gray>Clear vanilla drops:</gray> <white>{value}</white>
+messages.command.mobs.loot.info.drops: <gray>Drop entries:</gray> <white>{count}</white>
+messages.command.mobs.loot.info.guaranteed: <gray>Guaranteed items:</gray> <white>{count}</white>
+messages.command.mobs.loot.info.header: <gold><bold>Loot Pool</bold></gold> <white>{id}</white>
+messages.command.mobs.loot.info.rolls: <gray>Rolls:</gray> <white>{rolls}</white> <gray>Bonus:</gray> <white>{bonus}</white>
+messages.command.mobs.loot.none: <gray>No loot pools configured.</gray>
+messages.command.mobs.loot.unknown: <red>Unknown loot pool:</red> <white>{id}</white>
+messages.command.mobs.snapshot.header: Header
+messages.command.mobs.snapshot.hp: Hp
+messages.command.mobs.snapshot.owner: Owner
+messages.command.mobs.snapshot.pos: Pos
+messages.command.mobs.snapshot.variant: Variant
+messages.command.mobs.snapshot.world: World
+messages.command.mobs.spawned: Spawned
+messages.command.party.inviteHint: Messages command party inviteHint
+messages.command.party.inviteReceived: Messages command party inviteReceived
+messages.command.reload.allErrors: <red>Reload completed with {errors} errors. Check logs.</red>
+messages.command.reload.allOk: <green>Reloaded all systems.</green>
+messages.command.reload.dir: Dir
+messages.command.reload.file: File
+messages.command.result.error: Error
+messages.command.shops.give: Give
+messages.command.shops.help.give: Give
+messages.command.shops.help.info: Info
+messages.command.shops.help.list: List
+messages.command.shops.help.reload: Reload
+messages.command.shops.help.token: Token
+messages.command.shops.info.header: Header
+messages.command.shops.info.permission: Permission
+messages.command.shops.info.stock: Stock
+messages.command.shops.info.title: Title
+messages.command.shops.info.trades: Trades
+messages.command.shops.list.entry: Entry
+messages.command.shops.list.header: Header
+messages.command.shops.tokenGive: <green>Given tokens</green> <white>x{amount}</white> <green>to</green> <white>{player}</white>
+messages.command.shops.tokenUnknown: <red>Unknown token tier:</red> <white>{id}</white>
+messages.command.shops.unknown: Unknown
+messages.command.systemUnavailable: Messages command systemUnavailable
+messages.command.unknownUpgrade: Messages command unknownUpgrade
+messages.command.upgradeGiven: Messages command upgradeGiven
+messages.command.upgrades.debug.entry: <gray>-</gray> <white>{record}</white> <dark_gray>({status})</dark_gray>
+messages.command.upgrades.debug.none: <gray>No upgrade records found.</gray>
+messages.command.upgrades.debug.recordsHeader: <gold>[Upgrades]</gold> <white>Records:</white> <white>{count}</white>
+messages.command.upgrades.debug.status.empty: empty
+messages.command.upgrades.debug.status.missing: missing
+messages.command.upgrades.debug.status.ok: ok
+messages.command.upgrades.debug.status.vanilla: vanilla
+messages.command.upgrades.debug.validationEntry: <gray>-</gray> <white>{issue}</white>
+messages.command.upgrades.debug.validationHeader: <gold>[Upgrades]</gold> <white>Validation report</white>
+messages.command.upgrades.debug.validationNone: <green>No upgrade issues detected.</green>

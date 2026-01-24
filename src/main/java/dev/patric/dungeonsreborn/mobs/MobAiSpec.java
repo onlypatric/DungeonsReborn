@@ -15,10 +15,20 @@ public final class MobAiSpec {
   private final double fleeSpeed;
   private final double idleWanderRadius;
   private final long idleWanderIntervalTicks;
+  private final double roamRadius;
   private final double kiteMinRange;
   private final double kiteSpeed;
   private final double chaseSpeed;
+  private final MobLocomotionMode locomotionMode;
+  private final boolean avoidWater;
+  private final boolean avoidLava;
+  private final boolean preferGround;
+  private final java.util.List<org.bukkit.util.Vector> guardPoints;
+  private final double rageHealthRatio;
+  private final double rageSpeed;
   private final MobAiController controller;
+  private final MobPartyRule partyRule;
+  private final java.util.List<MobAiGoalSpec> goals;
 
   private MobAiSpec(Builder builder) {
     this.enabled = builder.enabled;
@@ -33,10 +43,20 @@ public final class MobAiSpec {
     this.fleeSpeed = builder.fleeSpeed;
     this.idleWanderRadius = builder.idleWanderRadius;
     this.idleWanderIntervalTicks = builder.idleWanderIntervalTicks;
+    this.roamRadius = builder.roamRadius;
     this.kiteMinRange = builder.kiteMinRange;
     this.kiteSpeed = builder.kiteSpeed;
     this.chaseSpeed = builder.chaseSpeed;
+    this.locomotionMode = builder.locomotionMode;
+    this.avoidWater = builder.avoidWater;
+    this.avoidLava = builder.avoidLava;
+    this.preferGround = builder.preferGround;
+    this.guardPoints = java.util.List.copyOf(builder.guardPoints);
+    this.rageHealthRatio = builder.rageHealthRatio;
+    this.rageSpeed = builder.rageSpeed;
     this.controller = builder.controller;
+    this.partyRule = builder.partyRule;
+    this.goals = java.util.List.copyOf(builder.goals);
   }
 
   public boolean enabled() {
@@ -87,6 +107,10 @@ public final class MobAiSpec {
     return idleWanderIntervalTicks;
   }
 
+  public double roamRadius() {
+    return roamRadius;
+  }
+
   public double kiteMinRange() {
     return kiteMinRange;
   }
@@ -99,8 +123,44 @@ public final class MobAiSpec {
     return chaseSpeed;
   }
 
+  public MobLocomotionMode locomotionMode() {
+    return locomotionMode;
+  }
+
+  public boolean avoidWater() {
+    return avoidWater;
+  }
+
+  public boolean avoidLava() {
+    return avoidLava;
+  }
+
+  public boolean preferGround() {
+    return preferGround;
+  }
+
+  public java.util.List<org.bukkit.util.Vector> guardPoints() {
+    return guardPoints;
+  }
+
+  public double rageHealthRatio() {
+    return rageHealthRatio;
+  }
+
+  public double rageSpeed() {
+    return rageSpeed;
+  }
+
   public MobAiController controller() {
     return controller;
+  }
+
+  public MobPartyRule partyRule() {
+    return partyRule;
+  }
+
+  public java.util.List<MobAiGoalSpec> goals() {
+    return goals;
   }
 
   public static Builder builder() {
@@ -120,10 +180,20 @@ public final class MobAiSpec {
     private double fleeSpeed = 0.35;
     private double idleWanderRadius = 6.0;
     private long idleWanderIntervalTicks = 80L;
+    private double roamRadius;
     private double kiteMinRange;
     private double kiteSpeed;
     private double chaseSpeed = 0.25;
+    private MobLocomotionMode locomotionMode = MobLocomotionMode.GROUND;
+    private boolean avoidWater;
+    private boolean avoidLava;
+    private boolean preferGround = true;
+    private final java.util.List<org.bukkit.util.Vector> guardPoints = new java.util.ArrayList<>();
+    private double rageHealthRatio;
+    private double rageSpeed = 0.35;
     private MobAiController controller;
+    private MobPartyRule partyRule = MobPartyRule.NONE;
+    private final java.util.List<MobAiGoalSpec> goals = new java.util.ArrayList<>();
 
     private Builder() {
     }
@@ -212,6 +282,14 @@ public final class MobAiSpec {
       return this;
     }
 
+    public Builder roamRadius(double roamRadius) {
+      if (roamRadius < 0.0) {
+        throw new IllegalArgumentException("roamRadius must be >= 0");
+      }
+      this.roamRadius = roamRadius;
+      return this;
+    }
+
     public Builder kiteMinRange(double kiteMinRange) {
       if (kiteMinRange < 0.0) {
         throw new IllegalArgumentException("kiteMinRange must be >= 0");
@@ -236,8 +314,63 @@ public final class MobAiSpec {
       return this;
     }
 
+    public Builder locomotionMode(MobLocomotionMode locomotionMode) {
+      this.locomotionMode = Objects.requireNonNull(locomotionMode, "locomotionMode");
+      return this;
+    }
+
+    public Builder avoidWater(boolean avoidWater) {
+      this.avoidWater = avoidWater;
+      return this;
+    }
+
+    public Builder avoidLava(boolean avoidLava) {
+      this.avoidLava = avoidLava;
+      return this;
+    }
+
+    public Builder preferGround(boolean preferGround) {
+      this.preferGround = preferGround;
+      return this;
+    }
+
+    public Builder addGuardPoint(org.bukkit.util.Vector point) {
+      if (point != null) {
+        this.guardPoints.add(point);
+      }
+      return this;
+    }
+
+    public Builder rageHealthRatio(double rageHealthRatio) {
+      if (rageHealthRatio < 0.0 || rageHealthRatio > 1.0) {
+        throw new IllegalArgumentException("rageHealthRatio must be in [0,1]");
+      }
+      this.rageHealthRatio = rageHealthRatio;
+      return this;
+    }
+
+    public Builder rageSpeed(double rageSpeed) {
+      if (rageSpeed < 0.0) {
+        throw new IllegalArgumentException("rageSpeed must be >= 0");
+      }
+      this.rageSpeed = rageSpeed;
+      return this;
+    }
+
     public Builder controller(MobAiController controller) {
       this.controller = controller;
+      return this;
+    }
+
+    public Builder partyRule(MobPartyRule partyRule) {
+      this.partyRule = Objects.requireNonNull(partyRule, "partyRule");
+      return this;
+    }
+
+    public Builder addGoal(MobAiGoalSpec goal) {
+      if (goal != null) {
+        this.goals.add(goal);
+      }
       return this;
     }
 

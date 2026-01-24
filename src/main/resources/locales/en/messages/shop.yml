@@ -1,0 +1,58 @@
+messages.shop.classes.export.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.export.errors: <red>Classes export failed ({count} errors):</red> <white>{path}</white>
+messages.shop.classes.export.ok: <green>Exported classes:</green> <white>{count}</white> <gray>to</gray> <white>{path}</white>
+messages.shop.classes.import.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.import.errors: <red>Classes import failed ({count} errors):</red> <white>{path}</white>
+messages.shop.classes.import.missing: <red>Missing import file name.</red>
+messages.shop.classes.import.ok: <green>Imported classes:</green> <white>{count}</white> <gray>from</gray> <white>{path}</white>
+  <gray>(loaded {loaded}, errors {errors})</gray>
+messages.shop.classes.missingSpec: <red>Selected class is missing from YAML.</red>
+messages.shop.classes.selectFirst: <red>Select a class first.</red>
+messages.shop.classes.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.validate.errors: <yellow>Classes validation found {count} issues:</yellow>
+messages.shop.classes.validate.ok: <green>Classes:</green> <white>no validation errors.</white>
+messages.shop.editor.exists: Messages shop editor exists
+messages.shop.editor.missingId: Messages shop editor missingId
+messages.shop.editor.saveFailed: Messages shop editor saveFailed
+messages.shop.editor.saved: Messages shop editor saved
+messages.shop.itemGiven: <green>Gave item</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>to</green>
+  <white>{player}</white>
+messages.shop.kits.list.entry: <gray>-</gray> <white>{id}</white> <dark_gray>({title})</dark_gray>
+messages.shop.kits.list.header: <gold><bold>DungeonsReborn</bold></gold> <gray>Kits</gray>
+messages.shop.party.admin.cleanup: <green>Cleanup complete.</green> <gray>Invites</gray> <white>{invites}</white> <gray>Requests</gray>
+  <white>{requests}</white> <gray>Parties</gray> <white>{parties}</white>
+messages.shop.party.admin.disbanded: <green>Party disbanded.</green>
+messages.shop.party.admin.info.header: <gold>Party</gold> <white>{id}</white>
+messages.shop.party.admin.info.invites: <gray>Invites:</gray> <white>{count}</white>
+messages.shop.party.admin.info.leader: <gray>Leader:</gray> <white>{leader}</white>
+messages.shop.party.admin.info.member: <gray>-</gray> <white>{player}</white> <dark_gray>({role})</dark_gray> <gray>online:</gray>
+  <white>{online}</white>
+messages.shop.party.admin.info.members: <gray>Members</gray> <dark_gray>({count})</dark_gray>
+messages.shop.party.admin.info.public: <gray>Public:</gray> <white>{public}</white>
+messages.shop.party.admin.info.requests: <gray>Join requests:</gray> <white>{count}</white>
+messages.shop.party.admin.info.world: <gray>World:</gray> <white>{world}</white>
+messages.shop.party.admin.list.entry: <gray>-</gray> <white>{id}</white> <gray>leader</gray> <white>{leader}</white> <gray>size</gray>
+  <white>{size}</white> <gray>public</gray> <white>{public}</white> <gray>world</gray> <white>{world}</white>
+messages.shop.party.admin.list.header: <gold>Parties</gold> <gray>({count})</gray>
+messages.shop.reload.classesSummary: <green>Reloaded classes:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
+messages.shop.reload.craftingSummary: <green>Reloaded crafting recipes:</green> <white>{loaded}</white><gray>, errors:</gray>
+  <white>{errors}</white>
+messages.shop.reload.dir: <gray>Dir:</gray> <white>{path}</white>
+messages.shop.reload.dungeonsSummary: <green>Dungeon config reloaded:</green> <white>{loaded}</white><gray>, errors:</gray>
+  <white>{errors}</white>
+messages.shop.reload.file: <gray>File:</gray> <white>{path}</white>
+messages.shop.reload.kitsSummary: <green>Reloaded kits:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white>
+messages.shop.reload.questsGiversFile: <gray>Givers file:</gray> <white>{path}</white>
+messages.shop.reload.questsSummary: <green>Reloaded quests:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white><gray>,
+  givers:</gray> <white>{givers}</white><gray>, giver errors:</gray> <white>{giverErrors}</white>
+messages.shop.reload.upgradesSummary: <green>Reloaded upgrades:</green> <white>{loaded}</white><gray>, errors:</gray> <white>{errors}</white><gray>,
+  migrated items:</gray> <white>{migrated}</white>
+messages.shop.result.error: <red>{message}</red>
+messages.shop.result.success: <green>{message}</green>
+messages.shop.systemUnavailable: <red>{system} is not available.</red>
+messages.shop.targetNotFound: <red>Target player not found.</red>
+messages.shop.tokens.added: <green>Token stack added.</green>
+messages.shop.tokens.missing: <red>Token item not configured.</red>
+messages.shop.unknownItem: <red>Unknown item id:</red> <white>{id}</white>
+messages.shop.unknownUpgrade: <red>Unknown upgrade id:</red> <white>{id}</white>
+messages.shop.upgradeGiven: <green>Gave upgrade to</green> <white>{player}</white>

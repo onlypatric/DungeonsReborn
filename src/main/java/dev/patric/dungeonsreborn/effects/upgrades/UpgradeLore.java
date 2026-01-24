@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,25 +30,52 @@ public final class UpgradeLore {
   private static final String MARKER_END = "[/dr:upgrade]";
   private static final String APPLIED_START = "[dr:upgrades]";
   private static final String APPLIED_END = "[/dr:upgrades]";
-  private static final String DEFAULT_BOOK_NAME =
-      "<gradient:#ff9f1a:#ffd166><bold>Upgrade Tome</bold></gradient>";
   private static final Map<String, String> ABILITY_NAMES = new HashMap<>();
   private static int targetLineLimit = 10;
-  private static String targetMoreFormat = "... {remaining} more";
+  private static final List<String> DEFAULT_BOOK_ORDER = List.of(
+      "name",
+      "activation",
+      "category",
+      "limits",
+      "requirements",
+      "price",
+      "modifiers",
+      "behaviors",
+      "compatibility",
+      "conflicts",
+      "attributes",
+      "enchants",
+      "description",
+      "hint");
+  private static final List<String> DEFAULT_APPLIED_ORDER = List.of(
+      "header",
+      "details",
+      "totals");
+  private static final Map<String, Boolean> BOOK_SECTION_ENABLED = new HashMap<>();
+  private static final Map<String, Boolean> APPLIED_SECTION_ENABLED = new HashMap<>();
+  private static List<String> bookOrder = new ArrayList<>(DEFAULT_BOOK_ORDER);
+  private static List<String> appliedOrder = new ArrayList<>(DEFAULT_APPLIED_ORDER);
 
   private UpgradeLore() {
   }
 
-  public static void configure(org.bukkit.configuration.ConfigurationSection section, EffectsEngine engine) {
+  public static void configure(ConfigurationSection section, EffectsEngine engine) {
     if (section == null) {
       ABILITY_NAMES.clear();
     } else {
       targetLineLimit = Math.max(0, section.getInt("maxTargetLines", targetLineLimit));
-      String format = section.getString("moreFormat", targetMoreFormat);
-      if (format != null && !format.isBlank()) {
-        targetMoreFormat = format;
-      }
     }
+    ConfigurationSection composition = section == null ? null : section.getConfigurationSection("composition");
+    ConfigurationSection bookConfig = composition == null ? null : composition.getConfigurationSection("book");
+    ConfigurationSection appliedConfig = composition == null ? null : composition.getConfigurationSection("applied");
+    bookOrder = resolveOrder(bookConfig == null ? null : bookConfig.getStringList("order"), DEFAULT_BOOK_ORDER);
+    appliedOrder = resolveOrder(appliedConfig == null ? null : appliedConfig.getStringList("order"), DEFAULT_APPLIED_ORDER);
+    BOOK_SECTION_ENABLED.clear();
+    BOOK_SECTION_ENABLED.putAll(resolveSections(bookConfig == null ? null : bookConfig.getConfigurationSection("sections"),
+        DEFAULT_BOOK_ORDER));
+    APPLIED_SECTION_ENABLED.clear();
+    APPLIED_SECTION_ENABLED.putAll(resolveSections(appliedConfig == null ? null : appliedConfig.getConfigurationSection("sections"),
+        DEFAULT_APPLIED_ORDER));
     ABILITY_NAMES.clear();
     if (engine == null) {
       return;
@@ -54,6 +83,40 @@ public final class UpgradeLore {
     for (AbilitySpec spec : engine.abilitySpecs().values()) {
       ABILITY_NAMES.put(spec.id(), abilityLabel(spec));
     }
+  }
+
+  private static List<String> resolveOrder(List<String> raw, List<String> defaults) {
+    List<String> order = new ArrayList<>();
+    if (raw != null) {
+      for (String entry : raw) {
+        if (entry == null || entry.isBlank()) {
+          continue;
+        }
+        String key = entry.trim().toLowerCase(Locale.ROOT);
+        if (defaults.contains(key) && !order.contains(key)) {
+          order.add(key);
+        }
+      }
+    }
+    for (String key : defaults) {
+      if (!order.contains(key)) {
+        order.add(key);
+      }
+    }
+    return order;
+  }
+
+  private static Map<String, Boolean> resolveSections(ConfigurationSection section, List<String> defaults) {
+    Map<String, Boolean> out = new HashMap<>();
+    for (String key : defaults) {
+      boolean enabled = section == null ? true : section.getBoolean(key, true);
+      out.put(key, enabled);
+    }
+    return out;
+  }
+
+  private static boolean isSectionEnabled(Map<String, Boolean> map, String key) {
+    return map.getOrDefault(key, true);
   }
 
   public static Component parseRichText(String raw) {
@@ -83,22 +146,26 @@ public final class UpgradeLore {
       return item;
     }
     String bookName = loreText("labels.upgrades.lore.bookName");
-    if (bookName.isBlank() || bookName.equals("labels.upgrades.lore.bookName")) {
-      bookName = DEFAULT_BOOK_NAME;
-    }
     meta.displayName(parseRichText(bookName));
-    List<Component> lore = new ArrayList<>();
+    Map<String, List<Component>> sections = new HashMap<>();
+    List<Component> nameSection = new ArrayList<>();
     if (spec.name() != null && !spec.name().isBlank()) {
-      lore.add(noItalic(parseRichText(spec.name())));
+      nameSection.add(noItalic(parseRichText(spec.name())));
     }
+    sections.put("name", nameSection);
+
+    List<Component> activationSection = new ArrayList<>();
     if (!spec.spells().isEmpty()) {
       String activators = spec.spells().stream()
           .map(spell -> label(spell.activator()))
           .distinct()
           .sorted()
           .collect(java.util.stream.Collectors.joining(", "));
-      lore.add(mmLine(loreText("labels.upgrades.lore.activation", "binding", activators)));
+      activationSection.add(mmLine(loreText("labels.upgrades.lore.activation", "binding", activators)));
     }
+    sections.put("activation", activationSection);
+
+    List<Component> categorySection = new ArrayList<>();
     if (spec.limits() != null && spec.limits().category() != null && !spec.limits().category().isBlank()) {
       StringBuilder line = new StringBuilder(spec.limits().category());
       if (spec.limits().tier() > 0) {
@@ -106,60 +173,79 @@ public final class UpgradeLore {
             .append(loreText("labels.upgrades.lore.categoryTier", "tier", spec.limits().tier()))
             .append(')');
       }
-      lore.add(mmLine(loreText("labels.upgrades.lore.category", "category", line)));
+      categorySection.add(mmLine(loreText("labels.upgrades.lore.category", "category", line)));
     }
+    sections.put("category", categorySection);
+
+    List<Component> limitsSection = new ArrayList<>();
     if (spec.limits() != null) {
       if (spec.limits().exclusive()) {
         String label = spec.limits().category() == null
             ? loreText("labels.upgrades.lore.exclusive")
             : loreText("labels.upgrades.lore.exclusiveCategory", "category", spec.limits().category());
-        lore.add(mmLine(label));
+        limitsSection.add(mmLine(label));
       }
       if (spec.limits().maxPerItem() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.limitPerItem", "count", spec.limits().maxPerItem())));
+        limitsSection.add(mmLine(loreText("labels.upgrades.lore.limitPerItem", "count", spec.limits().maxPerItem())));
       }
       if (spec.limits().maxTier() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.maxTier", "tier", spec.limits().maxTier())));
+        limitsSection.add(mmLine(loreText("labels.upgrades.lore.maxTier", "tier", spec.limits().maxTier())));
       }
     }
+    sections.put("limits", limitsSection);
+
+    List<Component> requirementsSection = new ArrayList<>();
     if (spec.requirements() != null) {
       if (spec.requirements().minXp() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.requiresLevels", "level", spec.requirements().minXp())));
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.requiresLevels",
+            "level", spec.requirements().minXp())));
       }
       if (spec.requirements().consumeXp() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.consumesLevels", "level", spec.requirements().consumeXp())));
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.consumesLevels",
+            "level", spec.requirements().consumeXp())));
       }
       if (spec.requirements().minTotalXp() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.requiresTotalXp", "xp", spec.requirements().minTotalXp())));
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.requiresTotalXp",
+            "xp", spec.requirements().minTotalXp())));
       }
       if (spec.requirements().consumeTotalXp() > 0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.consumesTotalXp", "xp", spec.requirements().consumeTotalXp())));
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.consumesTotalXp",
+            "xp", spec.requirements().consumeTotalXp())));
       }
       if (spec.requirements().minProgress() > 0.0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.requiresProgress",
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.requiresProgress",
             "percent", formatPercent(spec.requirements().minProgress()))));
       }
       if (spec.requirements().consumeProgress() > 0.0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.consumesProgress",
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.consumesProgress",
             "percent", formatPercent(spec.requirements().consumeProgress()))));
       }
       if (spec.requirements().minMaxMana() > 0.0) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.requiresMaxMana",
+        requirementsSection.add(mmLine(loreText("labels.upgrades.lore.requiresMaxMana",
             "mana", format(spec.requirements().minMaxMana()))));
       }
     }
+    sections.put("requirements", requirementsSection);
+
+    List<Component> priceSection = new ArrayList<>();
     if (spec.price() != null && !spec.price().isEmpty()) {
-      lore.add(mmLine(loreText("labels.upgrades.lore.cost", "price", formatPrice(spec.price()))));
+      priceSection.add(mmLine(loreText("labels.upgrades.lore.cost", "price", formatPrice(spec.price()))));
     }
+    sections.put("price", priceSection);
+
+    List<Component> modifiersSection = new ArrayList<>();
     for (UpgradeModifierSpec modifier : spec.modifiers()) {
       String line = formatModifier(modifier);
       if (!line.isBlank()) {
-        lore.add(mmLine("<gray>" + line + "</gray>"));
+        modifiersSection.add(mmLine("<gray>" + line + "</gray>"));
       }
     }
+    sections.put("modifiers", modifiersSection);
+
+    List<Component> behaviorsSection = new ArrayList<>();
     if (spec.behaviors() != null && !spec.behaviors().isEmpty()) {
       if (spec.behaviors().inventoryActive()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.inventoryActive")));
+        behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.inventoryActive")));
       }
       List<String> secondaryAbilities = spec.behaviors().secondaryAbilities();
       List<String> secondaryDescriptions = spec.behaviors().secondaryDescriptions();
@@ -171,36 +257,42 @@ public final class UpgradeLore {
         if (label.isBlank()) {
           continue;
         }
-        lore.add(mmLine(loreText("labels.upgrades.lore.secondary", "value", label)));
+        behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.secondary", "value", label)));
       }
       for (String preset : spec.behaviors().particlePresets()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.particlePreset", "preset", preset)));
+        behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.particlePreset", "preset", preset)));
       }
       for (UpgradeStatusEffectSpec effect : spec.behaviors().statusEffects()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
+        behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
             formatStatusEffect(effect, "labels.upgrades.lore.prefix.onHit"))));
       }
       for (UpgradeStatusEffectSpec effect : spec.behaviors().inventoryEffects()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
+        behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.statusEffect", "value",
             formatStatusEffect(effect, "labels.upgrades.lore.prefix.inInventory"))));
       }
       for (UpgradeOnDamagedSpec effect : spec.behaviors().onDamagedEffects()) {
         String line = formatOnDamagedEffect(effect);
         if (!line.isBlank()) {
-          lore.add(mmLine(loreText("labels.upgrades.lore.onDamagedLine", "value", line)));
+          behaviorsSection.add(mmLine(loreText("labels.upgrades.lore.onDamagedLine", "value", line)));
         }
       }
     }
+    sections.put("behaviors", behaviorsSection);
+
+    List<Component> compatibilitySection = new ArrayList<>();
     if (spec.compatibility() != null && !spec.compatibility().isEmpty()) {
       if (!spec.compatibility().denyItemIds().isEmpty()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.blockedItems",
+        compatibilitySection.add(mmLine(loreText("labels.upgrades.lore.blockedItems",
             "items", String.join(", ", spec.compatibility().denyItemIds()))));
       }
       if (!spec.compatibility().denyMaterials().isEmpty()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.blockedMaterials",
+        compatibilitySection.add(mmLine(loreText("labels.upgrades.lore.blockedMaterials",
             "materials", joinMaterials(spec.compatibility().denyMaterials()))));
       }
     }
+    sections.put("compatibility", compatibilitySection);
+
+    List<Component> conflictsSection = new ArrayList<>();
     if (!spec.spells().isEmpty()) {
       String bindings = spec.spells().stream()
           .map(spell -> label(spell.activator()))
@@ -209,27 +301,52 @@ public final class UpgradeLore {
           .collect(java.util.stream.Collectors.joining(", "));
       String conflict = Locales.text(null, "labels.upgrades.lore.conflicts",
           Locales.placeholders("binding", bindings));
-      lore.add(mmLine(conflict));
+      conflictsSection.add(mmLine(conflict));
     }
+    sections.put("conflicts", conflictsSection);
+
+    List<Component> attributesSection = new ArrayList<>();
     for (UpgradeAttributeSpec attr : spec.attributes()) {
       String line = formatAttribute(attr);
       if (!line.isBlank()) {
-        lore.add(mmLine(loreText("labels.upgrades.lore.attribute", "value", line)));
+        attributesSection.add(mmLine(loreText("labels.upgrades.lore.attribute", "value", line)));
       }
     }
+    sections.put("attributes", attributesSection);
+
+    List<Component> enchantsSection = new ArrayList<>();
     for (UpgradeEnchantSpec enchant : spec.enchants()) {
-      lore.add(mmLine(loreText("labels.upgrades.lore.enchant", "value", formatEnchant(enchant))));
+      enchantsSection.add(mmLine(loreText("labels.upgrades.lore.enchant", "value", formatEnchant(enchant))));
     }
+    sections.put("enchants", enchantsSection);
+
+    List<Component> descriptionSection = new ArrayList<>();
     if (spec.description() != null && !spec.description().isBlank()) {
       String[] lines = spec.description().replace("\\n", "\n").split("\n", -1);
       for (String line : lines) {
         if (line.isBlank()) {
           continue;
         }
-        lore.add(noItalic(parseRichText(line)));
+        descriptionSection.add(noItalic(parseRichText(line)));
       }
     }
-    lore.add(mmLine(loreText("labels.upgrades.lore.hintApply")));
+    sections.put("description", descriptionSection);
+
+    List<Component> hintSection = new ArrayList<>();
+    hintSection.add(mmLine(loreText("labels.upgrades.lore.hintApply")));
+    sections.put("hint", hintSection);
+
+    List<Component> lore = new ArrayList<>();
+    for (String key : bookOrder) {
+      if (!isSectionEnabled(BOOK_SECTION_ENABLED, key)) {
+        continue;
+      }
+      List<Component> lines = sections.get(key);
+      if (lines == null || lines.isEmpty()) {
+        continue;
+      }
+      lore.addAll(lines);
+    }
     if (!lore.isEmpty()) {
       List<Component> merged = new ArrayList<>();
       merged.add(noItalic(Component.text(MARKER_START, NamedTextColor.BLACK)));
@@ -342,13 +459,30 @@ public final class UpgradeLore {
         count++;
       }
     }
-    List<Component> out = new ArrayList<>();
-    out.add(parseRichText(loreText("labels.upgrades.lore.appliedHeader", "count", count)));
+    List<Component> headerSection = new ArrayList<>();
+    headerSection.add(parseRichText(loreText("labels.upgrades.lore.appliedHeader", "count", count)));
     boolean compact = item != null && ItemMarkers.isUpgradeLoreCompact(item);
+    List<Component> detailsSection = new ArrayList<>();
     if (!compact) {
-      appendUpgradeDetails(out, records, registry);
+      appendUpgradeDetails(detailsSection, records, registry);
     }
-    appendUpgradeTotals(out, item);
+    List<Component> totalsSection = buildUpgradeTotals(item);
+    Map<String, List<Component>> sections = new HashMap<>();
+    sections.put("header", headerSection);
+    sections.put("details", detailsSection);
+    sections.put("totals", totalsSection);
+
+    List<Component> out = new ArrayList<>();
+    for (String key : appliedOrder) {
+      if (!isSectionEnabled(APPLIED_SECTION_ENABLED, key)) {
+        continue;
+      }
+      List<Component> lines = sections.get(key);
+      if (lines == null || lines.isEmpty()) {
+        continue;
+      }
+      out.addAll(lines);
+    }
     return out;
   }
 
@@ -377,7 +511,7 @@ public final class UpgradeLore {
       }
       UpgradeSpec spec = registry == null ? null : registry.upgradeSpec(record);
       if (spec == null) {
-        out.add(Component.text("• " + record, NamedTextColor.GRAY));
+        out.add(mmLine(loreText("labels.upgrades.lore.appliedUnknown")));
         continue;
       }
       String name = spec.name() != null && !spec.name().isBlank() ? spec.name() : record;
@@ -415,15 +549,16 @@ public final class UpgradeLore {
     }
   }
 
-  private static void appendUpgradeTotals(List<Component> out, ItemStack item) {
+  private static List<Component> buildUpgradeTotals(ItemStack item) {
+    List<Component> totals = new ArrayList<>();
     if (item == null) {
-      return;
+      return totals;
     }
     java.util.Map<String, Double> modifiers = ItemMarkers.getUpgradeModifiers(item);
     if (modifiers.isEmpty()) {
-      return;
+      return totals;
     }
-    out.add(parseRichText(loreText("labels.upgrades.lore.appliedTotals")));
+    totals.add(parseRichText(loreText("labels.upgrades.lore.appliedTotals")));
     for (UpgradeModifierType type : UpgradeModifierType.values()) {
       Double value = modifiers.get(type.key());
       if (value == null || !Double.isFinite(value)) {
@@ -431,9 +566,10 @@ public final class UpgradeLore {
       }
       String line = formatModifier(type, value);
       if (!line.isBlank()) {
-        out.add(Component.text(line, NamedTextColor.GRAY));
+        totals.add(Component.text(line, NamedTextColor.GRAY));
       }
     }
+    return totals;
   }
 
   private static String label(UpgradeActivator activator) {

@@ -1,5 +1,9 @@
 package dev.patric.dungeonsreborn.effects.config;
 
+import static dev.patric.dungeonsreborn.effects.config.YamlErrors.*;
+import static dev.patric.dungeonsreborn.effects.config.YamlReaders.*;
+import static dev.patric.dungeonsreborn.effects.config.YamlValueParsers.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -22,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.Biome;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Material;
@@ -30,15 +35,13 @@ import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.Location;
 import org.bukkit.Vibration;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -50,6 +53,7 @@ import org.bukkit.util.Vector;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 
+import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
 import dev.patric.dungeonsreborn.effects.CastContext;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
@@ -58,12 +62,20 @@ import dev.patric.dungeonsreborn.effects.actions.ActionHandle;
 import dev.patric.dungeonsreborn.effects.actions.ActionWithHandle;
 import dev.patric.dungeonsreborn.effects.actions.Actions;
 import dev.patric.dungeonsreborn.effects.actions.EntityActions;
+import dev.patric.dungeonsreborn.effects.particles.Frame;
+import dev.patric.dungeonsreborn.effects.particles.Frames;
 import dev.patric.dungeonsreborn.effects.anim.Easings;
 import dev.patric.dungeonsreborn.effects.conditions.Conditions;
 import dev.patric.dungeonsreborn.effects.costs.Costs;
+import dev.patric.dungeonsreborn.effects.damage.DamageAmountMode;
+import dev.patric.dungeonsreborn.effects.damage.DamageCause;
+import dev.patric.dungeonsreborn.effects.damage.DamageSpec;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.effects.heal.HealType;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileSpec;
 import dev.patric.dungeonsreborn.effects.Vars;
+import dev.patric.dungeonsreborn.effects.config.actions.ActionParserContext;
+import dev.patric.dungeonsreborn.effects.config.actions.ActionParsers;
 import dev.patric.dungeonsreborn.effects.targeting.Targeters;
 import dev.patric.dungeonsreborn.effects.targeting.Targeter;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
@@ -74,18 +86,36 @@ import dev.patric.dungeonsreborn.effects.integration.ItemMatchers;
 import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.integration.PassiveBinding;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.effects.items.ItemTemplateCompiler;
+import dev.patric.dungeonsreborn.effects.items.ItemTemplateSnapshot;
+import dev.patric.dungeonsreborn.effects.items.ItemAffixPool;
+import dev.patric.dungeonsreborn.effects.items.ItemAffixRoll;
+import dev.patric.dungeonsreborn.effects.items.ItemHookSpec;
+import dev.patric.dungeonsreborn.effects.items.ItemHookType;
+import dev.patric.dungeonsreborn.effects.items.ItemStatBlock;
+import dev.patric.dungeonsreborn.effects.items.ItemTierSpec;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemYaml;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
+import dev.patric.dungeonsreborn.party.Party;
+import dev.patric.dungeonsreborn.party.PartyService;
+import dev.patric.dungeonsreborn.progression.PlayerProgression;
+import dev.patric.dungeonsreborn.progression.ProgressionService;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
+import dev.patric.dungeonsreborn.quests.QuestRegion;
 import dev.patric.dungeonsreborn.effects.minions.MinionScaling;
 import dev.patric.dungeonsreborn.effects.minions.MinionSpec;
 import dev.patric.dungeonsreborn.effects.minions.MinionMode;
+import dev.patric.dungeonsreborn.effects.minions.MinionOwnerScalingSpec;
 import dev.patric.dungeonsreborn.effects.minions.MinionPassiveSpec;
+import dev.patric.dungeonsreborn.effects.minions.MinionScalingLimits;
 import dev.patric.dungeonsreborn.effects.minions.MinionSpecialAttackSpec;
-import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
+import dev.patric.dungeonsreborn.effects.minions.MinionTargetRules;
+import dev.patric.dungeonsreborn.effects.minions.MinionFormation;
+import dev.patric.dungeonsreborn.effects.minions.MinionSummonSpec;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.logging.ServiceLogManager;
+import dev.patric.dungeonsreborn.mobs.MobParticlesSpec;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
@@ -112,16 +142,26 @@ public final class EffectsYamlAbilities {
   private record AbilityEntry(String normalizedId, String basePath, ConfigurationSection section) {
   }
 
-  private record ItemTemplate(String id, ItemStack item, ItemStack matchBase) {
+  private record ItemTemplate(
+      String id,
+      ItemStack item,
+      ItemStack matchBase,
+      int version,
+      ItemTemplateCompiler.DurabilityRange durabilityRange,
+      ItemStatBlock baseStats,
+      ItemAffixPool affixPool,
+      ItemTierSpec tierSpec,
+      java.util.Map<ItemHookType, java.util.List<ItemHookSpec>> hooks) {
   }
 
   private record ShapeTemplate(List<PointSpec> points, List<List<PointSpec>> triangles) {
   }
 
-  private enum VarScope {
+  public enum VarScope {
     CAST,
     PLAYER,
-    ENTITY
+    ENTITY,
+    ABILITY
   }
 
   private final JavaPlugin plugin;
@@ -136,12 +176,20 @@ public final class EffectsYamlAbilities {
   private java.util.Map<String, ShapeTemplate> shapeTemplates = java.util.Collections.emptyMap();
   private final Map<UUID, Map<String, Object>> playerVars = new ConcurrentHashMap<>();
   private final Map<UUID, Map<String, Object>> entityVars = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, Object>> abilityVars = new ConcurrentHashMap<>();
+  private final Map<UUID, Map<String, Long>> playerVarExpirations = new ConcurrentHashMap<>();
+  private final Map<UUID, Map<String, Long>> entityVarExpirations = new ConcurrentHashMap<>();
+  private final Map<String, Map<String, Long>> abilityVarExpirations = new ConcurrentHashMap<>();
   private final java.util.Map<String, dev.patric.dungeonsreborn.effects.actions.Action> yamlActionGraphs = new ConcurrentHashMap<>();
   private final java.util.Map<java.nio.file.Path, ScriptCacheEntry> scriptCache = new ConcurrentHashMap<>();
   private final java.util.Map<String, ScriptMetrics> scriptMetrics = new ConcurrentHashMap<>();
   private final java.util.Map<String, ItemTemplate> itemTemplates = new java.util.HashMap<>();
+  private volatile List<String> lastItemErrors = List.of();
+  private final java.util.Map<String, EffectsEngine.AbilityCombatProfile> abilityCombatProfiles = new java.util.HashMap<>();
   private volatile boolean scriptDebug;
   private volatile boolean scriptTrace;
+  private final double globalMinMana;
+  private final double globalMinManaPct;
   private static final String YAML_LAST_ENTITY = "yaml_last_entity";
   private static final String YAML_INVOKE_STACK = "yaml_invoke_stack";
   private static final String DSL_ON_HIT = "dsl_on_hit";
@@ -159,11 +207,45 @@ public final class EffectsYamlAbilities {
   private static final int MAX_CAST_VARS = 128;
   private static final int MAX_PLAYER_VARS = 256;
   private static final int MAX_ENTITY_VARS = 256;
+  private static final int MAX_ABILITY_VARS = 256;
   private static final int SCRIPT_VERSION = 1;
+  private static final int EFFECTS_SCHEMA_VERSION = 1;
   private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
   private static final String ITEM_MARKER_START = "[dr:effects]";
   private static final String ITEM_MARKER_END = "[/dr:effects]";
-  private enum EasingId {
+  private static final String DEFAULT_UNSAFE_PERMISSION = "dungeonsreborn.effects.unsafe";
+  private static final java.util.Set<String> UNSAFE_ACTION_TYPES = java.util.Set.of(
+      "damage",
+      "damage_typed",
+      "damage_percent",
+      "damage_true",
+      "damage_falloff",
+      "damage_crit",
+      "damage_lifesteal",
+      "damage_dot",
+      "damage_over_time",
+      "damage_chain",
+      "chain_damage",
+      "chain_lightning",
+      "knockback",
+      "ignite",
+      "minion_summon",
+      "summon_minion",
+      "minions");
+  private static final Map<String, String> DEPRECATED_ACTION_KEYS = java.util.Map.of(
+      "delay", "delayTicks",
+      "period", "periodTicks",
+      "ticks", "durationTicks",
+      "ttl", "ttlTicks",
+      "cooldown", "cooldownTicks");
+  private static final Map<String, String> DEPRECATED_DSL_STATEMENTS = java.util.Map.of(
+      "strike_lightning", "lightning",
+      "chain_lightning", "damage_chain");
+  private static final java.util.Set<String> REMOVED_DSL_STATEMENTS = java.util.Set.of(
+      "dash");
+  private final java.util.Set<String> deprecatedWarnings = java.util.concurrent.ConcurrentHashMap.newKeySet();
+  private String unsafePermission;
+  public enum EasingId {
     LINEAR,
     IN_OUT_CUBIC,
     OUT_QUAD
@@ -181,6 +263,8 @@ public final class EffectsYamlAbilities {
     this.bindings = bindings;
     this.effectsLog = Objects.requireNonNull(effectsLog, "effectsLog");
     this.bindingsLog = Objects.requireNonNull(bindingsLog, "bindingsLog");
+    this.globalMinMana = plugin.getConfig().getDouble("mana.minToCast", 0.0);
+    this.globalMinManaPct = plugin.getConfig().getDouble("mana.minToCastPct", 0.0);
   }
 
   public File file() {
@@ -195,6 +279,261 @@ public final class EffectsYamlAbilities {
     return new File(plugin.getDataFolder(), "effects/items");
   }
 
+  private final ActionParserContext actionParserContext = new ActionParserContextImpl();
+
+  private final class ActionParserContextImpl implements ActionParserContext {
+    @Override
+    public Map<String, Object> macro(String id) {
+      return macros.get(id);
+    }
+
+    @Override
+    public dev.patric.dungeonsreborn.effects.actions.Action compileAction(Map<String, Object> node, String path,
+        java.util.ArrayDeque<String> includeStack) {
+      return EffectsYamlAbilities.this.compileAction(node, path, includeStack);
+    }
+
+    @Override
+    public dev.patric.dungeonsreborn.effects.conditions.Condition compileCondition(Object raw, String path) {
+      return EffectsYamlAbilities.this.compileCondition(raw, path);
+    }
+
+    @Override
+    public dev.patric.dungeonsreborn.effects.actions.Action findYamlActionGraph(String abilityId) {
+      return yamlActionGraphs.get(abilityId);
+    }
+
+    @Override
+    public Object require(Map<String, Object> node, String key, String path) {
+      return YamlReaders.require(node, key, path);
+    }
+
+    @Override
+    public Map<String, Object> castMap(Object raw, String path) {
+      return YamlReaders.castMap(raw, path);
+    }
+
+    @Override
+    public List<?> mapList(Map<String, Object> node, String key, String path) {
+      return YamlReaders.mapList(node, key, path);
+    }
+
+    @Override
+    public String requireString(Map<String, Object> node, String key, String path) {
+      return YamlReaders.requireString(node, key, path);
+    }
+
+    @Override
+    public String string(Map<String, Object> node, String key, String def) {
+      return YamlReaders.string(node, key, def);
+    }
+
+    @Override
+    public boolean bool(Map<String, Object> node, String key, boolean def) {
+      return YamlReaders.bool(node, key, def);
+    }
+
+    @Override
+    public int intValue(Map<String, Object> node, String key, int def) {
+      return YamlReaders.intValue(node, key, def);
+    }
+
+    @Override
+    public NumValue numValue(Map<String, Object> node, String key, double def, String path) {
+      return EffectsYamlAbilities.this.numValue(node, key, def, path);
+    }
+
+    @Override
+    public NumValue requireNumValue(Map<String, Object> node, String key, String path) {
+      return EffectsYamlAbilities.this.requireNumValue(node, key, path);
+    }
+
+    @Override
+    public EasingId easingId(Map<String, Object> node, String path) {
+      String raw = YamlReaders.string(node, "easing", EasingId.IN_OUT_CUBIC.name());
+      try {
+        return EasingId.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+      } catch (Exception ex) {
+        return EasingId.IN_OUT_CUBIC;
+      }
+    }
+
+    @Override
+    public java.util.function.DoubleUnaryOperator easingFromId(EasingId id) {
+      return switch (id) {
+        case LINEAR -> Easings::linear;
+        case IN_OUT_CUBIC -> Easings::inOutCubic;
+        case OUT_QUAD -> Easings::outQuad;
+      };
+    }
+
+    @Override
+    public VarScope parseVarScope(String raw, String path, VarScope def) {
+      return EffectsYamlAbilities.parseVarScope(raw, path, def);
+    }
+
+    @Override
+    public ValueSupplier varValue(Object raw, String path) {
+      return EffectsYamlAbilities.this.varValue(raw, path);
+    }
+
+    @Override
+    public Map<String, Object> vars(CastContext ctx, VarScope scope) {
+      return EffectsYamlAbilities.this.vars(ctx, scope);
+    }
+
+    @Override
+    public Map<String, Long> varExpirations(CastContext ctx, VarScope scope) {
+      return EffectsYamlAbilities.this.varExpirations(ctx, scope);
+    }
+
+    @Override
+    public void setVar(CastContext ctx, VarScope scope, String key, Object value) {
+      EffectsYamlAbilities.this.setVar(ctx, scope, key, value);
+    }
+
+    @Override
+    public void setVar(CastContext ctx, VarScope scope, String key, Object value, Long ttlTicks) {
+      EffectsYamlAbilities.this.setVar(ctx, scope, key, value, ttlTicks);
+    }
+
+    @Override
+    public long evalTtlTicks(NumValue ttl, CastContext ctx) {
+      return EffectsYamlAbilities.this.evalTtlTicks(ttl, ctx);
+    }
+
+    @SuppressWarnings("static-access")
+    @Override
+    public long evalLong(NumValue value, CastContext ctx) {
+      return EffectsYamlAbilities.this.evalLong(value, ctx);
+    }
+
+    @SuppressWarnings("static-access")
+    @Override
+    public int evalInt(NumValue value, CastContext ctx) {
+      return EffectsYamlAbilities.this.evalInt(value, ctx);
+    }
+
+    @SuppressWarnings("static-access")
+    @Override
+    public double evalDouble(NumValue value, CastContext ctx) {
+      return EffectsYamlAbilities.this.evalDouble(value, ctx);
+    }
+
+    @Override
+    public double numericVar(Object raw, double def) {
+      return EffectsYamlAbilities.numericVar(raw, def);
+    }
+
+    @Override
+    public ActionHandle scheduledHandle(EffectsEngine.ScheduledHandle handle, AtomicBoolean done) {
+      return EffectsYamlAbilities.scheduledHandle(handle, done);
+    }
+
+    @Override
+    public LivingEntity lastEntity(CastContext ctx) {
+      return EffectsYamlAbilities.lastEntity(ctx);
+    }
+
+    @Override
+    public Player targetPlayer(CastContext ctx) {
+      return EffectsYamlAbilities.targetPlayer(ctx);
+    }
+
+    @Override
+    public CastContext followCasterContext(CastContext ctx) {
+      return EffectsYamlAbilities.followCasterContext(ctx);
+    }
+
+    @Override
+    public Location resolveAtWithOffsets(CastContext ctx, Object atMode, NumValue forward, NumValue right, NumValue up) {
+      return EffectsYamlAbilities.resolveAtWithOffsets(ctx, (AtMode) atMode, forward, right, up);
+    }
+
+    @Override
+    public Location resolveAtWithEntity(CastContext ctx, Object atMode) {
+      return EffectsYamlAbilities.resolveAtWithEntity(ctx, (AtMode) atMode);
+    }
+
+    @Override
+    public Object parseAt(String raw, String path) {
+      return EffectsYamlAbilities.parseAt(raw, path);
+    }
+
+    @Override
+    public String yamlLastEntityKey() {
+      return YAML_LAST_ENTITY;
+    }
+
+    @Override
+    public String yamlInvokeStackKey() {
+      return YAML_INVOKE_STACK;
+    }
+
+    @Override
+    public void withTempVar(CastContext ctx, VarScope scope, String key, Object value, Runnable task) {
+      EffectsYamlAbilities.this.withTempVar(ctx, scope, key, value, task);
+    }
+
+    @Override
+    public void withTempVars(CastContext ctx, VarScope scope, Map<String, Object> values, Runnable task) {
+      EffectsYamlAbilities.this.withTempVars(ctx, scope, values, task);
+    }
+
+    @Override
+    public net.kyori.adventure.text.Component renderText(String raw, CastContext ctx) {
+      return EffectsYamlAbilities.this.renderText(raw, ctx);
+    }
+
+    @Override
+    public Actions.MotionMode parseMotionMode(String raw, String path) {
+      return EffectsYamlAbilities.parseMotionMode(raw, path);
+    }
+
+    @Override
+    public Sound soundValue(Map<String, Object> node, String key, String path) {
+      return EffectsYamlAbilities.soundValue(node, key, path);
+    }
+  }
+
+  private boolean checkSchemaVersion(String sourcePath, int schemaVersion, List<String> errors) {
+    if (schemaVersion > EFFECTS_SCHEMA_VERSION) {
+      errors.add(sourcePath + ": Unsupported schemaVersion=" + schemaVersion + " (max " + EFFECTS_SCHEMA_VERSION + ")");
+      return false;
+    }
+    if (schemaVersion < EFFECTS_SCHEMA_VERSION) {
+      warnDeprecatedOnce(
+          "schemaVersion:" + sourcePath,
+          sourcePath + ": schemaVersion=" + schemaVersion + " is older than supported version " + EFFECTS_SCHEMA_VERSION + "; consider updating");
+    }
+    return true;
+  }
+
+  private void warnDeprecatedOnce(String key, String message) {
+    if (!deprecatedWarnings.add(key)) {
+      return;
+    }
+    effectsLog.warn("[Effects] " + message);
+  }
+
+  private void migrateDeprecatedKeys(Map<String, Object> node, String path, Map<String, String> deprecatedKeys) {
+    for (var entry : deprecatedKeys.entrySet()) {
+      String oldKey = entry.getKey();
+      if (!node.containsKey(oldKey)) {
+        continue;
+      }
+      String newKey = entry.getValue();
+      if (node.containsKey(newKey)) {
+        warnDeprecatedOnce(path + "." + oldKey, path + "." + oldKey + " is deprecated and ignored because " + newKey + " is already set");
+        node.remove(oldKey);
+        continue;
+      }
+      Object value = node.remove(oldKey);
+      node.put(newKey, value);
+      warnDeprecatedOnce(path + "." + oldKey, path + "." + oldKey + " is deprecated; use " + newKey);
+    }
+  }
+
   public ItemStack itemTemplate(String id) {
     if (id == null) {
       return null;
@@ -203,7 +542,75 @@ public final class EffectsYamlAbilities {
     if (template == null) {
       return null;
     }
-    return template.item().clone();
+    ItemStack item = template.item().clone();
+    if (template.durabilityRange() != null) {
+      ItemTemplateCompiler.applyDurabilityRange(item, template.durabilityRange(), java.util.concurrent.ThreadLocalRandom.current());
+    }
+    ItemStatBlock baseStats = template.baseStats();
+    ItemTierSpec tierSpec = template.tierSpec();
+    if (baseStats != null && tierSpec != null) {
+      baseStats = tierSpec.apply(baseStats);
+    }
+    ItemAffixPool affixPool = template.affixPool();
+    if (affixPool != null) {
+      List<ItemAffixRoll> affixes = affixPool.roll(java.util.concurrent.ThreadLocalRandom.current());
+      ItemStatBlock affixStats = ItemStatBlock.empty();
+      List<String> affixIds = new ArrayList<>();
+      for (ItemAffixRoll roll : affixes) {
+        affixIds.add(roll.id());
+        affixStats = affixStats.merge(roll.stats());
+      }
+      ItemStatBlock combined = baseStats == null ? affixStats : baseStats.merge(affixStats);
+      if (!combined.isEmpty()) {
+        ItemMarkers.setItemStats(item, combined.values());
+      }
+      if (!affixIds.isEmpty()) {
+        ItemMarkers.setItemAffixes(item, affixIds);
+      }
+    } else if (baseStats != null && !baseStats.isEmpty()) {
+      ItemMarkers.setItemStats(item, baseStats.values());
+    }
+    return item;
+  }
+
+  public ItemTemplateSnapshot itemTemplateSnapshot(String id) {
+    if (id == null) {
+      return null;
+    }
+    ItemTemplate template = itemTemplates.get(dev.patric.dungeonsreborn.effects.Ids.normalize(id));
+    if (template == null) {
+      return null;
+    }
+    ItemStack base = template.item() == null ? null : template.item().clone();
+    ItemStack matchBase = template.matchBase() == null ? null : template.matchBase().clone();
+    String rarityId = base == null ? null : ItemMarkers.getItemRarity(base);
+    return new ItemTemplateSnapshot(
+        template.id(),
+        template.version(),
+        base,
+        matchBase,
+        template.durabilityRange(),
+        template.baseStats(),
+        template.affixPool(),
+        template.tierSpec(),
+        rarityId,
+        template.hooks());
+  }
+
+  public List<String> itemTemplateErrors() {
+    return lastItemErrors;
+  }
+
+  public java.util.List<ItemHookSpec> itemHooks(Player player, ItemStack item, ItemHookType type) {
+    if (item == null || type == null) {
+      return java.util.List.of();
+    }
+    ItemTemplate template = findTemplate(player, item);
+    if (template == null) {
+      return java.util.List.of();
+    }
+    java.util.List<ItemHookSpec> hooks = template.hooks().get(type);
+    return hooks == null ? java.util.List.of() : hooks;
   }
 
   public Set<String> loadedItemIds() {
@@ -304,6 +711,7 @@ public final class EffectsYamlAbilities {
     }
     loadedBindingIds.clear();
     yamlActionGraphs.clear();
+    abilityCombatProfiles.clear();
 
     ArrayList<String> errors = new ArrayList<>();
     java.util.ArrayList<java.util.Map.Entry<String, YamlConfiguration>> sources = new java.util.ArrayList<>();
@@ -343,9 +751,8 @@ public final class EffectsYamlAbilities {
       String sourcePath = source.getKey();
       YamlConfiguration cfg = source.getValue();
 
-      int schemaVersion = cfg.getInt("schemaVersion", 1);
-      if (schemaVersion != 1) {
-        errors.add(sourcePath + ": Unsupported schemaVersion=" + schemaVersion + " (expected 1)");
+      int schemaVersion = cfg.getInt("schemaVersion", EFFECTS_SCHEMA_VERSION);
+      if (!checkSchemaVersion(sourcePath, schemaVersion, errors)) {
         continue;
       }
 
@@ -436,6 +843,10 @@ public final class EffectsYamlAbilities {
           engine.unregisterAbility(entry.normalizedId());
         }
         engine.registerAbility(spec);
+        EffectsEngine.AbilityCombatProfile combatProfile = abilityCombatProfiles.get(entry.normalizedId());
+        if (combatProfile != null) {
+          engine.registerAbilityProfile(entry.normalizedId(), combatProfile);
+        }
         if (bindings != null) {
           for (InteractBinding binding : spec.interactBindings()) {
             bindings.register(binding);
@@ -459,13 +870,18 @@ public final class EffectsYamlAbilities {
       itemFiles = new File[0];
     }
     itemTemplates.clear();
+    List<String> itemErrors = new ArrayList<>();
     if (itemFiles != null) {
       java.util.Arrays.sort(itemFiles, java.util.Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
       for (File f : itemFiles) {
+        int errorStart = errors.size();
         String fileName = f.getName();
         int dot = fileName.lastIndexOf('.');
         if (dot <= 0) {
           errors.add(f.getPath() + ": filename must be <itemId>.yml");
+          if (errors.size() > errorStart) {
+            itemErrors.addAll(errors.subList(errorStart, errors.size()));
+          }
           continue;
         }
         String itemIdRaw = fileName.substring(0, dot);
@@ -474,19 +890,28 @@ public final class EffectsYamlAbilities {
           itemId = dev.patric.dungeonsreborn.effects.Ids.normalize(itemIdRaw);
         } catch (Exception ex) {
           errors.add(f.getPath() + ": invalid item id (" + ex.getMessage() + ")");
+          if (errors.size() > errorStart) {
+            itemErrors.addAll(errors.subList(errorStart, errors.size()));
+          }
           continue;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
-        int schemaVersion = cfg.getInt("schemaVersion", 1);
-        if (schemaVersion != 1) {
-          errors.add(f.getPath() + ": Unsupported schemaVersion=" + schemaVersion + " (expected 1)");
+        int schemaVersion = cfg.getInt("schemaVersion", EFFECTS_SCHEMA_VERSION);
+        if (!checkSchemaVersion(f.getPath(), schemaVersion, errors)) {
+          if (errors.size() > errorStart) {
+            itemErrors.addAll(errors.subList(errorStart, errors.size()));
+          }
           continue;
         }
         Map<String, Object> root = normalizeMap(cfg.getValues(false));
         loadItemTemplate(itemId, f.getPath(), cfg, errors);
         loadedItemBindings += compileItemBindings(itemId, f.getPath(), root, errors);
+        if (errors.size() > errorStart) {
+          itemErrors.addAll(errors.subList(errorStart, errors.size()));
+        }
       }
     }
+    lastItemErrors = List.copyOf(itemErrors);
 
     if (!errors.isEmpty()) {
       effectsLog.warn("[Effects] YAML reload had " + errors.size() + " errors (some abilities/bindings may be missing)");
@@ -586,15 +1011,31 @@ public final class EffectsYamlAbilities {
     return lines;
   }
 
+  public record ItemMigrationReport(int updatedTotal, Map<String, Integer> updatedById) {
+  }
+
   public int syncOnlineItems() {
+    ItemMigrationReport report = syncOnlineItemsWithReport();
+    if (report.updatedTotal() > 0) {
+      effectsLog.info("[Effects] Updated " + report.updatedTotal() + " item(s) via migrations: " + report.updatedById());
+    }
+    return report.updatedTotal();
+  }
+
+  public ItemMigrationReport syncOnlineItemsWithReport() {
+    Map<String, Integer> updatedById = new HashMap<>();
     int updated = 0;
     for (Player player : Bukkit.getOnlinePlayers()) {
-      updated += syncPlayerItems(player);
+      updated += syncPlayerItems(player, updatedById);
     }
-    return updated;
+    return new ItemMigrationReport(updated, java.util.Collections.unmodifiableMap(updatedById));
   }
 
   public int syncPlayerItems(Player player) {
+    return syncPlayerItems(player, null);
+  }
+
+  private int syncPlayerItems(Player player, Map<String, Integer> updatedById) {
     Objects.requireNonNull(player, "player");
     if (itemTemplates.isEmpty()) {
       return 0;
@@ -603,15 +1044,15 @@ public final class EffectsYamlAbilities {
     var inv = player.getInventory();
 
     ItemStack[] contents = inv.getContents();
-    updated += syncArray(player, contents);
+    updated += syncArray(player, contents, updatedById);
     inv.setContents(contents);
 
     ItemStack[] armor = inv.getArmorContents();
-    updated += syncArray(player, armor);
+    updated += syncArray(player, armor, updatedById);
     inv.setArmorContents(armor);
 
     ItemStack offhand = inv.getItemInOffHand();
-    ItemStack updatedOffhand = syncItem(player, offhand);
+    ItemStack updatedOffhand = syncItem(player, offhand, updatedById);
     if (updatedOffhand != offhand) {
       inv.setItemInOffHand(updatedOffhand);
       updated++;
@@ -619,11 +1060,11 @@ public final class EffectsYamlAbilities {
     return updated;
   }
 
-  private int syncArray(Player player, ItemStack[] contents) {
+  private int syncArray(Player player, ItemStack[] contents, Map<String, Integer> updatedById) {
     int updated = 0;
     for (int i = 0; i < contents.length; i++) {
       ItemStack current = contents[i];
-      ItemStack next = syncItem(player, current);
+      ItemStack next = syncItem(player, current, updatedById);
       if (next != current) {
         contents[i] = next;
         updated++;
@@ -632,7 +1073,7 @@ public final class EffectsYamlAbilities {
     return updated;
   }
 
-  private ItemStack syncItem(Player player, ItemStack item) {
+  private ItemStack syncItem(Player player, ItemStack item, Map<String, Integer> updatedById) {
     if (item == null || item.getType().isAir()) {
       return item;
     }
@@ -643,9 +1084,14 @@ public final class EffectsYamlAbilities {
     if (template == null) {
       return item;
     }
+    int currentVersion = ItemMarkers.getItemVersion(item);
+    boolean versionMatches = currentVersion == template.version();
     ItemStack updated = applyTemplate(template, item);
-    if (isSameItem(item, updated)) {
+    if (versionMatches && isSameItem(item, updated)) {
       return item;
+    }
+    if (updatedById != null) {
+      updatedById.merge(template.id(), 1, (left, right) -> (left == null ? 0 : left) + (right == null ? 0 : right));
     }
     return updated;
   }
@@ -700,6 +1146,9 @@ public final class EffectsYamlAbilities {
     ItemStack compare = item.clone();
     compare.setAmount(1);
     ItemMarkers.setItemId(compare, null);
+    ItemMarkers.setItemVersion(compare, null);
+    ItemMarkers.setItemTier(compare, null);
+    ItemMarkers.setItemRarity(compare, null);
     stripEffectLore(compare);
     return compare.isSimilar(template.matchBase());
   }
@@ -725,6 +1174,14 @@ public final class EffectsYamlAbilities {
     if (meta instanceof Damageable dmgNew && existing instanceof Damageable dmgOld) {
       dmgNew.setDamage(dmgOld.getDamage());
       updated.setItemMeta(meta);
+    }
+    java.util.Map<String, Double> existingStats = ItemMarkers.getItemStats(current);
+    if (!existingStats.isEmpty()) {
+      ItemMarkers.setItemStats(updated, existingStats);
+    }
+    List<String> existingAffixes = ItemMarkers.getItemAffixes(current);
+    if (!existingAffixes.isEmpty()) {
+      ItemMarkers.setItemAffixes(updated, existingAffixes);
     }
     return updated;
   }
@@ -759,10 +1216,8 @@ public final class EffectsYamlAbilities {
   }
 
   private void loadItemTemplate(String itemId, String base, YamlConfiguration cfg, List<String> errors) {
-    ItemStack item = cfg.getItemStack("item");
-    if (item == null || item.getType().isAir()) {
-      item = parseCustomItemTemplate(cfg.getConfigurationSection("item"), base + ".item", errors);
-    }
+    ItemTemplateCompiler.CompiledTemplate compiled = parseCustomItemTemplate(cfg.getConfigurationSection("item"), base + ".item", errors);
+    ItemStack item = compiled == null ? cfg.getItemStack("item") : compiled.item();
     if (item == null || item.getType().isAir()) {
       errors.add(base + ": item is missing or invalid");
       return;
@@ -770,10 +1225,27 @@ public final class EffectsYamlAbilities {
     try {
       ItemStack template = item.clone();
       ItemMarkers.setItemId(template, itemId);
+      int version = cfg.getInt("version", cfg.getInt("itemVersion", 1));
+      if (version < 0) {
+        version = 0;
+      }
+      ItemMarkers.setItemVersion(template, version);
+      String tierId = null;
+      String rarityId = null;
       ConfigurationSection mana = cfg.getConfigurationSection("mana");
       if (mana != null) {
         double maxBonus = mana.contains("maxBonus") ? mana.getDouble("maxBonus") : mana.getDouble("max", 0.0);
         double regenBonus = mana.contains("regenBonus") ? mana.getDouble("regenBonus") : mana.getDouble("regen", 0.0);
+        double regenMultiplier = mana.getDouble("regenMultiplier", 0.0);
+        double regenPercent = mana.getDouble("regenPercent", 0.0);
+        String regenMode = YamlValues.string(mana, "regenMode",
+            YamlValues.string(mana, "regenCurve", YamlValues.string(mana, "curve", null)));
+        double costMultiplier = mana.contains("costMultiplier")
+            ? mana.getDouble("costMultiplier")
+            : mana.getDouble("costPercent", 0.0);
+        double costAdd = mana.contains("costAdd")
+            ? mana.getDouble("costAdd")
+            : mana.getDouble("costFlat", 0.0);
         double boost = 0.0;
         if (mana.contains("boost")) {
           boost = mana.getDouble("boost");
@@ -787,6 +1259,34 @@ public final class EffectsYamlAbilities {
         }
         ItemMarkers.setManaMaxBonus(template, maxBonus);
         ItemMarkers.setManaRegenBonus(template, regenBonus);
+        ItemMarkers.setManaRegenMultiplier(template, regenMultiplier);
+        ItemMarkers.setManaRegenPercent(template, regenPercent);
+        ItemMarkers.setManaRegenMode(template, regenMode);
+        ItemMarkers.setManaCostMultiplier(template, costMultiplier);
+        ItemMarkers.setManaCostAdd(template, costAdd);
+      }
+      ItemTierSpec tierSpec = ItemTierSpec.parse(cfg.get("tier"), base + ".tier", errors);
+      if (tierSpec != null && tierSpec.id() != null && !tierSpec.id().isBlank()) {
+        tierId = Ids.normalize(tierSpec.id());
+        ItemMarkers.setItemTier(template, tierId);
+      }
+      rarityId = readItemRarity(cfg);
+      if (rarityId != null && !rarityId.isBlank()) {
+        ItemMarkers.setItemRarity(template, Ids.normalize(rarityId));
+      }
+      List<String> itemTags = readStringList(cfg.get("tags"));
+      if (itemTags.isEmpty()) {
+        itemTags = readStringList(cfg.get("tag"));
+      }
+      if (!itemTags.isEmpty()) {
+        ItemMarkers.setItemTags(template, itemTags);
+      }
+      String itemCategory = YamlValues.string(cfg.get("category"), null);
+      if (itemCategory == null || itemCategory.isBlank()) {
+        itemCategory = YamlValues.string(cfg.get("itemCategory"), null);
+      }
+      if (itemCategory != null && !itemCategory.isBlank()) {
+        ItemMarkers.setItemCategory(template, Ids.normalize(itemCategory));
       }
       Object consumableRaw = cfg.get("consumable");
       if (consumableRaw == null) {
@@ -832,101 +1332,428 @@ public final class EffectsYamlAbilities {
           errors.add(base + ": " + ex.getMessage());
         }
       }
+      ConfigurationSection upgrades = cfg.getConfigurationSection("upgrades");
+      if (upgrades != null) {
+        java.util.Map<String, Integer> slots = parseUpgradeSlots(upgrades.get("slots"), base + ".upgrades.slots", errors);
+        if (!slots.isEmpty()) {
+          ItemMarkers.setUpgradeSlots(template, slots);
+        }
+        int maxUpgrades = upgrades.getInt("maxUpgrades", upgrades.getInt("maxPerItem", 0));
+        if (maxUpgrades < 0) {
+          errors.add(base + ".upgrades.maxUpgrades: must be >= 0");
+          maxUpgrades = 0;
+        }
+        if (maxUpgrades > 0) {
+          ItemMarkers.setUpgradeMaxCount(template, maxUpgrades);
+        }
+        int tierBudget = upgrades.getInt("tierBudget", upgrades.getInt("maxTierTotal", 0));
+        if (tierBudget < 0) {
+          errors.add(base + ".upgrades.tierBudget: must be >= 0");
+          tierBudget = 0;
+        }
+        if (tierBudget > 0) {
+          ItemMarkers.setUpgradeTierBudget(template, tierBudget);
+        }
+      }
       List<Map<String, Object>> bindings = EditorItemYaml.bindings(cfg);
       EditorItemLore.applyAbilityLore(template, bindings, engine);
       ItemStack matchBase = template.clone();
       ItemMarkers.setItemId(matchBase, null);
+      ItemMarkers.setItemVersion(matchBase, null);
+      ItemMarkers.setItemTier(matchBase, null);
+      ItemMarkers.setItemRarity(matchBase, null);
       stripEffectLore(matchBase);
-      itemTemplates.put(itemId, new ItemTemplate(itemId, template, matchBase));
+      ItemStatBlock baseStats = ItemStatBlock.parse(cfg.get("stats"), base + ".stats", errors);
+      ItemStatBlock effectiveStats = baseStats;
+      if (tierSpec != null) {
+        effectiveStats = tierSpec.apply(baseStats);
+      }
+      if (effectiveStats != null && !effectiveStats.isEmpty()) {
+        ItemMarkers.setItemStats(template, effectiveStats.values());
+      }
+      ItemAffixPool affixPool = ItemAffixPool.parse(cfg.get("affixes"), base + ".affixes", errors);
+      if (affixPool == null) {
+        affixPool = ItemAffixPool.parse(cfg.get("affixPool"), base + ".affixPool", errors);
+      }
+      java.util.Map<ItemHookType, java.util.List<ItemHookSpec>> hooks = parseItemHooks(cfg, base, errors);
+      ItemTemplateCompiler.DurabilityRange durabilityRange = compiled == null ? null : compiled.durabilityRange();
+      itemTemplates.put(itemId, new ItemTemplate(itemId, template, matchBase, version, durabilityRange, baseStats, affixPool, tierSpec, hooks));
     } catch (Exception ex) {
       errors.add(base + ": " + ex.getMessage());
     }
   }
 
-  private ItemStack parseCustomItemTemplate(ConfigurationSection section, String path, List<String> errors) {
-    if (section == null) {
-      return null;
-    }
-    String typeRaw = YamlValues.string(section, "type", null);
-    String materialRaw = YamlValues.string(section, "material", null);
-    String materialKey = materialRaw;
-    if (materialKey == null && typeRaw != null && !typeRaw.equalsIgnoreCase("material")) {
-      materialKey = typeRaw;
-    }
-    if (materialKey == null || materialKey.isBlank()) {
-      errors.add(path + ".material: missing material");
-      return null;
-    }
-    Material material = Material.matchMaterial(materialKey);
-    if (material == null) {
-      errors.add(path + ".material: unknown material=" + materialKey);
-      return null;
-    }
-    int amount = section.getInt("amount", 1);
-    ItemStack item = new ItemStack(material, Math.max(1, amount));
-    ConfigurationSection meta = section.getConfigurationSection("meta");
-    if (meta == null) {
-      return item;
-    }
-    ItemMeta itemMeta = item.getItemMeta();
-    if (itemMeta == null) {
-      return item;
-    }
-    String displayName = YamlValues.string(meta, "display-name",
-        YamlValues.string(meta, "displayName", YamlValues.string(meta, "name", null)));
-    if (displayName != null && !displayName.isBlank()) {
-      itemMeta.displayName(GuiMini.mm(displayName));
-    }
-    List<String> loreLines = meta.getStringList("lore");
-    if (!loreLines.isEmpty()) {
-      itemMeta.lore(GuiMini.loreMm(loreLines));
-    }
-    ConfigurationSection enchants = meta.getConfigurationSection("enchants");
-    if (enchants != null) {
-      for (String key : enchants.getKeys(false)) {
-        int level = enchants.getInt(key, 1);
-        Enchantment enchant = parseEnchantment(key);
-        if (enchant == null) {
-          errors.add(path + ".meta.enchants: unknown enchantment=" + key);
-          continue;
-        }
-        itemMeta.addEnchant(enchant, Math.max(1, level), true);
-      }
-    }
-    List<String> flags = meta.getStringList("flags");
-    for (String raw : flags) {
-      if (raw == null || raw.isBlank()) {
-        continue;
-      }
-      try {
-        itemMeta.addItemFlags(ItemFlag.valueOf(raw.trim().toUpperCase(Locale.ROOT)));
-      } catch (IllegalArgumentException ex) {
-        errors.add(path + ".meta.flags: unknown flag=" + raw);
-      }
-    }
-    item.setItemMeta(itemMeta);
-    return item;
+  private ItemTemplateCompiler.CompiledTemplate parseCustomItemTemplate(ConfigurationSection section, String path, List<String> errors) {
+    return ItemTemplateCompiler.compile(section, path, errors);
   }
 
-  private Enchantment parseEnchantment(String raw) {
-    if (raw == null || raw.isBlank()) {
+  private java.util.Map<ItemHookType, java.util.List<ItemHookSpec>> parseItemHooks(
+      YamlConfiguration cfg,
+      String base,
+      List<String> errors) {
+    ConfigurationSection behavior = cfg.getConfigurationSection("behavior");
+    if (behavior == null) {
+      return java.util.Map.of();
+    }
+    java.util.Map<ItemHookType, java.util.List<ItemHookSpec>> hooks = new java.util.EnumMap<>(ItemHookType.class);
+    parseHookList(hooks, ItemHookType.ON_EQUIP, behavior.get("onEquip"), base + ".behavior.onEquip", errors);
+    parseHookList(hooks, ItemHookType.ON_HIT, behavior.get("onHit"), base + ".behavior.onHit", errors);
+    parseHookList(hooks, ItemHookType.ON_HURT, behavior.get("onHurt"), base + ".behavior.onHurt", errors);
+    parseHookList(hooks, ItemHookType.ON_CONSUME, behavior.get("onConsume"), base + ".behavior.onConsume", errors);
+    parseHookList(hooks, ItemHookType.ON_BLOCK_BREAK, behavior.get("onBlockBreak"), base + ".behavior.onBlockBreak", errors);
+    return hooks;
+  }
+
+  private java.util.Map<String, Integer> parseUpgradeSlots(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return java.util.Map.of();
+    }
+    java.util.Map<String, Integer> slots = new java.util.LinkedHashMap<>();
+    if (raw instanceof ConfigurationSection section) {
+      for (String key : section.getKeys(false)) {
+        int count = section.getInt(key, 0);
+        if (count < 0) {
+          errors.add(path + "." + key + ": count must be >= 0");
+          continue;
+        }
+        slots.put(normalizeSlot(key), count);
+      }
+      return slots;
+    }
+    if (raw instanceof Map<?, ?> map) {
+      for (var entry : map.entrySet()) {
+        String key = entry.getKey() == null ? "" : String.valueOf(entry.getKey());
+        if (key.isBlank()) {
+          continue;
+        }
+        int count = intValue(entry.getValue(), null, null, 0);
+        if (count < 0) {
+          errors.add(path + "." + key + ": count must be >= 0");
+          continue;
+        }
+        slots.put(normalizeSlot(key), count);
+      }
+      return slots;
+    }
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Object entry = list.get(i);
+        String entryPath = path + "[" + i + "]";
+        if (entry instanceof Map<?, ?> slotMap) {
+          Object typeRaw = slotMap.get("type");
+          if (typeRaw == null) {
+            errors.add(entryPath + ".type: missing slot type");
+            continue;
+          }
+          String type = normalizeSlot(String.valueOf(typeRaw));
+          int count = intValue(slotMap.get("count"), slotMap.get("slots"), null, 0);
+          if (count < 0) {
+            errors.add(entryPath + ".count: must be >= 0");
+            continue;
+          }
+          slots.put(type, count);
+        } else {
+          errors.add(entryPath + ": expected object with type/count");
+        }
+      }
+      return slots;
+    }
+    errors.add(path + ": expected map, list, or section");
+    return java.util.Map.of();
+  }
+
+  private String readItemRarity(YamlConfiguration cfg) {
+    String rarity = YamlValues.string(cfg.get("rarity"), null);
+    if (rarity != null && !rarity.isBlank()) {
+      return rarity;
+    }
+    ConfigurationSection item = cfg.getConfigurationSection("item");
+    if (item != null) {
+      rarity = YamlValues.string(item.get("rarity"), null);
+      if (rarity != null && !rarity.isBlank()) {
+        return rarity;
+      }
+      ConfigurationSection display = item.getConfigurationSection("display");
+      if (display != null) {
+        rarity = YamlValues.string(display.get("rarity"), null);
+        if (rarity != null && !rarity.isBlank()) {
+          return rarity;
+        }
+      }
+    }
+    return null;
+  }
+
+  private String normalizeSlot(String raw) {
+    if (raw == null) {
+      return "default";
+    }
+    String trimmed = raw.trim();
+    if (trimmed.isEmpty()) {
+      return "default";
+    }
+    if (trimmed.equalsIgnoreCase("any") || trimmed.equalsIgnoreCase("*")) {
+      return "any";
+    }
+    return Ids.normalize(trimmed);
+  }
+
+  private void parseHookList(
+      java.util.Map<ItemHookType, java.util.List<ItemHookSpec>> hooks,
+      ItemHookType type,
+      Object raw,
+      String path,
+      List<String> errors) {
+    if (raw == null) {
+      return;
+    }
+    List<ItemHookSpec> out = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        ItemHookSpec spec = parseHookSpec(list.get(i), path + "[" + i + "]", errors);
+        if (spec != null) {
+          out.add(spec);
+        }
+      }
+    } else {
+      ItemHookSpec spec = parseHookSpec(raw, path, errors);
+      if (spec != null) {
+        out.add(spec);
+      }
+    }
+    if (!out.isEmpty()) {
+      hooks.put(type, java.util.Collections.unmodifiableList(out));
+    }
+  }
+
+  private ItemHookSpec parseHookSpec(Object raw, String path, List<String> errors) {
+    List<String> abilities = new ArrayList<>();
+    dev.patric.dungeonsreborn.effects.actions.Action action = null;
+    long cooldownTicks = 0L;
+    double manaCost = 0.0;
+    int durabilityCost = 0;
+    int consumeAmount = 0;
+
+    if (raw instanceof String abilityId) {
+      abilities.add(Ids.normalize(abilityId));
+    } else if (raw instanceof Map<?, ?> map) {
+      Object abilityRaw = map.get("ability");
+      if (abilityRaw instanceof String single) {
+        abilities.add(Ids.normalize(single));
+      }
+      Object abilitiesRaw = map.get("abilities");
+      if (abilitiesRaw instanceof List<?> list) {
+        for (Object entry : list) {
+          if (entry == null) {
+            continue;
+          }
+          abilities.add(Ids.normalize(String.valueOf(entry)));
+        }
+      } else if (abilitiesRaw instanceof String listAsString) {
+        abilities.add(Ids.normalize(listAsString));
+      }
+
+      Object soundRaw = map.get("sound");
+      dev.patric.dungeonsreborn.effects.actions.Action soundAction = parseSoundAction(soundRaw, path + ".sound", errors);
+      Object particleRaw = map.get("particle");
+      if (particleRaw == null) {
+        particleRaw = map.get("particles");
+      }
+      dev.patric.dungeonsreborn.effects.actions.Action particleAction = parseParticleAction(particleRaw, path + ".particle", errors);
+      if (soundAction != null && particleAction != null) {
+        action = Actions.sequence(soundAction, particleAction);
+      } else if (soundAction != null) {
+        action = soundAction;
+      } else if (particleAction != null) {
+        action = particleAction;
+      }
+
+      cooldownTicks = parseCooldownTicks(map, path);
+      manaCost = doubleValue(map.get("manaCost"), map.get("mana"), 0.0);
+      durabilityCost = intValue(map.get("durabilityCost"), map.get("durability"), map.get("damage"), 0);
+      consumeAmount = intValue(map.get("consumeAmount"), map.get("consume"), map.get("amount"), 0);
+    } else {
+      errors.add(path + ": expected string or object");
+      return null;
+    }
+
+    return new ItemHookSpec(
+        java.util.Collections.unmodifiableList(abilities),
+        action,
+        cooldownTicks,
+        manaCost,
+        durabilityCost,
+        consumeAmount);
+  }
+
+  private long parseCooldownTicks(Map<?, ?> map, String path) {
+    Object ticksRaw = map.get("cooldownTicks");
+    if (ticksRaw != null) {
+      return Math.max(0L, YamlValues.longValue(ticksRaw, 0L));
+    }
+    Object secondsRaw = map.containsKey("cooldownSeconds") ? map.get("cooldownSeconds") : map.get("cooldown");
+    if (secondsRaw != null) {
+      double seconds = YamlValues.doubleValue(secondsRaw, 0.0);
+      if (seconds < 0.0) {
+        return 0L;
+      }
+      return Math.round(seconds * 20.0);
+    }
+    return 0L;
+  }
+
+  private dev.patric.dungeonsreborn.effects.actions.Action parseSoundAction(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return null;
+    }
+    String id;
+    float volume = 1.0f;
+    float pitch = 1.0f;
+    if (raw instanceof String value) {
+      id = value;
+    } else if (raw instanceof Map<?, ?> map) {
+      Object idRaw = map.get("id");
+      if (idRaw == null) {
+        idRaw = map.get("sound");
+      }
+      if (idRaw == null) {
+        errors.add(path + ".id: missing sound id");
+        return null;
+      }
+      id = String.valueOf(idRaw);
+      volume = (float) doubleValue(map.get("volume"), null, 1.0);
+      pitch = (float) doubleValue(map.get("pitch"), null, 1.0);
+    } else {
+      errors.add(path + ": expected string or object");
+      return null;
+    }
+    NamespacedKey key = parseSoundKey(id);
+    if (key == null) {
+      errors.add(path + ": invalid sound key=" + id);
+      return null;
+    }
+    Sound sound = Registry.SOUNDS.get(key);
+    if (sound == null) {
+      errors.add(path + ": unknown sound=" + id);
+      return null;
+    }
+    return Actions.sound(sound, volume, pitch);
+  }
+
+  private static NamespacedKey parseSoundKey(String raw) {
+    if (raw == null) {
       return null;
     }
     String trimmed = raw.trim();
-    NamespacedKey key;
-    if (trimmed.contains(":")) {
-      key = NamespacedKey.fromString(trimmed);
-    } else {
-      String legacy = switch (trimmed.toUpperCase(Locale.ROOT)) {
-        case "DURABILITY" -> "unbreaking";
-        default -> trimmed.toLowerCase(Locale.ROOT);
-      };
-      key = NamespacedKey.minecraft(legacy);
-    }
-    if (key == null) {
+    if (trimmed.isEmpty()) {
       return null;
     }
-    return RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT).get(key);
+    String normalized = trimmed.toLowerCase(Locale.ROOT);
+    NamespacedKey key = NamespacedKey.fromString(normalized);
+    if (key != null) {
+      return key;
+    }
+    if (normalized.contains(".")) {
+      return NamespacedKey.minecraft(normalized);
+    }
+    return NamespacedKey.minecraft(normalized.replace('_', '.'));
+  }
+
+  private dev.patric.dungeonsreborn.effects.actions.Action parseParticleAction(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return null;
+    }
+    String type;
+    int count = 1;
+    double offset = 0.0;
+    double extra = 0.0;
+    if (raw instanceof String value) {
+      type = value;
+    } else if (raw instanceof Map<?, ?> map) {
+      Object typeRaw = map.get("type");
+      if (typeRaw == null) {
+        typeRaw = map.get("particle");
+      }
+      if (typeRaw == null) {
+        errors.add(path + ".type: missing particle type");
+        return null;
+      }
+      type = String.valueOf(typeRaw);
+      count = intValue(map.get("count"), null, null, 1);
+      offset = doubleValue(map.get("offset"), null, 0.0);
+      extra = doubleValue(map.get("extra"), null, 0.0);
+    } else {
+      errors.add(path + ": expected string or object");
+      return null;
+    }
+    try {
+      Particle particle = Particle.valueOf(type.trim().toUpperCase(Locale.ROOT));
+      return Actions.particlesPoint(particle, count, offset, extra);
+    } catch (IllegalArgumentException ex) {
+      errors.add(path + ": unknown particle=" + type);
+      return null;
+    }
+  }
+
+  private static double doubleValue(Object primary, Object secondary, double fallback) {
+    if (primary != null) {
+      return YamlValues.doubleValue(primary, fallback);
+    }
+    if (secondary != null) {
+      return YamlValues.doubleValue(secondary, fallback);
+    }
+    return fallback;
+  }
+
+  private static double doubleValue(Map<String, Object> node, String key, double fallback) {
+    if (node == null || key == null) {
+      return fallback;
+    }
+    return YamlReaders.doubleValue(node, key, fallback);
+  }
+
+  private static int intValue(Object first, Object second, Object third, int fallback) {
+    if (first != null) {
+      return YamlValues.intValue(first, fallback);
+    }
+    if (second != null) {
+      return YamlValues.intValue(second, fallback);
+    }
+    if (third != null) {
+      return YamlValues.intValue(third, fallback);
+    }
+    return fallback;
+  }
+
+  private static List<String> readStringList(Object raw) {
+    if (raw == null) {
+      return List.of();
+    }
+    if (raw instanceof List<?> list) {
+      List<String> out = new ArrayList<>();
+      for (Object entry : list) {
+        if (entry == null) {
+          continue;
+        }
+        String value = String.valueOf(entry).trim();
+        if (!value.isEmpty()) {
+          out.add(value);
+        }
+      }
+      return out;
+    }
+    String value = String.valueOf(raw).trim();
+    if (value.isEmpty()) {
+      return List.of();
+    }
+    return List.of(value);
+  }
+
+  private static int intValue(Map<String, Object> node, String key, int fallback) {
+    if (node == null || key == null) {
+      return fallback;
+    }
+    return YamlReaders.intValue(node, key, fallback);
   }
 
   public LintResult lintScripts() {
@@ -1029,71 +1856,163 @@ public final class EffectsYamlAbilities {
     AbilitySpec.Builder builder = AbilitySpec.builder(id)
         .name(a.getString("name"))
         .description(a.getString("description"));
+    String previousUnsafePermission = unsafePermission;
+    String configuredUnsafePermission = a.getString("unsafePermission");
+    if (configuredUnsafePermission != null && configuredUnsafePermission.isBlank()) {
+      configuredUnsafePermission = null;
+    }
+    boolean unsafeActions = a.getBoolean("unsafeActions", false);
+    if (configuredUnsafePermission == null && unsafeActions) {
+      configuredUnsafePermission = DEFAULT_UNSAFE_PERMISSION;
+    }
+    unsafePermission = configuredUnsafePermission;
 
-    // Requirements
-    var requirements = a.getMapList("requirements");
-    for (int i = 0; i < requirements.size(); i++) {
-      Map<?, ?> raw = requirements.get(i);
-      Map<String, Object> req = castMap(raw, base + ".requirements[" + i + "]");
-      String type = requireString(req, "type", base + ".requirements[" + i + "].type");
-      Component message = req.containsKey("message") ? richText(String.valueOf(req.get("message"))) : null;
+    try {
+      // Requirements
+      var requirements = a.getMapList("requirements");
+      for (int i = 0; i < requirements.size(); i++) {
+        Map<?, ?> raw = requirements.get(i);
+        Map<String, Object> req = castMap(raw, base + ".requirements[" + i + "]");
+        String type = requireString(req, "type", base + ".requirements[" + i + "].type");
+        Component message = req.containsKey("message") ? richText(String.valueOf(req.get("message"))) : null;
 
-      switch (type.toLowerCase(Locale.ROOT)) {
-        case "sneaking" -> builder.require(Conditions.sneaking(), message);
-        case "permission" -> builder.require(Conditions.permission(requireString(req, "permission", base + ".requirements[" + i + "].permission")), message);
-        case "has_item_tag" -> {
-          String keyStr = requireString(req, "key", base + ".requirements[" + i + "].key");
-          NamespacedKey key = NamespacedKey.fromString(keyStr);
-          if (key == null) {
-            throw new IllegalArgumentException(base + ".requirements[" + i + "].key: invalid NamespacedKey: " + keyStr);
+        switch (type.toLowerCase(Locale.ROOT)) {
+          case "sneaking" -> builder.require(Conditions.sneaking(), message);
+          case "permission" -> builder.require(Conditions.permission(requireString(req, "permission", base + ".requirements[" + i + "].permission")), message);
+          case "has_item_tag" -> {
+            String keyStr = requireString(req, "key", base + ".requirements[" + i + "].key");
+            NamespacedKey key = NamespacedKey.fromString(keyStr);
+            if (key == null) {
+              throw new IllegalArgumentException(base + ".requirements[" + i + "].key: invalid NamespacedKey: " + keyStr);
+            }
+            builder.require(Conditions.hasItemTag(key), message);
           }
-          builder.require(Conditions.hasItemTag(key), message);
+          default -> throw new IllegalArgumentException(base + ".requirements[" + i + "].type: unknown type: " + type);
         }
-        default -> throw new IllegalArgumentException(base + ".requirements[" + i + "].type: unknown type: " + type);
       }
-    }
 
-    // Costs
-    var costs = a.getMapList("costs");
-    for (int i = 0; i < costs.size(); i++) {
-      Map<?, ?> raw = costs.get(i);
-      Map<String, Object> cost = castMap(raw, base + ".costs[" + i + "]");
-      String type = requireString(cost, "type", base + ".costs[" + i + "].type");
-      switch (type.toLowerCase(Locale.ROOT)) {
-        case "mana" -> {
-          NumValue amount = requireNumValue(cost, "amount", base + ".costs[" + i + "].amount");
-          builder.cost(ctx -> {
-            double v = evalDouble(amount, ctx);
-            if (!(v > 0.0)) {
-              return Component.text("Invalid mana cost.");
-            }
-            return Costs.mana(v).tryApply(ctx);
-          });
-        }
-        case "consume_item", "consume_main_hand" -> {
-          NumValue amount = requireNumValue(cost, "amount", base + ".costs[" + i + "].amount");
-          builder.cost(ctx -> {
-            int v = evalInt(amount, ctx);
-            if (v <= 0) {
-              return Component.text("Invalid item cost.");
-            }
-            return Costs.consumeMainHand(v).tryApply(ctx);
-          });
-        }
-        case "durability", "durability_main_hand" -> {
-          NumValue dmg = requireNumValue(cost, "damage", base + ".costs[" + i + "].damage");
-          boolean allowBreak = bool(cost, "allowBreak", false);
-          builder.cost(ctx -> {
-            int v = evalInt(dmg, ctx);
-            if (v <= 0) {
-              return Component.text("Invalid durability cost.");
-            }
-            return Costs.durabilityMainHand(v, allowBreak).tryApply(ctx);
-          });
-        }
-        default -> throw new IllegalArgumentException(base + ".costs[" + i + "].type: unknown type: " + type);
+      Set<String> allowWorlds = parseStringSet(a.get("allowWorlds"), a.get("allowWorld"), base + ".allowWorlds");
+      if (!allowWorlds.isEmpty()) {
+        Component message = a.isString("allowWorldsMessage") ? richText(a.getString("allowWorldsMessage")) : null;
+        builder.require(ctx -> matchesWorld(ctx.world(), allowWorlds), message);
       }
-    }
+      Set<String> denyWorlds = parseStringSet(a.get("denyWorlds"), a.get("denyWorld"), base + ".denyWorlds");
+      if (!denyWorlds.isEmpty()) {
+        Component message = a.isString("denyWorldsMessage") ? richText(a.getString("denyWorldsMessage")) : null;
+        builder.require(ctx -> !matchesWorld(ctx.world(), denyWorlds), message);
+      }
+      List<QuestRegion> allowRegions = parseRegionList(a.get("allowRegions"), base + ".allowRegions");
+      if (!allowRegions.isEmpty()) {
+        Component message = a.isString("allowRegionsMessage") ? richText(a.getString("allowRegionsMessage")) : null;
+        builder.require(ctx -> regionContainsAny(allowRegions, ctx.origin()), message);
+      }
+      List<QuestRegion> denyRegions = parseRegionList(a.get("denyRegions"), base + ".denyRegions");
+      if (!denyRegions.isEmpty()) {
+        Component message = a.isString("denyRegionsMessage") ? richText(a.getString("denyRegionsMessage")) : null;
+        builder.require(ctx -> !regionContainsAny(denyRegions, ctx.origin()), message);
+      }
+      Component minManaMessage = a.isString("minManaMessage") ? richText(a.getString("minManaMessage")) : null;
+      double minMana = a.contains("minMana") ? a.getDouble("minMana", 0.0) : 0.0;
+      double minManaPct = a.contains("minManaPct") ? a.getDouble("minManaPct", 0.0) : 0.0;
+      if (globalMinMana > 0.0 || globalMinManaPct > 0.0) {
+        addManaMinimumRequirement(builder, base, globalMinMana, globalMinManaPct, null);
+      }
+      if (minMana > 0.0 || minManaPct > 0.0) {
+        addManaMinimumRequirement(builder, base, minMana, minManaPct, minManaMessage);
+      }
+
+      // Costs
+      var costs = a.getMapList("costs");
+      for (int i = 0; i < costs.size(); i++) {
+        Map<?, ?> raw = costs.get(i);
+        Map<String, Object> cost = castMap(raw, base + ".costs[" + i + "]");
+        String type = requireString(cost, "type", base + ".costs[" + i + "].type");
+        String costBase = base + ".costs[" + i + "]";
+        NumValue multiplier = numValue(cost, "multiplier", 1.0, costBase);
+        NumValue add = numValue(cost, "add", 0.0, costBase);
+        dev.patric.dungeonsreborn.effects.conditions.Condition condition = null;
+        if (cost.containsKey("condition")) {
+          condition = compileCondition(cost.get("condition"), costBase + ".condition");
+        } else if (cost.containsKey("conditions")) {
+          Object conditionsRaw = cost.get("conditions");
+          if (conditionsRaw instanceof List<?> list && !list.isEmpty()) {
+            List<dev.patric.dungeonsreborn.effects.conditions.Condition> compiled = new ArrayList<>();
+            for (int c = 0; c < list.size(); c++) {
+              compiled.add(compileCondition(list.get(c), costBase + ".conditions[" + c + "]"));
+            }
+            condition = ctx -> {
+              for (dev.patric.dungeonsreborn.effects.conditions.Condition entry : compiled) {
+                if (!entry.test(ctx)) {
+                  return false;
+                }
+              }
+              return true;
+            };
+          } else if (conditionsRaw != null) {
+            condition = compileCondition(conditionsRaw, costBase + ".conditions");
+          }
+        }
+        final dev.patric.dungeonsreborn.effects.conditions.Condition costCondition = condition;
+        switch (type.toLowerCase(Locale.ROOT)) {
+          case "mana" -> {
+            NumValue amount = requireNumValue(cost, "amount", costBase + ".amount");
+            builder.cost(ctx -> {
+              if (costCondition != null && !costCondition.test(ctx)) {
+                return null;
+              }
+              double v = evalDouble(amount, ctx);
+              v = v * evalDouble(multiplier, ctx) + evalDouble(add, ctx);
+              if (!(v > 0.0)) {
+                return Component.text("Invalid mana cost.");
+              }
+              return Costs.mana(v).tryApply(ctx);
+            });
+          }
+          case "resource" -> {
+            String resourceId = requireString(cost, "resource", costBase + ".resource");
+            NumValue amount = requireNumValue(cost, "amount", costBase + ".amount");
+            builder.cost(ctx -> {
+              if (costCondition != null && !costCondition.test(ctx)) {
+                return null;
+              }
+              double v = evalDouble(amount, ctx);
+              v = v * evalDouble(multiplier, ctx) + evalDouble(add, ctx);
+              if (!(v > 0.0)) {
+                return Component.text("Invalid resource cost.");
+              }
+              return Costs.resource(resourceId, v).tryApply(ctx);
+            });
+          }
+          case "consume_item", "consume_main_hand" -> {
+            NumValue amount = requireNumValue(cost, "amount", costBase + ".amount");
+            builder.cost(ctx -> {
+              if (costCondition != null && !costCondition.test(ctx)) {
+                return null;
+              }
+              int v = evalInt(amount, ctx);
+              if (v <= 0) {
+                return Component.text("Invalid item cost.");
+              }
+              return Costs.consumeMainHand(v).tryApply(ctx);
+            });
+          }
+          case "durability", "durability_main_hand" -> {
+            NumValue dmg = requireNumValue(cost, "damage", costBase + ".damage");
+            boolean allowBreak = bool(cost, "allowBreak", false);
+            builder.cost(ctx -> {
+              if (costCondition != null && !costCondition.test(ctx)) {
+                return null;
+              }
+              int v = evalInt(dmg, ctx);
+              if (v <= 0) {
+                return Component.text("Invalid durability cost.");
+              }
+              return Costs.durabilityMainHand(v, allowBreak).tryApply(ctx);
+            });
+          }
+          default -> throw new IllegalArgumentException(base + ".costs[" + i + "].type: unknown type: " + type);
+        }
+      }
 
     // Cooldown
     ConfigurationSection cooldown = a.getConfigurationSection("cooldown");
@@ -1137,6 +2056,9 @@ public final class EffectsYamlAbilities {
       }
       compiled = compileAction(actionNode, base + ".action", new java.util.ArrayDeque<>());
     }
+    if (unsafePermission != null && unsafeActions) {
+      compiled = wrapUnsafeAction(compiled, "ability", base);
+    }
     if (a.getBoolean("profile", false)) {
       compiled = Actions.timed("yaml:" + id, compiled);
     }
@@ -1177,7 +2099,15 @@ public final class EffectsYamlAbilities {
       builder.triggerInteract(bindingId, trigger, matcher, requireSneaking, permission, cancelEvent);
     }
 
-    return builder.build();
+    EffectsEngine.AbilityCombatProfile combatProfile = parseAbilityCombatProfile(a, base + ".combat");
+    if (combatProfile != null) {
+      abilityCombatProfiles.put(id, combatProfile);
+    }
+
+      return builder.build();
+    } finally {
+      unsafePermission = previousUnsafePermission;
+    }
   }
 
   private int compileItemBindings(String itemId, String base, Map<String, Object> root, List<String> errors) {
@@ -1300,7 +2230,8 @@ public final class EffectsYamlAbilities {
       case "cast" -> VarScope.CAST;
       case "player" -> VarScope.PLAYER;
       case "entity", "target" -> VarScope.ENTITY;
-      default -> throw new IllegalArgumentException(path + ": invalid scope=" + raw + " (use cast|player|entity)");
+      case "ability" -> VarScope.ABILITY;
+      default -> throw new IllegalArgumentException(path + ": invalid scope=" + raw + " (use cast|player|entity|ability)");
     };
   }
 
@@ -1318,7 +2249,7 @@ public final class EffectsYamlAbilities {
   }
 
   private Map<String, Object> vars(CastContext ctx, VarScope scope) {
-    return switch (scope) {
+    Map<String, Object> vars = switch (scope) {
       case CAST -> ctx.variables();
       case PLAYER -> {
         if (!(ctx.caster() instanceof Player)) {
@@ -1333,7 +2264,10 @@ public final class EffectsYamlAbilities {
         }
         yield entityVars.computeIfAbsent(entity.getUniqueId(), k -> new java.util.HashMap<>());
       }
+      case ABILITY -> abilityVars.computeIfAbsent(ctx.abilityId(), k -> new java.util.HashMap<>());
     };
+    pruneExpired(vars, varExpirations(ctx, scope), ctx.tick());
+    return vars;
   }
 
   private static int maxVars(VarScope scope) {
@@ -1341,7 +2275,43 @@ public final class EffectsYamlAbilities {
       case CAST -> MAX_CAST_VARS;
       case PLAYER -> MAX_PLAYER_VARS;
       case ENTITY -> MAX_ENTITY_VARS;
+      case ABILITY -> MAX_ABILITY_VARS;
     };
+  }
+
+  private Map<String, Long> varExpirations(CastContext ctx, VarScope scope) {
+    return switch (scope) {
+      case CAST -> ctx.state().expirations();
+      case PLAYER -> {
+        if (!(ctx.caster() instanceof Player)) {
+          yield ctx.state().expirations();
+        }
+        yield playerVarExpirations.computeIfAbsent(ctx.caster().getUniqueId(), k -> new java.util.HashMap<>());
+      }
+      case ENTITY -> {
+        LivingEntity entity = lastEntity(ctx);
+        if (entity == null) {
+          entity = ctx.caster();
+        }
+        yield entityVarExpirations.computeIfAbsent(entity.getUniqueId(), k -> new java.util.HashMap<>());
+      }
+      case ABILITY -> abilityVarExpirations.computeIfAbsent(ctx.abilityId(), k -> new java.util.HashMap<>());
+    };
+  }
+
+  private void pruneExpired(Map<String, Object> vars, Map<String, Long> expirations, long tick) {
+    if (expirations.isEmpty()) {
+      return;
+    }
+    java.util.Iterator<Map.Entry<String, Long>> it = expirations.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<String, Long> entry = it.next();
+      Long expiresAt = entry.getValue();
+      if (expiresAt != null && expiresAt <= tick) {
+        vars.remove(entry.getKey());
+        it.remove();
+      }
+    }
   }
 
   private static ActionHandle scheduledHandle(EffectsEngine.ScheduledHandle handle, AtomicBoolean done) {
@@ -1361,13 +2331,20 @@ public final class EffectsYamlAbilities {
   }
 
   private boolean setVar(CastContext ctx, VarScope scope, String key, Object value) {
+    return setVar(ctx, scope, key, value, null);
+  }
+
+  private boolean setVar(CastContext ctx, VarScope scope, String key, Object value, Long ttlTicks) {
     Map<String, Object> vars = vars(ctx, scope);
+    Map<String, Long> expirations = varExpirations(ctx, scope);
     if (value == null) {
       vars.remove(key);
+      expirations.remove(key);
       return true;
     }
     if (vars.containsKey(key)) {
       vars.put(key, value);
+      updateExpiration(expirations, key, ttlTicks, ctx.tick());
       return true;
     }
     int limit = maxVars(scope);
@@ -1378,7 +2355,27 @@ public final class EffectsYamlAbilities {
       return false;
     }
     vars.put(key, value);
+    updateExpiration(expirations, key, ttlTicks, ctx.tick());
     return true;
+  }
+
+  private void updateExpiration(Map<String, Long> expirations, String key, Long ttlTicks, long tick) {
+    if (ttlTicks == null || ttlTicks <= 0) {
+      expirations.remove(key);
+      return;
+    }
+    expirations.put(key, tick + ttlTicks);
+  }
+
+  private long evalTtlTicks(NumValue ttlValue, CastContext ctx) {
+    if (ttlValue == null) {
+      return -1L;
+    }
+    double value = evalDouble(ttlValue, ctx);
+    if (!Double.isFinite(value) || value <= 0.0) {
+      return -1L;
+    }
+    return (long) Math.ceil(value);
   }
 
   private static InteractTrigger parseInteractTrigger(String raw, String path) {
@@ -1448,7 +2445,7 @@ public final class EffectsYamlAbilities {
   private static ItemMatcher compileItemMatcher(Object raw, String path) {
     Map<String, Object> node = castMap(raw, path);
     String type = requireString(node, "type", path + ".type").trim().toLowerCase(Locale.ROOT);
-    return switch (type) {
+    ItemMatcher matcher = switch (type) {
       case "any_non_air", "any-non-air", "any_nonair", "any" -> ItemMatchers.anyNonAir();
       case "material" -> {
         String m = requireString(node, "material", path + ".material").trim().toUpperCase(Locale.ROOT);
@@ -1501,6 +2498,7 @@ public final class EffectsYamlAbilities {
       }
       default -> throw new IllegalArgumentException(path + ".type: unknown matcher type: " + type);
     };
+    return matcher;
   }
 
   private dev.patric.dungeonsreborn.effects.conditions.Condition compileCondition(Object raw, String path) {
@@ -1517,6 +2515,164 @@ public final class EffectsYamlAbilities {
           throw new IllegalArgumentException(path + ".key: invalid NamespacedKey: " + keyStr);
         }
         yield Conditions.hasItemTag(key);
+      }
+      case "caster_has_tag", "caster-has-tag", "has_tag", "has-tag" -> {
+        String tag = requireString(node, "tag", path + ".tag");
+        yield Conditions.casterHasTag(tag);
+      }
+      case "caster_lacks_tag", "caster-lacks-tag", "lacks_tag", "lacks-tag" -> {
+        String tag = requireString(node, "tag", path + ".tag");
+        yield Conditions.casterLacksTag(tag);
+      }
+      case "item_match", "item-match", "has_item", "has-item" -> {
+        Object itemRaw = require(node, "item", path + ".item");
+        ItemMatcher matcher = compileItemMatcher(itemRaw, path + ".item");
+        List<EquipmentSlot> slots = parseSlots(node.get("slot"), path + ".slot");
+        yield ctx -> {
+          if (!(ctx.caster() instanceof Player player)) {
+            return false;
+          }
+          for (EquipmentSlot slot : slots) {
+            ItemStack item = equipmentItem(player, slot);
+            if (matcher.matches(player, item)) {
+              return true;
+            }
+          }
+          return false;
+        };
+      }
+      case "world" -> {
+        Set<String> worlds = parseStringSet(node.get("worlds"), node.get("world"), path);
+        if (worlds.isEmpty()) {
+          throw new IllegalArgumentException(path + ".worlds: expected at least one world");
+        }
+        yield ctx -> matchesWorld(ctx.world(), worlds);
+      }
+      case "biome" -> {
+        Set<Biome> biomes = parseBiomeSet(node.get("biomes"), node.get("biome"), path);
+        if (biomes.isEmpty()) {
+          throw new IllegalArgumentException(path + ".biomes: expected at least one biome");
+        }
+        yield ctx -> {
+          World world = ctx.world();
+          if (world == null) {
+            return false;
+          }
+          return biomes.contains(world.getBiome(ctx.origin()));
+        };
+      }
+      case "time_between", "time-between" -> {
+        NumValue minTime = numValue(node, "minTime", 0.0, path);
+        NumValue maxTime = numValue(node, "maxTime", 23999.0, path);
+        yield ctx -> {
+          World world = ctx.world();
+          if (world == null) {
+            return false;
+          }
+          long time = world.getTime();
+          long min = Math.round(evalDouble(minTime, ctx));
+          long max = Math.round(evalDouble(maxTime, ctx));
+          return timeBetween(time, min, max);
+        };
+      }
+      case "region" -> {
+        QuestRegion region = parseRegion(node, path);
+        yield ctx -> region.contains(ctx.origin());
+      }
+      case "in_party", "in-party" -> {
+        yield ctx -> partyOf(ctx) != null;
+      }
+      case "party_size_gte", "party-size-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          Party party = partyOf(ctx);
+          return party != null && party.size() >= Math.round(evalDouble(threshold, ctx));
+        };
+      }
+      case "party_size_lte", "party-size-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          Party party = partyOf(ctx);
+          return party != null && party.size() <= Math.round(evalDouble(threshold, ctx));
+        };
+      }
+      case "party_leader", "party-leader" -> {
+        yield ctx -> {
+          Party party = partyOf(ctx);
+          return party != null && party.leader().equals(ctx.caster().getUniqueId());
+        };
+      }
+      case "health_gte", "health-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> ctx.caster().getHealth() >= evalDouble(threshold, ctx);
+      }
+      case "health_lte", "health-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> ctx.caster().getHealth() <= evalDouble(threshold, ctx);
+      }
+      case "health_pct_gte", "health-pct-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          AttributeInstance attr = ctx.caster().getAttribute(Attribute.MAX_HEALTH);
+          double max = attr != null ? attr.getValue() : 20.0;
+          return max > 0.0 && (ctx.caster().getHealth() / max) >= evalDouble(threshold, ctx);
+        };
+      }
+      case "health_pct_lte", "health-pct-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          AttributeInstance attr = ctx.caster().getAttribute(Attribute.MAX_HEALTH);
+          double max = attr != null ? attr.getValue() : 20.0;
+          return max > 0.0 && (ctx.caster().getHealth() / max) <= evalDouble(threshold, ctx);
+        };
+      }
+      case "mana_gte", "mana-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> manaValue(ctx) >= evalDouble(threshold, ctx);
+      }
+      case "mana_lte", "mana-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> manaValue(ctx) <= evalDouble(threshold, ctx);
+      }
+      case "mana_pct_gte", "mana-pct-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          double max = manaMax(ctx);
+          return max > 0.0 && (manaValue(ctx) / max) >= evalDouble(threshold, ctx);
+        };
+      }
+      case "mana_pct_lte", "mana-pct-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> {
+          double max = manaMax(ctx);
+          return max > 0.0 && (manaValue(ctx) / max) <= evalDouble(threshold, ctx);
+        };
+      }
+      case "level_gte", "level-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> levelValue(ctx) >= evalDouble(threshold, ctx);
+      }
+      case "level_lte", "level-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> levelValue(ctx) <= evalDouble(threshold, ctx);
+      }
+      case "xp_gte", "xp-gte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> xpValue(ctx) >= evalDouble(threshold, ctx);
+      }
+      case "xp_lte", "xp-lte" -> {
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> xpValue(ctx) <= evalDouble(threshold, ctx);
+      }
+      case "stat_gte", "stat-gte" -> {
+        String stat = requireString(node, "stat", path + ".stat");
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> statValue(ctx, stat) >= evalDouble(threshold, ctx);
+      }
+      case "stat_lte", "stat-lte" -> {
+        String stat = requireString(node, "stat", path + ".stat");
+        NumValue threshold = requireNumValue(node, "value", path + ".value");
+        yield ctx -> statValue(ctx, stat) <= evalDouble(threshold, ctx);
       }
       case "has_target", "has-target" -> ctx -> lastEntity(ctx) != null;
       case "chance" -> {
@@ -1627,7 +2783,274 @@ public final class EffectsYamlAbilities {
     };
   }
 
+  private static List<EquipmentSlot> parseSlots(Object raw, String path) {
+    if (raw == null) {
+      return List.of(EquipmentSlot.HAND);
+    }
+    List<String> values = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (Object o : list) {
+        if (o != null) {
+          values.add(String.valueOf(o));
+        }
+      }
+    } else {
+      values.add(String.valueOf(raw));
+    }
+    ArrayList<EquipmentSlot> slots = new ArrayList<>();
+    for (String value : values) {
+      String normalized = value.trim().toUpperCase(Locale.ROOT);
+      if (normalized.isEmpty()) {
+        continue;
+      }
+      switch (normalized) {
+        case "ANY", "ALL" -> {
+          slots.add(EquipmentSlot.HAND);
+          slots.add(EquipmentSlot.OFF_HAND);
+          slots.add(EquipmentSlot.HEAD);
+          slots.add(EquipmentSlot.CHEST);
+          slots.add(EquipmentSlot.LEGS);
+          slots.add(EquipmentSlot.FEET);
+        }
+        case "ARMOR", "ARMOUR" -> {
+          slots.add(EquipmentSlot.HEAD);
+          slots.add(EquipmentSlot.CHEST);
+          slots.add(EquipmentSlot.LEGS);
+          slots.add(EquipmentSlot.FEET);
+        }
+        case "HAND", "MAIN_HAND", "MAINHAND" -> slots.add(EquipmentSlot.HAND);
+        case "OFF_HAND", "OFFHAND" -> slots.add(EquipmentSlot.OFF_HAND);
+        case "HEAD", "HELMET" -> slots.add(EquipmentSlot.HEAD);
+        case "CHEST", "CHESTPLATE" -> slots.add(EquipmentSlot.CHEST);
+        case "LEGS", "LEGGINGS" -> slots.add(EquipmentSlot.LEGS);
+        case "FEET", "BOOTS" -> slots.add(EquipmentSlot.FEET);
+        default -> throw new IllegalArgumentException(path + ": unknown slot " + value);
+      }
+    }
+    if (slots.isEmpty()) {
+      throw new IllegalArgumentException(path + ": expected at least one slot");
+    }
+    return List.copyOf(slots);
+  }
+
+  private static ItemStack equipmentItem(LivingEntity living, EquipmentSlot slot) {
+    if (living.getEquipment() == null) {
+      return null;
+    }
+    return switch (slot) {
+      case HAND -> living.getEquipment().getItemInMainHand();
+      case OFF_HAND -> living.getEquipment().getItemInOffHand();
+      case HEAD -> living.getEquipment().getHelmet();
+      case CHEST -> living.getEquipment().getChestplate();
+      case LEGS -> living.getEquipment().getLeggings();
+      case FEET -> living.getEquipment().getBoots();
+      default -> null;
+    };
+  }
+
+  private static Set<Biome> parseBiomeSet(Object primary, Object secondary, String path) {
+    Set<String> raw = parseStringSet(primary, secondary, path);
+    if (raw.isEmpty()) {
+      return Set.of();
+    }
+    Set<Biome> out = new HashSet<>();
+    var biomeRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME);
+    for (String value : raw) {
+      String trimmed = value.trim();
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      NamespacedKey key = NamespacedKey.fromString(trimmed.toLowerCase(Locale.ROOT));
+      if (key == null) {
+        key = NamespacedKey.fromString("minecraft:" + trimmed.toLowerCase(Locale.ROOT));
+      }
+      Biome biome = key == null ? null : biomeRegistry.get(key);
+      if (biome == null) {
+        throw new IllegalArgumentException(path + ": unknown biome " + value);
+      }
+      out.add(biome);
+    }
+    return out;
+  }
+
+  private static boolean matchesWorld(World world, Set<String> worlds) {
+    if (world == null) {
+      return false;
+    }
+    if (worlds.contains(world.getName())) {
+      return true;
+    }
+    return worlds.contains(world.getKey().toString());
+  }
+
+  private static boolean timeBetween(long time, long min, long max) {
+    if (min <= max) {
+      return time >= min && time <= max;
+    }
+    return time >= min || time <= max;
+  }
+
+  private static QuestRegion parseRegion(Map<String, Object> node, String path) {
+    Object regionRaw = node.get("region");
+    Map<String, Object> data = regionRaw instanceof Map<?, ?> || regionRaw instanceof ConfigurationSection
+        ? castMap(regionRaw, path + ".region")
+        : node;
+    String world = requireString(data, "world", path + ".world");
+    double x = requireDouble(data, "x", path + ".x");
+    double y = requireDouble(data, "y", path + ".y");
+    double z = requireDouble(data, "z", path + ".z");
+    double radius = requireDouble(data, "radius", path + ".radius");
+    if (radius < 0.0) {
+      throw new IllegalArgumentException(path + ".radius: must be >= 0");
+    }
+    return new QuestRegion(world, x, y, z, radius);
+  }
+
+  private static List<QuestRegion> parseRegionList(Object raw, String path) {
+    if (raw == null) {
+      return List.of();
+    }
+    List<QuestRegion> regions = new ArrayList<>();
+    if (raw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Map<String, Object> regionNode = castMap(list.get(i), path + "[" + i + "]");
+        regions.add(parseRegion(regionNode, path + "[" + i + "]"));
+      }
+    } else {
+      Map<String, Object> regionNode = castMap(raw, path);
+      regions.add(parseRegion(regionNode, path));
+    }
+    return regions;
+  }
+
+  private static boolean regionContainsAny(List<QuestRegion> regions, Location origin) {
+    if (origin == null) {
+      return false;
+    }
+    for (QuestRegion region : regions) {
+      if (region.contains(origin)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private dev.patric.dungeonsreborn.effects.actions.Action wrapUnsafeAction(
+      dev.patric.dungeonsreborn.effects.actions.Action action,
+      String type,
+      String path) {
+    String permission = unsafePermission;
+    if (permission == null) {
+      return action;
+    }
+    return ctx -> {
+      Player player = ctx.caster() instanceof Player p ? p : null;
+      if (player == null || !player.hasPermission(permission)) {
+        if (ctx.engine().isDebugEnabled()) {
+          ctx.engine().debug("blocked unsafe action " + type + " at " + path + " (missing " + permission + ")");
+        }
+        return;
+      }
+      action.execute(ctx);
+    };
+  }
+
+  private Party partyOf(CastContext ctx) {
+    if (!(ctx.caster() instanceof Player player)) {
+      return null;
+    }
+    if (plugin instanceof DungeonsRebornPlugin dr) {
+      PartyService service = dr.partyService();
+      return service == null ? null : service.partyOf(player);
+    }
+    return null;
+  }
+
+  private double manaValue(CastContext ctx) {
+    if (ctx.caster() instanceof Player player && ctx.engine().manaProvider() != null) {
+      return ctx.engine().manaProvider().get(player);
+    }
+    return 0.0;
+  }
+
+  private double manaMax(CastContext ctx) {
+    if (ctx.caster() instanceof Player player && ctx.engine().manaProvider() != null) {
+      return ctx.engine().manaProvider().getMax(player);
+    }
+    return 0.0;
+  }
+
+  private void addManaMinimumRequirement(AbilitySpec.Builder builder, String base, double minMana, double minManaPct,
+      Component message) {
+    Component fallback = message != null ? message : Component.text("Not enough mana.");
+    if (minMana > 0.0) {
+      builder.require(ctx -> manaValue(ctx) >= minMana, fallback);
+    }
+    if (minManaPct > 0.0) {
+      builder.require(ctx -> {
+        double max = manaMax(ctx);
+        return max > 0.0 && (manaValue(ctx) / max) >= minManaPct;
+      }, fallback);
+    }
+  }
+
+  private double levelValue(CastContext ctx) {
+    if (!(ctx.caster() instanceof Player player)) {
+      return 0.0;
+    }
+    if (plugin instanceof DungeonsRebornPlugin dr && dr.customXpService() != null) {
+      CustomXpProfile profile = dr.customXpService().getOrCreate(player.getUniqueId());
+      return profile.level();
+    }
+    if (plugin instanceof DungeonsRebornPlugin dr && dr.progressionService() != null) {
+      PlayerProgression progression = dr.progressionService().getOrCreate(player.getUniqueId());
+      return progression.level();
+    }
+    return 0.0;
+  }
+
+  private double xpValue(CastContext ctx) {
+    if (!(ctx.caster() instanceof Player player)) {
+      return 0.0;
+    }
+    if (plugin instanceof DungeonsRebornPlugin dr && dr.customXpService() != null) {
+      CustomXpProfile profile = dr.customXpService().getOrCreate(player.getUniqueId());
+      return profile.points();
+    }
+    if (plugin instanceof DungeonsRebornPlugin dr && dr.progressionService() != null) {
+      PlayerProgression progression = dr.progressionService().getOrCreate(player.getUniqueId());
+      return progression.points();
+    }
+    return 0.0;
+  }
+
+  private double statValue(CastContext ctx, String stat) {
+    if (!(ctx.caster() instanceof Player player)) {
+      return 0.0;
+    }
+    if (!(plugin instanceof DungeonsRebornPlugin dr)) {
+      return 0.0;
+    }
+    ProgressionService progression = dr.progressionService();
+    if (progression == null) {
+      return 0.0;
+    }
+    PlayerProgression p = progression.getOrCreate(player.getUniqueId());
+    String key = stat.trim().toLowerCase(Locale.ROOT);
+    return switch (key) {
+      case "strength" -> p.strength();
+      case "dexterity" -> p.dexterity();
+      case "intelligence" -> p.intelligence();
+      case "vitality" -> p.vitality();
+      case "skill_points", "skillpoints" -> p.skillPoints();
+      case "skill_tree_points", "skilltreepoints" -> p.skillTreePoints();
+      case "mana_max", "max_mana" -> p.maxMana();
+      default -> 0.0;
+    };
+  }
+
   private dev.patric.dungeonsreborn.effects.actions.Action compileAction(Map<String, Object> node, String path, java.util.ArrayDeque<String> includeStack) {
+    migrateDeprecatedKeys(node, path, DEPRECATED_ACTION_KEYS);
     Object rawType = node.get("type");
     if (rawType == null) {
       throw new IllegalArgumentException(path + ": missing type");
@@ -1638,323 +3061,12 @@ public final class EffectsYamlAbilities {
     }
     type = type.toLowerCase(Locale.ROOT);
 
-    return switch (type) {
-      case "include" -> {
-        String macro = requireString(node, "macro", path + ".macro");
-        var def = macros.get(macro);
-        if (def == null) {
-          throw new IllegalArgumentException(path + ".macro: unknown macro: " + macro);
-        }
-        if (includeStack.contains(macro)) {
-          throw new IllegalArgumentException(path + ": include cycle: " + String.join(" -> ", includeStack) + " -> " + macro);
-        }
-        includeStack.addLast(macro);
-        try {
-          yield compileAction(def, "macros." + macro, includeStack);
-        } finally {
-          includeStack.removeLast();
-        }
-      }
-      case "sequence" -> {
-        List<?> list = mapList(node, "actions", path + ".actions");
-        var actions = new ArrayList<dev.patric.dungeonsreborn.effects.actions.Action>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-          actions.add(compileAction(castMap(list.get(i), path + ".actions[" + i + "]"), path + ".actions[" + i + "]", includeStack));
-        }
-        yield Actions.sequence(actions.toArray(dev.patric.dungeonsreborn.effects.actions.Action[]::new));
-      }
-      case "timeline" -> {
-        List<?> list = mapList(node, "entries", path + ".entries");
-        var entries = new java.util.ArrayList<TimelineEntrySpec>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-          Map<String, Object> entry = castMap(list.get(i), path + ".entries[" + i + "]");
-          NumValue at = entry.containsKey("at")
-              ? numValue(entry, "at", 0.0, path + ".entries[" + i + "]")
-              : numValue(entry, "delay", 0.0, path + ".entries[" + i + "]");
-          Map<String, Object> actionNode = castMap(require(entry, "action", path + ".entries[" + i + "].action"),
-              path + ".entries[" + i + "].action");
-          dev.patric.dungeonsreborn.effects.actions.Action action = compileAction(actionNode, path + ".entries[" + i + "].action", includeStack);
-          entries.add(new TimelineEntrySpec(at, action));
-        }
-        yield new ActionWithHandle() {
-          @Override
-          public ActionHandle executeWithHandle(CastContext ctx) {
-            var resolved = new java.util.ArrayList<Actions.TimelineEntry>(entries.size());
-            for (TimelineEntrySpec spec : entries) {
-              long delayTicks = Math.max(0L, evalLong(spec.delayTicks(), ctx));
-              resolved.add(new Actions.TimelineEntry(delayTicks, spec.action()));
-            }
-            return Actions.timeline(resolved).executeWithHandle(ctx);
-          }
-        };
-      }
-      case "delay" -> {
-        NumValue ticksValue = numValue(node, "ticks", 0.0, path);
-        Map<String, Object> then = castMap(require(node, "then", path + ".then"), path + ".then");
-        dev.patric.dungeonsreborn.effects.actions.Action thenAction = compileAction(then, path + ".then", includeStack);
-        yield new ActionWithHandle() {
-          @Override
-          public ActionHandle executeWithHandle(CastContext ctx) {
-            long ticks = Math.max(0L, evalLong(ticksValue, ctx));
-            final LivingEntity captured = lastEntity(ctx);
-            final Object prev = ctx.state().get(YAML_LAST_ENTITY);
-            if (ticks <= 0L) {
-              if (captured != null) {
-                ctx.state().put(YAML_LAST_ENTITY, captured);
-              }
-              try {
-                return thenAction.executeWithHandle(ctx);
-              } finally {
-                ctx.state().put(YAML_LAST_ENTITY, prev);
-              }
-            }
-            AtomicBoolean done = new AtomicBoolean(false);
-            var handle = ctx.engine().runLater(ticks, () -> {
-              if (captured != null) {
-                ctx.state().put(YAML_LAST_ENTITY, captured);
-              }
-              try {
-                thenAction.executeWithHandle(ctx);
-              } finally {
-                ctx.state().put(YAML_LAST_ENTITY, prev);
-                done.set(true);
-              }
-            });
-            ctx.state().track(handle);
-            return scheduledHandle(handle, done);
-          }
-        };
-      }
-      case "repeat_ticks" -> {
-        NumValue delayTicksValue = numValue(node, "delayTicks", 0.0, path);
-        NumValue periodTicksValue = numValue(node, "periodTicks", 1.0, path);
-        NumValue timesValue = numValue(node, "times", 1.0, path);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action body = compileAction(action, path + ".action", includeStack);
-        yield new ActionWithHandle() {
-          @Override
-          public ActionHandle executeWithHandle(CastContext ctx) {
-            long delayTicks = Math.max(0L, evalLong(delayTicksValue, ctx));
-            long periodTicks = evalLong(periodTicksValue, ctx);
-            int times = evalInt(timesValue, ctx);
-            if (periodTicks <= 0 || times <= 0) {
-              return ActionHandle.completed();
-            }
-            final LivingEntity captured = lastEntity(ctx);
-            final Object prev = ctx.state().get(YAML_LAST_ENTITY);
-            final int[] remaining = new int[] { times };
-            AtomicBoolean done = new AtomicBoolean(false);
-            final dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[] handle = new dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[1];
-            handle[0] = ctx.engine().runRepeating(delayTicks, periodTicks, () -> {
-              if (handle[0] == null || handle[0].isCancelled()) {
-                done.set(true);
-                return;
-              }
-              if (remaining[0]-- <= 0) {
-                handle[0].cancel();
-                done.set(true);
-                return;
-              }
-              if (captured != null) {
-                ctx.state().put(YAML_LAST_ENTITY, captured);
-              }
-              try {
-                body.executeWithHandle(ctx);
-              } finally {
-                ctx.state().put(YAML_LAST_ENTITY, prev);
-              }
-            });
-            ctx.state().track(handle[0]);
-            return scheduledHandle(handle[0], done);
-          }
-        };
-      }
-      case "set_var" -> {
-        String key = requireString(node, "key", path + ".key");
-        VarScope scope = parseVarScope(string(node, "scope", null), path + ".scope", VarScope.CAST);
-        ValueSupplier value = varValue(node.get("value"), path + ".value");
-        yield ctx -> {
-          Object v = value.eval(ctx);
-          setVar(ctx, scope, key, v);
-        };
-      }
-      case "inc_var" -> {
-        String key = requireString(node, "key", path + ".key");
-        VarScope scope = parseVarScope(string(node, "scope", null), path + ".scope", VarScope.CAST);
-        NumValue amount = numValue(node, "amount", 1.0, path);
-        NumValue def = numValue(node, "default", 0.0, path);
-        yield ctx -> {
-          Object cur = vars(ctx, scope).get(key);
-          double next = numericVar(cur, evalDouble(def, ctx)) + evalDouble(amount, ctx);
-          setVar(ctx, scope, key, next);
-        };
-      }
-      case "with_var" -> {
-        String key = requireString(node, "key", path + ".key");
-        VarScope scope = parseVarScope(string(node, "scope", null), path + ".scope", VarScope.CAST);
-        ValueSupplier value = varValue(node.get("value"), path + ".value");
-        Map<String, Object> then = castMap(require(node, "then", path + ".then"), path + ".then");
-        dev.patric.dungeonsreborn.effects.actions.Action thenAction = compileAction(then, path + ".then", includeStack);
-        yield ctx -> {
-          Map<String, Object> vars = vars(ctx, scope);
-          boolean had = vars.containsKey(key);
-          Object prev = vars.get(key);
-          Object v = value.eval(ctx);
-          setVar(ctx, scope, key, v);
-          try {
-            thenAction.execute(ctx);
-          } finally {
-            if (!had) {
-              vars.remove(key);
-            } else {
-              vars.put(key, prev);
-            }
-          }
-        };
-      }
-      case "debug_var" -> {
-        String key = requireString(node, "key", path + ".key");
-        VarScope scope = parseVarScope(string(node, "scope", null), path + ".scope", VarScope.CAST);
-        String label = string(node, "label", key);
-        yield ctx -> {
-          if (!ctx.engine().isDebugEnabled()) {
-            return;
-          }
-          Object v = vars(ctx, scope).get(key);
-          ctx.engine().debug("var(" + scope.name().toLowerCase(Locale.ROOT) + "): " + label + "=" + v);
-        };
-      }
-      case "when" -> {
-        var cond = compileCondition(require(node, "condition", path + ".condition"), path + ".condition");
-        Map<String, Object> then = castMap(require(node, "then", path + ".then"), path + ".then");
-        dev.patric.dungeonsreborn.effects.actions.Action thenAction = compileAction(then, path + ".then", includeStack);
-        dev.patric.dungeonsreborn.effects.actions.Action otherwise = Actions.noop();
-        if (node.containsKey("otherwise")) {
-          otherwise = compileAction(castMap(node.get("otherwise"), path + ".otherwise"), path + ".otherwise", includeStack);
-        }
-        final dev.patric.dungeonsreborn.effects.actions.Action finalOtherwise = otherwise;
-        yield ctx -> {
-          if (cond.test(ctx)) {
-            thenAction.execute(ctx);
-          } else {
-            finalOtherwise.execute(ctx);
-          }
-        };
-      }
-      case "random_choice_weighted" -> {
-        Object v = require(node, "choices", path + ".choices");
-        if (!(v instanceof List<?> choices) || choices.isEmpty()) {
-          throw new IllegalArgumentException(path + ".choices: expected non-empty list");
-        }
-        record Choice(NumValue weight, dev.patric.dungeonsreborn.effects.actions.Action action) {
-        }
-        var compiled = new ArrayList<Choice>(choices.size());
-        for (int i = 0; i < choices.size(); i++) {
-          Map<String, Object> c = castMap(choices.get(i), path + ".choices[" + i + "]");
-          NumValue w = requireNumValue(c, "weight", path + ".choices[" + i + "].weight");
-          Map<String, Object> a = castMap(require(c, "action", path + ".choices[" + i + "].action"), path + ".choices[" + i + "].action");
-          compiled.add(new Choice(w, compileAction(a, path + ".choices[" + i + "].action", includeStack)));
-        }
-        yield ctx -> {
-          double totalWeight = 0.0;
-          double[] weights = new double[compiled.size()];
-          for (int i = 0; i < compiled.size(); i++) {
-            double w = evalDouble(compiled.get(i).weight(), ctx);
-            if (w > 0.0) {
-              weights[i] = w;
-              totalWeight += w;
-            } else {
-              weights[i] = 0.0;
-            }
-          }
-          if (!(totalWeight > 0.0)) {
-            if (ctx.engine().isDebugEnabled()) {
-              ctx.engine().debug("random_choice_weighted: no positive weights");
-            }
-            return;
-          }
-          double r = ctx.rng().nextDouble() * totalWeight;
-          double acc = 0.0;
-          for (int i = 0; i < compiled.size(); i++) {
-            acc += weights[i];
-            if (r <= acc) {
-              compiled.get(i).action().execute(ctx);
-              return;
-            }
-          }
-          compiled.get(compiled.size() - 1).action().execute(ctx);
-        };
-      }
-      case "invoke_ability" -> {
-        String rawAbility = requireString(node, "ability", path + ".ability");
-        String abilityId;
-        try {
-          abilityId = dev.patric.dungeonsreborn.effects.Ids.normalize(rawAbility);
-        } catch (Exception ex) {
-          throw new IllegalArgumentException(path + ".ability: invalid id: " + rawAbility);
-        }
+    dev.patric.dungeonsreborn.effects.actions.Action parsed = ActionParsers.parse(actionParserContext, type, node, path, includeStack);
+    if (parsed != null) {
+      return parsed;
+    }
 
-        String mode = string(node, "mode", "subgraph").trim().toLowerCase(Locale.ROOT);
-        int maxDepth = intValue(node, "maxDepth", 8);
-        if (maxDepth <= 0) {
-          throw new IllegalArgumentException(path + ".maxDepth: must be > 0");
-        }
-
-        yield ctx -> {
-          if ("cast".equals(mode)) {
-            if (ctx.engine().hasAbility(abilityId)) {
-              ctx.engine().cast(abilityId, ctx.caster());
-            } else if (ctx.engine().isDebugEnabled()) {
-              ctx.engine().debug("invoke_ability cast: ability not registered: " + abilityId);
-            }
-            return;
-          }
-
-          dev.patric.dungeonsreborn.effects.actions.Action target = yamlActionGraphs.get(abilityId);
-          if (target == null) {
-            // Fallback: allow invoking code-first abilities by creating a nested cast.
-            if (ctx.engine().hasAbility(abilityId)) {
-              ctx.engine().cast(abilityId, ctx.caster());
-              return;
-            }
-            if (ctx.engine().isDebugEnabled()) {
-              ctx.engine().debug("invoke_ability: unknown ability: " + abilityId);
-            }
-            return;
-          }
-
-          Object existing = ctx.state().get(YAML_INVOKE_STACK);
-          @SuppressWarnings("unchecked")
-          java.util.ArrayDeque<String> stack = existing instanceof java.util.ArrayDeque<?> d ? (java.util.ArrayDeque<String>) d : null;
-          if (stack == null) {
-            stack = new java.util.ArrayDeque<>();
-            stack.addLast(ctx.abilityId());
-            ctx.state().put(YAML_INVOKE_STACK, stack);
-          } else if (stack.isEmpty()) {
-            stack.addLast(ctx.abilityId());
-          }
-
-          if (stack.size() >= maxDepth) {
-            if (ctx.engine().isDebugEnabled()) {
-              ctx.engine().debug("invoke_ability: maxDepth reached (" + maxDepth + "): " + String.join(" -> ", stack));
-            }
-            return;
-          }
-          if (stack.contains(abilityId)) {
-            if (ctx.engine().isDebugEnabled()) {
-              ctx.engine().debug("invoke_ability: cycle detected: " + String.join(" -> ", stack) + " -> " + abilityId);
-            }
-            return;
-          }
-
-          stack.addLast(abilityId);
-          try {
-            target.execute(ctx);
-          } finally {
-            stack.removeLast();
-          }
-        };
-      }
+    dev.patric.dungeonsreborn.effects.actions.Action action = switch (type) {
       case "sound" -> {
         Sound sound = soundValue(node, "sound", path + ".sound");
         NumValue volume = numValue(node, "volume", 1.0, path);
@@ -1966,8 +3078,8 @@ public final class EffectsYamlAbilities {
         NumValue periodTicks = numValue(node, "periodTicks", 1.0, path);
         boolean followCaster = bool(node, "followCaster", true);
         var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           long duration = evalLong(durationTicks, ctx);
           long period = evalLong(periodTicks, ctx);
@@ -1989,8 +3101,8 @@ public final class EffectsYamlAbilities {
         if (raw == null) {
           throw new IllegalArgumentException(path + ".shape: missing shape/action");
         }
-        Map<String, Object> action = castMap(raw, path + ".shape");
-        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".shape", includeStack);
+        Map<String, Object> shapeNode = castMap(raw, path + ".shape");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(shapeNode, path + ".shape", includeStack);
         yield ctx -> {
           long duration = evalLong(durationTicks, ctx);
           long period = evalLong(periodTicks, ctx);
@@ -2028,8 +3140,8 @@ public final class EffectsYamlAbilities {
         if (raw == null) {
           throw new IllegalArgumentException(path + ".action: missing action/shape");
         }
-        Map<String, Object> action = castMap(raw, path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(raw, path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           long duration = evalLong(durationTicks, ctx);
           long period = evalLong(periodTicks, ctx);
@@ -2133,8 +3245,8 @@ public final class EffectsYamlAbilities {
         NumValue timesValue = numValue(node, "times", 6.0, path);
         NumValue spacingValue = numValue(node, "spacingTicks", 0.0, path);
         NumValue delayValue = numValue(node, "delayTicks", 0.0, path);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           int times = Math.max(1, evalInt(timesValue, ctx));
           if (times > MAX_REPEAT_TIMES) {
@@ -2161,8 +3273,8 @@ public final class EffectsYamlAbilities {
         NumValue periodTicks = numValue(node, "periodTicks", 10.0, path);
         boolean followCaster = bool(node, "followCaster", false);
         var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           long duration = evalLong(durationTicks, ctx);
           long period = evalLong(periodTicks, ctx);
@@ -2180,8 +3292,8 @@ public final class EffectsYamlAbilities {
         NumValue periodTicks = numValue(node, "periodTicks", 2.0, path);
         boolean followCaster = bool(node, "followCaster", true);
         var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           long duration = evalLong(durationTicks, ctx);
           long period = evalLong(periodTicks, ctx);
@@ -2194,13 +3306,59 @@ public final class EffectsYamlAbilities {
           }).execute(ctx);
         };
       }
+      case "attach" -> {
+        String anchorRaw = string(node, "anchor", "caster");
+        String pointRaw = string(node, "point", null);
+        AnchorMode anchor = parseAnchorMode(anchorRaw, path + ".anchor");
+        AnchorPoint point = parseAnchorPoint(pointRaw, anchor, path + ".point");
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(actionNode, path + ".action", includeStack);
+        Frame frame = frameForAnchor(anchor, point);
+        yield ctx -> {
+          double f = evalDouble(forward, ctx);
+          double r = evalDouble(right, ctx);
+          double u = evalDouble(up, ctx);
+          Actions.attach(inner, Frames.withOffsets(frame, f, r, u)).execute(ctx);
+        };
+      }
+      case "follow", "lock_to_target", "lock_target" -> {
+        String anchorRaw = string(node, "anchor", "caster");
+        String pointRaw = string(node, "point", null);
+        AnchorMode anchor = parseAnchorMode(anchorRaw, path + ".anchor");
+        AnchorPoint point = parseAnchorPoint(pointRaw, anchor, path + ".point");
+        NumValue durationTicks = numValue(node, "durationTicks", 60.0, path);
+        NumValue periodTicks = numValue(node, "periodTicks", 2.0, path);
+        NumValue smoothing = numValue(node, "smoothing", 1.0, path);
+        NumValue forward = numValue(node, "forward", 0.0, path);
+        NumValue right = numValue(node, "right", 0.0, path);
+        NumValue up = numValue(node, "up", 0.0, path);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action inner = compileAction(actionNode, path + ".action", includeStack);
+        Frame frame = frameForAnchor(anchor, point);
+        yield new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(1L, evalLong(durationTicks, ctx));
+            long period = Math.max(1L, evalLong(periodTicks, ctx));
+            double smooth = evalDouble(smoothing, ctx);
+            double f = evalDouble(forward, ctx);
+            double r = evalDouble(right, ctx);
+            double u = evalDouble(up, ctx);
+            return Actions.follow(inner, Frames.withOffsets(frame, f, r, u), duration, period, smooth)
+                .executeWithHandle(ctx);
+          }
+        };
+      }
       case "animate_realtime", "animate_real_time" -> {
         NumValue durationMillis = numValue(node, "durationMillis", 1000.0, path);
         NumValue periodMillis = numValue(node, "periodMillis", 50.0, path);
         boolean followCaster = bool(node, "followCaster", true);
         var easing = easing(node, "easing", EasingId.IN_OUT_CUBIC);
-        Map<String, Object> action = castMap(require(node, "action", path + ".action"), path + ".action");
-        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(action, path + ".action", includeStack);
+        Map<String, Object> actionNode = castMap(require(node, "action", path + ".action"), path + ".action");
+        dev.patric.dungeonsreborn.effects.actions.Action tickAction = compileAction(actionNode, path + ".action", includeStack);
         yield ctx -> {
           long duration = evalLong(durationMillis, ctx);
           long period = evalLong(periodMillis, ctx);
@@ -2211,108 +3369,6 @@ public final class EffectsYamlAbilities {
             CastContext exec = followCaster ? followCasterContext(tickCtx) : tickCtx;
             withTempVar(exec, VarScope.CAST, "t", t, () -> tickAction.execute(exec));
           }).execute(ctx);
-        };
-      }
-      case "message" -> {
-        String raw = requireString(node, "text", path + ".text");
-        yield ctx -> {
-          if (ctx.caster() instanceof Player player) {
-            player.sendMessage(renderText(raw, ctx));
-          }
-        };
-      }
-      case "action_bar" -> {
-        String raw = requireString(node, "text", path + ".text");
-        yield ctx -> {
-          if (ctx.caster() instanceof Player player) {
-            player.sendActionBar(renderText(raw, ctx));
-          }
-        };
-      }
-      case "title" -> {
-        String rawTitle = requireString(node, "title", path + ".title");
-        String rawSubtitle = node.containsKey("subtitle") ? String.valueOf(node.get("subtitle")) : null;
-        NumValue fadeInTicks = numValue(node, "fadeInTicks", 10.0, path);
-        NumValue stayTicks = numValue(node, "stayTicks", 40.0, path);
-        NumValue fadeOutTicks = numValue(node, "fadeOutTicks", 10.0, path);
-        yield ctx -> {
-          if (ctx.caster() instanceof Player player) {
-            Component title = renderText(rawTitle, ctx);
-            Component subtitle = rawSubtitle == null ? Component.empty() : renderText(rawSubtitle, ctx);
-            long fadeIn = Math.max(0L, evalLong(fadeInTicks, ctx));
-            long stay = Math.max(0L, evalLong(stayTicks, ctx));
-            long fadeOut = Math.max(0L, evalLong(fadeOutTicks, ctx));
-            Title.Times times = Title.Times.times(
-                Duration.ofMillis(fadeIn * 50L),
-                Duration.ofMillis(stay * 50L),
-                Duration.ofMillis(fadeOut * 50L));
-            player.showTitle(Title.title(title, subtitle, times));
-          }
-        };
-      }
-      case "overlay" -> {
-        String rawTitle = requireString(node, "title", path + ".title");
-        String rawSubtitle = node.containsKey("subtitle") ? String.valueOf(node.get("subtitle")) : null;
-        NumValue fadeInTicks = numValue(node, "fadeInTicks", 10.0, path);
-        NumValue stayTicks = numValue(node, "stayTicks", 40.0, path);
-        NumValue fadeOutTicks = numValue(node, "fadeOutTicks", 10.0, path);
-        yield ctx -> {
-          Player player = targetPlayer(ctx);
-          if (player == null) {
-            return;
-          }
-          Component title = renderText(rawTitle, ctx);
-          Component subtitle = rawSubtitle == null ? Component.empty() : renderText(rawSubtitle, ctx);
-          long fadeIn = Math.max(0L, evalLong(fadeInTicks, ctx));
-          long stay = Math.max(0L, evalLong(stayTicks, ctx));
-          long fadeOut = Math.max(0L, evalLong(fadeOutTicks, ctx));
-          Actions.overlay(title, subtitle,
-              Duration.ofMillis(fadeIn * 50L),
-              Duration.ofMillis(stay * 50L),
-              Duration.ofMillis(fadeOut * 50L))
-              .execute(new CastContext(ctx.engine(), ctx.plugin(), ctx.castId(), ctx.abilityId(), ctx.tick(), ctx.state(),
-                  player, ctx.origin(), ctx.direction(), ctx.itemInHand()));
-        };
-      }
-      case "screen_shake" -> {
-        NumValue durationTicks = numValue(node, "durationTicks", 20.0, path);
-        NumValue amplifier = numValue(node, "amplifier", 0.0, path);
-        boolean ambient = bool(node, "ambient", false);
-        boolean particles = bool(node, "particles", true);
-        boolean icon = bool(node, "icon", true);
-        yield ctx -> {
-          Player player = targetPlayer(ctx);
-          if (player == null) {
-            return;
-          }
-          int duration = Math.max(0, evalInt(durationTicks, ctx));
-          int amp = Math.max(0, evalInt(amplifier, ctx));
-          Actions.screenShake(player, ctx.engine().cinematicSettings(), duration, amp, ambient, particles, icon);
-        };
-      }
-      case "screen_flash" -> {
-        Particle particle = node.containsKey("particle")
-            ? enumValue(node, "particle", Particle.class, path + ".particle")
-            : Particle.FLASH;
-        NumValue count = numValue(node, "count", 1.0, path);
-        NumValue offset = numValue(node, "offset", 0.0, path);
-        NumValue extra = numValue(node, "extra", 0.0, path);
-        Sound sound = node.containsKey("sound") ? soundValue(node, "sound", path + ".sound") : null;
-        NumValue volume = numValue(node, "volume", 1.0, path);
-        NumValue pitch = numValue(node, "pitch", 1.0, path);
-        yield ctx -> {
-          Player player = targetPlayer(ctx);
-          if (player == null) {
-            return;
-          }
-          int emitCount = evalInt(count, ctx);
-          double off = evalDouble(offset, ctx);
-          double ex = evalDouble(extra, ctx);
-          Actions.screenFlash(player, ctx.engine().cinematicSettings(), particle, emitCount, off, ex);
-          if (sound != null) {
-            player.getWorld().playSound(player.getLocation(), sound,
-                (float) evalDouble(volume, ctx), (float) evalDouble(pitch, ctx));
-          }
         };
       }
       case "particles_ring" -> {
@@ -5118,6 +6174,11 @@ public final class EffectsYamlAbilities {
         NumValue raySize = numValue(node, "raySize", 0.35, path);
         boolean stopOnBlock = bool(node, "stopOnBlock", true);
         boolean ignoreCaster = bool(node, "ignoreCaster", true);
+        DamageSpecTemplate damageTemplate = null;
+        if (node.containsKey("damage")) {
+          Map<String, Object> damageNode = castMap(node.get("damage"), path + ".damage");
+          damageTemplate = parseDamageSpecTemplate(damageNode, path + ".damage", DamageCause.DIRECT, DamageType.PHYSICAL);
+        }
         Map<String, Object> then = castMap(require(node, "then", path + ".then"), path + ".then");
         dev.patric.dungeonsreborn.effects.actions.Action thenAction = compileAction(then, path + ".then", includeStack);
         dev.patric.dungeonsreborn.effects.actions.Action otherwise = Actions.noop();
@@ -5125,6 +6186,7 @@ public final class EffectsYamlAbilities {
           otherwise = compileAction(castMap(node.get("otherwise"), path + ".otherwise"), path + ".otherwise", includeStack);
         }
         final dev.patric.dungeonsreborn.effects.actions.Action finalOtherwise = otherwise;
+        final DamageSpecTemplate finalDamageTemplate = damageTemplate;
         yield ctx -> {
           double max = evalDouble(maxDistance, ctx);
           double size = evalDouble(raySize, ctx);
@@ -5139,10 +6201,16 @@ public final class EffectsYamlAbilities {
           }
           LivingEntity target = hits.get(0);
           ctx.state().put(YAML_LAST_ENTITY, target);
+          if (finalDamageTemplate != null) {
+            DamageSpec spec = finalDamageTemplate.toSpec(ctx);
+            if (spec != null) {
+              ctx.engine().applyDamage(ctx, target, spec);
+            }
+          }
           thenAction.execute(ctx);
           Object hook = ctx.state().get(DSL_ON_HIT);
-          if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action action) {
-            action.execute(ctx);
+          if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
+            hookAction.execute(ctx);
           }
         };
       }
@@ -5211,6 +6279,11 @@ public final class EffectsYamlAbilities {
       }
       case "damage" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        NumValue maxPercent = numValue(node, "maxPercent", 0.0, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.DIRECT);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5219,6 +6292,11 @@ public final class EffectsYamlAbilities {
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
           default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
         };
+        dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        if (node.containsKey("onHit")) {
+          onHitAction = compileAction(castMap(node.get("onHit"), path + ".onHit"), path + ".onHit", includeStack);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target != null) {
@@ -5226,14 +6304,30 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0) {
               return;
             }
-            EntityActions.damage(dmg, p).execute(ctx, target);
+            double capValue = evalDouble(cap, ctx);
+            double maxPercentValue = evalDouble(maxPercent, ctx);
+            DamageSpec spec = DamageSpec.flat(dmg, DamageType.PHYSICAL, cause, false, p)
+                .withCaps(Math.max(0.0, capValue), Math.max(0.0, maxPercentValue));
+            if (source != null && !source.isBlank()) {
+              spec = spec.withSource(source);
+            }
+            if (tags != null && !tags.isEmpty()) {
+              spec = spec.withTags(tags);
+            }
+            ctx.engine().applyDamage(ctx, target, spec);
+            finalOnHit.execute(ctx);
           }
         };
       }
       case "damage_typed" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        NumValue maxPercent = numValue(node, "maxPercent", 0.0, path);
         DamageType dmgType = damageTypeValue(node, path + ".damageType");
         boolean ignoreResistance = bool(node, "ignoreResistance", false);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.DIRECT);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5249,7 +6343,17 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0) {
               return;
             }
-            EntityActions.damageTyped(dmg, dmgType, ignoreResistance, p).execute(ctx, target);
+            double capValue = evalDouble(cap, ctx);
+            double maxPercentValue = evalDouble(maxPercent, ctx);
+            DamageSpec spec = DamageSpec.flat(dmg, dmgType, cause, ignoreResistance, p)
+                .withCaps(Math.max(0.0, capValue), Math.max(0.0, maxPercentValue));
+            if (source != null && !source.isBlank()) {
+              spec = spec.withSource(source);
+            }
+            if (tags != null && !tags.isEmpty()) {
+              spec = spec.withTags(tags);
+            }
+            ctx.engine().applyDamage(ctx, target, spec);
           }
         };
       }
@@ -5361,6 +6465,9 @@ public final class EffectsYamlAbilities {
       }
       case "damage_percent" -> {
         NumValue percent = numValue(node, "percent", 0.15, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.PERCENT);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5376,12 +6483,15 @@ public final class EffectsYamlAbilities {
             if (pct <= 0.0) {
               return;
             }
-            EntityActions.damagePercent(pct, p).execute(ctx, target);
+            EntityActions.damagePercent(pct, p, cause, source, tags).execute(ctx, target);
           }
         };
       }
       case "damage_true" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.TRUE);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5397,7 +6507,7 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0) {
               return;
             }
-            EntityActions.damageTrue(dmg, p).execute(ctx, target);
+            EntityActions.damageTrue(dmg, p, cause, source, tags).execute(ctx, target);
           }
         };
       }
@@ -5405,6 +6515,9 @@ public final class EffectsYamlAbilities {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         NumValue maxDistance = numValue(node, "maxDistance", 12.0, path);
         NumValue minMultiplier = numValue(node, "minMultiplier", 0.2, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.FALLOFF);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5422,7 +6535,7 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0 || maxDist <= 0.0) {
               return;
             }
-            EntityActions.damageWithFalloff(dmg, maxDist, minMult, p).execute(ctx, target);
+            EntityActions.damageWithFalloff(dmg, maxDist, minMult, p, cause, source, tags).execute(ctx, target);
           }
         };
       }
@@ -5432,6 +6545,9 @@ public final class EffectsYamlAbilities {
         NumValue critMultiplier = numValue(node, "critMultiplier", 1.5, path);
         NumValue headshotMultiplier = numValue(node, "headshotMultiplier", 1.0, path);
         NumValue headshotThreshold = numValue(node, "headshotThreshold", 0.25, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.CRIT);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5453,13 +6569,19 @@ public final class EffectsYamlAbilities {
                 evalDouble(critMultiplier, ctx),
                 evalDouble(headshotMultiplier, ctx),
                 evalDouble(headshotThreshold, ctx),
-                p).execute(ctx, target);
+                p,
+                cause,
+                source,
+                tags).execute(ctx, target);
           }
         };
       }
       case "damage_lifesteal" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         NumValue ratio = numValue(node, "ratio", 0.25, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.LIFESTEAL);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5475,7 +6597,7 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0) {
               return;
             }
-            EntityActions.damageLifesteal(dmg, evalDouble(ratio, ctx), p).execute(ctx, target);
+            EntityActions.damageLifesteal(dmg, evalDouble(ratio, ctx), p, cause, source, tags).execute(ctx, target);
           }
         };
       }
@@ -5483,6 +6605,9 @@ public final class EffectsYamlAbilities {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         NumValue periodTicks = numValue(node, "periodTicks", 10.0, path);
         NumValue times = numValue(node, "times", 5.0, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.DOT);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5491,6 +6616,16 @@ public final class EffectsYamlAbilities {
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
           default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
         };
+        dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        if (node.containsKey("onHit")) {
+          onHitAction = compileAction(castMap(node.get("onHit"), path + ".onHit"), path + ".onHit", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onTickAction = Actions.noop();
+        if (node.containsKey("onTick")) {
+          onTickAction = compileAction(castMap(node.get("onTick"), path + ".onTick"), path + ".onTick", includeStack);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target != null) {
@@ -5500,7 +6635,16 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0 || period <= 0 || count <= 0) {
               return;
             }
-            EntityActions.damageOverTime(dmg, period, count, p).execute(ctx, target);
+            finalOnHit.execute(ctx);
+            EntityActions.damageOverTime(dmg, period, count, p, cause, source, tags, (cast, hit) -> {
+              Object prev = cast.state().get(YAML_LAST_ENTITY);
+              cast.state().put(YAML_LAST_ENTITY, hit);
+              try {
+                finalOnTick.execute(cast);
+              } finally {
+                cast.state().put(YAML_LAST_ENTITY, prev);
+              }
+            }).execute(ctx, target);
           }
         };
       }
@@ -5510,6 +6654,9 @@ public final class EffectsYamlAbilities {
         NumValue maxJumps = numValue(node, "maxJumps", 4.0, path);
         NumValue delayTicks = numValue(node, "delayTicks", 2.0, path);
         NumValue falloff = numValue(node, "falloff", 0.8, path);
+        DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.CHAIN);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
           case "any" -> EntityActions.DamagePolicy.any();
@@ -5534,7 +6681,7 @@ public final class EffectsYamlAbilities {
             if (dmg <= 0.0 || r <= 0.0 || jumps <= 0 || delay < 0) {
               return;
             }
-            EntityActions.chainDamage(dmg, r, jumps, delay, f, p, (cast, hit) -> {
+            EntityActions.chainDamage(dmg, r, jumps, delay, f, p, cause, source, tags, (cast, hit) -> {
               Object prev = cast.state().get(YAML_LAST_ENTITY);
               cast.state().put(YAML_LAST_ENTITY, hit);
               try {
@@ -5546,8 +6693,59 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      case "ground_damage", "damage_ground" -> {
+        NumValue radius = numValue(node, "radius", 4.0, path);
+        NumValue maxDrop = numValue(node, "maxDrop", 6.0, path);
+        boolean ignoreCaster = bool(node, "ignoreCaster", true);
+        Map<String, Object> damageNode = castMap(require(node, "damage", path + ".damage"), path + ".damage");
+        DamageSpecTemplate damageTemplate = parseDamageSpecTemplate(damageNode, path + ".damage", DamageCause.AOE, DamageType.PHYSICAL);
+        dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        if (node.containsKey("onHit")) {
+          onHitAction = compileAction(castMap(node.get("onHit"), path + ".onHit"), path + ".onHit", includeStack);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          double drop = evalDouble(maxDrop, ctx);
+          if (r <= 0.0 || drop < 0.0) {
+            return;
+          }
+          var targets = Targeters.groundSphere(r, drop, ignoreCaster, e -> true).select(ctx);
+          if (targets.isEmpty()) {
+            return;
+          }
+          for (LivingEntity target : targets) {
+            DamageSpec spec = damageTemplate.toSpec(ctx);
+            if (spec != null) {
+              ctx.engine().applyDamage(ctx, target, spec);
+            }
+            Object prev = ctx.state().get(YAML_LAST_ENTITY);
+            ctx.state().put(YAML_LAST_ENTITY, target);
+            try {
+              finalOnHit.execute(ctx);
+            } finally {
+              ctx.state().put(YAML_LAST_ENTITY, prev);
+            }
+          }
+        };
+      }
       case "heal" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        HealType healType = healTypeValue(node, path + ".healType", HealType.DIRECT);
+        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        EntityActions.DamagePolicy p = switch (policy) {
+          case "any" -> EntityActions.DamagePolicy.any();
+          case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
+          case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
+          case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
+          default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
+        };
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        boolean overhealToShield = bool(node, "overhealToShield", false);
+        NumValue shieldCap = numValue(node, "shieldCap", 0.0, path);
+        NumValue shieldDecayTicks = numValue(node, "shieldDecayTicks", 0.0, path);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target != null) {
@@ -5555,7 +6753,134 @@ public final class EffectsYamlAbilities {
             if (heal <= 0.0) {
               return;
             }
-            EntityActions.heal(heal).execute(ctx, target);
+            EntityActions.heal(
+                heal,
+                p,
+                healType,
+                source,
+                tags,
+                evalDouble(cap, ctx),
+                overhealToShield,
+                evalDouble(shieldCap, ctx),
+                evalLong(shieldDecayTicks, ctx)).execute(ctx, target);
+          }
+        };
+      }
+      case "heal_percent" -> {
+        NumValue percent = numValue(node, "percent", 0.15, path);
+        HealType healType = healTypeValue(node, path + ".healType", HealType.DIRECT);
+        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        EntityActions.DamagePolicy p = switch (policy) {
+          case "any" -> EntityActions.DamagePolicy.any();
+          case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
+          case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
+          case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
+          default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
+        };
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        boolean overhealToShield = bool(node, "overhealToShield", false);
+        NumValue shieldCap = numValue(node, "shieldCap", 0.0, path);
+        NumValue shieldDecayTicks = numValue(node, "shieldDecayTicks", 0.0, path);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target != null) {
+            double pct = evalDouble(percent, ctx);
+            if (pct <= 0.0) {
+              return;
+            }
+            EntityActions.healPercent(
+                pct,
+                p,
+                healType,
+                source,
+                tags,
+                evalDouble(cap, ctx),
+                overhealToShield,
+                evalDouble(shieldCap, ctx),
+                evalLong(shieldDecayTicks, ctx)).execute(ctx, target);
+          }
+        };
+      }
+      case "heal_over_time", "heal_hot" -> {
+        NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        NumValue periodTicks = numValue(node, "periodTicks", 10.0, path);
+        NumValue times = numValue(node, "times", 5.0, path);
+        HealType healType = healTypeValue(node, path + ".healType", HealType.HOT);
+        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        EntityActions.DamagePolicy p = switch (policy) {
+          case "any" -> EntityActions.DamagePolicy.any();
+          case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
+          case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
+          case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
+          default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
+        };
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        boolean overhealToShield = bool(node, "overhealToShield", false);
+        NumValue shieldCap = numValue(node, "shieldCap", 0.0, path);
+        NumValue shieldDecayTicks = numValue(node, "shieldDecayTicks", 0.0, path);
+        String source = string(node, "source", null);
+        java.util.Set<String> tags = damageTagSet(node, path);
+        dev.patric.dungeonsreborn.effects.actions.Action onTickAction = Actions.noop();
+        if (node.containsKey("onTick")) {
+          onTickAction = compileAction(castMap(node.get("onTick"), path + ".onTick"), path + ".onTick", includeStack);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target != null) {
+            double heal = evalDouble(amount, ctx);
+            long period = evalLong(periodTicks, ctx);
+            int count = evalInt(times, ctx);
+            if (heal <= 0.0 || period <= 0 || count <= 0) {
+              return;
+            }
+            EntityActions.healOverTime(
+                heal,
+                period,
+                count,
+                p,
+                healType,
+                source,
+                tags,
+                evalDouble(cap, ctx),
+                overhealToShield,
+                evalDouble(shieldCap, ctx),
+                evalLong(shieldDecayTicks, ctx),
+                (cast, hit) -> {
+                  Object prev = cast.state().get(YAML_LAST_ENTITY);
+                  cast.state().put(YAML_LAST_ENTITY, hit);
+                  try {
+                    finalOnTick.execute(cast);
+                  } finally {
+                    cast.state().put(YAML_LAST_ENTITY, prev);
+                  }
+                }).execute(ctx, target);
+          }
+        };
+      }
+      case "shield", "absorb" -> {
+        NumValue amount = requireNumValue(node, "amount", path + ".amount");
+        NumValue cap = numValue(node, "cap", 0.0, path);
+        NumValue decayTicks = numValue(node, "decayTicks", 0.0, path);
+        HealType healType = "absorb".equals(type) ? HealType.ABSORB : HealType.SHIELD;
+        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        EntityActions.DamagePolicy p = switch (policy) {
+          case "any" -> EntityActions.DamagePolicy.any();
+          case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
+          case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
+          case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
+          default -> throw new IllegalArgumentException(path + ".policy: unknown policy: " + policy);
+        };
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target != null) {
+            double shield = evalDouble(amount, ctx);
+            if (shield <= 0.0) {
+              return;
+            }
+            EntityActions.shield(shield, evalDouble(cap, ctx), evalLong(decayTicks, ctx), p, healType).execute(ctx, target);
           }
         };
       }
@@ -5622,8 +6947,14 @@ public final class EffectsYamlAbilities {
           Map<String, Object> onHit = castMap(node.get("onHit"), path + ".onHit");
           onHitAction = compileAction(onHit, path + ".onHit", includeStack);
         }
+        DamageSpecTemplate damageTemplate = null;
+        if (node.containsKey("damage")) {
+          Map<String, Object> damageNode = castMap(node.get("damage"), path + ".damage");
+          damageTemplate = parseDamageSpecTemplate(damageNode, path + ".damage", DamageCause.PROJECTILE, DamageType.PHYSICAL);
+        }
 
         final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        final DamageSpecTemplate finalDamageTemplate = damageTemplate;
         yield ctx -> {
           double speed = evalDouble(speedPerTick, ctx);
           double max = evalDouble(maxDistance, ctx);
@@ -5656,10 +6987,16 @@ public final class EffectsYamlAbilities {
           b.onHit(hit -> {
             CastContext cast = hit.cast();
             cast.state().put(YAML_LAST_ENTITY, hit.hitEntity());
+            if (finalDamageTemplate != null) {
+              DamageSpec spec = finalDamageTemplate.toSpec(cast);
+              if (spec != null) {
+                cast.engine().applyDamage(cast, hit.hitEntity(), spec);
+              }
+            }
             finalOnHit.execute(cast);
             Object hook = cast.state().get(DSL_ON_HIT);
-            if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action action) {
-              action.execute(cast);
+            if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
+              hookAction.execute(cast);
             }
           });
 
@@ -5672,13 +7009,37 @@ public final class EffectsYamlAbilities {
         int count = intValue(node, "count", 1);
         long duration = longValue(node, "durationTicks", 20L * 30L);
         double radius = doubleValue(node, "radius", 1.5);
+        int waves = Math.max(1, intValue(node, "waves", 1));
+        long waveIntervalTicks = longValue(node, "waveIntervalTicks", 0L);
+        MinionFormation formation = parseMinionFormation(string(node, "formation", null), path + ".formation");
+        double formationRadius = doubleValue(node, "formationRadius", 0.0);
+        boolean safeSpawn = bool(node, "safeSpawn", false);
+        int maxSpawnAttempts = Math.max(1, intValue(node, "maxSpawnAttempts", 6));
         boolean despawnOnLogout = bool(node, "despawnOnLogout", true);
+        boolean persistent = bool(node, "persistent", false);
+        boolean sharePotionEffects = bool(node, "sharePotionEffects", false);
         MinionScaling scaling = parseMinionScaling(node.get("scale"), path + ".scale");
+        MinionOwnerScalingSpec ownerScaling = parseMinionOwnerScaling(node.get("ownerScaling"), path + ".ownerScaling");
+        MinionScalingLimits scalingLimits = parseMinionScalingLimits(node.get("scalingLimits"), path + ".scalingLimits");
         Map<DamageType, Double> resistances = parseResistanceMap(node.get("resistances"), path + ".resistances");
         java.util.Set<DamageType> immunities = parseDamageTypeSet(node.get("immunities"), path + ".immunities");
         dev.patric.dungeonsreborn.effects.minions.MinionMode mode = parseMinionMode(string(node, "mode", null), path + ".mode");
+        MinionTargetRules targetRules = parseMinionTargetRules(node, path + ".targeting");
         java.util.List<dev.patric.dungeonsreborn.effects.minions.MinionPassiveSpec> passives = parseMinionPassives(node.get("passives"), path + ".passives");
         java.util.List<dev.patric.dungeonsreborn.effects.minions.MinionSpecialAttackSpec> specialAttacks = parseMinionSpecialAttacks(node.get("specialAttacks"), path + ".specialAttacks");
+        Map<Attribute, Double> statOverrides = parseMinionStatOverrides(node.get("statOverrides"), path + ".statOverrides");
+        String mainAttackOverride = string(node, "mainAttack", string(node, "mainAttackOverride", null));
+        String secondaryAttackOverride = string(node, "secondaryAttack", string(node, "secondaryAttackOverride", null));
+        boolean disableBasePassives = bool(node, "disableBasePassives", false);
+        boolean disableBaseAttacks = bool(node, "disableBaseAttacks", false);
+        boolean disableBaseAi = bool(node, "disableBaseAi", false);
+        String nameOverride = string(node, "name", null);
+        Boolean glowOverride = node.containsKey("glow") ? bool(node, "glow", false) : null;
+        MobParticlesSpec particles = parseMinionParticles(node.get("particles"), path + ".particles");
+        long particlesPeriodTicks = longValue(node, "particlesPeriodTicks", particles == null ? 0L : 20L);
+        List<MinionSummonCostSpec> summonCosts = parseMinionSummonCosts(node.get("summonCosts"), path + ".summonCosts");
+        long summonCooldownTicks = longValue(node, "summonCooldownTicks", 0L);
+        String summonCooldownKey = string(node, "summonCooldownKey", minionId == null ? null : "minion:" + minionId);
         if (count <= 0) {
           throw new IllegalArgumentException(path + ".count: must be > 0");
         }
@@ -5691,12 +7052,33 @@ public final class EffectsYamlAbilities {
             throw new IllegalArgumentException(path + ".mob: unknown mob id: " + mobId);
           }
           java.util.UUID ownerId = ctx.caster().getUniqueId();
-          MinionSpec spec = new MinionSpec(minionId, mobId, count, duration, ownerId, radius, scaling, resistances, immunities, despawnOnLogout, mode, passives, specialAttacks);
-          java.util.List<LivingEntity> spawned = minions.summon(spec, ctx.caster().getLocation());
-          java.util.List<java.util.UUID> ids = new java.util.ArrayList<>(spawned.size());
-          for (LivingEntity living : spawned) {
-            ids.add(living.getUniqueId());
+          if (summonCooldownTicks > 0L && ctx.caster() instanceof Player player) {
+            String cooldownKey = summonCooldownKey;
+            if (cooldownKey == null || cooldownKey.isBlank()) {
+              cooldownKey = "minion:" + minionId;
+            }
+            if (!ctx.engine().tryStartCooldown(player.getUniqueId(), cooldownKey, summonCooldownTicks)) {
+              return;
+            }
           }
+          if (!summonCosts.isEmpty()) {
+            if (!applyMinionSummonCosts(ctx, summonCosts)) {
+              return;
+            }
+          }
+          MinionSummonSpec summonSpec = new MinionSummonSpec(waves, waveIntervalTicks, formation, formationRadius,
+              safeSpawn, maxSpawnAttempts);
+          MinionSpec spec = new MinionSpec(minionId, mobId, count, duration, ownerId, radius, summonSpec,
+              scaling, resistances, immunities, despawnOnLogout, persistent, mode, targetRules, passives, specialAttacks,
+              statOverrides, ownerScaling,
+              scalingLimits, Ids.normalize(mainAttackOverride), Ids.normalize(secondaryAttackOverride),
+              disableBasePassives, disableBaseAttacks, disableBaseAi,
+              sharePotionEffects,
+              nameOverride, glowOverride, particles, particlesPeriodTicks);
+          java.util.List<java.util.UUID> ids = new java.util.ArrayList<>();
+          java.util.List<LivingEntity> spawned = minions.summon(spec, ctx.caster().getLocation(), living -> {
+            ids.add(living.getUniqueId());
+          });
           ctx.state().put(Vars.MINION_ID, minionId);
           ctx.state().put(Vars.MINION_COUNT, spawned.size());
           ctx.state().put(Vars.MINION_IDS, java.util.List.copyOf(ids));
@@ -5705,9 +7087,51 @@ public final class EffectsYamlAbilities {
       }
       default -> throw new IllegalArgumentException(path + ": unknown action type: " + type);
     };
+    if (unsafePermission != null && UNSAFE_ACTION_TYPES.contains(type)) {
+      action = wrapUnsafeAction(action, type, path);
+    }
+    return action;
   }
 
-  private record TimelineEntrySpec(NumValue delayTicks, dev.patric.dungeonsreborn.effects.actions.Action action) {
+  public static record TimelineEntrySpec(NumValue delayTicks, dev.patric.dungeonsreborn.effects.actions.Action action) {
+  }
+
+  private record DamageSpecTemplate(
+      NumValue amount,
+      DamageAmountMode mode,
+      DamageType type,
+      DamageCause cause,
+      boolean ignoreResistance,
+      EntityActions.DamagePolicy policy,
+      String source,
+      java.util.Set<String> tags,
+      NumValue cap,
+      NumValue maxPercent) {
+    DamageSpec toSpec(CastContext ctx) {
+      double value = evalDouble(amount, ctx);
+      if (!(value > 0.0)) {
+        return null;
+      }
+      double capValue = cap == null ? 0.0 : evalDouble(cap, ctx);
+      double maxPercentValue = maxPercent == null ? 0.0 : evalDouble(maxPercent, ctx);
+      DamageSpec spec;
+      switch (mode) {
+        case TRUE -> spec = DamageSpec.trueDamage(value, cause, policy);
+        case PERCENT_MAX_HEALTH -> spec = DamageSpec.percent(value, type, cause, ignoreResistance, policy);
+        case FLAT -> spec = DamageSpec.flat(value, type, cause, ignoreResistance, policy);
+        default -> spec = DamageSpec.flat(value, type, cause, ignoreResistance, policy);
+      }
+      if (capValue > 0.0 || maxPercentValue > 0.0) {
+        spec = spec.withCaps(Math.max(0.0, capValue), Math.max(0.0, maxPercentValue));
+      }
+      if (source != null && !source.isBlank()) {
+        spec = spec.withSource(source);
+      }
+      if (tags != null && !tags.isEmpty()) {
+        spec = spec.withTags(tags);
+      }
+      return spec;
+    }
   }
 
   private MinionManager resolveMinionManager(String path) {
@@ -5718,6 +7142,122 @@ public final class EffectsYamlAbilities {
       }
     }
     throw new IllegalArgumentException(path + ": minion system not available");
+  }
+
+  private DamageSpecTemplate parseDamageSpecTemplate(Map<String, Object> node, String path,
+      DamageCause defaultCause, DamageType defaultType) {
+    NumValue amount = requireNumValue(node, "amount", path + ".amount");
+    String modeRaw = string(node, "mode", string(node, "damageMode", string(node, "amountMode", null)));
+    DamageAmountMode mode = damageModeValue(modeRaw, path + ".mode", DamageAmountMode.FLAT);
+    DamageType type = hasDamageType(node) ? damageTypeValue(node, path + ".damageType") : defaultType;
+    DamageCause cause = damageCauseValue(node, path + ".damageCause", defaultCause);
+    boolean ignoreResistance = bool(node, "ignoreResistance", false);
+    EntityActions.DamagePolicy policy = damagePolicyValue(string(node, "policy", "hostile_default"), path + ".policy");
+    String source = string(node, "source", null);
+    java.util.Set<String> tags = damageTagSet(node, path);
+    NumValue cap = node.containsKey("cap") ? numValue(node, "cap", 0.0, path) : null;
+    NumValue maxPercent = node.containsKey("maxPercent") ? numValue(node, "maxPercent", 0.0, path) : null;
+    if (mode == DamageAmountMode.TRUE) {
+      type = null;
+      ignoreResistance = true;
+    } else if (type == null) {
+      type = DamageType.PHYSICAL;
+    }
+    return new DamageSpecTemplate(amount, mode, type, cause, ignoreResistance, policy, source, tags, cap, maxPercent);
+  }
+
+  private EffectsEngine.AbilityCombatProfile parseAbilityCombatProfile(ConfigurationSection section, String path) {
+    Object combatRaw = section.get("combat");
+    if (combatRaw == null) {
+      return null;
+    }
+    Map<String, Object> combat = combatRaw instanceof ConfigurationSection sec
+        ? normalizeMap(sec.getValues(false))
+        : castMap(combatRaw, path);
+
+    EffectsEngine.CombatProfile defaults = EffectsEngine.CombatProfile.defaults();
+    EffectsEngine.CombatProfilePair baseProfiles = parseCombatProfilePair(combat, path, defaults);
+
+    Map<String, EffectsEngine.CombatProfilePair> worldOverrides = new HashMap<>();
+    Object worldsRaw = combat.get("worlds");
+    if (worldsRaw instanceof ConfigurationSection || worldsRaw instanceof Map<?, ?>) {
+      Map<String, Object> worlds = castMap(worldsRaw, path + ".worlds");
+      for (Map.Entry<String, Object> entry : worlds.entrySet()) {
+        String worldKey = entry.getKey().toLowerCase(Locale.ROOT);
+        Map<String, Object> worldNode = castMap(entry.getValue(), path + ".worlds." + entry.getKey());
+        EffectsEngine.CombatProfilePair profiles = parseCombatProfilePair(worldNode, path + ".worlds." + entry.getKey(), defaults);
+        worldOverrides.put(worldKey, profiles);
+      }
+    } else if (worldsRaw != null) {
+      throw new IllegalArgumentException(path + ".worlds: expected object");
+    }
+
+    List<EffectsEngine.RegionProfile> regionOverrides = new ArrayList<>();
+    Object regionsRaw = combat.get("regions");
+    if (regionsRaw instanceof List<?> list) {
+      for (int i = 0; i < list.size(); i++) {
+        Map<String, Object> regionNode = castMap(list.get(i), path + ".regions[" + i + "]");
+        QuestRegion region = parseRegion(regionNode, path + ".regions[" + i + "]");
+        EffectsEngine.CombatProfilePair profiles = parseCombatProfilePair(regionNode, path + ".regions[" + i + "]", defaults);
+        regionOverrides.add(new EffectsEngine.RegionProfile(region, profiles));
+      }
+    } else if (regionsRaw != null) {
+      throw new IllegalArgumentException(path + ".regions: expected list");
+    }
+
+    return new EffectsEngine.AbilityCombatProfile(baseProfiles, worldOverrides, regionOverrides);
+  }
+
+  private EffectsEngine.CombatProfilePair parseCombatProfilePair(Map<String, Object> node, String path,
+      EffectsEngine.CombatProfile defaults) {
+    Map<String, Object> pvpNode = mapNode(node.get("pvp"), path + ".pvp");
+    Map<String, Object> pveNode = mapNode(node.get("pve"), path + ".pve");
+    if (pvpNode == null && pveNode == null) {
+      EffectsEngine.CombatProfile profile = parseCombatProfile(node, path, defaults);
+      return new EffectsEngine.CombatProfilePair(profile, profile);
+    }
+    EffectsEngine.CombatProfile pvp = parseCombatProfile(pvpNode, path + ".pvp", defaults);
+    EffectsEngine.CombatProfile pve = parseCombatProfile(pveNode, path + ".pve", defaults);
+    return new EffectsEngine.CombatProfilePair(pvp, pve);
+  }
+
+  private EffectsEngine.CombatProfile parseCombatProfile(Map<String, Object> node, String path,
+      EffectsEngine.CombatProfile defaults) {
+    if (node == null) {
+      return defaults;
+    }
+    double damageMultiplier = doubleValue(node, "damageMultiplier",
+        doubleValue(node, "damageMult", defaults.damageMultiplier()));
+    double healMultiplier = doubleValue(node, "healMultiplier",
+        doubleValue(node, "healMult", defaults.healMultiplier()));
+    double damageCap = doubleValue(node, "damageCap",
+        doubleValue(node, "damageLimit", defaults.damageCap()));
+    double healCap = doubleValue(node, "healCap",
+        doubleValue(node, "healLimit", defaults.healCap()));
+    double maxDamagePercent = doubleValue(node, "maxDamagePercent",
+        doubleValue(node, "maxDamagePct", defaults.maxDamagePercent()));
+    double maxHealPercent = doubleValue(node, "maxHealPercent",
+        doubleValue(node, "maxHealPct", defaults.maxHealPercent()));
+    boolean allowDamage = bool(node, "allowDamage", defaults.allowDamage());
+    boolean allowHeal = bool(node, "allowHeal", defaults.allowHeal());
+    if (damageMultiplier < 0.0 || healMultiplier < 0.0) {
+      throw new IllegalArgumentException(path + ": multipliers must be >= 0");
+    }
+    if (damageCap < 0.0 || healCap < 0.0) {
+      throw new IllegalArgumentException(path + ": caps must be >= 0");
+    }
+    if (maxDamagePercent < 0.0 || maxHealPercent < 0.0) {
+      throw new IllegalArgumentException(path + ": maxPercent values must be >= 0");
+    }
+    return new EffectsEngine.CombatProfile(
+        damageMultiplier,
+        healMultiplier,
+        damageCap,
+        healCap,
+        maxDamagePercent,
+        maxHealPercent,
+        allowDamage,
+        allowHeal);
   }
 
   private ScriptHandlers compileScript(Object raw, String path) {
@@ -6279,6 +7819,20 @@ public final class EffectsYamlAbilities {
     private dev.patric.dungeonsreborn.effects.actions.Action parseStatement() {
       Token stmtToken = lookahead;
       String name = requireIdent("statement");
+      String normalized = name.toLowerCase(Locale.ROOT);
+      String deprecatedReplacement = DEPRECATED_DSL_STATEMENTS.get(normalized);
+      if (deprecatedReplacement != null) {
+        warnDeprecatedOnce(
+            pathAt(stmtToken) + ":statement:" + normalized,
+            pathAt(stmtToken) + ": statement '" + normalized + "' is deprecated; use '" + deprecatedReplacement + "'");
+        name = deprecatedReplacement;
+        normalized = deprecatedReplacement;
+      }
+      if (REMOVED_DSL_STATEMENTS.contains(normalized)) {
+        warnDeprecatedOnce(
+            pathAt(stmtToken) + ":statement:" + normalized,
+            pathAt(stmtToken) + ": statement '" + normalized + "' was removed");
+      }
       if ("if".equalsIgnoreCase(name) || "when".equalsIgnoreCase(name)) {
         var condition = parseCondition();
         dev.patric.dungeonsreborn.effects.actions.Action thenAction = parseBlock();
@@ -6300,9 +7854,12 @@ public final class EffectsYamlAbilities {
         VarTarget target = parseVarTarget();
         consume(TokenType.EQUALS);
         ScriptValue value = parseAssignValue();
+        Map<String, Value> attrs = parseAttributes();
+        NumValue ttl = numAttr(attrs, "ttlTicks", -1.0, stmtToken);
         return ctx -> {
           Object v = value.eval(ctx);
-          setVar(ctx, target.scope(), target.key(), v);
+          long ttlTicks = evalTtlTicks(ttl, ctx);
+          setVar(ctx, target.scope(), target.key(), v, ttlTicks > 0 ? ttlTicks : null);
         };
       }
       if ("inc_var".equalsIgnoreCase(name)) {
@@ -6310,10 +7867,12 @@ public final class EffectsYamlAbilities {
         Map<String, Value> attrs = parseAttributes();
         NumValue amount = numAttr(attrs, "amount", 1.0, stmtToken);
         NumValue def = numAttr(attrs, "default", 0.0, stmtToken);
+        NumValue ttl = numAttr(attrs, "ttlTicks", -1.0, stmtToken);
         return ctx -> {
           Object cur = vars(ctx, target.scope()).get(target.key());
           double next = numericVar(cur, evalDouble(def, ctx)) + evalDouble(amount, ctx);
-          setVar(ctx, target.scope(), target.key(), next);
+          long ttlTicks = evalTtlTicks(ttl, ctx);
+          setVar(ctx, target.scope(), target.key(), next, ttlTicks > 0 ? ttlTicks : null);
         };
       }
       if ("with_var".equalsIgnoreCase(name)) {
@@ -6323,8 +7882,11 @@ public final class EffectsYamlAbilities {
         dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
         return ctx -> {
           Map<String, Object> vars = vars(ctx, target.scope());
+          Map<String, Long> expirations = varExpirations(ctx, target.scope());
           boolean had = vars.containsKey(target.key());
           Object prev = vars.get(target.key());
+          boolean hadExp = expirations.containsKey(target.key());
+          Long prevExp = expirations.get(target.key());
           Object v = value.eval(ctx);
           setVar(ctx, target.scope(), target.key(), v);
           try {
@@ -6332,8 +7894,14 @@ public final class EffectsYamlAbilities {
           } finally {
             if (!had) {
               vars.remove(target.key());
+              expirations.remove(target.key());
             } else {
               vars.put(target.key(), prev);
+              if (hadExp) {
+                expirations.put(target.key(), prevExp);
+              } else {
+                expirations.remove(target.key());
+              }
             }
           }
         };
@@ -6495,6 +8063,54 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      if ("attach".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        String anchorRaw = stringAttr(attrs, "anchor", "caster", stmtToken);
+        String pointRaw = stringAttr(attrs, "point", null, stmtToken);
+        AnchorMode anchor = parseAnchorMode(anchorRaw, pathAt(stmtToken) + ".anchor");
+        AnchorPoint point = parseAnchorPoint(pointRaw, anchor, pathAt(stmtToken) + ".point");
+        double[] offsets = offsetsFromAttrs(attrs, stmtToken);
+        NumValue forward = numAttr(attrs, "forward", offsets == null ? 0.0 : offsets[0], stmtToken);
+        NumValue right = numAttr(attrs, "right", offsets == null ? 0.0 : offsets[1], stmtToken);
+        NumValue up = numAttr(attrs, "up", offsets == null ? 0.0 : offsets[2], stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        Frame frame = frameForAnchor(anchor, point);
+        return ctx -> {
+          double f = evalDouble(forward, ctx);
+          double r = evalDouble(right, ctx);
+          double u = evalDouble(up, ctx);
+          Actions.attach(inner, Frames.withOffsets(frame, f, r, u)).execute(ctx);
+        };
+      }
+      if ("follow".equalsIgnoreCase(name) || "lock_to_target".equalsIgnoreCase(name) || "lock_target".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 60.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 2.0, stmtToken);
+        NumValue smoothing = numAttr(attrs, "smoothing", 1.0, stmtToken);
+        String anchorRaw = stringAttr(attrs, "anchor", "caster", stmtToken);
+        String pointRaw = stringAttr(attrs, "point", null, stmtToken);
+        AnchorMode anchor = parseAnchorMode(anchorRaw, pathAt(stmtToken) + ".anchor");
+        AnchorPoint point = parseAnchorPoint(pointRaw, anchor, pathAt(stmtToken) + ".point");
+        double[] offsets = offsetsFromAttrs(attrs, stmtToken);
+        NumValue forward = numAttr(attrs, "forward", offsets == null ? 0.0 : offsets[0], stmtToken);
+        NumValue right = numAttr(attrs, "right", offsets == null ? 0.0 : offsets[1], stmtToken);
+        NumValue up = numAttr(attrs, "up", offsets == null ? 0.0 : offsets[2], stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action inner = parseBlock();
+        Frame frame = frameForAnchor(anchor, point);
+        return new ActionWithHandle() {
+          @Override
+          public ActionHandle executeWithHandle(CastContext ctx) {
+            long duration = Math.max(1L, evalLong(durationTicks, ctx));
+            long period = Math.max(1L, evalLong(periodTicks, ctx));
+            double smooth = evalDouble(smoothing, ctx);
+            double f = evalDouble(forward, ctx);
+            double r = evalDouble(right, ctx);
+            double u = evalDouble(up, ctx);
+            return Actions.follow(inner, Frames.withOffsets(frame, f, r, u), duration, period, smooth)
+                .executeWithHandle(ctx);
+          }
+        };
+      }
       if ("state_machine".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue chargeTicks = numAttr(attrs, "chargeTicks", 20.0, stmtToken);
@@ -6569,6 +8185,57 @@ public final class EffectsYamlAbilities {
             }
             return Actions.timeline(entries).executeWithHandle(ctx);
           }
+        };
+      }
+      if ("global_timeline".equalsIgnoreCase(name) || "timeline_global".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        String id = stringAttr(attrs, "id", null, stmtToken);
+        if (id == null || id.isBlank()) {
+          throw error(stmtToken, "global_timeline requires id");
+        }
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 200.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 1.0, stmtToken);
+        boolean start = boolAttr(attrs, "start", true, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action onTick = parseBlock();
+        return ctx -> {
+          long duration = Math.max(1L, evalLong(durationTicks, ctx));
+          long period = Math.max(1L, evalLong(periodTicks, ctx));
+          EffectsEngine.TimelineHandle timeline = ctx.engine().timeline(id);
+          if (timeline == null && start) {
+            timeline = ctx.engine().startTimeline(id, duration, period);
+          }
+          if (timeline == null) {
+            return;
+          }
+          AtomicBoolean cancelled = new AtomicBoolean(false);
+          ctx.state().onCancel(() -> cancelled.set(true));
+          EffectsEngine.TimelineHandle handleRef = timeline;
+          long timelineDuration = Math.max(1L, handleRef.durationTicks());
+          timeline.subscribe(tick -> {
+            if (cancelled.get()) {
+              return;
+            }
+            double t = Math.min(1.0, Math.max(0.0, tick / (double) timelineDuration));
+            Map<String, Object> values = new java.util.HashMap<>();
+            values.put("timeline_id", handleRef.id());
+            values.put("timeline_tick", tick);
+            values.put("timeline_t", t);
+            withTempVars(ctx, VarScope.CAST, values, () -> onTick.executeWithHandle(ctx));
+          });
+        };
+      }
+      if ("preset_timeline_pulse".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue durationTicks = numAttr(attrs, "durationTicks", 100.0, stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 5.0, stmtToken);
+        String easingRaw = stringAttr(attrs, "easing", EasingId.IN_OUT_CUBIC.name(), stmtToken);
+        EasingId easingId = parseEasing(easingRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action onTick = parseBlock();
+        return ctx -> {
+          long duration = Math.max(1L, evalLong(durationTicks, ctx));
+          long period = Math.max(1L, evalLong(periodTicks, ctx));
+          Actions.timelinePresetPulse(duration, period, easingFromId(easingId),
+              (exec, t) -> withTempVar(exec, VarScope.CAST, "t", t, () -> onTick.executeWithHandle(exec))).execute(ctx);
         };
       }
       if ("burst".equalsIgnoreCase(name)) {
@@ -7058,8 +8725,24 @@ public final class EffectsYamlAbilities {
       if ("damage".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.DIRECT, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        if (lookahead.type == TokenType.LBRACE) {
+          consume(TokenType.LBRACE);
+          while (lookahead.type != TokenType.RBRACE && lookahead.type != TokenType.EOF) {
+            String inner = requireIdent("damage hook");
+            if (!"on_hit".equalsIgnoreCase(inner) && !"onhit".equalsIgnoreCase(inner)) {
+              throw error(stmtToken, "damage only supports on_hit block");
+            }
+            onHitAction = parseBlock();
+          }
+          consume(TokenType.RBRACE);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
         return ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target == null) {
@@ -7069,7 +8752,8 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0) {
             return;
           }
-          EntityActions.damage(dmg, policy).execute(ctx, target);
+          EntityActions.damage(dmg, policy, cause, source, tags).execute(ctx, target);
+          finalOnHit.execute(ctx);
         };
       }
       if ("damage_typed".equalsIgnoreCase(name)) {
@@ -7077,6 +8761,9 @@ public final class EffectsYamlAbilities {
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
         DamageType type = parseDamageType(requireAttr(attrs, "type", stmtToken), stmtToken, "type");
         boolean ignoreResistance = boolAttr(attrs, "ignoreResistance", false, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.DIRECT, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7088,7 +8775,7 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0) {
             return;
           }
-          EntityActions.damageTyped(dmg, type, ignoreResistance, policy).execute(ctx, target);
+          EntityActions.damageTyped(dmg, type, ignoreResistance, policy, cause, source, tags).execute(ctx, target);
         };
       }
       if ("set_resistance".equalsIgnoreCase(name)) {
@@ -7195,6 +8882,9 @@ public final class EffectsYamlAbilities {
       if ("damage_percent".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue percent = numAttr(attrs, "percent", 0.15, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.PERCENT, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7206,12 +8896,15 @@ public final class EffectsYamlAbilities {
           if (pct <= 0.0) {
             return;
           }
-          EntityActions.damagePercent(pct, policy).execute(ctx, target);
+          EntityActions.damagePercent(pct, policy, cause, source, tags).execute(ctx, target);
         };
       }
       if ("damage_true".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.TRUE, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7223,7 +8916,7 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0) {
             return;
           }
-          EntityActions.damageTrue(dmg, policy).execute(ctx, target);
+          EntityActions.damageTrue(dmg, policy, cause, source, tags).execute(ctx, target);
         };
       }
       if ("damage_falloff".equalsIgnoreCase(name)) {
@@ -7231,6 +8924,9 @@ public final class EffectsYamlAbilities {
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
         NumValue maxDistance = numAttr(attrs, "maxDistance", 12.0, stmtToken);
         NumValue minMultiplier = numAttr(attrs, "minMultiplier", 0.2, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.FALLOFF, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7244,7 +8940,7 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0 || maxDist <= 0.0) {
             return;
           }
-          EntityActions.damageWithFalloff(dmg, maxDist, minMult, policy).execute(ctx, target);
+          EntityActions.damageWithFalloff(dmg, maxDist, minMult, policy, cause, source, tags).execute(ctx, target);
         };
       }
       if ("damage_crit".equalsIgnoreCase(name)) {
@@ -7254,6 +8950,9 @@ public final class EffectsYamlAbilities {
         NumValue critMultiplier = numAttr(attrs, "critMultiplier", 1.5, stmtToken);
         NumValue headshotMultiplier = numAttr(attrs, "headshotMultiplier", 1.0, stmtToken);
         NumValue headshotThreshold = numAttr(attrs, "headshotThreshold", 0.25, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.CRIT, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7271,13 +8970,19 @@ public final class EffectsYamlAbilities {
               evalDouble(critMultiplier, ctx),
               evalDouble(headshotMultiplier, ctx),
               evalDouble(headshotThreshold, ctx),
-              policy).execute(ctx, target);
+              policy,
+              cause,
+              source,
+              tags).execute(ctx, target);
         };
       }
       if ("damage_lifesteal".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
         NumValue ratio = numAttr(attrs, "ratio", 0.25, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.LIFESTEAL, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         return ctx -> {
@@ -7289,7 +8994,7 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0) {
             return;
           }
-          EntityActions.damageLifesteal(dmg, evalDouble(ratio, ctx), policy).execute(ctx, target);
+          EntityActions.damageLifesteal(dmg, evalDouble(ratio, ctx), policy, cause, source, tags).execute(ctx, target);
         };
       }
       if ("damage_dot".equalsIgnoreCase(name) || "damage_over_time".equalsIgnoreCase(name)) {
@@ -7297,8 +9002,31 @@ public final class EffectsYamlAbilities {
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
         NumValue periodTicks = numAttr(attrs, "periodTicks", 10.0, stmtToken);
         NumValue times = numAttr(attrs, "times", 5.0, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.DOT, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onTickAction = Actions.noop();
+        if (lookahead.type == TokenType.LBRACE) {
+          consume(TokenType.LBRACE);
+          while (lookahead.type != TokenType.RBRACE && lookahead.type != TokenType.EOF) {
+            String inner = requireIdent("damage_dot hook");
+            if ("on_hit".equalsIgnoreCase(inner) || "onhit".equalsIgnoreCase(inner)) {
+              onHitAction = parseBlock();
+              continue;
+            }
+            if ("on_tick".equalsIgnoreCase(inner) || "ontick".equalsIgnoreCase(inner)) {
+              onTickAction = parseBlock();
+              continue;
+            }
+            throw error(stmtToken, "damage_dot supports on_hit or on_tick blocks");
+          }
+          consume(TokenType.RBRACE);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
         return ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target == null) {
@@ -7310,7 +9038,16 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0 || period <= 0 || count <= 0) {
             return;
           }
-          EntityActions.damageOverTime(dmg, period, count, policy).execute(ctx, target);
+          finalOnHit.execute(ctx);
+          EntityActions.damageOverTime(dmg, period, count, policy, cause, source, tags, (cast, hit) -> {
+            Object prev = cast.state().get(YAML_LAST_ENTITY);
+            cast.state().put(YAML_LAST_ENTITY, hit);
+            try {
+              finalOnTick.execute(cast);
+            } finally {
+              cast.state().put(YAML_LAST_ENTITY, prev);
+            }
+          }).execute(ctx, target);
         };
       }
       if ("damage_chain".equalsIgnoreCase(name) || "chain_damage".equalsIgnoreCase(name) || "chain_lightning".equalsIgnoreCase(name)) {
@@ -7320,6 +9057,9 @@ public final class EffectsYamlAbilities {
         NumValue maxJumps = numAttr(attrs, "maxJumps", 4.0, stmtToken);
         NumValue delayTicks = numAttr(attrs, "delayTicks", 2.0, stmtToken);
         NumValue falloff = numAttr(attrs, "falloff", 0.8, stmtToken);
+        DamageCause cause = damageCauseAttr(attrs, DamageCause.CHAIN, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
         EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
         dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
@@ -7340,7 +9080,7 @@ public final class EffectsYamlAbilities {
           if (dmg <= 0.0 || r <= 0.0 || jumps <= 0 || delay < 0) {
             return;
           }
-          EntityActions.chainDamage(dmg, r, jumps, delay, f, policy, (cast, hit) -> {
+          EntityActions.chainDamage(dmg, r, jumps, delay, f, policy, cause, source, tags, (cast, hit) -> {
             Object prev = cast.state().get(YAML_LAST_ENTITY);
             cast.state().put(YAML_LAST_ENTITY, hit);
             try {
@@ -7368,6 +9108,17 @@ public final class EffectsYamlAbilities {
       if ("heal".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
         NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
+        HealType healType = attrs.containsKey("type")
+            ? parseHealType(requireAttr(attrs, "type", stmtToken), stmtToken, "type")
+            : HealType.DIRECT;
+        String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
+        EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        NumValue cap = numAttr(attrs, "cap", 0.0, stmtToken);
+        boolean overhealToShield = boolAttr(attrs, "overhealToShield", false, stmtToken);
+        NumValue shieldCap = numAttr(attrs, "shieldCap", 0.0, stmtToken);
+        NumValue shieldDecayTicks = numAttr(attrs, "shieldDecayTicks", 0.0, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
         return ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target == null) {
@@ -7377,7 +9128,142 @@ public final class EffectsYamlAbilities {
           if (heal <= 0.0) {
             return;
           }
-          EntityActions.heal(heal).execute(ctx, target);
+          EntityActions.heal(
+              heal,
+              policy,
+              healType,
+              source,
+              tags,
+              evalDouble(cap, ctx),
+              overhealToShield,
+              evalDouble(shieldCap, ctx),
+              evalLong(shieldDecayTicks, ctx)).execute(ctx, target);
+        };
+      }
+
+      if ("heal_percent".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue percent = numAttr(attrs, "percent", 0.15, stmtToken);
+        HealType healType = attrs.containsKey("type")
+            ? parseHealType(requireAttr(attrs, "type", stmtToken), stmtToken, "type")
+            : HealType.DIRECT;
+        String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
+        EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        NumValue cap = numAttr(attrs, "cap", 0.0, stmtToken);
+        boolean overhealToShield = boolAttr(attrs, "overhealToShield", false, stmtToken);
+        NumValue shieldCap = numAttr(attrs, "shieldCap", 0.0, stmtToken);
+        NumValue shieldDecayTicks = numAttr(attrs, "shieldDecayTicks", 0.0, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          double pct = evalDouble(percent, ctx);
+          if (pct <= 0.0) {
+            return;
+          }
+          EntityActions.healPercent(
+              pct,
+              policy,
+              healType,
+              source,
+              tags,
+              evalDouble(cap, ctx),
+              overhealToShield,
+              evalDouble(shieldCap, ctx),
+              evalLong(shieldDecayTicks, ctx)).execute(ctx, target);
+        };
+      }
+
+      if ("heal_hot".equalsIgnoreCase(name) || "heal_over_time".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
+        NumValue periodTicks = numAttr(attrs, "periodTicks", 10.0, stmtToken);
+        NumValue times = numAttr(attrs, "times", 5.0, stmtToken);
+        HealType healType = attrs.containsKey("type")
+            ? parseHealType(requireAttr(attrs, "type", stmtToken), stmtToken, "type")
+            : HealType.HOT;
+        String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
+        EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        NumValue cap = numAttr(attrs, "cap", 0.0, stmtToken);
+        boolean overhealToShield = boolAttr(attrs, "overhealToShield", false, stmtToken);
+        NumValue shieldCap = numAttr(attrs, "shieldCap", 0.0, stmtToken);
+        NumValue shieldDecayTicks = numAttr(attrs, "shieldDecayTicks", 0.0, stmtToken);
+        String source = stringAttr(attrs, "source", null, stmtToken);
+        java.util.Set<String> tags = tagSetAttr(attrs, stmtToken);
+        dev.patric.dungeonsreborn.effects.actions.Action onTickAction = Actions.noop();
+        if (lookahead.type == TokenType.LBRACE) {
+          consume(TokenType.LBRACE);
+          while (lookahead.type != TokenType.RBRACE && lookahead.type != TokenType.EOF) {
+            String inner = requireIdent("heal_hot hook");
+            if (!"on_tick".equalsIgnoreCase(inner) && !"ontick".equalsIgnoreCase(inner)) {
+              throw error(stmtToken, "heal_hot supports on_tick block");
+            }
+            onTickAction = parseBlock();
+          }
+          consume(TokenType.RBRACE);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          double heal = evalDouble(amount, ctx);
+          long period = evalLong(periodTicks, ctx);
+          int count = evalInt(times, ctx);
+          if (heal <= 0.0 || period <= 0 || count <= 0) {
+            return;
+          }
+          EntityActions.healOverTime(
+              heal,
+              period,
+              count,
+              policy,
+              healType,
+              source,
+              tags,
+              evalDouble(cap, ctx),
+              overhealToShield,
+              evalDouble(shieldCap, ctx),
+              evalLong(shieldDecayTicks, ctx),
+              (cast, hit) -> {
+                Object prev = cast.state().get(YAML_LAST_ENTITY);
+                cast.state().put(YAML_LAST_ENTITY, hit);
+                try {
+                  finalOnTick.execute(cast);
+                } finally {
+                  cast.state().put(YAML_LAST_ENTITY, prev);
+                }
+              }).execute(ctx, target);
+        };
+      }
+
+      if ("shield".equalsIgnoreCase(name) || "absorb".equalsIgnoreCase(name)) {
+        Map<String, Value> attrs = parseAttributes();
+        NumValue amount = numFromValue(requireAttr(attrs, "amount", stmtToken), "amount", stmtToken);
+        NumValue cap = numAttr(attrs, "cap", 0.0, stmtToken);
+        NumValue decayTicks = numAttr(attrs, "decayTicks", 0.0, stmtToken);
+        HealType healType = "absorb".equalsIgnoreCase(name) ? HealType.ABSORB : HealType.SHIELD;
+        String policyRaw = stringAttr(attrs, "policy", "hostile_default", stmtToken);
+        EntityActions.DamagePolicy policy = parseDamagePolicy(policyRaw, stmtToken);
+        return ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            return;
+          }
+          double shield = evalDouble(amount, ctx);
+          if (shield <= 0.0) {
+            return;
+          }
+          EntityActions.shield(
+              shield,
+              evalDouble(cap, ctx),
+              evalLong(decayTicks, ctx),
+              policy,
+              healType).execute(ctx, target);
         };
       }
 
@@ -7644,6 +9530,7 @@ public final class EffectsYamlAbilities {
             double extra = trailExtra == null ? 0.0 : evalDouble(trailExtra, ctx);
             b.trail(trailParticle, count, offset, extra);
           }
+          b.frameOut(frame -> ctx.state().put(Vars.PROJECTILE_FRAME, frame));
           b.onHit(hit -> {
             CastContext cast = hit.cast();
             cast.state().put(YAML_LAST_ENTITY, hit.hitEntity());
@@ -7664,9 +9551,35 @@ public final class EffectsYamlAbilities {
         NumValue count = numAttr(attrs, "count", 1.0, stmtToken);
         NumValue durationTicks = numAttr(attrs, "durationTicks", 20.0 * 30.0, stmtToken);
         NumValue radius = numAttr(attrs, "radius", 1.5, stmtToken);
+        NumValue waves = numAttr(attrs, "waves", 1.0, stmtToken);
+        NumValue waveIntervalTicks = numAttr(attrs, "waveIntervalTicks", 0.0, stmtToken);
+        String formationRaw = stringAttr(attrs, "formation", null, stmtToken);
+        MinionFormation formation = parseMinionFormation(formationRaw, pathAt(stmtToken) + ".formation");
+        NumValue formationRadius = numAttr(attrs, "formationRadius", 0.0, stmtToken);
+        boolean safeSpawn = boolAttr(attrs, "safeSpawn", false, stmtToken);
+        NumValue maxSpawnAttempts = numAttr(attrs, "maxSpawnAttempts", 6.0, stmtToken);
         boolean despawnOnLogout = boolAttr(attrs, "despawnOnLogout", true, stmtToken);
+        boolean persistent = boolAttr(attrs, "persistent", false, stmtToken);
         String modeRaw = stringAttr(attrs, "mode", null, stmtToken);
         MinionMode mode = parseMinionMode(modeRaw, pathAt(stmtToken) + ".mode");
+        boolean allowPvp = boolAttr(attrs, "allowPvp", false, stmtToken);
+        boolean allowPartyTargets = boolAttr(attrs, "allowPartyTargets", false, stmtToken);
+        boolean shareOwnerAggro = boolAttr(attrs, "shareOwnerAggro", true, stmtToken);
+        NumValue maxDistanceFromOwner = numAttr(attrs, "maxDistanceFromOwner", 0.0, stmtToken);
+        boolean sharePotionEffects = boolAttr(attrs, "sharePotionEffects", false, stmtToken);
+        NumValue summonMana = numAttr(attrs, "summonMana", 0.0, stmtToken);
+        NumValue summonCooldownTicks = numAttr(attrs, "summonCooldownTicks", 0.0, stmtToken);
+        String summonCooldownKey = stringAttr(attrs, "summonCooldownKey", null, stmtToken);
+        NumValue ownerLevelScale = numAttr(attrs, "ownerLevel", 0.0, stmtToken);
+        NumValue ownerStrengthScale = numAttr(attrs, "ownerStrength", 0.0, stmtToken);
+        NumValue ownerDexterityScale = numAttr(attrs, "ownerDexterity", 0.0, stmtToken);
+        NumValue ownerIntelligenceScale = numAttr(attrs, "ownerIntelligence", 0.0, stmtToken);
+        NumValue ownerVitalityScale = numAttr(attrs, "ownerVitality", 0.0, stmtToken);
+        NumValue ownerMaxHealthScale = numAttr(attrs, "ownerMaxHealth", 0.0, stmtToken);
+        NumValue ownerMaxManaScale = numAttr(attrs, "ownerMaxMana", 0.0, stmtToken);
+        NumValue bonusHealthCap = numAttr(attrs, "bonusHealthCap", 0.0, stmtToken);
+        NumValue bonusDamageCap = numAttr(attrs, "bonusDamageCap", 0.0, stmtToken);
+        NumValue decayExponent = numAttr(attrs, "decayExponent", 0.0, stmtToken);
         NumValue healthPerLevel = numAttrAlias(attrs, "scale_healthPerLevel", "healthPerLevel", 0.0, stmtToken);
         NumValue damagePerLevel = numAttrAlias(attrs, "scale_damagePerLevel", "damagePerLevel", 0.0, stmtToken);
         NumValue healthPerMaxHealth = numAttrAlias(attrs, "scale_healthPerMaxHealth", "healthPerMaxHealth", 0.0, stmtToken);
@@ -7705,6 +9618,8 @@ public final class EffectsYamlAbilities {
         List<String> specialIds = splitIdList(specialsRaw);
         NumValue specialCooldown = numAttr(attrs, "specialCooldownTicks", 60.0, stmtToken);
         NumValue specialChance = numAttr(attrs, "specialChance", 1.0, stmtToken);
+        NumValue specialCostMultiplier = numAttr(attrs, "specialCostMultiplier", 1.0, stmtToken);
+        NumValue specialCostAdd = numAttr(attrs, "specialCostAdd", 0.0, stmtToken);
         boolean specialRequireTarget = boolAttr(attrs, "specialRequireTarget", true, stmtToken);
 
         MinionManager minions = resolveMinionManager(pathAt(stmtToken));
@@ -7718,6 +9633,11 @@ public final class EffectsYamlAbilities {
           if (c <= 0 || dur <= 0) {
             return;
           }
+          int waveCount = Math.max(1, evalInt(waves, ctx));
+          long waveEvery = Math.max(0L, evalLong(waveIntervalTicks, ctx));
+          double formationRadiusValue = Math.max(0.0, evalDouble(formationRadius, ctx));
+          boolean safeSpawnValue = safeSpawn;
+          int maxSpawnAttemptsValue = Math.max(1, evalInt(maxSpawnAttempts, ctx));
           MinionScaling scaling = new MinionScaling(
               evalDouble(healthPerLevel, ctx),
               evalDouble(damagePerLevel, ctx),
@@ -7743,18 +9663,59 @@ public final class EffectsYamlAbilities {
 
           long specialTicks = Math.max(1L, Math.round(evalDouble(specialCooldown, ctx)));
           double chance = Math.max(0.0, Math.min(1.0, evalDouble(specialChance, ctx)));
+          double costMultiplier = Math.max(0.0, evalDouble(specialCostMultiplier, ctx));
+          double costAdd = evalDouble(specialCostAdd, ctx);
           List<MinionSpecialAttackSpec> specials = new java.util.ArrayList<>();
           for (String abilityId : specialIds) {
-            specials.add(new MinionSpecialAttackSpec(abilityId, specialTicks, chance, specialRequireTarget));
+            specials.add(new MinionSpecialAttackSpec(abilityId, specialTicks, chance, specialRequireTarget,
+                costMultiplier, costAdd));
           }
 
           java.util.UUID ownerId = ctx.caster().getUniqueId();
-          MinionSpec spec = new MinionSpec(minionId, Ids.normalize(mobId), c, dur, ownerId, r, scaling, resistances, immuneTypes, despawnOnLogout, mode, passives, specials);
-          java.util.List<LivingEntity> spawned = minions.summon(spec, ctx.caster().getLocation());
-          java.util.List<java.util.UUID> ids = new java.util.ArrayList<>(spawned.size());
-          for (LivingEntity living : spawned) {
-            ids.add(living.getUniqueId());
+          double summonManaValue = Math.max(0.0, evalDouble(summonMana, ctx));
+          long summonCooldownValue = Math.max(0L, evalLong(summonCooldownTicks, ctx));
+          if (summonCooldownValue > 0L && ctx.caster() instanceof Player player) {
+            String key = summonCooldownKey == null || summonCooldownKey.isBlank()
+                ? "minion:" + minionId
+                : summonCooldownKey;
+            if (!ctx.engine().tryStartCooldown(player.getUniqueId(), key, summonCooldownValue)) {
+              return;
+            }
           }
+          if (summonManaValue > 0.0) {
+            Component fail = Costs.mana(summonManaValue).tryApply(ctx);
+            if (fail != null) {
+              if (ctx.caster() instanceof Player player) {
+                player.sendMessage(fail);
+              }
+              return;
+            }
+          }
+          MinionSummonSpec summonSpec = new MinionSummonSpec(waveCount, waveEvery, formation,
+              formationRadiusValue, safeSpawnValue, maxSpawnAttemptsValue);
+          MinionOwnerScalingSpec ownerScaling = new MinionOwnerScalingSpec(
+              evalDouble(ownerLevelScale, ctx),
+              evalDouble(ownerStrengthScale, ctx),
+              evalDouble(ownerDexterityScale, ctx),
+              evalDouble(ownerIntelligenceScale, ctx),
+              evalDouble(ownerVitalityScale, ctx),
+              evalDouble(ownerMaxManaScale, ctx),
+              evalDouble(ownerMaxHealthScale, ctx));
+          MinionScalingLimits limits = new MinionScalingLimits(
+              Math.max(0.0, evalDouble(bonusHealthCap, ctx)),
+              Math.max(0.0, evalDouble(bonusDamageCap, ctx)),
+              Math.max(0.0, evalDouble(decayExponent, ctx)));
+          MinionSpec spec = new MinionSpec(minionId, Ids.normalize(mobId), c, dur, ownerId, r, summonSpec,
+              scaling, resistances, immuneTypes, despawnOnLogout, persistent, mode,
+              new MinionTargetRules(allowPvp, allowPartyTargets, shareOwnerAggro,
+                  Math.max(0.0, evalDouble(maxDistanceFromOwner, ctx))),
+              passives, specials, Map.of(), ownerScaling, limits, null, null, false, false, false,
+              sharePotionEffects, null,
+              null, null, 0L);
+          java.util.List<java.util.UUID> ids = new java.util.ArrayList<>();
+          java.util.List<LivingEntity> spawned = minions.summon(spec, ctx.caster().getLocation(), living -> {
+            ids.add(living.getUniqueId());
+          });
           ctx.state().put(Vars.MINION_ID, minionId);
           ctx.state().put(Vars.MINION_COUNT, spawned.size());
           ctx.state().put(Vars.MINION_IDS, java.util.List.copyOf(ids));
@@ -9894,6 +11855,7 @@ public final class EffectsYamlAbilities {
           Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
           org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
           org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          TransformSpec transform = transformSpecFromAttrs(attrs, stmtToken);
           String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
           java.util.List<PointSpec> points;
           if (shapeId != null) {
@@ -9910,7 +11872,7 @@ public final class EffectsYamlAbilities {
           }
           var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
           for (PointSpec spec : points) {
-            fns.add(ctx -> pointAt(ctx, spec));
+            fns.add(ctx -> applyTransform(ctx, pointAt(ctx, spec), transform));
           }
           return ctx -> {
             int emitCount = Math.max(0, evalInt(count, ctx));
@@ -9962,6 +11924,7 @@ public final class EffectsYamlAbilities {
           Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
           org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
           org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          TransformSpec transform = transformSpecFromAttrs(attrs, stmtToken);
           String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
           java.util.List<PointSpec> points;
           if (shapeId != null) {
@@ -9978,7 +11941,7 @@ public final class EffectsYamlAbilities {
           }
           var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points.size());
           for (PointSpec spec : points) {
-            fns.add(ctx -> pointAt(ctx, spec));
+            fns.add(ctx -> applyTransform(ctx, pointAt(ctx, spec), transform));
           }
           return ctx -> {
             int emitCount = Math.max(0, evalInt(count, ctx));
@@ -10033,6 +11996,7 @@ public final class EffectsYamlAbilities {
           Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
           org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
           org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          TransformSpec transform = transformSpecFromAttrs(attrs, stmtToken);
           String shapeId = attrs.containsKey("shape") ? stringAttr(attrs, "shape", null, stmtToken) : null;
           java.util.List<List<PointSpec>> triangles;
           if (shapeId != null) {
@@ -10052,7 +12016,11 @@ public final class EffectsYamlAbilities {
             PointSpec a = tri.get(0);
             PointSpec b = tri.get(1);
             PointSpec c = tri.get(2);
-            fns.add(ctx -> new Location[] { pointAt(ctx, a), pointAt(ctx, b), pointAt(ctx, c) });
+            fns.add(ctx -> new Location[] {
+                applyTransform(ctx, pointAt(ctx, a), transform),
+                applyTransform(ctx, pointAt(ctx, b), transform),
+                applyTransform(ctx, pointAt(ctx, c), transform)
+            });
           }
           return ctx -> {
             int emitCount = Math.max(0, evalInt(count, ctx));
@@ -10100,8 +12068,163 @@ public final class EffectsYamlAbilities {
             }
           };
         }
+        case "parametric" -> {
+          NumValue pointsValue = numAttr(attrs, "points", 64.0, stmtToken);
+          NumValue tMin = numAttr(attrs, "tMin", 0.0, stmtToken);
+          NumValue tMax = numAttr(attrs, "tMax", 1.0, stmtToken);
+          Value xValue = requireAttr(attrs, "x", stmtToken);
+          Value yValue = requireAttr(attrs, "y", stmtToken);
+          Value zValue = requireAttr(attrs, "z", stmtToken);
+          NumValue xExpr = numFromValue(xValue, "x", stmtToken);
+          NumValue yExpr = numFromValue(yValue, "y", stmtToken);
+          NumValue zExpr = numFromValue(zValue, "z", stmtToken);
+          TransformSpec transform = transformSpecFromAttrs(attrs, stmtToken);
+          Value startColorValue = attrs.getOrDefault("startColor", attrs.getOrDefault("from", attrs.get("color")));
+          Value endColorValue = attrs.getOrDefault("endColor", attrs.getOrDefault("toColor", attrs.get("to")));
+          org.bukkit.Color from = startColorValue == null ? null : parseColor(rawValue(startColorValue, "startColor", stmtToken), pathAt(stmtToken) + ".startColor");
+          org.bukkit.Color to = endColorValue == null ? null : parseColor(rawValue(endColorValue, "endColor", stmtToken), pathAt(stmtToken) + ".endColor");
+          NumValue size = numAttr(attrs, "size", 1.0, stmtToken);
+          return ctx -> {
+            int emitCount = Math.max(0, evalInt(count, ctx));
+            int points = Math.max(0, evalInt(pointsValue, ctx));
+            if (emitCount == 0 || points <= 0) {
+              return;
+            }
+            long total = (long) points * emitCount;
+            if (!consumeParticles(ctx, total)) {
+              return;
+            }
+            Location origin = resolveAtWithOffsets(ctx, at, forward, right, up);
+            if (origin.getWorld() == null) {
+              return;
+            }
+            CastContext exec = new CastContext(
+                ctx.engine(),
+                ctx.plugin(),
+                ctx.castId(),
+                ctx.abilityId(),
+                ctx.tick(),
+                ctx.state(),
+                ctx.caster(),
+                origin.clone(),
+                ctx.direction().clone(),
+                ctx.itemInHand());
+            double tStart = evalDouble(tMin, exec);
+            double tEnd = evalDouble(tMax, exec);
+            if (Math.abs(tEnd - tStart) < 1e-9) {
+              tEnd = tStart + 1.0;
+            }
+            var fns = new ArrayList<java.util.function.Function<CastContext, Location>>(points);
+            for (int i = 0; i < points; i++) {
+              double t = points == 1 ? tStart : (tStart + (tEnd - tStart) * (i / (double) (points - 1)));
+              fns.add(pointCtx -> evalParametricPoint(pointCtx, t, xExpr, yExpr, zExpr, transform));
+            }
+            float dustSize = (float) evalDouble(size, exec);
+            if (from != null && to != null) {
+              Actions.particlesPointsGradient(
+                  particle,
+                  fns,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data,
+                  from,
+                  to,
+                  dustSize).execute(exec);
+            } else {
+              Actions.particlesPoints(
+                  particle,
+                  fns,
+                  emitCount,
+                  evalDouble(offset, exec),
+                  evalDouble(extra, exec),
+                  data).execute(exec);
+            }
+          };
+        }
         default -> throw error(stmtToken, "unknown particles shape: " + shape);
       }
+    }
+
+    private record TransformSpec(
+        NumValue scale,
+        NumValue rotateYaw,
+        NumValue rotatePitch,
+        NumValue rotateRoll,
+        NumValue offsetX,
+        NumValue offsetY,
+        NumValue offsetZ) {
+    }
+
+    private TransformSpec transformSpecFromAttrs(Map<String, Value> attrs, Token stmtToken) {
+      boolean has =
+          attrs.containsKey("scale")
+              || attrs.containsKey("rotateYaw")
+              || attrs.containsKey("rotatePitch")
+              || attrs.containsKey("rotateRoll")
+              || attrs.containsKey("rotateX")
+              || attrs.containsKey("rotateY")
+              || attrs.containsKey("rotateZ")
+              || attrs.containsKey("offsetX")
+              || attrs.containsKey("offsetY")
+              || attrs.containsKey("offsetZ");
+      if (!has) {
+        return null;
+      }
+      NumValue scale = numAttr(attrs, "scale", 1.0, stmtToken);
+      NumValue rotateYaw = numAttrAlias(attrs, "rotateYaw", "rotateY", 0.0, stmtToken);
+      NumValue rotatePitch = numAttrAlias(attrs, "rotatePitch", "rotateX", 0.0, stmtToken);
+      NumValue rotateRoll = numAttrAlias(attrs, "rotateRoll", "rotateZ", 0.0, stmtToken);
+      NumValue offsetX = numAttr(attrs, "offsetX", 0.0, stmtToken);
+      NumValue offsetY = numAttr(attrs, "offsetY", 0.0, stmtToken);
+      NumValue offsetZ = numAttr(attrs, "offsetZ", 0.0, stmtToken);
+      return new TransformSpec(scale, rotateYaw, rotatePitch, rotateRoll, offsetX, offsetY, offsetZ);
+    }
+
+    private Location applyTransform(CastContext ctx, Location location, TransformSpec spec) {
+      if (location == null || spec == null) {
+        return location;
+      }
+      Location origin = ctx.origin();
+      if (origin.getWorld() == null) {
+        return location;
+      }
+      Vector delta = location.toVector().subtract(origin.toVector());
+      double scale = evalDouble(spec.scale(), ctx);
+      if (Math.abs(scale - 1.0) > 1e-9) {
+        delta.multiply(scale);
+      }
+      double yaw = Math.toRadians(evalDouble(spec.rotateYaw(), ctx));
+      double pitch = Math.toRadians(evalDouble(spec.rotatePitch(), ctx));
+      double roll = Math.toRadians(evalDouble(spec.rotateRoll(), ctx));
+      if (Math.abs(yaw) > 1e-9) {
+        delta = dev.patric.dungeonsreborn.effects.particles.ParticleTransforms.rotateAroundAxis(delta, new Vector(0, 1, 0), yaw);
+      }
+      if (Math.abs(pitch) > 1e-9) {
+        delta = dev.patric.dungeonsreborn.effects.particles.ParticleTransforms.rotateAroundAxis(delta, new Vector(1, 0, 0), pitch);
+      }
+      if (Math.abs(roll) > 1e-9) {
+        delta = dev.patric.dungeonsreborn.effects.particles.ParticleTransforms.rotateAroundAxis(delta, new Vector(0, 0, 1), roll);
+      }
+      double ox = evalDouble(spec.offsetX(), ctx);
+      double oy = evalDouble(spec.offsetY(), ctx);
+      double oz = evalDouble(spec.offsetZ(), ctx);
+      return origin.clone().add(delta).add(ox, oy, oz);
+    }
+
+    private Location evalParametricPoint(CastContext ctx, double t, NumValue xExpr, NumValue yExpr, NumValue zExpr, TransformSpec spec) {
+      final double[] coords = new double[3];
+      withTempVar(ctx, VarScope.CAST, "t", t, () -> {
+        coords[0] = evalDouble(xExpr, ctx);
+        coords[1] = evalDouble(yExpr, ctx);
+        coords[2] = evalDouble(zExpr, ctx);
+      });
+      Location origin = ctx.origin();
+      if (origin.getWorld() == null) {
+        return null;
+      }
+      Location raw = origin.clone().add(coords[0], coords[1], coords[2]);
+      return applyTransform(ctx, raw, spec);
     }
 
     private double[] offsetsFromAttrs(Map<String, Value> attrs, Token at) {
@@ -10426,6 +12549,42 @@ public final class EffectsYamlAbilities {
       }
     }
 
+    private HealType parseHealType(Value value, Token at, String key) {
+      if (value.kind() == ValueKind.EXPR || value.kind() == ValueKind.NUMBER) {
+        throw error(at, "invalid " + key + ": expected heal type");
+      }
+      String raw = value.text();
+      String normalized = raw.trim().toUpperCase(Locale.ROOT);
+      try {
+        return HealType.valueOf(normalized);
+      } catch (IllegalArgumentException ex) {
+        String suggestion = suggestEnumValue(raw, HealType.class);
+        String msg = "invalid " + key + "=" + raw;
+        if (suggestion != null) {
+          msg += " (did you mean " + suggestion + "?)";
+        }
+        throw error(at, msg);
+      }
+    }
+
+    private DamageCause parseDamageCause(Value value, Token at, String key) {
+      if (value.kind() == ValueKind.EXPR || value.kind() == ValueKind.NUMBER) {
+        throw error(at, "invalid " + key + ": expected damage cause");
+      }
+      String raw = value.text();
+      String normalized = raw.trim().toUpperCase(Locale.ROOT);
+      try {
+        return DamageCause.valueOf(normalized);
+      } catch (IllegalArgumentException ex) {
+        String suggestion = suggestEnumValue(raw, DamageCause.class);
+        String msg = "invalid " + key + "=" + raw;
+        if (suggestion != null) {
+          msg += " (did you mean " + suggestion + "?)";
+        }
+        throw error(at, msg);
+      }
+    }
+
     private PotionEffectType parsePotionEffect(Value value, Token at, String key) {
       if (value.kind() == ValueKind.EXPR || value.kind() == ValueKind.NUMBER) {
         throw error(at, "invalid " + key + ": expected potion effect");
@@ -10549,6 +12708,18 @@ public final class EffectsYamlAbilities {
             return Targeters.nearest(r, ignoreCaster, filter).select(ctx);
           };
         }
+        case "nearest_within_angle", "nearest-within-angle", "nearest_angle", "nearest-angle" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          NumValue angleDegrees = numAttr(attrs, "angleDegrees", 60.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            double angle = evalDouble(angleDegrees, ctx);
+            if (r < 0.0 || angle <= 0.0 || angle > 180.0) {
+              return List.of();
+            }
+            return Targeters.nearestWithinAngle(r, angle, ignoreCaster, filter).select(ctx);
+          };
+        }
         case "cone" -> {
           NumValue radius = numAttr(attrs, "radius", 8.0, at);
           NumValue angleDegrees = numAttr(attrs, "angleDegrees", 90.0, at);
@@ -10559,6 +12730,28 @@ public final class EffectsYamlAbilities {
               return List.of();
             }
             return Targeters.cone(r, angle, ignoreCaster, filter).select(ctx);
+          };
+        }
+        case "line_of_sight", "line-of-sight", "los" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            if (r < 0.0) {
+              return List.of();
+            }
+            return Targeters.lineOfSight(r, ignoreCaster, filter).select(ctx);
+          };
+        }
+        case "ground_sphere", "ground-sphere", "ground_snap", "ground-snap" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          NumValue maxDrop = numAttr(attrs, "maxDrop", 24.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            double drop = evalDouble(maxDrop, ctx);
+            if (r < 0.0 || drop < 0.0) {
+              return List.of();
+            }
+            return Targeters.groundSphere(r, drop, ignoreCaster, filter).select(ctx);
           };
         }
         case "box" -> {
@@ -10606,8 +12799,126 @@ public final class EffectsYamlAbilities {
             return Targeters.capsuleRay(max, r, stopOnBlock, ignoreCaster, filter).select(ctx);
           };
         }
+        case "chain" -> {
+          NumValue radius = numAttr(attrs, "radius", 6.0, at);
+          NumValue maxTargets = numAttr(attrs, "maxTargets", 3.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            int count = (int) Math.round(evalDouble(maxTargets, ctx));
+            if (r < 0.0 || count < 0) {
+              return List.of();
+            }
+            return Targeters.chain(r, count, ignoreCaster, filter).select(ctx);
+          };
+        }
+        case "random", "random_n", "random-n" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          NumValue count = numAttr(attrs, "count", 3.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            int size = (int) Math.round(evalDouble(count, ctx));
+            if (r < 0.0 || size <= 0) {
+              return List.of();
+            }
+            return Targeters.sample(Targeters.sphere(r, ignoreCaster, filter), size, Targeters.SampleMode.RANDOM).select(ctx);
+          };
+        }
+        case "weighted_distance", "weighted-distance" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          NumValue count = numAttr(attrs, "count", 3.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            int size = (int) Math.round(evalDouble(count, ctx));
+            if (r < 0.0 || size <= 0) {
+              return List.of();
+            }
+            return Targeters.sample(Targeters.sphere(r, ignoreCaster, filter), size, Targeters.SampleMode.WEIGHT_DISTANCE).select(ctx);
+          };
+        }
+        case "weighted_threat", "weighted-threat" -> {
+          NumValue radius = numAttr(attrs, "radius", 8.0, at);
+          NumValue count = numAttr(attrs, "count", 3.0, at);
+          yield ctx -> {
+            double r = evalDouble(radius, ctx);
+            int size = (int) Math.round(evalDouble(count, ctx));
+            if (r < 0.0 || size <= 0) {
+              return List.of();
+            }
+            return Targeters.sample(Targeters.sphere(r, ignoreCaster, filter), size, Targeters.SampleMode.WEIGHT_THREAT).select(ctx);
+          };
+        }
+        case "union", "intersection", "difference" -> {
+          Map<String, Value> leftAttrs = prefixedTargeterAttrs(attrs, "left", at);
+          Map<String, Value> rightAttrs = prefixedTargeterAttrs(attrs, "right", at);
+          Targeter<LivingEntity> left = parseTargeter(leftAttrs, at);
+          Targeter<LivingEntity> right = parseTargeter(rightAttrs, at);
+          yield switch (type) {
+            case "union" -> Targeters.union(left, right);
+            case "intersection" -> Targeters.intersection(left, right);
+            default -> Targeters.difference(left, right);
+          };
+        }
         default -> throw error(at, "unknown targeter type: " + type);
       };
+    }
+
+    private Map<String, Value> prefixedTargeterAttrs(Map<String, Value> attrs, String prefix, Token at) {
+      String typeKey = prefix + "Type";
+      Value typeValue = attrs.get(typeKey);
+      if (typeValue == null) {
+        String altKey = prefix + "_type";
+        typeValue = attrs.get(altKey);
+      }
+      if (typeValue == null) {
+        throw error(at, "missing " + typeKey + " for " + prefix + " targeter");
+      }
+      Map<String, Value> out = new java.util.HashMap<>();
+      out.put("type", typeValue);
+      for (var entry : attrs.entrySet()) {
+        String key = entry.getKey();
+        if (key.equalsIgnoreCase(typeKey) || key.equalsIgnoreCase(prefix + "_type")) {
+          continue;
+        }
+        String stripped = stripPrefix(key, prefix);
+        if (stripped == null || stripped.isEmpty()) {
+          continue;
+        }
+        out.put(stripped, entry.getValue());
+      }
+      if (!out.containsKey("ignoreCaster") && attrs.containsKey("ignoreCaster")) {
+        out.put("ignoreCaster", attrs.get("ignoreCaster"));
+      }
+      if (!out.containsKey("filter") && attrs.containsKey("filter")) {
+        out.put("filter", attrs.get("filter"));
+      }
+      return out;
+    }
+
+    private String stripPrefix(String key, String prefix) {
+      if (key.startsWith(prefix + "_")) {
+        return toCamel(key.substring(prefix.length() + 1));
+      }
+      if (key.startsWith(prefix) && key.length() > prefix.length()) {
+        String raw = key.substring(prefix.length());
+        return Character.toLowerCase(raw.charAt(0)) + raw.substring(1);
+      }
+      return null;
+    }
+
+    private String toCamel(String raw) {
+      String[] parts = raw.split("_");
+      if (parts.length == 0) {
+        return raw;
+      }
+      StringBuilder out = new StringBuilder(parts[0]);
+      for (int i = 1; i < parts.length; i++) {
+        String p = parts[i];
+        if (p.isEmpty()) {
+          continue;
+        }
+        out.append(Character.toUpperCase(p.charAt(0))).append(p.substring(1));
+      }
+      return out.toString();
     }
 
     private java.util.function.DoubleUnaryOperator easingFromId(EasingId id) {
@@ -10747,6 +13058,37 @@ public final class EffectsYamlAbilities {
       return v.text;
     }
 
+    private DamageCause damageCauseAttr(Map<String, Value> attrs, DamageCause def, Token at) {
+      Value v = attrs.get("cause");
+      String key = "cause";
+      if (v == null) {
+        v = attrs.get("damageCause");
+        key = "damageCause";
+      }
+      if (v == null) {
+        v = attrs.get("damage_cause");
+        key = "damage_cause";
+      }
+      if (v == null) {
+        return def;
+      }
+      return parseDamageCause(v, at, key);
+    }
+
+    private java.util.Set<String> tagSetAttr(Map<String, Value> attrs, Token at) {
+      Value v = attrs.get("tags");
+      if (v == null) {
+        v = attrs.get("tag");
+      }
+      if (v == null) {
+        return java.util.Set.of();
+      }
+      if (v.kind() == ValueKind.EXPR || v.kind() == ValueKind.NUMBER) {
+        throw error(at, "invalid tags: expected string");
+      }
+      return splitTagList(v.text());
+    }
+
     private List<String> splitIdList(String raw) {
       if (raw == null || raw.isBlank()) {
         return List.of();
@@ -10760,6 +13102,24 @@ public final class EffectsYamlAbilities {
         }
       }
       return List.copyOf(out);
+    }
+
+    private java.util.Set<String> splitTagList(String raw) {
+      if (raw == null || raw.isBlank()) {
+        return java.util.Set.of();
+      }
+      String[] parts = raw.split(",");
+      java.util.LinkedHashSet<String> out = new java.util.LinkedHashSet<>();
+      for (String part : parts) {
+        String trimmed = part.trim();
+        if (!trimmed.isEmpty()) {
+          out.add(trimmed);
+        }
+      }
+      if (out.isEmpty()) {
+        return java.util.Set.of();
+      }
+      return java.util.Set.copyOf(out);
     }
 
     private Particle parseParticle(Value value, Token at, String key) {
@@ -10813,6 +13173,7 @@ public final class EffectsYamlAbilities {
           case "cast" -> scope = VarScope.CAST;
           case "player" -> scope = VarScope.PLAYER;
           case "entity", "target" -> scope = VarScope.ENTITY;
+          case "ability" -> scope = VarScope.ABILITY;
           default -> {
           }
         }
@@ -10852,6 +13213,47 @@ public final class EffectsYamlAbilities {
     }
 
     private Condition parseCondition() {
+      return parseConditionOr();
+    }
+
+    private Condition parseConditionOr() {
+      Condition left = parseConditionAnd();
+      while (lookahead.type == TokenType.IDENT && "or".equalsIgnoreCase(lookahead.text)) {
+        consume(TokenType.IDENT);
+        Condition right = parseConditionAnd();
+        Condition prev = left;
+        left = ctx -> prev.test(ctx) || right.test(ctx);
+      }
+      return left;
+    }
+
+    private Condition parseConditionAnd() {
+      Condition left = parseConditionUnary();
+      while (lookahead.type == TokenType.IDENT && "and".equalsIgnoreCase(lookahead.text)) {
+        consume(TokenType.IDENT);
+        Condition right = parseConditionUnary();
+        Condition prev = left;
+        left = ctx -> prev.test(ctx) && right.test(ctx);
+      }
+      return left;
+    }
+
+    private Condition parseConditionUnary() {
+      if (lookahead.type == TokenType.IDENT && "not".equalsIgnoreCase(lookahead.text)) {
+        consume(TokenType.IDENT);
+        Condition inner = parseConditionUnary();
+        return ctx -> !inner.test(ctx);
+      }
+      if (lookahead.type == TokenType.LPAREN) {
+        consume(TokenType.LPAREN);
+        Condition inner = parseConditionOr();
+        consume(TokenType.RPAREN);
+        return inner;
+      }
+      return parseConditionAtom();
+    }
+
+    private Condition parseConditionAtom() {
       ScriptValue left = parseConditionValue();
       if (lookahead.type == TokenType.COMP) {
         String op = lookahead.text;
@@ -10959,6 +13361,9 @@ public final class EffectsYamlAbilities {
           if (!key.isEmpty()) {
             Object v = vars(ctx, VarScope.CAST).get(key);
             if (v == null) {
+              v = vars(ctx, VarScope.ABILITY).get(key);
+            }
+            if (v == null) {
               v = vars(ctx, VarScope.PLAYER).get(key);
             }
             if (v == null) {
@@ -10981,6 +13386,7 @@ public final class EffectsYamlAbilities {
         if (!key.isEmpty()) {
           return switch (prefix) {
             case "cast" -> vars(ctx, VarScope.CAST).get(key);
+            case "ability" -> vars(ctx, VarScope.ABILITY).get(key);
             case "player" -> vars(ctx, VarScope.PLAYER).get(key);
             case "entity", "target" -> vars(ctx, VarScope.ENTITY).get(key);
             default -> null;
@@ -10988,6 +13394,10 @@ public final class EffectsYamlAbilities {
         }
       }
       Object v = vars(ctx, VarScope.CAST).get(trimmed);
+      if (v != null) {
+        return v;
+      }
+      v = vars(ctx, VarScope.ABILITY).get(trimmed);
       if (v != null) {
         return v;
       }
@@ -11445,16 +13855,25 @@ public final class EffectsYamlAbilities {
 
   private void withTempVar(CastContext ctx, VarScope scope, String key, Object value, Runnable action) {
     Map<String, Object> vars = vars(ctx, scope);
+    Map<String, Long> expirations = varExpirations(ctx, scope);
     boolean had = vars.containsKey(key);
     Object prev = vars.get(key);
+    boolean hadExp = expirations.containsKey(key);
+    Long prevExp = expirations.get(key);
     setVar(ctx, scope, key, value);
     try {
       action.run();
     } finally {
       if (!had) {
         vars.remove(key);
+        expirations.remove(key);
       } else {
         vars.put(key, prev);
+        if (hadExp) {
+          expirations.put(key, prevExp);
+        } else {
+          expirations.remove(key);
+        }
       }
     }
   }
@@ -11462,13 +13881,20 @@ public final class EffectsYamlAbilities {
   private void withTempVars(CastContext ctx, VarScope scope, Map<String, Object> values, Runnable action) {
     Map<String, Object> vars = vars(ctx, scope);
     Map<String, Object> prev = new java.util.HashMap<>();
+    Map<String, Long> prevExp = new java.util.HashMap<>();
     Set<String> had = new java.util.HashSet<>();
+    Set<String> hadExp = new java.util.HashSet<>();
     Set<String> touched = new java.util.HashSet<>();
+    Map<String, Long> expirations = varExpirations(ctx, scope);
     for (Map.Entry<String, Object> entry : values.entrySet()) {
       String key = entry.getKey();
       if (vars.containsKey(key)) {
         had.add(key);
         prev.put(key, vars.get(key));
+      }
+      if (expirations.containsKey(key)) {
+        hadExp.add(key);
+        prevExp.put(key, expirations.get(key));
       }
       Object value = entry.getValue();
       if (setVar(ctx, scope, key, value)) {
@@ -11483,6 +13909,11 @@ public final class EffectsYamlAbilities {
           vars.put(key, prev.get(key));
         } else {
           vars.remove(key);
+        }
+        if (hadExp.contains(key)) {
+          expirations.put(key, prevExp.get(key));
+        } else {
+          expirations.remove(key);
         }
       }
     }
@@ -11563,6 +13994,19 @@ public final class EffectsYamlAbilities {
           return Targeters.nearest(r, ignoreCaster, filter).select(ctx);
         };
       }
+      case "nearest_within_angle", "nearest-within-angle", "nearest_angle", "nearest-angle" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        NumValue angleDegrees = numValue(node, "angleDegrees", 60.0, path);
+        cacheable = cacheable && radius.isConstant() && angleDegrees.isConstant();
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          double angle = evalDouble(angleDegrees, ctx);
+          if (r < 0.0 || angle <= 0.0 || angle > 180.0) {
+            return List.of();
+          }
+          return Targeters.nearestWithinAngle(r, angle, ignoreCaster, filter).select(ctx);
+        };
+      }
       case "cone" -> {
         NumValue radius = numValue(node, "radius", 8.0, path);
         NumValue angleDegrees = numValue(node, "angleDegrees", 90.0, path);
@@ -11574,6 +14018,30 @@ public final class EffectsYamlAbilities {
             return List.of();
           }
           return Targeters.cone(r, angle, ignoreCaster, filter).select(ctx);
+        };
+      }
+      case "line_of_sight", "line-of-sight", "los" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        cacheable = cacheable && radius.isConstant();
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          if (r < 0.0) {
+            return List.of();
+          }
+          return Targeters.lineOfSight(r, ignoreCaster, filter).select(ctx);
+        };
+      }
+      case "ground_sphere", "ground-sphere", "ground_snap", "ground-snap" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        NumValue maxDrop = numValue(node, "maxDrop", 24.0, path);
+        cacheable = cacheable && radius.isConstant() && maxDrop.isConstant();
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          double drop = evalDouble(maxDrop, ctx);
+          if (r < 0.0 || drop < 0.0) {
+            return List.of();
+          }
+          return Targeters.groundSphere(r, drop, ignoreCaster, filter).select(ctx);
         };
       }
       case "box" -> {
@@ -11624,13 +14092,151 @@ public final class EffectsYamlAbilities {
           return Targeters.capsuleRay(max, r, stopOnBlock, ignoreCaster, filter).select(ctx);
         };
       }
+      case "chain" -> {
+        NumValue radius = numValue(node, "radius", 6.0, path);
+        NumValue maxTargets = numValue(node, "maxTargets", 3.0, path);
+        cacheable = false;
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          int count = (int) Math.round(evalDouble(maxTargets, ctx));
+          if (r < 0.0 || count < 0) {
+            return List.of();
+          }
+          return Targeters.chain(r, count, ignoreCaster, filter).select(ctx);
+        };
+      }
+      case "random", "random_n", "random-n" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        NumValue count = numValue(node, "count", 3.0, path);
+        cacheable = false;
+        Targeter<LivingEntity> source = node.containsKey("source")
+            ? compileTargeter(castMap(node.get("source"), path + ".source"), path + ".source")
+            : null;
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          int size = (int) Math.round(evalDouble(count, ctx));
+          if (size <= 0) {
+            return List.of();
+          }
+          Targeter<LivingEntity> baseTargeter = source != null ? source : Targeters.sphere(Math.max(0.0, r), ignoreCaster, filter);
+          return Targeters.sample(baseTargeter, size, Targeters.SampleMode.RANDOM).select(ctx);
+        };
+      }
+      case "weighted_distance", "weighted-distance" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        NumValue count = numValue(node, "count", 3.0, path);
+        cacheable = false;
+        Targeter<LivingEntity> source = node.containsKey("source")
+            ? compileTargeter(castMap(node.get("source"), path + ".source"), path + ".source")
+            : null;
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          int size = (int) Math.round(evalDouble(count, ctx));
+          if (size <= 0) {
+            return List.of();
+          }
+          Targeter<LivingEntity> baseTargeter = source != null ? source : Targeters.sphere(Math.max(0.0, r), ignoreCaster, filter);
+          return Targeters.sample(baseTargeter, size, Targeters.SampleMode.WEIGHT_DISTANCE).select(ctx);
+        };
+      }
+      case "weighted_threat", "weighted-threat" -> {
+        NumValue radius = numValue(node, "radius", 8.0, path);
+        NumValue count = numValue(node, "count", 3.0, path);
+        cacheable = false;
+        Targeter<LivingEntity> source = node.containsKey("source")
+            ? compileTargeter(castMap(node.get("source"), path + ".source"), path + ".source")
+            : null;
+        yield ctx -> {
+          double r = evalDouble(radius, ctx);
+          int size = (int) Math.round(evalDouble(count, ctx));
+          if (size <= 0) {
+            return List.of();
+          }
+          Targeter<LivingEntity> baseTargeter = source != null ? source : Targeters.sphere(Math.max(0.0, r), ignoreCaster, filter);
+          return Targeters.sample(baseTargeter, size, Targeters.SampleMode.WEIGHT_THREAT).select(ctx);
+        };
+      }
+      case "union", "intersection", "difference" -> {
+        cacheable = false;
+        Map<String, Object> leftNode = node.containsKey("left")
+            ? castMap(node.get("left"), path + ".left")
+            : extractPrefixedTargeterNode(node, "left", path);
+        Map<String, Object> rightNode = node.containsKey("right")
+            ? castMap(node.get("right"), path + ".right")
+            : extractPrefixedTargeterNode(node, "right", path);
+        Targeter<LivingEntity> left = compileTargeter(leftNode, path + ".left");
+        Targeter<LivingEntity> right = compileTargeter(rightNode, path + ".right");
+        yield switch (type) {
+          case "union" -> Targeters.union(left, right);
+          case "intersection" -> Targeters.intersection(left, right);
+          default -> Targeters.difference(left, right);
+        };
+      }
       default -> throw new IllegalArgumentException(path + ".type: unknown type: " + type);
     };
 
     return cacheable ? Targeters.cachedPerTick("yaml:" + path, base) : base;
   }
 
-  private interface NumValue {
+  private static Map<String, Object> extractPrefixedTargeterNode(Map<String, Object> node, String prefix, String path) {
+    String typeKey = prefix + "Type";
+    Object typeValue = node.get(typeKey);
+    if (typeValue == null) {
+      typeValue = node.get(prefix + "_type");
+    }
+    if (typeValue == null) {
+      throw new IllegalArgumentException(path + ": missing " + typeKey);
+    }
+    java.util.HashMap<String, Object> out = new java.util.HashMap<>();
+    out.put("type", typeValue);
+    for (var entry : node.entrySet()) {
+      String key = entry.getKey();
+      if (key.equalsIgnoreCase(typeKey) || key.equalsIgnoreCase(prefix + "_type")) {
+        continue;
+      }
+      String stripped = stripPrefix(key, prefix);
+      if (stripped == null || stripped.isBlank()) {
+        continue;
+      }
+      out.put(stripped, entry.getValue());
+    }
+    if (!out.containsKey("ignoreCaster") && node.containsKey("ignoreCaster")) {
+      out.put("ignoreCaster", node.get("ignoreCaster"));
+    }
+    if (!out.containsKey("filter") && node.containsKey("filter")) {
+      out.put("filter", node.get("filter"));
+    }
+    return out;
+  }
+
+  private static String stripPrefix(String key, String prefix) {
+    if (key.startsWith(prefix + "_")) {
+      return toCamel(key.substring(prefix.length() + 1));
+    }
+    if (key.startsWith(prefix) && key.length() > prefix.length()) {
+      String raw = key.substring(prefix.length());
+      return Character.toLowerCase(raw.charAt(0)) + raw.substring(1);
+    }
+    return null;
+  }
+
+  private static String toCamel(String raw) {
+    String[] parts = raw.split("_");
+    if (parts.length == 0) {
+      return raw;
+    }
+    StringBuilder out = new StringBuilder(parts[0]);
+    for (int i = 1; i < parts.length; i++) {
+      String part = parts[i];
+      if (part.isEmpty()) {
+        continue;
+      }
+      out.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
+    }
+    return out.toString();
+  }
+
+  public interface NumValue {
     double eval(CastContext ctx);
 
     default boolean isConstant() {
@@ -11650,7 +14256,7 @@ public final class EffectsYamlAbilities {
     }
   }
 
-  private interface ValueSupplier {
+  public interface ValueSupplier {
     Object eval(CastContext ctx);
   }
 
@@ -11782,6 +14388,9 @@ public final class EffectsYamlAbilities {
         }
         Object v = vars(ctx, VarScope.CAST).get(key);
         if (v == null) {
+          v = vars(ctx, VarScope.ABILITY).get(key);
+        }
+        if (v == null) {
           v = vars(ctx, VarScope.PLAYER).get(key);
         }
         if (v == null) {
@@ -11801,6 +14410,18 @@ public final class EffectsYamlAbilities {
     }
 
     Object direct = vars(ctx, VarScope.CAST).get(name);
+    if (direct != null) {
+      return numericVar(direct, 0.0);
+    }
+    direct = vars(ctx, VarScope.ABILITY).get(name);
+    if (direct != null) {
+      return numericVar(direct, 0.0);
+    }
+    direct = vars(ctx, VarScope.PLAYER).get(name);
+    if (direct != null) {
+      return numericVar(direct, 0.0);
+    }
+    direct = vars(ctx, VarScope.ENTITY).get(name);
     if (direct != null) {
       return numericVar(direct, 0.0);
     }
@@ -12079,6 +14700,16 @@ public final class EffectsYamlAbilities {
     }
   }
 
+  @SuppressWarnings("unused")
+  private static EasingId easingId(Map<String, Object> node, String path) {
+    String raw = string(node, "easing", EasingId.IN_OUT_CUBIC.name());
+    try {
+      return EasingId.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      return EasingId.IN_OUT_CUBIC;
+    }
+  }
+
   private static java.util.function.DoubleUnaryOperator easing(Map<String, Object> node, String key, EasingId def) {
     String raw = string(node, key, def.name());
     EasingId id;
@@ -12087,6 +14718,15 @@ public final class EffectsYamlAbilities {
     } catch (Exception ignored) {
       id = def;
     }
+    return switch (id) {
+      case LINEAR -> Easings::linear;
+      case IN_OUT_CUBIC -> Easings::inOutCubic;
+      case OUT_QUAD -> Easings::outQuad;
+    };
+  }
+
+  @SuppressWarnings("unused")
+  private java.util.function.DoubleUnaryOperator easingFromId(EasingId id) {
     return switch (id) {
       case LINEAR -> Easings::linear;
       case IN_OUT_CUBIC -> Easings::inOutCubic;
@@ -12184,6 +14824,25 @@ public final class EffectsYamlAbilities {
     LAST_ENTITY
   }
 
+  private enum AnchorMode {
+    ORIGIN,
+    CASTER,
+    LAST_ENTITY,
+    LAST_HIT,
+    PROJECTILE
+  }
+
+  private enum AnchorPoint {
+    ORIGIN,
+    BODY,
+    EYES,
+    HEAD,
+    MAIN_HAND,
+    OFF_HAND,
+    HIT,
+    BLOCK_FACE
+  }
+
   private static AtMode parseAt(String raw, String path) {
     String s = (raw == null ? "origin" : raw).trim().toLowerCase(Locale.ROOT);
     return switch (s) {
@@ -12191,6 +14850,42 @@ public final class EffectsYamlAbilities {
       case "last_hit", "last-hit" -> AtMode.LAST_HIT;
       case "last_entity", "last-entity" -> AtMode.LAST_ENTITY;
       default -> throw new IllegalArgumentException(path + ": invalid at=" + raw + " (use origin|last_hit|last_entity)");
+    };
+  }
+
+  private static AnchorMode parseAnchorMode(String raw, String path) {
+    String s = (raw == null ? "origin" : raw).trim().toLowerCase(Locale.ROOT);
+    return switch (s) {
+      case "origin" -> AnchorMode.ORIGIN;
+      case "caster", "self" -> AnchorMode.CASTER;
+      case "target", "last_entity", "last-entity" -> AnchorMode.LAST_ENTITY;
+      case "last_hit", "last-hit", "projectile_hit", "projectile-hit" -> AnchorMode.LAST_HIT;
+      case "projectile", "projectile_frame", "projectile-frame" -> AnchorMode.PROJECTILE;
+      default -> throw new IllegalArgumentException(path + ": invalid anchor=" + raw
+          + " (use origin|caster|last_entity|last_hit|projectile)");
+    };
+  }
+
+  private static AnchorPoint parseAnchorPoint(String raw, AnchorMode anchor, String path) {
+    if (raw == null || raw.isBlank()) {
+      return switch (anchor) {
+        case ORIGIN -> AnchorPoint.ORIGIN;
+        case LAST_HIT -> AnchorPoint.HIT;
+        default -> AnchorPoint.BODY;
+      };
+    }
+    String s = raw.trim().toLowerCase(Locale.ROOT);
+    return switch (s) {
+      case "origin" -> AnchorPoint.ORIGIN;
+      case "body" -> AnchorPoint.BODY;
+      case "eyes", "eye" -> AnchorPoint.EYES;
+      case "head" -> AnchorPoint.HEAD;
+      case "main_hand", "mainhand", "hand", "right_hand" -> AnchorPoint.MAIN_HAND;
+      case "off_hand", "offhand", "left_hand" -> AnchorPoint.OFF_HAND;
+      case "hit" -> AnchorPoint.HIT;
+      case "block_face", "blockface", "face" -> AnchorPoint.BLOCK_FACE;
+      default -> throw new IllegalArgumentException(path + ": invalid point=" + raw
+          + " (use body|eyes|head|main_hand|off_hand|hit|block_face)");
     };
   }
 
@@ -12223,6 +14918,134 @@ public final class EffectsYamlAbilities {
         yield ctx.origin();
       }
     };
+  }
+
+  private static Frame frameForAnchor(AnchorMode anchor, AnchorPoint point) {
+    return new Frame() {
+      @Override
+      public Location location(CastContext ctx) {
+        return switch (anchor) {
+          case ORIGIN -> ctx.origin().clone();
+          case CASTER -> entityAnchorLocation(ctx.caster(), point);
+          case LAST_ENTITY -> {
+            LivingEntity entity = lastEntity(ctx);
+            if (entity != null) {
+              yield entityAnchorLocation(entity, point);
+            }
+            yield ctx.origin().clone();
+          }
+          case LAST_HIT -> {
+            Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
+            if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+              yield hitAnchorLocation(ph, point);
+            }
+            yield ctx.origin().clone();
+          }
+          case PROJECTILE -> {
+            Object frame = ctx.state().get(Vars.PROJECTILE_FRAME);
+            if (frame instanceof Frame live) {
+              Location loc = live.location(ctx);
+              if (loc != null) {
+                yield loc;
+              }
+            }
+            yield ctx.origin().clone();
+          }
+        };
+      }
+
+      @Override
+      public Vector direction(CastContext ctx) {
+        return switch (anchor) {
+          case ORIGIN -> ctx.direction().clone();
+          case CASTER -> entityAnchorDirection(ctx.caster(), point);
+          case LAST_ENTITY -> {
+            LivingEntity entity = lastEntity(ctx);
+            if (entity != null) {
+              yield entityAnchorDirection(entity, point);
+            }
+            yield ctx.direction().clone();
+          }
+          case LAST_HIT -> {
+            Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
+            if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+              yield safeDirection(ph.direction(), ctx.direction());
+            }
+            yield ctx.direction().clone();
+          }
+          case PROJECTILE -> {
+            Object frame = ctx.state().get(Vars.PROJECTILE_FRAME);
+            if (frame instanceof Frame live) {
+              Vector dir = live.direction(ctx);
+              if (dir != null) {
+                yield safeDirection(dir, ctx.direction());
+              }
+            }
+            yield ctx.direction().clone();
+          }
+        };
+      }
+    };
+  }
+
+  private static Location entityAnchorLocation(LivingEntity entity, AnchorPoint point) {
+    return switch (point) {
+      case ORIGIN, BODY -> entity.getLocation().clone();
+      case EYES, HEAD -> {
+        if (entity instanceof Player player) {
+          yield player.getEyeLocation();
+        }
+        Location base = entity.getLocation();
+        yield base.add(0.0, entity.getHeight() * 0.9, 0.0);
+      }
+      case MAIN_HAND -> handLocation(entity, false);
+      case OFF_HAND -> handLocation(entity, true);
+      case HIT, BLOCK_FACE -> entity.getLocation().clone();
+    };
+  }
+
+  private static Vector entityAnchorDirection(LivingEntity entity, AnchorPoint point) {
+    if (point == AnchorPoint.EYES || point == AnchorPoint.HEAD) {
+      if (entity instanceof Player player) {
+        return safeDirection(player.getEyeLocation().getDirection(), entity.getLocation().getDirection());
+      }
+    }
+    return safeDirection(entity.getLocation().getDirection(), new Vector(0, 0, 1));
+  }
+
+  private static Location handLocation(LivingEntity entity, boolean offHand) {
+    Location base = entity.getLocation();
+    Vector dir = safeDirection(base.getDirection(), new Vector(0, 0, 1));
+    Vector right = dir.clone().crossProduct(new Vector(0, 1, 0));
+    if (right.lengthSquared() < 1e-9) {
+      right = new Vector(1, 0, 0);
+    } else {
+      right.normalize();
+    }
+    double side = offHand ? 0.35 : -0.35;
+    Location out = base.clone().add(0.0, entity.getHeight() * 0.75, 0.0);
+    out.add(right.multiply(side));
+    out.add(dir.multiply(0.2));
+    return out;
+  }
+
+  private static Location hitAnchorLocation(dev.patric.dungeonsreborn.effects.projectile.ProjectileHit hit, AnchorPoint point) {
+    if (point == AnchorPoint.BLOCK_FACE && hit.hitBlock() != null) {
+      Location center = hit.hitBlock().getLocation().add(0.5, 0.5, 0.5);
+      Vector dir = safeDirection(hit.direction(), new Vector(0, 0, 1));
+      return center.add(dir.multiply(0.5));
+    }
+    return hit.location().clone();
+  }
+
+  private static Vector safeDirection(Vector dir, Vector fallback) {
+    if (dir == null) {
+      return fallback.clone();
+    }
+    if (dir.lengthSquared() < 1e-9) {
+      return fallback.clone();
+    }
+    return dir.clone().normalize();
   }
 
   private static Location resolveAtWithOffsets(CastContext ctx, AtMode mode, NumValue forward, NumValue right, NumValue up) {
@@ -12414,275 +15237,6 @@ public final class EffectsYamlAbilities {
     return fallback;
   }
 
-  private static Object require(Map<String, Object> node, String key, String path) {
-    Object v = node.get(key);
-    if (v == null) {
-      throw new IllegalArgumentException(missingKeyMessage(node, key, path));
-    }
-    return v;
-  }
-
-  private static Map<String, Object> castMap(Object raw, String path) {
-    if (raw instanceof ConfigurationSection sec) {
-      return normalizeMap(sec.getValues(false));
-    }
-    if (raw instanceof Map<?, ?> map) {
-      return normalizeMap(map);
-    }
-    throw new IllegalArgumentException(path + ": expected object");
-  }
-
-  private static List<?> mapList(Map<String, Object> node, String key, String path) {
-    Object v = node.get(key);
-    if (v == null) {
-      return List.of();
-    }
-    if (!(v instanceof List<?> list)) {
-      throw new IllegalArgumentException(path + ": expected list");
-    }
-    for (Object o : list) {
-      if (!(o instanceof Map<?, ?>) && !(o instanceof ConfigurationSection)) {
-        throw new IllegalArgumentException(path + ": list elements must be objects");
-      }
-    }
-    return list;
-  }
-
-  private static Map<String, Object> normalizeMap(Map<?, ?> raw) {
-    java.util.HashMap<String, Object> out = new java.util.HashMap<>();
-    for (var e : raw.entrySet()) {
-      String key = String.valueOf(e.getKey());
-      out.put(key, normalizeValue(e.getValue()));
-    }
-    return out;
-  }
-
-  private static Object normalizeValue(Object v) {
-    if (v instanceof ConfigurationSection sec) {
-      return normalizeMap(sec.getValues(false));
-    }
-    if (v instanceof Map<?, ?> map) {
-      return normalizeMap(map);
-    }
-    if (v instanceof List<?> list) {
-      ArrayList<Object> out = new ArrayList<>(list.size());
-      for (Object o : list) {
-        out.add(normalizeValue(o));
-      }
-      return out;
-    }
-    return v;
-  }
-
-  private static String missingKeyMessage(Map<String, Object> node, String key, String path) {
-    StringBuilder msg = new StringBuilder(path).append(": missing ").append(key);
-    String suggestion = suggestClosest(key, node.keySet());
-    if (suggestion != null) {
-      msg.append(" (did you mean ").append(suggestion).append("?)");
-    } else if (!node.isEmpty()) {
-      msg.append(" (available: ").append(formatKeys(node.keySet(), 8)).append(")");
-    }
-    return msg.toString();
-  }
-
-  private static String formatKeys(java.util.Set<String> keys, int limit) {
-    if (keys.isEmpty()) {
-      return "";
-    }
-    int count = 0;
-    StringBuilder out = new StringBuilder();
-    for (String k : keys) {
-      if (count++ >= limit) {
-        out.append(", ...");
-        break;
-      }
-      if (out.length() > 0) {
-        out.append(", ");
-      }
-      out.append(k);
-    }
-    return out.toString();
-  }
-
-  private static <E extends Enum<E>> String suggestEnumValue(String raw, Class<E> enumType) {
-    if (raw == null) {
-      return null;
-    }
-    java.util.List<String> options = new java.util.ArrayList<>();
-    for (E e : enumType.getEnumConstants()) {
-      options.add(e.name());
-    }
-    return suggestClosest(raw, options);
-  }
-
-  private static String suggestClosest(String input, java.util.Collection<String> options) {
-    String in = normalizeToken(input);
-    if (in.isEmpty() || options.isEmpty()) {
-      return null;
-    }
-    String best = null;
-    int bestDist = Integer.MAX_VALUE;
-    for (String opt : options) {
-      if (opt == null) {
-        continue;
-      }
-      String norm = normalizeToken(opt);
-      if (norm.isEmpty()) {
-        continue;
-      }
-      int dist = editDistance(in, norm);
-      if (norm.startsWith(in) || in.startsWith(norm) || norm.contains(in)) {
-        dist = Math.min(dist, 1);
-      }
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = opt;
-      }
-    }
-    int maxDist = Math.max(1, Math.min(4, in.length() / 3 + 1));
-    return bestDist <= maxDist ? best : null;
-  }
-
-  private static String normalizeToken(String raw) {
-    if (raw == null) {
-      return "";
-    }
-    String s = raw.trim().toLowerCase(Locale.ROOT);
-    StringBuilder out = new StringBuilder(s.length());
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-        out.append(c);
-      }
-    }
-    return out.toString();
-  }
-
-  private static int editDistance(String a, String b) {
-    if (a.equals(b)) {
-      return 0;
-    }
-    int alen = a.length();
-    int blen = b.length();
-    if (alen == 0) {
-      return blen;
-    }
-    if (blen == 0) {
-      return alen;
-    }
-    int[] prev = new int[blen + 1];
-    int[] curr = new int[blen + 1];
-    for (int j = 0; j <= blen; j++) {
-      prev[j] = j;
-    }
-    for (int i = 1; i <= alen; i++) {
-      curr[0] = i;
-      char ca = a.charAt(i - 1);
-      for (int j = 1; j <= blen; j++) {
-        int cost = (ca == b.charAt(j - 1)) ? 0 : 1;
-        int insert = curr[j - 1] + 1;
-        int delete = prev[j] + 1;
-        int replace = prev[j - 1] + cost;
-        curr[j] = Math.min(insert, Math.min(delete, replace));
-      }
-      int[] tmp = prev;
-      prev = curr;
-      curr = tmp;
-    }
-    return prev[blen];
-  }
-
-  private static String requireString(Map<String, Object> node, String key, String path) {
-    Object v = node.get(key);
-    if (v == null) {
-      throw new IllegalArgumentException(missingKeyMessage(node, key, path));
-    }
-    String s = String.valueOf(v);
-    if (s.isBlank()) {
-      throw new IllegalArgumentException(path + ": " + key + " is blank");
-    }
-    return s;
-  }
-
-  private static String string(Map<String, Object> node, String key, String def) {
-    Object v = node.get(key);
-    if (v == null) {
-      return def;
-    }
-    return String.valueOf(v);
-  }
-
-  private static boolean bool(Map<String, Object> node, String key, boolean def) {
-    Object v = node.get(key);
-    if (v == null) {
-      return def;
-    }
-    if (v instanceof Boolean b) {
-      return b;
-    }
-    return Boolean.parseBoolean(String.valueOf(v));
-  }
-
-  private static int intValue(Map<String, Object> node, String key, int def) {
-    Object v = node.get(key);
-    if (v == null) {
-      return def;
-    }
-    if (v instanceof Number n) {
-      return n.intValue();
-    }
-    try {
-      return Integer.parseInt(String.valueOf(v));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(key + ": expected number");
-    }
-  }
-
-  private static long longValue(Map<String, Object> node, String key, long def) {
-    Object v = node.get(key);
-    if (v == null) {
-      return def;
-    }
-    if (v instanceof Number n) {
-      return n.longValue();
-    }
-    try {
-      return Long.parseLong(String.valueOf(v));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(key + ": expected number");
-    }
-  }
-
-  private static double doubleValue(Map<String, Object> node, String key, double def) {
-    Object v = node.get(key);
-    if (v == null) {
-      return def;
-    }
-    if (v instanceof Number n) {
-      return n.doubleValue();
-    }
-    try {
-      return Double.parseDouble(String.valueOf(v));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(key + ": expected number");
-    }
-  }
-
-  private static double requireDouble(Map<String, Object> node, String key, String path) {
-    Object v = node.get(key);
-    if (v == null) {
-      throw new IllegalArgumentException(missingKeyMessage(node, key, path));
-    }
-    if (v instanceof Number n) {
-      return n.doubleValue();
-    }
-    try {
-      return Double.parseDouble(String.valueOf(v));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(path + ": " + key + " must be a number");
-    }
-  }
-
   private static Object parseParticleData(Map<String, Object> node, Particle particle, String path) {
     if (!node.containsKey("data")) {
       if (particleRequiresData(particle)) {
@@ -12728,122 +15282,6 @@ public final class EffectsYamlAbilities {
           path + ": particle " + particle.name() + " uses Particle.Spell, which is not available in Paper 1.21.8");
       default -> throw new IllegalArgumentException(path + ": particle " + particle.name() + " does not support data");
     };
-  }
-
-  private static ItemStack parseParticleItem(Object raw, String path) {
-    if (raw instanceof ItemStack stack) {
-      return stack.clone();
-    }
-    if (raw instanceof ConfigurationSection sec) {
-      return parseParticleItem(sec.getValues(false), path);
-    }
-    if (raw instanceof Map<?, ?> map) {
-      Map<String, Object> node = normalizeMap(map);
-      Object nested = pick(node, "item", "stack", "value");
-      if (nested != null && nested != raw) {
-        return parseParticleItem(nested, path + ".item");
-      }
-      Map<String, Object> copy = new java.util.HashMap<>(node);
-      if (!copy.containsKey("type") && copy.containsKey("material")) {
-        copy.put("type", copy.get("material"));
-      }
-      if (copy.containsKey("type")) {
-        try {
-          return ItemStack.deserialize(copy);
-        } catch (IllegalArgumentException ignored) {
-          Material material = materialValue(copy.get("type"), path + ".type");
-          int amount = Math.max(1, intValue(copy, "amount", 1));
-          return new ItemStack(material, amount);
-        }
-      }
-      if (copy.containsKey("material")) {
-        Material material = materialValue(copy.get("material"), path + ".material");
-        int amount = Math.max(1, intValue(copy, "amount", 1));
-        return new ItemStack(material, amount);
-      }
-    }
-    if (raw instanceof String s) {
-      Material material = materialValue(s, path);
-      return new ItemStack(material);
-    }
-    throw new IllegalArgumentException(path + ": expected itemstack or material");
-  }
-
-  private static BlockData parseBlockData(Object raw, String path) {
-    if (raw instanceof BlockData blockData) {
-      return blockData;
-    }
-    if (raw instanceof ConfigurationSection sec) {
-      return parseBlockData(sec.getValues(false), path);
-    }
-    if (raw instanceof Map<?, ?> map) {
-      Map<String, Object> node = normalizeMap(map);
-      Object nested = pick(node, "data", "blockData", "block", "value");
-      if (nested != null && nested != raw) {
-        return parseBlockData(nested, path + ".data");
-      }
-      Object materialRaw = pick(node, "material", "type");
-      if (materialRaw != null) {
-        Material material = materialValue(materialRaw, path + ".material");
-        if (!material.isBlock()) {
-          throw new IllegalArgumentException(path + ": material is not a block: " + material);
-        }
-        Object statesRaw = node.get("states");
-        if (statesRaw instanceof Map<?, ?> states) {
-          return parseBlockDataFromStates(material, normalizeMap(states), path + ".states");
-        }
-        return material.createBlockData();
-      }
-    }
-    if (raw instanceof Material material) {
-      if (!material.isBlock()) {
-        throw new IllegalArgumentException(path + ": material is not a block: " + material);
-      }
-      return material.createBlockData();
-    }
-    if (raw instanceof String s) {
-      return parseBlockDataString(s, path);
-    }
-    throw new IllegalArgumentException(path + ": expected block data");
-  }
-
-  private static BlockData parseBlockDataFromStates(Material material, Map<String, Object> states, String path) {
-    if (states.isEmpty()) {
-      return material.createBlockData();
-    }
-    StringBuilder out = new StringBuilder(material.getKey().toString()).append('[');
-    int index = 0;
-    for (Map.Entry<String, Object> entry : states.entrySet()) {
-      if (entry.getKey() == null || entry.getValue() == null) {
-        throw new IllegalArgumentException(path + ": state keys/values cannot be null");
-      }
-      if (index++ > 0) {
-        out.append(',');
-      }
-      out.append(entry.getKey()).append('=').append(String.valueOf(entry.getValue()));
-    }
-    out.append(']');
-    try {
-      return Bukkit.createBlockData(out.toString());
-    } catch (IllegalArgumentException ex) {
-      throw new IllegalArgumentException(path + ": invalid block states for " + material, ex);
-    }
-  }
-
-  private static BlockData parseBlockDataString(String value, String path) {
-    String trimmed = value.trim();
-    if (trimmed.isBlank()) {
-      throw new IllegalArgumentException(path + ": block data is blank");
-    }
-    try {
-      return Bukkit.createBlockData(trimmed);
-    } catch (IllegalArgumentException ex) {
-      Material material = materialValue(trimmed, path);
-      if (!material.isBlock()) {
-        throw new IllegalArgumentException(path + ": material is not a block: " + trimmed);
-      }
-      return material.createBlockData();
-    }
   }
 
   private static java.util.function.BiFunction<CastContext, Location, Object> parseVibrationData(Object raw, String path) {
@@ -12903,190 +15341,6 @@ public final class EffectsYamlAbilities {
     return resolveAt(ctx, mode);
   }
 
-  private static Material materialValue(Object raw, String path) {
-    if (raw instanceof Material material) {
-      return material;
-    }
-    if (raw == null) {
-      throw new IllegalArgumentException(path + ": missing material");
-    }
-    String name = String.valueOf(raw).trim();
-    if (name.isBlank()) {
-      throw new IllegalArgumentException(path + ": material is blank");
-    }
-    Material material = Material.matchMaterial(name);
-    if (material == null) {
-      material = Material.matchMaterial(name.toUpperCase(Locale.ROOT));
-    }
-    if (material == null) {
-      throw new IllegalArgumentException(path + ": unknown material: " + raw);
-    }
-    return material;
-  }
-
-  private static Particle.DustOptions parseDustOptions(Object raw, String path) {
-    Map<String, Object> data = castMap(raw, path);
-    Object colorRaw = pick(data, "color", "colour");
-    Color color = parseColor(colorRaw != null ? colorRaw : data, path + ".color");
-    double size = doubleValue(data, "size", 1.0);
-    if (!Double.isFinite(size) || size <= 0.0) {
-      throw new IllegalArgumentException(path + ".size: must be > 0");
-    }
-    return new Particle.DustOptions(color, (float) size);
-  }
-
-  private static Particle.DustTransition parseDustTransition(Object raw, String path) {
-    Map<String, Object> data = castMap(raw, path);
-    Object fromRaw = pick(data, "color", "from", "fromColor", "from_colour");
-    Object toRaw = pick(data, "toColor", "colorTo", "to", "end", "endColor", "to_colour");
-    if (fromRaw == null) {
-      fromRaw = data;
-    }
-    if (toRaw == null) {
-      throw new IllegalArgumentException(path + ".toColor: missing target color");
-    }
-    Color from = parseColor(fromRaw, path + ".color");
-    Color to = parseColor(toRaw, path + ".toColor");
-    double size = doubleValue(data, "size", 1.0);
-    if (!Double.isFinite(size) || size <= 0.0) {
-      throw new IllegalArgumentException(path + ".size: must be > 0");
-    }
-    return new Particle.DustTransition(from, to, (float) size);
-  }
-
-  private static Color parseColor(Object raw, String path) {
-    if (raw == null) {
-      throw new IllegalArgumentException(path + ": missing color");
-    }
-    if (raw instanceof Color color) {
-      return color;
-    }
-    if (raw instanceof Map<?, ?> map) {
-      Map<String, Object> node = normalizeMap(map);
-      Object nested = pick(node, "color", "colour", "hex", "value");
-      if (nested != null && nested != raw) {
-        return parseColor(nested, path);
-      }
-      if (hasColorKeys(node)) {
-        int r = parseColorComponent(pick(node, "r", "red"), path + ".r");
-        int g = parseColorComponent(pick(node, "g", "green"), path + ".g");
-        int b = parseColorComponent(pick(node, "b", "blue"), path + ".b");
-        return Color.fromRGB(r, g, b);
-      }
-    }
-    if (raw instanceof List<?> list) {
-      if (list.size() < 3) {
-        throw new IllegalArgumentException(path + ": expected 3 color components");
-      }
-      int r = parseColorComponent(list.get(0), path + ".r");
-      int g = parseColorComponent(list.get(1), path + ".g");
-      int b = parseColorComponent(list.get(2), path + ".b");
-      return Color.fromRGB(r, g, b);
-    }
-    if (raw instanceof Number n) {
-      return Color.fromRGB(n.intValue() & 0xFFFFFF);
-    }
-    if (raw instanceof String s) {
-      String trimmed = s.trim();
-      if (trimmed.isBlank()) {
-        throw new IllegalArgumentException(path + ": color is blank");
-      }
-      String hex = trimmed;
-      if (hex.startsWith("#")) {
-        hex = hex.substring(1);
-      } else if (hex.startsWith("0x") || hex.startsWith("0X")) {
-        hex = hex.substring(2);
-      }
-      if (hex.matches("[0-9a-fA-F]{6}")) {
-        return Color.fromRGB(Integer.parseInt(hex, 16));
-      }
-      String[] parts = trimmed.split("[,\\s]+");
-      if (parts.length >= 3) {
-        int r = parseColorComponent(parts[0], path + ".r");
-        int g = parseColorComponent(parts[1], path + ".g");
-        int b = parseColorComponent(parts[2], path + ".b");
-        return Color.fromRGB(r, g, b);
-      }
-    }
-    throw new IllegalArgumentException(path + ": invalid color value");
-  }
-
-  private static boolean hasColorKeys(Map<String, Object> node) {
-    return node.containsKey("r") || node.containsKey("red")
-        || node.containsKey("g") || node.containsKey("green")
-        || node.containsKey("b") || node.containsKey("blue");
-  }
-
-  private static int parseColorComponent(Object raw, String path) {
-    if (raw == null) {
-      throw new IllegalArgumentException(path + ": missing color component");
-    }
-    int value = parseInt(raw, path);
-    if (value < 0 || value > 255) {
-      throw new IllegalArgumentException(path + ": must be in [0, 255]");
-    }
-    return value;
-  }
-
-  private static Float parseFloatData(Object raw, String path) {
-    Object value = raw;
-    if (raw instanceof Map<?, ?> map) {
-      Map<String, Object> node = normalizeMap(map);
-      value = pick(node, "value", "data", "scale");
-      if (value == null) {
-        throw new IllegalArgumentException(path + ": missing value");
-      }
-    }
-    double d = parseDouble(value, path);
-    if (!Double.isFinite(d)) {
-      throw new IllegalArgumentException(path + ": value must be finite");
-    }
-    return (float) d;
-  }
-
-  private static Integer parseIntData(Object raw, String path) {
-    Object value = raw;
-    if (raw instanceof Map<?, ?> map) {
-      Map<String, Object> node = normalizeMap(map);
-      value = pick(node, "value", "data");
-      if (value == null) {
-        throw new IllegalArgumentException(path + ": missing value");
-      }
-    }
-    return parseInt(value, path);
-  }
-
-  private static double parseDouble(Object raw, String path) {
-    if (raw instanceof Number n) {
-      return n.doubleValue();
-    }
-    try {
-      return Double.parseDouble(String.valueOf(raw));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(path + ": expected number");
-    }
-  }
-
-  private static int parseInt(Object raw, String path) {
-    if (raw instanceof Number n) {
-      return n.intValue();
-    }
-    try {
-      return Integer.parseInt(String.valueOf(raw));
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException(path + ": expected integer");
-    }
-  }
-
-  private static Object pick(Map<String, Object> node, String... keys) {
-    for (String key : keys) {
-      if (node.containsKey(key)) {
-        return node.get(key);
-      }
-    }
-    return null;
-  }
-
   private static Map<DamageType, Double> parseResistanceMap(Object raw, String path) {
     if (raw == null) {
       return Map.of();
@@ -13105,6 +15359,142 @@ public final class EffectsYamlAbilities {
       out.put(type, value);
     }
     return out;
+  }
+
+  private static Map<Attribute, Double> parseMinionStatOverrides(Object raw, String path) {
+    if (raw == null) {
+      return Map.of();
+    }
+    if (raw instanceof ConfigurationSection sec) {
+      return parseMinionStatOverrides(sec.getValues(false), path);
+    }
+    if (!(raw instanceof Map<?, ?> map)) {
+      throw new IllegalArgumentException(path + ": expected object");
+    }
+    Map<String, Object> node = normalizeMap(map);
+    Map<Attribute, Double> out = new java.util.HashMap<>();
+    for (Map.Entry<String, Object> entry : node.entrySet()) {
+      String key = entry.getKey();
+      Attribute attr = parseAttributeKey(key, path + "." + key);
+      double value = doubleFrom(entry.getValue(), path + "." + key);
+      out.put(attr, value);
+    }
+    return out;
+  }
+
+  private static Attribute parseAttributeKey(String raw, String path) {
+    if (raw == null || raw.isBlank()) {
+      throw new IllegalArgumentException(path + ": empty attribute");
+    }
+    String normalized = raw.trim().toLowerCase(Locale.ROOT).replace(' ', '_').replace('-', '_');
+    List<String> candidates = new ArrayList<>();
+    if (normalized.contains(":")) {
+      candidates.add(normalized);
+      String[] parts = normalized.split(":", 2);
+      if (parts.length == 2) {
+        candidates.add(parts[0] + ":" + parts[1].replace('_', '.'));
+      }
+    } else {
+      candidates.add("minecraft:" + normalized);
+      if (normalized.contains("_")) {
+        candidates.add("minecraft:" + normalized.replace('_', '.'));
+      }
+      if (normalized.contains(".")) {
+        candidates.add("minecraft:" + normalized.replace('.', '_'));
+      }
+    }
+    var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.ATTRIBUTE);
+    if (registry != null) {
+      for (String candidate : candidates) {
+        NamespacedKey key = NamespacedKey.fromString(candidate);
+        if (key == null) {
+          continue;
+        }
+        Attribute attr = registry.get(key);
+        if (attr != null) {
+          return attr;
+        }
+      }
+    }
+    String needle = normalized;
+    if (needle.contains(":")) {
+      String[] parts = needle.split(":", 2);
+      needle = parts.length == 2 ? parts[1] : needle;
+    }
+    String needleUnderscore = needle.replace('.', '_');
+    String needleDot = needle.replace('_', '.');
+    String needleNoGeneric = needle;
+    if (needleNoGeneric.startsWith("generic.")) {
+      needleNoGeneric = needleNoGeneric.substring("generic.".length());
+    } else if (needleNoGeneric.startsWith("generic_")) {
+      needleNoGeneric = needleNoGeneric.substring("generic_".length());
+    }
+    String suggestion = null;
+    if (registry != null) {
+      for (Attribute attr : registry) {
+        NamespacedKey key = attr.getKey();
+        if (key == null) {
+          continue;
+        }
+        String keyPath = key.getKey().toLowerCase(Locale.ROOT);
+        String keyUnderscore = keyPath.replace('.', '_');
+        String keyDot = keyPath.replace('_', '.');
+        String keyNoGeneric = keyPath;
+        if (keyNoGeneric.startsWith("generic.")) {
+          keyNoGeneric = keyNoGeneric.substring("generic.".length());
+        } else if (keyNoGeneric.startsWith("generic_")) {
+          keyNoGeneric = keyNoGeneric.substring("generic_".length());
+        }
+        if (keyPath.equals(needle) || keyPath.equals(needleUnderscore) || keyPath.equals(needleDot)
+            || keyUnderscore.equals(needle) || keyUnderscore.equals(needleUnderscore) || keyUnderscore.equals(needleDot)
+            || keyDot.equals(needle) || keyDot.equals(needleUnderscore) || keyDot.equals(needleDot)
+            || keyNoGeneric.equals(needleNoGeneric) || keyNoGeneric.equals(needleUnderscore)
+            || keyNoGeneric.equals(needleDot)) {
+          return attr;
+        }
+        if (suggestion == null && (keyPath.contains(needleNoGeneric) || keyUnderscore.contains(needleNoGeneric)
+            || keyDot.contains(needleNoGeneric))) {
+          suggestion = key.getKey();
+        }
+      }
+    }
+    String msg = path + ": invalid attribute=" + raw;
+    if (suggestion != null) {
+      msg += " (did you mean " + suggestion + "?)";
+    }
+    throw new IllegalArgumentException(msg);
+  }
+
+  private static MobParticlesSpec parseMinionParticles(Object raw, String path) {
+    if (raw == null) {
+      return null;
+    }
+    Map<String, Object> node;
+    if (raw instanceof ConfigurationSection sec) {
+      node = normalizeMap(sec.getValues(false));
+    } else if (raw instanceof Map<?, ?> map) {
+      node = normalizeMap(map);
+    } else {
+      throw new IllegalArgumentException(path + ": expected object");
+    }
+    String particleRaw = requireString(node, "particle", path + ".particle");
+    org.bukkit.Particle particle;
+    try {
+      particle = org.bukkit.Particle.valueOf(particleRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (IllegalArgumentException ex) {
+      String suggestion = suggestEnumValue(particleRaw, org.bukkit.Particle.class);
+      String msg = path + ".particle: invalid particle=" + particleRaw;
+      if (suggestion != null) {
+        msg += " (did you mean " + suggestion + "?)";
+      }
+      throw new IllegalArgumentException(msg);
+    }
+    int count = intValue(node, "count", 1);
+    double offsetX = doubleValue(node, "offsetX", 0.0);
+    double offsetY = doubleValue(node, "offsetY", 0.0);
+    double offsetZ = doubleValue(node, "offsetZ", 0.0);
+    double extra = doubleValue(node, "extra", 0.0);
+    return new MobParticlesSpec(particle, count, offsetX, offsetY, offsetZ, extra);
   }
 
   private static MinionScaling parseMinionScaling(Object raw, String path) {
@@ -13127,6 +15517,140 @@ public final class EffectsYamlAbilities {
     return new MinionScaling(healthPerLevel, damagePerLevel, healthPerMaxHealth, damagePerMaxHealth, healthPerManaMax, damagePerManaMax);
   }
 
+  private static MinionOwnerScalingSpec parseMinionOwnerScaling(Object raw, String path) {
+    if (raw == null) {
+      return MinionOwnerScalingSpec.NONE;
+    }
+    if (raw instanceof ConfigurationSection sec) {
+      return parseMinionOwnerScaling(sec.getValues(false), path);
+    }
+    if (!(raw instanceof Map<?, ?> map)) {
+      throw new IllegalArgumentException(path + ": expected object");
+    }
+    Map<String, Object> node = normalizeMap(map);
+    double levelMultiplier = doubleValue(node, "levelMultiplier", doubleValue(node, "level", 0.0));
+    double strengthMultiplier = doubleValue(node, "strengthMultiplier", doubleValue(node, "strength", 0.0));
+    double dexterityMultiplier = doubleValue(node, "dexterityMultiplier", doubleValue(node, "dexterity", 0.0));
+    double intelligenceMultiplier = doubleValue(node, "intelligenceMultiplier", doubleValue(node, "intelligence", 0.0));
+    double vitalityMultiplier = doubleValue(node, "vitalityMultiplier", doubleValue(node, "vitality", 0.0));
+    double maxManaMultiplier = doubleValue(node, "maxManaMultiplier", doubleValue(node, "maxMana", 0.0));
+    double maxHealthMultiplier = doubleValue(node, "maxHealthMultiplier", doubleValue(node, "maxHealth", 0.0));
+    return new MinionOwnerScalingSpec(levelMultiplier, strengthMultiplier, dexterityMultiplier,
+        intelligenceMultiplier, vitalityMultiplier, maxManaMultiplier, maxHealthMultiplier);
+  }
+
+  private static MinionScalingLimits parseMinionScalingLimits(Object raw, String path) {
+    if (raw == null) {
+      return MinionScalingLimits.NONE;
+    }
+    if (raw instanceof ConfigurationSection sec) {
+      return parseMinionScalingLimits(sec.getValues(false), path);
+    }
+    if (!(raw instanceof Map<?, ?> map)) {
+      throw new IllegalArgumentException(path + ": expected object");
+    }
+    Map<String, Object> node = normalizeMap(map);
+    double maxBonusHealth = doubleValue(node, "maxBonusHealth", 0.0);
+    double maxBonusDamage = doubleValue(node, "maxBonusDamage", 0.0);
+    double decayExponent = doubleValue(node, "decayExponent", 0.0);
+    return new MinionScalingLimits(maxBonusHealth, maxBonusDamage, decayExponent);
+  }
+
+  private static MinionFormation parseMinionFormation(String raw, String path) {
+    if (raw == null || raw.isBlank()) {
+      return MinionFormation.RANDOM;
+    }
+    String normalized = raw.trim().toUpperCase(Locale.ROOT);
+    try {
+      return MinionFormation.valueOf(normalized);
+    } catch (IllegalArgumentException ex) {
+      String suggestion = suggestEnumValue(raw, MinionFormation.class);
+      String msg = path + ": invalid formation=" + raw;
+      if (suggestion != null) {
+        msg += " (did you mean " + suggestion + "?)";
+      }
+      throw new IllegalArgumentException(msg);
+    }
+  }
+
+  private record MinionSummonCostSpec(String type, String resourceId, NumValue amount, NumValue multiplier,
+                                      NumValue add, boolean allowBreak) {
+  }
+
+  private java.util.List<MinionSummonCostSpec> parseMinionSummonCosts(Object raw, String path) {
+    if (raw == null) {
+      return java.util.List.of();
+    }
+    if (raw instanceof ConfigurationSection section) {
+      raw = section.getValues(false);
+    }
+    if (!(raw instanceof Iterable<?> list)) {
+      throw new IllegalArgumentException(path + ": expected list");
+    }
+    java.util.List<MinionSummonCostSpec> out = new java.util.ArrayList<>();
+    int index = 0;
+    for (Object entry : list) {
+      String base = path + "[" + index + "]";
+      Map<String, Object> node = castMap(entry, base);
+      String type = requireString(node, "type", base + ".type").toLowerCase(Locale.ROOT);
+      NumValue multiplier = numValue(node, "multiplier", 1.0, base + ".multiplier");
+      NumValue add = numValue(node, "add", 0.0, base + ".add");
+      switch (type) {
+        case "mana" -> {
+          NumValue amount = requireNumValue(node, "amount", base + ".amount");
+          out.add(new MinionSummonCostSpec(type, null, amount, multiplier, add, false));
+        }
+        case "resource" -> {
+          String resourceId = requireString(node, "resource", base + ".resource");
+          NumValue amount = requireNumValue(node, "amount", base + ".amount");
+          out.add(new MinionSummonCostSpec(type, resourceId, amount, multiplier, add, false));
+        }
+        case "consume_item", "consume_main_hand" -> {
+          NumValue amount = requireNumValue(node, "amount", base + ".amount");
+          out.add(new MinionSummonCostSpec(type, null, amount, multiplier, add, false));
+        }
+        case "durability", "durability_main_hand" -> {
+          NumValue amount = requireNumValue(node, "damage", base + ".damage");
+          boolean allowBreak = bool(node, "allowBreak", false);
+          out.add(new MinionSummonCostSpec(type, null, amount, multiplier, add, allowBreak));
+        }
+        default -> throw new IllegalArgumentException(base + ".type: unknown type: " + type);
+      }
+      index++;
+    }
+    return java.util.List.copyOf(out);
+  }
+
+  private static boolean applyMinionSummonCosts(CastContext ctx, java.util.List<MinionSummonCostSpec> costs) {
+    if (costs == null || costs.isEmpty()) {
+      return true;
+    }
+    for (MinionSummonCostSpec cost : costs) {
+      double value = evalDouble(cost.amount(), ctx);
+      value = value * evalDouble(cost.multiplier(), ctx) + evalDouble(cost.add(), ctx);
+      if (!(value > 0.0)) {
+        continue;
+      }
+      dev.patric.dungeonsreborn.effects.costs.Cost entry;
+      switch (cost.type()) {
+        case "mana" -> entry = Costs.mana(value);
+        case "resource" -> entry = Costs.resource(cost.resourceId(), value);
+        case "consume_item", "consume_main_hand" -> entry = Costs.consumeMainHand(Math.max(1, (int) Math.round(value)));
+        case "durability", "durability_main_hand" ->
+            entry = Costs.durabilityMainHand(Math.max(1, (int) Math.round(value)), cost.allowBreak());
+        default -> throw new IllegalArgumentException("Unsupported summon cost: " + cost.type());
+      }
+      Component fail = entry.tryApply(ctx);
+      if (fail != null) {
+        if (ctx.caster() instanceof Player player) {
+          player.sendMessage(fail);
+        }
+        return false;
+      }
+    }
+    return true;
+  }
+
   private static MinionMode parseMinionMode(String raw, String path) {
     if (raw == null || raw.isBlank()) {
       return null;
@@ -13142,6 +15666,29 @@ public final class EffectsYamlAbilities {
       }
       throw new IllegalArgumentException(msg);
     }
+  }
+
+  private static MinionTargetRules parseMinionTargetRules(Map<String, Object> node, String path) {
+    if (node == null) {
+      return MinionTargetRules.DEFAULT;
+    }
+    Object raw = node.get("targeting");
+    if (raw instanceof ConfigurationSection section) {
+      raw = section.getValues(false);
+    }
+    if (raw instanceof Map<?, ?> values) {
+      Map<String, Object> map = castMap(values, path);
+      boolean allowPvp = bool(map, "allowPvp", bool(node, "allowPvp", false));
+      boolean allowPartyTargets = bool(map, "allowPartyTargets", bool(node, "allowPartyTargets", false));
+      boolean shareOwnerAggro = bool(map, "shareOwnerAggro", bool(node, "shareOwnerAggro", true));
+      double maxDistanceFromOwner = doubleValue(map, "maxDistanceFromOwner", doubleValue(node, "maxDistanceFromOwner", 0.0));
+      return new MinionTargetRules(allowPvp, allowPartyTargets, shareOwnerAggro, maxDistanceFromOwner);
+    }
+    boolean allowPvp = bool(node, "allowPvp", false);
+    boolean allowPartyTargets = bool(node, "allowPartyTargets", false);
+    boolean shareOwnerAggro = bool(node, "shareOwnerAggro", true);
+    double maxDistanceFromOwner = doubleValue(node, "maxDistanceFromOwner", 0.0);
+    return new MinionTargetRules(allowPvp, allowPartyTargets, shareOwnerAggro, maxDistanceFromOwner);
   }
 
   private static java.util.List<MinionPassiveSpec> parseMinionPassives(Object raw, String path) {
@@ -13199,33 +15746,39 @@ public final class EffectsYamlAbilities {
         if (abilityId.isBlank()) {
           throw new IllegalArgumentException(base + ": ability is blank");
         }
-        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), 60L, 1.0, true));
+        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), 60L, 1.0, true, 1.0, 0.0));
       } else if (entry instanceof Map<?, ?> map) {
         Map<String, Object> node = castMap(map, base);
         String abilityId = requireString(node, "ability", base + ".ability");
         long cooldown = longValue(node, "cooldownTicks", 60L);
         double chance = doubleValue(node, "chance", 1.0);
         boolean requireTarget = bool(node, "requireTarget", true);
+        double costMultiplier = doubleValue(node, "costMultiplier", 1.0);
+        double costAdd = doubleValue(node, "costAdd", 0.0);
         if (cooldown <= 0) {
           throw new IllegalArgumentException(base + ".cooldownTicks: must be > 0");
         }
         if (!Double.isFinite(chance) || chance < 0.0 || chance > 1.0) {
           throw new IllegalArgumentException(base + ".chance: must be in [0,1]");
         }
-        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), cooldown, chance, requireTarget));
+        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), cooldown, chance, requireTarget,
+            costMultiplier, costAdd));
       } else if (entry instanceof ConfigurationSection sec) {
         Map<String, Object> node = castMap(sec.getValues(false), base);
         String abilityId = requireString(node, "ability", base + ".ability");
         long cooldown = longValue(node, "cooldownTicks", 60L);
         double chance = doubleValue(node, "chance", 1.0);
         boolean requireTarget = bool(node, "requireTarget", true);
+        double costMultiplier = doubleValue(node, "costMultiplier", 1.0);
+        double costAdd = doubleValue(node, "costAdd", 0.0);
         if (cooldown <= 0) {
           throw new IllegalArgumentException(base + ".cooldownTicks: must be > 0");
         }
         if (!Double.isFinite(chance) || chance < 0.0 || chance > 1.0) {
           throw new IllegalArgumentException(base + ".chance: must be in [0,1]");
         }
-        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), cooldown, chance, requireTarget));
+        out.add(new MinionSpecialAttackSpec(Ids.normalize(abilityId), cooldown, chance, requireTarget,
+            costMultiplier, costAdd));
       } else {
         throw new IllegalArgumentException(base + ": expected string or object");
       }
@@ -13291,26 +15844,25 @@ public final class EffectsYamlAbilities {
     }
   }
 
-  private static <E extends Enum<E>> E enumValue(Map<String, Object> node, String key, Class<E> enumType, String path) {
-    String raw = requireString(node, key, path);
-    String normalized = raw.trim().toUpperCase(Locale.ROOT);
-    try {
-      return Enum.valueOf(enumType, normalized);
-    } catch (IllegalArgumentException ex) {
-      String suggestion = suggestEnumValue(raw, enumType);
-      String msg = path + ": invalid " + key + "=" + raw;
-      if (suggestion != null) {
-        msg += " (did you mean " + suggestion + "?)";
-      }
-      throw new IllegalArgumentException(msg);
-    }
-  }
-
   private static boolean hasDamageType(Map<String, Object> node) {
     return node.containsKey("damageType")
         || node.containsKey("damage_type")
         || node.containsKey("dmgType")
         || node.containsKey("dmg_type");
+  }
+
+  private static boolean hasHealType(Map<String, Object> node) {
+    return node.containsKey("healType")
+        || node.containsKey("heal_type")
+        || node.containsKey("type");
+  }
+
+  private static boolean hasDamageCause(Map<String, Object> node) {
+    return node.containsKey("damageCause")
+        || node.containsKey("damage_cause")
+        || node.containsKey("cause")
+        || node.containsKey("dmgCause")
+        || node.containsKey("dmg_cause");
   }
 
   private static DamageType damageTypeValue(Map<String, Object> node, String path) {
@@ -13344,6 +15896,116 @@ public final class EffectsYamlAbilities {
       }
       throw new IllegalArgumentException(msg);
     }
+  }
+
+  private static HealType healTypeValue(Map<String, Object> node, String path, HealType def) {
+    if (!hasHealType(node)) {
+      return def;
+    }
+    String key = null;
+    Object raw = null;
+    if (node.containsKey("healType")) {
+      key = "healType";
+      raw = node.get(key);
+    } else if (node.containsKey("heal_type")) {
+      key = "heal_type";
+      raw = node.get(key);
+    } else if (node.containsKey("type")) {
+      key = "type";
+      raw = node.get(key);
+    }
+    if (raw == null) {
+      throw new IllegalArgumentException(missingKeyMessage(node, "healType", path));
+    }
+    String value = String.valueOf(raw);
+    String normalized = value.trim().toUpperCase(Locale.ROOT);
+    try {
+      return HealType.valueOf(normalized);
+    } catch (IllegalArgumentException ex) {
+      String suggestion = suggestEnumValue(value, HealType.class);
+      String msg = path + ": invalid " + key + "=" + value;
+      if (suggestion != null) {
+        msg += " (did you mean " + suggestion + "?)";
+      }
+      throw new IllegalArgumentException(msg);
+    }
+  }
+
+  private static DamageCause damageCauseValue(Map<String, Object> node, String path, DamageCause def) {
+    if (!hasDamageCause(node)) {
+      return def;
+    }
+    String key = null;
+    Object raw = null;
+    if (node.containsKey("damageCause")) {
+      key = "damageCause";
+      raw = node.get(key);
+    } else if (node.containsKey("damage_cause")) {
+      key = "damage_cause";
+      raw = node.get(key);
+    } else if (node.containsKey("cause")) {
+      key = "cause";
+      raw = node.get(key);
+    } else if (node.containsKey("dmgCause")) {
+      key = "dmgCause";
+      raw = node.get(key);
+    } else if (node.containsKey("dmg_cause")) {
+      key = "dmg_cause";
+      raw = node.get(key);
+    }
+    if (raw == null) {
+      throw new IllegalArgumentException(missingKeyMessage(node, "damageCause", path));
+    }
+    String value = String.valueOf(raw);
+    String normalized = value.trim().toUpperCase(Locale.ROOT);
+    try {
+      return DamageCause.valueOf(normalized);
+    } catch (IllegalArgumentException ex) {
+      String suggestion = suggestEnumValue(value, DamageCause.class);
+      String msg = path + ": invalid " + key + "=" + value;
+      if (suggestion != null) {
+        msg += " (did you mean " + suggestion + "?)";
+      }
+      throw new IllegalArgumentException(msg);
+    }
+  }
+
+  private static DamageAmountMode damageModeValue(String raw, String path, DamageAmountMode def) {
+    if (raw == null) {
+      return def;
+    }
+    String normalized = raw.trim().toLowerCase(Locale.ROOT).replace('-', '_');
+    return switch (normalized) {
+      case "flat", "amount", "value" -> DamageAmountMode.FLAT;
+      case "percent", "percent_max", "percent_max_health", "percent_maxhealth", "percent_health", "percent_health_max" ->
+          DamageAmountMode.PERCENT_MAX_HEALTH;
+      case "true", "true_damage" -> DamageAmountMode.TRUE;
+      default -> throw new IllegalArgumentException(path + ": invalid damage mode: " + raw);
+    };
+  }
+
+  private static EntityActions.DamagePolicy damagePolicyValue(String raw, String path) {
+    String policy = raw == null ? "hostile_default" : raw.trim().toLowerCase(Locale.ROOT);
+    return switch (policy) {
+      case "any" -> EntityActions.DamagePolicy.any();
+      case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
+      case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
+      case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
+      default -> throw new IllegalArgumentException(path + ": unknown policy: " + raw);
+    };
+  }
+
+  private static java.util.Set<String> damageTagSet(Map<String, Object> node, String path) {
+    Object raw = null;
+    if (node.containsKey("tags")) {
+      raw = node.get("tags");
+    } else if (node.containsKey("tag")) {
+      raw = node.get("tag");
+    }
+    if (raw == null) {
+      return java.util.Set.of();
+    }
+    return parseStringSet(raw, path + ".tags");
   }
 
   private static Sound soundValue(Map<String, Object> node, String key, String path) {

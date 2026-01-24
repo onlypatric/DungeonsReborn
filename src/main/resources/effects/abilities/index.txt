@@ -1,1 +1,6 @@
+example_chain_storm.yml
+example_damage_burst.yml
+example_heal_aura.yml
+example_raycast_lance.yml
+example_vfx_morph.yml
 final_showcase_decaphase.yml

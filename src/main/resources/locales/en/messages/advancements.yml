@@ -1,0 +1,5 @@
+messages.advancements.bossKills: <green>Advancement unlocked:</green> <yellow>{title} {count}x</yellow>
+messages.advancements.fallbackGranted: <green>Advancement completed:</green> <yellow>{title}</yellow>
+messages.advancements.reload.disabled: <yellow>Advancements are not available.</yellow>
+messages.advancements.reload.ok: <green>Advancements reloaded.</green>
+messages.advancements.unlocked: <green>Advancement unlocked:</green> <yellow>{title}</yellow>

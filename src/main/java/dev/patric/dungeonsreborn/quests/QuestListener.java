@@ -9,13 +9,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import dev.patric.dungeonsreborn.mobs.MobMarkers;
 import dev.patric.dungeonsreborn.party.Party;
 import dev.patric.dungeonsreborn.party.PartyService;
 
@@ -46,11 +48,12 @@ public final class QuestListener implements Listener {
     if (killer == null) {
       return;
     }
-    String mobId = MobMarkers.getMobId(event.getEntity());
-    Location loc = event.getEntity().getLocation();
-    for (Player recipient : resolveRecipients(killer, loc)) {
-      quests.handleKill(recipient, mobId, event.getEntity().getType());
-    }
+    quests.handleKill(killer, event.getEntity());
+  }
+
+  @EventHandler
+  public void onPlayerDeath(PlayerDeathEvent event) {
+    quests.handleDeath(event.getEntity());
   }
 
   @EventHandler
@@ -71,9 +74,21 @@ public final class QuestListener implements Listener {
         && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
       return;
     }
+    quests.handleMovement(event.getPlayer(), event.getTo());
     quests.handleVisit(event.getPlayer(), event.getTo());
   }
 
+  @EventHandler
+  public void onBlockBreak(BlockBreakEvent event) {
+    quests.handleBlockBreak(event.getPlayer(), event.getBlock().getType());
+  }
+
+  @EventHandler
+  public void onBlockPlace(BlockPlaceEvent event) {
+    quests.handleBlockPlace(event.getPlayer(), event.getBlockPlaced().getType());
+  }
+
+  @SuppressWarnings("unused")
   private Set<Player> resolveRecipients(Player killer, Location loc) {
     Set<Player> recipients = new HashSet<>();
     if (killer == null) {

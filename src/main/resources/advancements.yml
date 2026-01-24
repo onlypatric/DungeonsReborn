@@ -2,6 +2,9 @@
 #
 # Disable any category by setting it to false.
 advancements:
+  schemaVersion: 1
+  # Optional: migrate old ids to new ids (old -> new). Multiple old ids can map to the same new id.
+  idMigrations: {}
   categories:
     bosses: false
     dungeons: false
@@ -9,3 +12,43 @@ advancements:
     xpLevels: false
     xpTotals: false
     tokens: false
+  # YAML-driven advancements (custom definitions).
+  definitions:
+    categories:
+      example:
+        order: 10
+        titleKey: "advancements.example.title"
+        descriptionKey: "advancements.example.description"
+        icon: "NETHER_STAR"
+        frame: "TASK"
+        tab: true
+        background: "textures/block/obsidian.png"
+        x: 0
+        y: 0
+        nodes:
+          earn_tokens:
+            titleKey: "advancements.example.earnTokens.title"
+            descriptionKey: "advancements.example.earnTokens.description"
+            icon: "EMERALD"
+            frame: "TASK"
+            x: 2
+            y: 0
+            criteria:
+              type: "TOKENS"
+              amount: 10
+            rewards:
+              tokens: 5
+          reach_level:
+            titleKey: "advancements.example.reachLevel.title"
+            descriptionKey: "advancements.example.reachLevel.description"
+            icon: "EXPERIENCE_BOTTLE"
+            frame: "TASK"
+            x: 4
+            y: 0
+            requires:
+              - earn_tokens
+            criteria:
+              type: "XP_LEVEL"
+              amount: 5
+            rewards:
+              xp: 250

@@ -1,0 +1,12 @@
+messages.effects.cast.cooldown: <yellow>Ability on cooldown.</yellow>
+messages.effects.cast.cost: <red>Not enough resources.</red>
+messages.effects.cast.invalid: <red>Unknown ability:</red> <white>{ability}</white>
+messages.effects.cast.ok: <green>Cast:</green> <white>{ability}</white>
+messages.effects.editor.cannotEdit: Messages effects editor cannotEdit
+messages.effects.editor.dsl.none: None
+messages.effects.editor.locked: Locked
+messages.effects.editor.publish.failure: Failure
+messages.effects.editor.publish.success: Success
+messages.effects.editor.unableOpenDraft: <red>Unable to open draft for this ability.</red>
+messages.effects.reload.errors: <red>Effects reload had {errors} errors. Check logs.</red>
+messages.effects.reload.ok: <green>Effects loaded:</green> <white>{count}</white>

@@ -38,7 +38,7 @@ public final class NextPageButton extends Button {
     Component pageText = Locales.component(player, "gui.list.page",
         Locales.placeholders("current", window.page() + 1, "total", window.pageCount()));
     if (window.hasNext()) {
-      return GuiItems.named(Material.ARROW, titleLabel, List.of(pageText));
+      return GuiItems.head("RIGHT", titleLabel, List.of(pageText));
     }
     return GuiItems.named(Material.GRAY_DYE, titleLabel, List.of(pageText, disabledLabel));
   }

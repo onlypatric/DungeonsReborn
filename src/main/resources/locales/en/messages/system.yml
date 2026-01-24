@@ -1,0 +1,6 @@
+messages.system.reload.errors: <red>Reload had {errors} errors. Check logs.</red>
+messages.system.reload.ok: <green>Reload complete.</green>
+messages.system.status.errors: <red>Some systems have errors.</red>
+messages.system.status.ok: <green>All systems OK.</green>
+messages.system.status.title: <white><bold>System Status</bold></white>
+messages.system.status.warnings: <yellow>Some systems have warnings.</yellow>

@@ -17,15 +17,24 @@ public final class CastState {
   private final UUID castId;
   private final Random rng;
   private final Map<String, Object> variables = new HashMap<>();
+  private final Map<String, Long> expirations = new HashMap<>();
   private final Map<String, Timing> timings = new HashMap<>();
   private final ArrayList<EffectsEngine.ScheduledHandle> handles = new ArrayList<>();
   private final ArrayList<Runnable> cancelHooks = new ArrayList<>();
   private boolean cancelled;
 
   CastState(UUID castId) {
+    this(castId, null);
+  }
+
+  CastState(UUID castId, Long deterministicSeed) {
     this.castId = Objects.requireNonNull(castId, "castId");
-    // Stable per-cast RNG seed.
-    this.rng = new Random(castId.getMostSignificantBits() ^ castId.getLeastSignificantBits());
+    if (deterministicSeed != null) {
+      this.rng = new Random(deterministicSeed);
+    } else {
+      // Stable per-cast RNG seed.
+      this.rng = new Random(castId.getMostSignificantBits() ^ castId.getLeastSignificantBits());
+    }
   }
 
   public UUID castId() {
@@ -98,6 +107,10 @@ public final class CastState {
 
   public Map<String, Object> variables() {
     return variables;
+  }
+
+  public Map<String, Long> expirations() {
+    return expirations;
   }
 
   public Object get(String key) {

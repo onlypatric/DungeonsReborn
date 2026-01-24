@@ -1,0 +1,50 @@
+messages.classes.editor.icon.missing: Missing
+messages.classes.editor.invalidId: Messages classes editor invalidId
+messages.classes.editor.invalidQuestId: Messages classes editor invalidQuestId
+messages.classes.reload.errors: <red>Ricarica classi con {errors} errori. Controlla i log.</red>
+messages.classes.reload.ok: <green>Classi caricate:</green> <white>{count}</white>
+messages.classes.select.alreadySelected: <yellow>Classe gia selezionata.</yellow>
+messages.classes.select.consumeCurrenciesFailed: <red>Impossibile consumare la valuta richiesta.</red>
+messages.classes.select.consumeFailed: <red>Impossibile consumare i gettoni.</red>
+messages.classes.select.consumeItemsFailed: <red>Impossibile consumare gli oggetti richiesti.</red>
+messages.classes.select.cooldown: <red>Cambio classe in ricarica per</red> <white>{seconds}</white> <red>secondi.</red>
+messages.classes.select.disabled: <red>Classe attualmente disabilitata.</red>
+messages.classes.select.invalid: <red>Selezione classe non valida.</red>
+messages.classes.select.locked: <red>Classe bloccata.</red>
+messages.classes.select.ok: <green>Classe scelta:</green> <white>{class}</white>
+messages.classes.select.requiresCurrencies: <red>Richiede valuta:</red> <white>{currencies}</white>
+messages.classes.select.requiresItems: <red>Richiede oggetti:</red> <white>{items}</white>
+messages.classes.select.requiresLevel: <red>Richiede livello {level}.</red>
+messages.classes.select.requiresQuests: <red>Requisiti missioni non soddisfatti.</red>
+messages.classes.select.requiresTokens: <red>Richiede {tokens} gettoni.</red>
+messages.classes.select.unknown: <red>Classe sconosciuta:</red> <white>{id}</white>
+messages.classes.select.worldDenied: <red>Classi disabilitate in questo mondo.</red>
+messages.classes.skills.alreadyUnlocked: <yellow>Gia sbloccata.</yellow>
+messages.classes.skills.classRequired: <red>Seleziona questa classe prima di sbloccare abilita.</red>
+messages.classes.skills.invalid: <red>Abilita non valida.</red>
+messages.classes.skills.maxRank: <yellow>Gia al rango massimo.</yellow>
+messages.classes.skills.missingPrereqs: <red>Prerequisiti mancanti:</red> <white>{nodes}</white>
+messages.classes.skills.notEnoughPoints: <red>Punti abilita insufficienti.</red>
+messages.classes.skills.open: <gray>Apertura percorso abilita...</gray>
+messages.classes.skills.preset.applied: <green>Preset applicato:</green> <white>{preset}</white>
+messages.classes.skills.preset.deleted: <green>Preset eliminato:</green> <white>{preset}</white>
+messages.classes.skills.preset.disabled: <red>Preset disabilitati.</red>
+messages.classes.skills.preset.limit: <red>Limite preset raggiunto.</red>
+messages.classes.skills.preset.missing: <red>Preset non trovato.</red>
+messages.classes.skills.preset.saved: <green>Preset salvato:</green> <white>{preset}</white>
+messages.classes.skills.reset.disabled: <red>Reset percorso abilita disabilitato.</red>
+messages.classes.skills.reset.none: <yellow>Nessuna abilita da resettare.</yellow>
+messages.classes.skills.reset.notActiveClass: <red>Puoi resettare solo la classe attiva.</red>
+messages.classes.skills.reset.ok: <green>Reset percorso abilita.</green> <white>Rimborsati {points} punti.</white>
+messages.classes.skills.respec.dependents: <red>Rimuovi prima i nodi dipendenti:</red> <white>{nodes}</white>
+messages.classes.skills.respec.disabled: <red>Respec disabilitato.</red>
+messages.classes.skills.respec.notActiveClass: <red>Puoi resettare solo la classe attiva.</red>
+messages.classes.skills.respec.notEnoughPoints: <red>Punti abilita insufficienti per resettare.</red>
+messages.classes.skills.respec.notEnoughTokens: <red>Gettoni insufficienti per resettare.</red>
+messages.classes.skills.respec.notUnlocked: <red>Abilita non sbloccata.</red>
+messages.classes.skills.respec.ok: <green>Reset effettuato</green> <white>{id}</white>
+messages.classes.skills.unlocked: <green>Sbloccata</green> <white>{id}</white>
+messages.classes.skills.worldDenied: <red>Abilita disabilitate in questo mondo.</red>
+messages.classes.yaml.entry: Entry
+messages.classes.yaml.header: Header
+messages.classes.yaml.none: None

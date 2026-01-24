@@ -26,7 +26,11 @@ import org.bukkit.util.Vector;
 import dev.patric.dungeonsreborn.effects.CastContext;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.compat.WorldCompat;
+import dev.patric.dungeonsreborn.effects.damage.DamageCause;
+import dev.patric.dungeonsreborn.effects.damage.DamageSpec;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.effects.heal.HealSpec;
+import dev.patric.dungeonsreborn.effects.heal.HealType;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileHit;
 import dev.patric.dungeonsreborn.effects.relations.Relation;
 import dev.patric.dungeonsreborn.effects.targeting.TargetAction;
@@ -59,62 +63,55 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> damage(double amount, DamagePolicy policy) {
+    return damage(amount, policy, DamageCause.DIRECT, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damage(double amount, DamagePolicy policy, DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(amount, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      DamageCause resolved = cause == null ? DamageCause.DIRECT : cause;
+      DamageSpec spec = DamageSpec.flat(amount, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
   public static TargetAction<LivingEntity> damageTyped(double amount, DamageType type, boolean ignoreResistance, DamagePolicy policy) {
+    return damageTyped(amount, type, ignoreResistance, policy, DamageCause.DIRECT, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageTyped(double amount, DamageType type, boolean ignoreResistance, DamagePolicy policy,
+      DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
     Objects.requireNonNull(type, "type");
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
-      double multiplier = ignoreResistance ? 1.0 : ctx.engine().resistanceMultiplier(target.getUniqueId(), type);
-      double dmg = amount * multiplier;
-      if (!(dmg > 0.0)) {
-        return;
-      }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(dmg, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      DamageCause resolved = cause == null ? DamageCause.DIRECT : cause;
+      DamageSpec spec = DamageSpec.flat(amount, type, resolved, ignoreResistance, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
   public static TargetAction<LivingEntity> damagePercent(double percent, DamagePolicy policy) {
+    return damagePercent(percent, policy, DamageCause.PERCENT, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damagePercent(double percent, DamagePolicy policy, DamageCause cause, String source, Set<String> tags) {
     if (!Double.isFinite(percent) || percent <= 0) {
       throw new IllegalArgumentException("percent must be > 0");
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
-      double pct = percent > 1.0 ? percent / 100.0 : percent;
-      if (pct <= 0.0) {
-        return;
-      }
-      double max = resolveMaxHealth(target);
-      double amount = max * pct;
-      if (amount <= 0.0) {
-        return;
-      }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(amount, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      DamageCause resolved = cause == null ? DamageCause.PERCENT : cause;
+      DamageSpec spec = DamageSpec.percent(percent, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
@@ -129,21 +126,28 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> damageTrue(double amount, DamagePolicy policy) {
+    return damageTrue(amount, policy, DamageCause.TRUE, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageTrue(double amount, DamagePolicy policy, DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
-      double next = Math.max(0.0, target.getHealth() - amount);
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.setHealth(next);
+      DamageCause resolved = cause == null ? DamageCause.TRUE : cause;
+      DamageSpec spec = DamageSpec.trueDamage(amount, resolved, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
   public static TargetAction<LivingEntity> damageWithFalloff(double amount, double maxDistance, double minMultiplier, DamagePolicy policy) {
+    return damageWithFalloff(amount, maxDistance, minMultiplier, policy, DamageCause.FALLOFF, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageWithFalloff(double amount, double maxDistance, double minMultiplier, DamagePolicy policy,
+      DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -155,9 +159,6 @@ public final class EntityActions {
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
       double dist = target.getLocation().distance(ctx.origin());
       double t = Math.min(1.0, Math.max(0.0, dist / maxDistance));
       double mult = Math.max(minMultiplier, 1.0 - t);
@@ -165,14 +166,20 @@ public final class EntityActions {
       if (dmg <= 0.0) {
         return;
       }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(dmg, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      DamageCause resolved = cause == null ? DamageCause.FALLOFF : cause;
+      DamageSpec spec = DamageSpec.flat(dmg, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
   public static TargetAction<LivingEntity> damageCrit(double amount, double critChance, double critMultiplier,
       double headshotMultiplier, double headshotThreshold, DamagePolicy policy) {
+    return damageCrit(amount, critChance, critMultiplier, headshotMultiplier, headshotThreshold, policy, DamageCause.CRIT, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageCrit(double amount, double critChance, double critMultiplier,
+      double headshotMultiplier, double headshotThreshold, DamagePolicy policy, DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -190,13 +197,13 @@ public final class EntityActions {
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
       double chance = critChance > 1.0 ? critChance / 100.0 : critChance;
       double multiplier = 1.0;
+      boolean crit = false;
+      boolean headshot = false;
       if (chance > 0.0 && ctx.rng().nextDouble() < chance) {
         multiplier *= critMultiplier;
+        crit = true;
       }
       if (headshotMultiplier > 1.0) {
         Object hitObj = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
@@ -205,6 +212,7 @@ public final class EntityActions {
           double eyeY = target.getEyeLocation().getY();
           if (hitY >= (eyeY - headshotThreshold)) {
             multiplier *= headshotMultiplier;
+            headshot = true;
           }
         }
       }
@@ -212,13 +220,26 @@ public final class EntityActions {
       if (dmg <= 0.0) {
         return;
       }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(dmg, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      java.util.Set<String> localTags = new java.util.HashSet<>();
+      if (crit) {
+        localTags.add("crit");
+      }
+      if (headshot) {
+        localTags.add("headshot");
+      }
+      DamageCause resolved = cause == null ? DamageCause.CRIT : cause;
+      DamageSpec spec = DamageSpec.flat(dmg, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, mergeTags(localTags, tags));
+      ctx.engine().applyDamage(ctx, target, spec);
     };
   }
 
   public static TargetAction<LivingEntity> damageLifesteal(double amount, double ratio, DamagePolicy policy) {
+    return damageLifesteal(amount, ratio, policy, DamageCause.LIFESTEAL, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageLifesteal(double amount, double ratio, DamagePolicy policy,
+      DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -227,13 +248,11 @@ public final class EntityActions {
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(amount, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
-      double heal = amount * ratio;
+      DamageCause resolved = cause == null ? DamageCause.LIFESTEAL : cause;
+      DamageSpec spec = DamageSpec.flat(amount, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      double applied = ctx.engine().applyDamage(ctx, target, spec);
+      double heal = applied * ratio;
       if (heal > 0.0) {
         LivingEntity caster = ctx.caster();
         double max = resolveMaxHealth(caster);
@@ -244,6 +263,12 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> damageOverTime(double amount, long periodTicks, int times, DamagePolicy policy) {
+    return damageOverTime(amount, periodTicks, times, policy, DamageCause.DOT, null, Set.of(), (ctx, target) -> {
+    });
+  }
+
+  public static TargetAction<LivingEntity> damageOverTime(double amount, long periodTicks, int times, DamagePolicy policy,
+      DamageCause cause, String source, Set<String> tags, TargetAction<LivingEntity> onTick) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -254,10 +279,8 @@ public final class EntityActions {
       throw new IllegalArgumentException("times must be > 0");
     }
     Objects.requireNonNull(policy, "policy");
+    Objects.requireNonNull(onTick, "onTick");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
       final LivingEntity captured = target;
       final int[] remaining = new int[] { times };
       final dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[] handle = new dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[1];
@@ -273,13 +296,11 @@ public final class EntityActions {
           handle[0].cancel();
           return;
         }
-        if (!canAffect(ctx, captured, policy)) {
-          handle[0].cancel();
-          return;
-        }
-        ctx.engine().recordDamageAttribution(captured.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-        captured.damage(amount, ctx.caster());
-        applyUpgradeStatusEffects(ctx, captured);
+        DamageCause resolved = cause == null ? DamageCause.DOT : cause;
+        DamageSpec spec = DamageSpec.flat(amount, DamageType.PHYSICAL, resolved, false, policy);
+        spec = applyDamageMetadata(spec, source, tags);
+        ctx.engine().applyDamage(ctx, captured, spec);
+        onTick.execute(ctx, captured);
       });
       ctx.state().track(handle[0]);
     };
@@ -287,6 +308,11 @@ public final class EntityActions {
 
   public static TargetAction<LivingEntity> chainDamage(double amount, double radius, int maxJumps, long delayTicks,
       double falloff, DamagePolicy policy, TargetAction<LivingEntity> onHit) {
+    return chainDamage(amount, radius, maxJumps, delayTicks, falloff, policy, DamageCause.CHAIN, null, Set.of(), onHit);
+  }
+
+  public static TargetAction<LivingEntity> chainDamage(double amount, double radius, int maxJumps, long delayTicks,
+      double falloff, DamagePolicy policy, DamageCause cause, String source, Set<String> tags, TargetAction<LivingEntity> onHit) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -304,9 +330,6 @@ public final class EntityActions {
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
       if (ctx.world() == null || target.getWorld() == null || !ctx.world().equals(target.getWorld())) {
         return;
       }
@@ -326,9 +349,10 @@ public final class EntityActions {
         visited.add(now.getUniqueId());
         double dmg = amount * Math.pow(falloff, jumps[0]);
         if (dmg > 0.0) {
-          ctx.engine().recordDamageAttribution(now.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-          now.damage(dmg, ctx.caster());
-          applyUpgradeStatusEffects(ctx, now);
+          DamageCause resolved = cause == null ? DamageCause.CHAIN : cause;
+          DamageSpec spec = DamageSpec.flat(dmg, DamageType.LIGHTNING, resolved, false, policy);
+          spec = applyDamageMetadata(spec, source, tags);
+          ctx.engine().applyDamage(ctx, now, spec);
         }
         if (onHit != null) {
           onHit.execute(ctx, now);
@@ -371,6 +395,11 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> damageIFramed(double amount, String group, long iFrameTicks, DamagePolicy policy) {
+    return damageIFramed(amount, group, iFrameTicks, policy, DamageCause.DIRECT, null, Set.of());
+  }
+
+  public static TargetAction<LivingEntity> damageIFramed(double amount, String group, long iFrameTicks, DamagePolicy policy,
+      DamageCause cause, String source, Set<String> tags) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
@@ -379,17 +408,39 @@ public final class EntityActions {
     }
     Objects.requireNonNull(policy, "policy");
     return (ctx, target) -> {
-      if (!canAffect(ctx, target, policy)) {
-        return;
-      }
       String g = group == null || group.isBlank() ? ("damage:" + ctx.abilityId()) : group;
       if (!ctx.engine().tryStartImmunity(target.getUniqueId(), g, iFrameTicks)) {
         return;
       }
-      ctx.engine().recordDamageAttribution(target.getUniqueId(), ctx.castId(), ctx.abilityId(), ctx.caster().getUniqueId());
-      target.damage(amount, ctx.caster());
-      applyUpgradeStatusEffects(ctx, target);
+      DamageCause resolved = cause == null ? DamageCause.DIRECT : cause;
+      DamageSpec spec = DamageSpec.flat(amount, DamageType.PHYSICAL, resolved, false, policy);
+      spec = applyDamageMetadata(spec, source, tags);
+      ctx.engine().applyDamage(ctx, target, spec);
     };
+  }
+
+  private static DamageSpec applyDamageMetadata(DamageSpec spec, String source, Set<String> tags) {
+    DamageSpec out = spec;
+    if (source != null && !source.isBlank()) {
+      out = out.withSource(source);
+    }
+    if (tags != null && !tags.isEmpty()) {
+      Set<String> merged = mergeTags(out.tags(), tags);
+      out = out.withTags(merged);
+    }
+    return out;
+  }
+
+  private static Set<String> mergeTags(Set<String> base, Set<String> extra) {
+    if (extra == null || extra.isEmpty()) {
+      return base == null ? Set.of() : base;
+    }
+    Set<String> merged = new HashSet<>();
+    if (base != null) {
+      merged.addAll(base);
+    }
+    merged.addAll(extra);
+    return Set.copyOf(merged);
   }
 
   public static TargetAction<LivingEntity> heal(double amount) {
@@ -397,17 +448,113 @@ public final class EntityActions {
   }
 
   public static TargetAction<LivingEntity> heal(double amount, DamagePolicy policy) {
+    return heal(amount, policy, HealType.DIRECT, null, Set.of(), 0.0, false, 0.0, 0L);
+  }
+
+  public static TargetAction<LivingEntity> heal(double amount, DamagePolicy policy, HealType type, String source,
+      Set<String> tags, double cap, boolean overhealToShield, double shieldCap, long shieldDecayTicks) {
     if (amount <= 0) {
       throw new IllegalArgumentException("amount must be > 0");
     }
     Objects.requireNonNull(policy, "policy");
+    Objects.requireNonNull(type, "type");
+    return (ctx, target) -> {
+      HealSpec spec = HealSpec.flat(amount, type, policy)
+          .withSource(source == null ? null : source)
+          .withTags(tags == null ? Set.of() : tags)
+          .withCap(cap)
+          .withOverhealToShield(overhealToShield, shieldCap, shieldDecayTicks);
+      ctx.engine().applyHeal(ctx, target, spec);
+    };
+  }
+
+  public static TargetAction<LivingEntity> healPercent(double percent, DamagePolicy policy) {
+    return healPercent(percent, policy, HealType.DIRECT, null, Set.of(), 0.0, false, 0.0, 0L);
+  }
+
+  public static TargetAction<LivingEntity> healPercent(double percent, DamagePolicy policy, HealType type, String source,
+      Set<String> tags, double cap, boolean overhealToShield, double shieldCap, long shieldDecayTicks) {
+    if (!Double.isFinite(percent) || percent <= 0) {
+      throw new IllegalArgumentException("percent must be > 0");
+    }
+    Objects.requireNonNull(policy, "policy");
+    Objects.requireNonNull(type, "type");
+    return (ctx, target) -> {
+      HealSpec spec = HealSpec.percent(percent, type, policy)
+          .withSource(source == null ? null : source)
+          .withTags(tags == null ? Set.of() : tags)
+          .withCap(cap)
+          .withOverhealToShield(overhealToShield, shieldCap, shieldDecayTicks);
+      ctx.engine().applyHeal(ctx, target, spec);
+    };
+  }
+
+  public static TargetAction<LivingEntity> healOverTime(double amount, long periodTicks, int times, DamagePolicy policy) {
+    return healOverTime(amount, periodTicks, times, policy, HealType.HOT, null, Set.of(), 0.0, false, 0.0, 0L,
+        (ctx, target) -> {
+        });
+  }
+
+  public static TargetAction<LivingEntity> healOverTime(double amount, long periodTicks, int times, DamagePolicy policy,
+      HealType type, String source, Set<String> tags, double cap, boolean overhealToShield,
+      double shieldCap, long shieldDecayTicks, TargetAction<LivingEntity> onTick) {
+    if (amount <= 0) {
+      throw new IllegalArgumentException("amount must be > 0");
+    }
+    if (periodTicks <= 0) {
+      throw new IllegalArgumentException("periodTicks must be > 0");
+    }
+    if (times <= 0) {
+      throw new IllegalArgumentException("times must be > 0");
+    }
+    Objects.requireNonNull(policy, "policy");
+    Objects.requireNonNull(type, "type");
+    Objects.requireNonNull(onTick, "onTick");
+    return (ctx, target) -> {
+      final LivingEntity captured = target;
+      final int[] remaining = new int[] { times };
+      final dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[] handle = new dev.patric.dungeonsreborn.effects.EffectsEngine.ScheduledHandle[1];
+      handle[0] = ctx.engine().runRepeating(0L, periodTicks, () -> {
+        if (handle[0] == null || handle[0].isCancelled()) {
+          return;
+        }
+        if (remaining[0]-- <= 0) {
+          handle[0].cancel();
+          return;
+        }
+        if (!captured.isValid() || captured.isDead()) {
+          handle[0].cancel();
+          return;
+        }
+        HealSpec spec = HealSpec.flat(amount, type, policy)
+            .withSource(source == null ? null : source)
+            .withTags(tags == null ? Set.of() : tags)
+            .withCap(cap)
+            .withOverhealToShield(overhealToShield, shieldCap, shieldDecayTicks);
+        ctx.engine().applyHeal(ctx, captured, spec);
+        onTick.execute(ctx, captured);
+      });
+      ctx.state().track(handle[0]);
+    };
+  }
+
+  public static TargetAction<LivingEntity> shield(double amount, double cap, long decayTicks, DamagePolicy policy, HealType type) {
+    if (amount <= 0) {
+      throw new IllegalArgumentException("amount must be > 0");
+    }
+    if (cap < 0) {
+      throw new IllegalArgumentException("cap must be >= 0");
+    }
+    if (decayTicks < 0) {
+      throw new IllegalArgumentException("decayTicks must be >= 0");
+    }
+    Objects.requireNonNull(policy, "policy");
+    Objects.requireNonNull(type, "type");
     return (ctx, target) -> {
       if (!canAffect(ctx, target, policy)) {
         return;
       }
-      double max = resolveMaxHealth(target);
-      double next = Math.min(max, target.getHealth() + amount);
-      target.setHealth(next);
+      ctx.engine().addShield(target.getUniqueId(), amount, cap, decayTicks);
     };
   }
 
@@ -862,7 +1009,7 @@ public final class EntityActions {
     };
   }
 
-  private static boolean canAffect(CastContext ctx, LivingEntity target, DamagePolicy policy) {
+  public static boolean canAffect(CastContext ctx, LivingEntity target, DamagePolicy policy) {
     if (!policy.allowSelf() && target.getUniqueId().equals(ctx.caster().getUniqueId())) {
       return false;
     }
@@ -963,7 +1110,7 @@ public final class EntityActions {
     return out;
   }
 
-  private static double resolveMaxHealth(LivingEntity entity) {
+  public static double resolveMaxHealth(LivingEntity entity) {
     AttributeInstance attribute = entity.getAttribute(Attribute.MAX_HEALTH);
     if (attribute == null) {
       return 20.0;
@@ -971,7 +1118,7 @@ public final class EntityActions {
     return attribute.getValue();
   }
 
-  private static void applyUpgradeStatusEffects(CastContext ctx, LivingEntity target) {
+  public static void applyUpgradeStatusEffects(CastContext ctx, LivingEntity target) {
     if (target == null || target.isDead()) {
       return;
     }

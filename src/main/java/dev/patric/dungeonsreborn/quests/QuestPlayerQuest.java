@@ -8,14 +8,23 @@ public final class QuestPlayerQuest {
   private long startedAt;
   private long completedAt;
   private long cooldownUntil;
+  private int dailyCount;
+  private int weeklyCount;
+  private long dailyResetAt;
+  private long weeklyResetAt;
   private int[] progress;
 
-  public QuestPlayerQuest(String questId, QuestStatus status, long startedAt, long completedAt, long cooldownUntil, int[] progress) {
+  public QuestPlayerQuest(String questId, QuestStatus status, long startedAt, long completedAt, long cooldownUntil,
+      int dailyCount, int weeklyCount, long dailyResetAt, long weeklyResetAt, int[] progress) {
     this.questId = questId;
     this.status = status;
     this.startedAt = startedAt;
     this.completedAt = completedAt;
     this.cooldownUntil = cooldownUntil;
+    this.dailyCount = dailyCount;
+    this.weeklyCount = weeklyCount;
+    this.dailyResetAt = dailyResetAt;
+    this.weeklyResetAt = weeklyResetAt;
     this.progress = progress == null ? new int[0] : progress;
   }
 
@@ -53,6 +62,38 @@ public final class QuestPlayerQuest {
 
   public void cooldownUntil(long cooldownUntil) {
     this.cooldownUntil = cooldownUntil;
+  }
+
+  public int dailyCount() {
+    return dailyCount;
+  }
+
+  public void dailyCount(int dailyCount) {
+    this.dailyCount = dailyCount;
+  }
+
+  public int weeklyCount() {
+    return weeklyCount;
+  }
+
+  public void weeklyCount(int weeklyCount) {
+    this.weeklyCount = weeklyCount;
+  }
+
+  public long dailyResetAt() {
+    return dailyResetAt;
+  }
+
+  public void dailyResetAt(long dailyResetAt) {
+    this.dailyResetAt = dailyResetAt;
+  }
+
+  public long weeklyResetAt() {
+    return weeklyResetAt;
+  }
+
+  public void weeklyResetAt(long weeklyResetAt) {
+    this.weeklyResetAt = weeklyResetAt;
   }
 
   public int progress(int index) {

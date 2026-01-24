@@ -22,6 +22,10 @@ public interface MobAiContext {
 
   void clearTarget();
 
+  MobBehaviorState behaviorState();
+
+  void setBehaviorState(MobBehaviorState state);
+
   void moveToward(Location target, double speed);
 
   void moveAwayFrom(LivingEntity target, double speed);

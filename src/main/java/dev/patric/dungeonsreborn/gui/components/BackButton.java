@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiItems;
+import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
@@ -17,11 +17,11 @@ import net.kyori.adventure.text.Component;
  */
 public final class BackButton extends Button {
   public BackButton() {
-    this(p -> GuiItems.named(Material.ARROW, Locales.component(p, "gui.button.back")), true);
+    this(p -> GuiButtons.item(GuiButtons.Type.BACK, Locales.component(p, "gui.button.back")), true);
   }
 
   public BackButton(Component title) {
-    this(p -> GuiItems.named(Material.ARROW, Objects.requireNonNull(title, "title")), true);
+    this(p -> GuiItems.head("LEFT", Objects.requireNonNull(title, "title"), List.of()), true);
   }
 
   public BackButton(Function<Player, ItemStack> item) {
@@ -36,6 +36,6 @@ public final class BackButton extends Button {
   public static BackButton withLore(Component title, List<Component> lore) {
     Objects.requireNonNull(title, "title");
     Objects.requireNonNull(lore, "lore");
-    return new BackButton(p -> GuiItems.named(Material.ARROW, title, lore), true);
+    return new BackButton(p -> GuiItems.head("LEFT", title, lore), true);
   }
 }

@@ -3,6 +3,8 @@ package dev.patric.dungeonsreborn.dungeons;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -87,6 +89,70 @@ public final class DungeonQueueService {
     queues.computeIfAbsent(level, ignored -> new ArrayDeque<>()).addLast(entry);
     autoStart();
     return new JoinResult(true, Locales.component(player, "messages.dungeons.queue.result.queued",
+        Locales.placeholders("level", level)));
+  }
+
+  public synchronized JoinResult joinParty(Player leader, List<Player> members, int level) {
+    if (leader == null) {
+      return new JoinResult(false, Locales.component(null, "messages.dungeons.queue.error.playerMissing"));
+    }
+    DungeonSpec dungeon = registry.dungeon();
+    if (dungeon == null) {
+      return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.notConfigured"));
+    }
+    if (!dungeon.levels().containsKey(level)) {
+      return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.invalidLevel"));
+    }
+    if (!isWorldAllowed(leader.getWorld())) {
+      return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.worldDisabled"));
+    }
+    if (active != null && active.playerId().equals(leader.getUniqueId())) {
+      return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.alreadyActive"));
+    }
+    DungeonSpec.DungeonQueueConfig queueConfig = queueConfig(dungeon);
+    int maxSize = queueConfig.maxSizePerLevel();
+    Map<UUID, Player> uniqueMembers = new LinkedHashMap<>();
+    if (members != null) {
+      for (Player member : members) {
+        if (member != null) {
+          uniqueMembers.put(member.getUniqueId(), member);
+        }
+      }
+    }
+    uniqueMembers.putIfAbsent(leader.getUniqueId(), leader);
+    int requested = uniqueMembers.size();
+    if (maxSize > 0 && queueSize(level) + requested > maxSize) {
+      return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.full"));
+    }
+    for (Player member : uniqueMembers.values()) {
+      if (!isWorldAllowed(member.getWorld())) {
+        return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.partyMember",
+            Locales.placeholders("player", member.getName())));
+      }
+      if (!member.getWorld().equals(leader.getWorld())) {
+        return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.partyMember",
+            Locales.placeholders("player", member.getName())));
+      }
+      if (active != null && active.playerId().equals(member.getUniqueId())) {
+        return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.partyMember",
+            Locales.placeholders("player", member.getName())));
+      }
+      if (findEntry(member.getUniqueId()) != null) {
+        return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.partyMember",
+            Locales.placeholders("player", member.getName())));
+      }
+      if (!isUnlocked(member.getUniqueId(), dungeon.id(), level)) {
+        return new JoinResult(false, Locales.component(leader, "messages.dungeons.queue.error.partyMember",
+            Locales.placeholders("player", member.getName())));
+      }
+    }
+    long now = System.currentTimeMillis();
+    Deque<QueueEntry> queue = queues.computeIfAbsent(level, ignored -> new ArrayDeque<>());
+    for (Player member : uniqueMembers.values()) {
+      queue.addLast(new QueueEntry(member.getUniqueId(), member.getName(), level, now));
+    }
+    autoStart();
+    return new JoinResult(true, Locales.component(leader, "messages.dungeons.queue.result.queued",
         Locales.placeholders("level", level)));
   }
 

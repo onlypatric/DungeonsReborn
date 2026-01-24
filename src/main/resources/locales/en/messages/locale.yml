@@ -1,0 +1,9 @@
+messages.locale.missingKey: <yellow>Missing locale key:</yellow> <white>{key}</white>
+messages.locale.reload.errors: <red>Locale reload had {errors} errors. Check logs.</red>
+messages.locale.reload.ok: <green>Locales loaded:</green> <white>{count}</white>
+messages.locale.validate.entry: <dark_gray>-</dark_gray> <white>{key}</white>
+messages.locale.validate.header: <gold><bold>Locale Coverage</bold></gold> <gray>{total} keys</gray>
+messages.locale.validate.localeHeader: <yellow>{locale}</yellow> <gray>missing</gray> <white>{count}</white>
+messages.locale.validate.more: <gray>... and</gray> <white>{count}</white> <gray>more</gray>
+messages.locale.validate.ok: <green>All locales have full coverage.</green>
+messages.locale.validate.unavailable: <red>Locale validation unavailable.</red>

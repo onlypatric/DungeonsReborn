@@ -1,0 +1,11 @@
+messages.upgrades.apply.conflict: <yellow>Upgrade overrides an existing slot.</yellow>
+messages.upgrades.apply.denied: <red>Upgrade not compatible.</red>
+messages.upgrades.apply.notEnoughTokens: <red>Not enough tokens.</red>
+messages.upgrades.apply.ok: <green>Upgrade applied:</green> <white>{upgrade}</white>
+messages.upgrades.apply.requirements: <red>Requirements not met.</red>
+messages.upgrades.apply.xpLocked: <red>Requires level {level} to apply this upgrade.</red>
+messages.upgrades.merge.applied: <green>Upgrade applied.</green>
+messages.upgrades.merge.error: <red>{error}</red>
+messages.upgrades.merge.missingInputs: <red>Place a target item and upgrade book first.</red>
+messages.upgrades.reload.errors: <red>Upgrades reload had {errors} errors. Check logs.</red>
+messages.upgrades.reload.ok: <green>Upgrades loaded:</green> <white>{count}</white>

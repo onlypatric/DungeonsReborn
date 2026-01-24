@@ -6,19 +6,32 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.MenuType;
 
+import dev.patric.dungeonsreborn.advancements.AdvancementService;
+import dev.patric.dungeonsreborn.classes.ClassService;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
-import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
+import dev.patric.dungeonsreborn.quests.QuestService;
 
 public final class ShopSessionManager {
   private final ShopYamlRegistry registry;
   private final ServiceLogger logger;
   private final ShopStockManager stockManager;
+  @SuppressWarnings("unused")
   private final boolean allowExperienceReward;
+  private ShopTradeMetrics metrics;
+  private ShopTradeAuditLog auditLog;
+  private AdvancementService advancements;
+  private CustomXpService customXpService;
+  private int customXpReward;
+  private QuestService questService;
+  private ClassService classService;
+  private ShopFactionService factionService;
   private final Map<UUID, ShopSession> openSessions = new ConcurrentHashMap<>();
   private final Map<UUID, Map<String, Long>> lastTrades = new ConcurrentHashMap<>();
+  private final Map<UUID, java.util.Set<String>> favoriteShops = new ConcurrentHashMap<>();
+  private final Map<UUID, Long> inFlightTrades = new ConcurrentHashMap<>();
 
   public ShopSessionManager(ShopYamlRegistry registry, ShopStockManager stockManager, boolean allowExperienceReward,
       ServiceLogger logger) {
@@ -26,6 +39,25 @@ public final class ShopSessionManager {
     this.stockManager = stockManager;
     this.allowExperienceReward = allowExperienceReward;
     this.logger = Objects.requireNonNull(logger, "logger");
+  }
+
+  public void setTradeServices(ShopTradeMetrics metrics, AdvancementService advancements,
+      CustomXpService customXpService, int customXpReward) {
+    this.metrics = metrics;
+    this.advancements = advancements;
+    this.customXpService = customXpService;
+    this.customXpReward = Math.max(0, customXpReward);
+  }
+
+  public void setAuditLog(ShopTradeAuditLog auditLog) {
+    this.auditLog = auditLog;
+  }
+
+  public void setRequirementServices(QuestService questService, ClassService classService,
+      ShopFactionService factionService) {
+    this.questService = questService;
+    this.classService = classService;
+    this.factionService = factionService;
   }
 
   public boolean openShop(Player player, String shopId, String source) {
@@ -62,16 +94,101 @@ public final class ShopSessionManager {
       player.sendMessage(Locales.component(player, "messages.shops.open.worldDenied"));
       return false;
     }
-    var merchant = ShopMerchantBuilder.buildMerchant(spec, registry.tokenSpec(), registry.itemResolver(), stockManager,
-        allowExperienceReward);
-    var view = MenuType.MERCHANT.builder()
-        .merchant(merchant)
-        .title(GuiMini.mm(spec.title()))
-        .build(player);
-    player.openInventory(view);
-    openSessions.put(player.getUniqueId(), new ShopSession(spec.id()));
-    logger.debug("[Shops] open: player=" + player.getName() + " shop=" + spec.id() + " source=" + source);
+    if (spec.availability() != null && !spec.availability().isAvailableNow()) {
+      player.sendMessage(Locales.component(player, "messages.shops.open.unavailable"));
+      return false;
+    }
+    ShopRequirementResult requirement = ShopRequirements.check(player, spec.requirements(),
+        requirementServices(), "messages.shops.open");
+    if (!requirement.allowed()) {
+      if (requirement.message() != null) {
+        player.sendMessage(requirement.message());
+      }
+      return false;
+    }
+    player.sendMessage(Locales.component(player, "messages.command.systemUnavailable",
+        Locales.placeholders("system", Locales.component(player, "labels.system.shops"))));
+    return false;
+  }
+
+  public boolean isVisible(Player player, ShopSpec spec) {
+    if (player == null || spec == null) {
+      return false;
+    }
+    if (!spec.enabled()) {
+      return false;
+    }
+    if (spec.permission() != null && !spec.permission().isBlank() && !player.hasPermission(spec.permission())) {
+      return false;
+    }
+    if (!spec.worlds().isEmpty() && !spec.worlds().contains(player.getWorld().getName())) {
+      return false;
+    }
+    if (spec.availability() != null && !spec.availability().isAvailableNow()) {
+      return false;
+    }
+    return ShopRequirements.isVisible(player, spec.visibilityRequirements(), requirementServices());
+  }
+
+  public ShopRequirements.Services requirementServices() {
+    return new ShopRequirements.Services(questService, classService, customXpService, factionService);
+  }
+
+  public ShopTradeAuditLog auditLog() {
+    return auditLog;
+  }
+
+  public boolean beginTrade(Player player) {
+    if (player == null) {
+      return false;
+    }
+    long now = System.currentTimeMillis();
+    Long previous = inFlightTrades.put(player.getUniqueId(), now);
+    if (previous == null) {
+      return true;
+    }
+    if (now - previous > 2000L) {
+      inFlightTrades.put(player.getUniqueId(), now);
+      return true;
+    }
+    return false;
+  }
+
+  public void endTrade(Player player) {
+    if (player == null) {
+      return;
+    }
+    inFlightTrades.remove(player.getUniqueId());
+  }
+
+  public boolean isFavoriteShop(Player player, String shopId) {
+    if (player == null || shopId == null || shopId.isBlank()) {
+      return false;
+    }
+    java.util.Set<String> favorites = favoriteShops.get(player.getUniqueId());
+    return favorites != null && favorites.contains(shopId);
+  }
+
+  public boolean toggleFavoriteShop(Player player, String shopId) {
+    if (player == null || shopId == null || shopId.isBlank()) {
+      return false;
+    }
+    java.util.Set<String> favorites = favoriteShops.computeIfAbsent(player.getUniqueId(),
+        id -> ConcurrentHashMap.newKeySet());
+    if (favorites.contains(shopId)) {
+      favorites.remove(shopId);
+      return false;
+    }
+    favorites.add(shopId);
     return true;
+  }
+
+  public java.util.Set<String> favoriteShops(Player player) {
+    if (player == null) {
+      return java.util.Set.of();
+    }
+    java.util.Set<String> favorites = favoriteShops.get(player.getUniqueId());
+    return favorites == null ? java.util.Set.of() : java.util.Set.copyOf(favorites);
   }
 
   public String openShopId(Player player) {

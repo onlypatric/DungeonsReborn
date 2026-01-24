@@ -17,16 +17,21 @@ import dev.patric.dungeonsreborn.mobs.MobMarkers;
 
 public final class ManaDropListener implements Listener {
   private final EffectsEngine engine;
+  private final ManaSourcesConfig.KillSource source;
   private final Random rng = new Random();
 
-  public ManaDropListener(EffectsEngine engine) {
+  public ManaDropListener(EffectsEngine engine, ManaSourcesConfig.KillSource source) {
     this.engine = Objects.requireNonNull(engine, "engine");
+    this.source = Objects.requireNonNull(source, "source");
   }
 
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onDeath(EntityDeathEvent event) {
     LivingEntity entity = event.getEntity();
     if (entity instanceof Player) {
+      return;
+    }
+    if (!source.enabled()) {
       return;
     }
     if (MobMarkers.getMobId(entity) != null) {
@@ -40,16 +45,8 @@ public final class ManaDropListener implements Listener {
     if (provider == null) {
       return;
     }
-    double max = maxHealth(entity);
-    if (!Double.isFinite(max) || max <= 0.0) {
-      return;
-    }
-    double base = Math.log(max);
-    if (!Double.isFinite(base) || base <= 0.0) {
-      return;
-    }
-    double amount = rng.nextDouble() * base;
-    addMana(provider, killer, amount);
+    double amount = source.computeAmount(maxHealth(entity), rng);
+    addMana(provider, killer, source.resourceId(), amount);
   }
 
   private static double maxHealth(LivingEntity entity) {
@@ -57,15 +54,18 @@ public final class ManaDropListener implements Listener {
     return attr == null ? entity.getHealth() : attr.getValue();
   }
 
-  private static void addMana(ManaProvider provider, Player player, double amount) {
-    if (provider == null || player == null || !Double.isFinite(amount) || amount <= 0.0) {
+  private static void addMana(ManaProvider provider, Player player, String resourceId, double amount) {
+    if (provider == null || player == null || resourceId == null || resourceId.isBlank()) {
       return;
     }
-    double max = provider.getMax(player);
+    if (!Double.isFinite(amount) || amount <= 0.0) {
+      return;
+    }
+    double max = provider.getMax(player, resourceId);
     if (max <= 0.0) {
       return;
     }
-    double current = provider.get(player);
-    provider.set(player, Math.min(max, current + amount));
+    double current = provider.get(player, resourceId);
+    provider.set(player, resourceId, Math.min(max, current + amount));
   }
 }

@@ -229,10 +229,12 @@ Crafting:
 - `docs/checklists/V2/ULTIMATE_ELEMENTAL_UPGRADES.md`
 - `docs/checklists/V3/PLUGIN_BUILDER_PLAN.md`
 - `docs/checklists/V3/PLUGIN_BUILDER_VFX_UPDATES.md`
-- `docs/checklists/V3/SPELL_ENGINE_EXPANSION_PLAN.md`
 - `docs/checklists/V3/SPELL_ENGINE_VFX_EVOLUTION.md`
 - `docs/checklists/V3/SPELL_ENGINE_VFX_PHASE0.md`
 - `docs/checklists/V3/VFX_CORE_EXPANSION_PLAN.md`
+- `docs/checklists/V4/SPELL_ENGINE_EXPANSION_PLAN.md`
+- `docs/checklists/V4/MOB_SYSTEM_COMPLETENESS_PLAN.md`
+- `docs/checklists/V4/ITEM_SYSTEM_COMPLETENESS_PLAN.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies

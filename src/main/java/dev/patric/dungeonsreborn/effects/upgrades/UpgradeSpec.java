@@ -12,6 +12,9 @@ public record UpgradeSpec(
     UpgradeTargetSpec target,
     UpgradeCompatibilitySpec compatibility,
     UpgradeLimitsSpec limits,
+    UpgradeProgressionSpec progression,
+    UpgradeFusionSpec fusion,
+    UpgradeSalvageSpec salvage,
     UpgradeBehaviorSpec behaviors,
     boolean allowUnsafe,
     List<UpgradeModifierSpec> modifiers,
@@ -26,6 +29,9 @@ public record UpgradeSpec(
     Objects.requireNonNull(target, "target");
     Objects.requireNonNull(compatibility, "compatibility");
     Objects.requireNonNull(limits, "limits");
+    Objects.requireNonNull(progression, "progression");
+    Objects.requireNonNull(fusion, "fusion");
+    Objects.requireNonNull(salvage, "salvage");
     Objects.requireNonNull(behaviors, "behaviors");
     Objects.requireNonNull(modifiers, "modifiers");
     Objects.requireNonNull(attributes, "attributes");

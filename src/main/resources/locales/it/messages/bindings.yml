@@ -1,0 +1,2 @@
+messages.bindings.reload.errors: <red>Ricarica collegamenti con {errors} errori. Controlla i log.</red>
+messages.bindings.reload.ok: <green>Collegamenti caricati:</green> <white>{count}</white>

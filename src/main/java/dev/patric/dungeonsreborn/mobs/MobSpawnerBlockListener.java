@@ -21,18 +21,30 @@ public final class MobSpawnerBlockListener implements Listener {
   private final MobSpawnManager spawns;
   private final MobSpawnerBlockStore store;
   private final ServiceLogger logger;
+  private final boolean ownershipEnabled;
+  private final boolean adminOnly;
+  private final String adminPermission;
 
   public MobSpawnerBlockListener(MobYamlRegistry yaml, MobRegistry registry, MobSpawnManager spawns,
-      MobSpawnerBlockStore store, ServiceLogger logger) {
+      MobSpawnerBlockStore store, ServiceLogger logger, boolean ownershipEnabled, boolean adminOnly,
+      String adminPermission) {
     this.yaml = Objects.requireNonNull(yaml, "yaml");
     this.registry = Objects.requireNonNull(registry, "registry");
     this.spawns = Objects.requireNonNull(spawns, "spawns");
     this.store = Objects.requireNonNull(store, "store");
     this.logger = Objects.requireNonNull(logger, "logger");
+    this.ownershipEnabled = ownershipEnabled;
+    this.adminOnly = adminOnly;
+    this.adminPermission = adminPermission == null ? "" : adminPermission;
   }
 
   @EventHandler(ignoreCancelled = true)
   public void onPlace(BlockPlaceEvent event) {
+    if (adminOnly && !event.getPlayer().hasPermission(adminPermission)) {
+      event.getPlayer().sendMessage(Locales.component(event.getPlayer(), "messages.noPermission"));
+      event.setCancelled(true);
+      return;
+    }
     ItemStack item = event.getItemInHand();
     String blockId = MobSpawnerMarkers.getSpawnerBlockId(item);
     MobSpawnerBlockSpec blockSpec = null;
@@ -91,7 +103,9 @@ public final class MobSpawnerBlockListener implements Listener {
     }
     MobSpawnerMarkers.setSpawnerId(block, createdId);
     MobSpawnerMarkers.setSpawnerMobId(block, mobId);
-    store.upsert(block, blockSpec == null ? null : blockSpec.id(), createdId, mobId);
+    MobSpawnerMarkers.setSpawnerOwner(block, event.getPlayer().getUniqueId());
+    store.upsert(block, blockSpec == null ? null : blockSpec.id(), createdId, mobId,
+        event.getPlayer().getUniqueId().toString());
     event.getPlayer().sendMessage(Locales.component(event.getPlayer(), "messages.mobs.spawner.created",
         Locales.placeholders("id", createdId)));
     logger.info("[Mobs] spawner: placed id=" + createdId + " mob=" + mobId);
@@ -102,6 +116,28 @@ public final class MobSpawnerBlockListener implements Listener {
     Block block = event.getBlock();
     if (block.getType() != Material.SPAWNER) {
       return;
+    }
+    if (adminOnly && !event.getPlayer().hasPermission(adminPermission)) {
+      event.getPlayer().sendMessage(Locales.component(event.getPlayer(), "messages.noPermission"));
+      event.setCancelled(true);
+      return;
+    }
+    if (ownershipEnabled && !event.getPlayer().hasPermission(adminPermission)) {
+      java.util.UUID ownerId = MobSpawnerMarkers.getSpawnerOwner(block);
+      if (ownerId == null) {
+        MobSpawnerBlockStore.Entry entry = store.entry(block);
+        if (entry != null && entry.ownerId() != null) {
+          try {
+            ownerId = java.util.UUID.fromString(entry.ownerId());
+          } catch (IllegalArgumentException ex) {
+          }
+        }
+      }
+      if (ownerId != null && !ownerId.equals(event.getPlayer().getUniqueId())) {
+        event.getPlayer().sendMessage(Locales.component(event.getPlayer(), "messages.noPermission"));
+        event.setCancelled(true);
+        return;
+      }
     }
     String spawnId = MobSpawnerMarkers.getSpawnerId(block);
     MobSpawnerBlockStore.Entry entry = store.entry(block);

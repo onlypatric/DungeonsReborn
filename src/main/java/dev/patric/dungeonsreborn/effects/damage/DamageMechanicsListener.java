@@ -37,6 +37,12 @@ public final class DamageMechanicsListener implements Listener {
     if (attacker == null || attacker.getUniqueId().equals(victim.getUniqueId())) {
       return;
     }
+    if (attacker instanceof org.bukkit.entity.Player player) {
+      engine.markCombat(player.getUniqueId());
+    }
+    if (victim instanceof org.bukkit.entity.Player player) {
+      engine.markCombat(player.getUniqueId());
+    }
     EffectsEngine.ReflectSpec spec = engine.reflectSpec(victim.getUniqueId());
     if (spec == null) {
       return;

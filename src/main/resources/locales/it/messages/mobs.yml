@@ -1,0 +1,16 @@
+messages.mobs.damage.xpLocked: <red>Richiede livello {level} per colpire questo mob.</red>
+messages.mobs.egg.cooldown: <red>Uovo in cooldown ({ticks}t)</red>
+messages.mobs.egg.missingPermission: '<red>Permesso mancante: {perm}</red>'
+messages.mobs.egg.noTarget: <red>Nessun blocco trovato.</red>
+messages.mobs.egg.spawnFailed: '<red>Spawn fallito: {message}</red>'
+messages.mobs.spawner.createFailed: '<red>Creazione spawner fallita: {message}</red>'
+messages.mobs.spawner.created: <green>Spawner creato:</green> <white>{id}</white>
+messages.mobs.spawner.entryNotFound: '<red>Spawner non trovato: {id}</red>'
+messages.mobs.spawner.mobMismatch: '<red>Mob spawner non corrisponde: {mob}</red>'
+messages.mobs.spawner.mustPlaceSpawner: <red>Gli spawner vanno piazzati come blocco spawner.</red>
+messages.mobs.spawner.removed: <green>Spawner rimosso:</green> <white>{id}</white>
+messages.mobs.spawner.unknownBlockId: '<red>Id blocco spawner sconosciuto: {id}</red>'
+messages.mobs.spawner.unknownMobId: '<red>Id mob sconosciuto: {id}</red>'
+messages.mobs.yaml.entry: Entry
+messages.mobs.yaml.header: Header
+messages.mobs.yaml.none: None

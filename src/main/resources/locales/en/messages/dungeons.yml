@@ -1,0 +1,48 @@
+messages.dungeons.action.boss: <red>Boss wave!</red>{affixSuffix}
+messages.dungeons.action.wave: <yellow>Wave {wave} started</yellow>{affixSuffix}
+messages.dungeons.broadcast.affixes: <gray>Affixes:</gray> <white>{affixes}</white>
+messages.dungeons.broadcast.duration: <gray>Duration:</gray> <white>{seconds}s</white>
+messages.dungeons.broadcast.header: <gold>Dungeon Report</gold> <dark_gray>:</dark_gray> <white>{dungeon}</white>
+messages.dungeons.broadcast.level: <gray>Level:</gray> <white>{level}</white>
+messages.dungeons.broadcast.players: <gray>Players:</gray> <white>{players}</white>
+messages.dungeons.broadcast.result: <gray>Result:</gray> <white>{result}</white>
+messages.dungeons.broadcast.separator: <dark_gray>--------------------------------</dark_gray>
+messages.dungeons.end.lose: <red>Dungeon failed.</red>
+messages.dungeons.end.summary: <gray>Level:</gray> <white>{level}</white> <gray>Players:</gray> <white>{players}</white>
+messages.dungeons.end.win: <green>Dungeon cleared!</green>
+messages.dungeons.queue.error.alreadyActive: <red>You are already in an active dungeon run.</red>
+messages.dungeons.queue.error.alreadyQueued: <red>You are already queued for level {level}.</red>
+messages.dungeons.queue.error.full: <red>Queue is full for this level.</red>
+messages.dungeons.queue.error.invalidLevel: <red>Invalid dungeon level.</red>
+messages.dungeons.queue.error.mustComplete: <red>Complete level {level} first.</red>
+messages.dungeons.queue.error.notConfigured: <red>Dungeon is not configured.</red>
+messages.dungeons.queue.error.notQueued: <red>You are not queued.</red>
+messages.dungeons.queue.error.partyMember: <red>Party member {player} cannot join the queue.</red>
+messages.dungeons.queue.error.playerMissing: <red>Player missing.</red>
+messages.dungeons.queue.error.worldDisabled: <red>Dungeon queues are disabled in this world.</red>
+messages.dungeons.queue.result.left: <gray>Left the dungeon queue.</gray>
+messages.dungeons.queue.result.queued: <green>Queued for dungeon level {level}.</green>
+messages.dungeons.queue.status: <gray>Queue position:</gray> <white>{position}</white>
+messages.dungeons.queue.stubStart: <gray>Dungeon run starting...</gray>
+messages.dungeons.result.defeat: Defeat
+messages.dungeons.result.victory: Victory
+messages.dungeons.rewards.extraLoot: <gray>Extra Loot:</gray> <white>{detail}</white>
+messages.dungeons.rewards.header: <gold><bold>Dungeon Rewards</bold></gold>
+messages.dungeons.rewards.skillPoints: <gray>Skill Points:</gray> <white>{skillPoints}</white>
+messages.dungeons.rewards.tokens: <gray>Tokens:</gray> <white>{tokens}</white>
+messages.dungeons.session.fail.death: <red>Dungeon failed (player died).</red>
+messages.dungeons.session.fail.left: <red>Dungeon failed (player left).</red>
+messages.dungeons.session.fail.time: <red>Dungeon failed (time limit reached).</red>
+messages.dungeons.session.fail.world: <red>Dungeon failed (left the dungeon world).</red>
+messages.dungeons.session.start: <green>Dungeon run starting.</green>
+messages.dungeons.titles.boss.subtitle: <gray>Stay sharp</gray>
+messages.dungeons.titles.boss.title: <red><bold>Boss Incoming</bold></red>
+messages.dungeons.titles.end.lose: <red><bold>Dungeon Failed</bold></red>
+messages.dungeons.titles.end.subtitle: <gray>Result:</gray> <white>{result}</white> <dark_gray>|</dark_gray> <white>{dungeon}</white>
+messages.dungeons.titles.end.win: <green><bold>Dungeon Complete</bold></green>
+messages.dungeons.titles.wave.subtitle: <gray>Wave {wave} of {total}</gray>
+messages.dungeons.titles.wave.subtitlePrepare: <gray>Prepare yourself</gray>
+messages.dungeons.titles.wave.title: <gold><bold>Wave {wave}</bold></gold>
+messages.dungeons.unavailable: <gray>Dungeons coming soon...</gray>
+messages.dungeons.wave.boss: <red>Boss wave!</red>
+messages.dungeons.wave.start: <gold>Wave {wave}</gold> <gray>has begun.</gray>

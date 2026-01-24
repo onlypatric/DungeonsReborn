@@ -1,0 +1,82 @@
+# Minion summon spec schema (file-only reference)
+#
+# This schema mirrors the minion summon config used by effects YAML/DSL.
+# Fields can be applied per summon block and act as overrides for the base mob spec.
+
+minion:
+  id: "example_minion"
+  mobId: "example_mob"
+  count: 3
+  durationTicks: 600
+  owner: "self" # self | last_hit | last_entity | uuid
+  spawnRadius: 3.5
+
+  summon:
+    waves: 2
+    waveIntervalTicks: 40
+    formation: "CIRCLE" # RANDOM | CIRCLE | LINE | CONE | GRID
+    formationRadius: 4.0
+    safeSpawn: true
+    maxSpawnAttempts: 6
+
+  summonCosts:
+    - type: "mana"
+      amount: 25
+    - type: "item"
+      id: "token_core"
+      count: 1
+
+  summonCooldownTicks: 200
+  summonCooldownKey: "minion_summon_cd"
+
+  scaling: "NONE"
+  scalingLimits:
+    maxHealth: 200.0
+    maxDamage: 20.0
+  ownerScaling:
+    levelScale: 0.02
+    strengthScale: 0.01
+
+  resistances:
+    FIRE: 0.5
+    ICE: 0.8
+  immunities:
+    - POISON
+
+  targetRules:
+    allowPvp: false
+    allowPartyTargets: false
+    shareOwnerAggro: true
+    maxDistanceFromOwner: 24.0
+
+  passives:
+    - ability: "minion_aura"
+      intervalTicks: 40
+
+  specialAttacks:
+    - ability: "minion_burst"
+      cooldownTicks: 80
+      chance: 0.35
+      requireTarget: true
+      costMultiplier: 1.0
+      costAdd: 0.0
+
+  statOverrides:
+    MAX_HEALTH: 40.0
+    ATTACK_DAMAGE: 6.0
+
+  mainAttackOverride: "minion_main_attack"
+  secondaryAttackOverride: "minion_secondary_attack"
+  disableBasePassives: false
+  disableBaseAttacks: false
+  disableBaseAi: false
+  sharePotionEffects: false
+
+  nameOverride: "Guardian Minion"
+  glowOverride: true
+
+  particles:
+    type: "SPELL_MOB"
+    count: 6
+    offset: 0.2
+  particlesPeriodTicks: 10

@@ -1,14 +1,16 @@
-tokens:
-  item:
-    name: <gold><bold>Gettone</bold></gold>
-    lore:
-    - <gray>Valuta per scambi e potenziamenti.</gray>
-    - <gray>Valore:</gray> <white>1 gettone</white>
-  compressed:
-    name: <gold><bold>Gettone Compresso</bold></gold>
-    lore:
-    - <gray>Valore:</gray> <white>64 gettoni</white>
-  pallet:
-    name: <gold><bold>Pallet di Gettoni</bold></gold>
-    lore:
-    - <gray>Valore:</gray> <white>64 gettoni compressi</white>
+tokens.compressed.lore:
+- <gray>Valore:</gray> <white>64 gettoni</white>
+tokens.compressed.name: <gold><bold>Gettone Compresso</bold></gold>
+tokens.item.lore:
+- <gray>Valuta per scambi e potenziamenti.</gray>
+- <gray>Valore:</gray> <white>1 gettone</white>
+tokens.item.name: <gold><bold>Gettone</bold></gold>
+tokens.pallet.lore:
+- <gray>Valore:</gray> <white>64 gettoni compressi</white>
+tokens.pallet.name: <gold><bold>Pallet di Gettoni</bold></gold>
+tokens.styles.bad: <red>{text}</red>
+tokens.styles.good: <green>{text}</green>
+tokens.styles.hint: <dark_gray>{text}</dark_gray>
+tokens.styles.subtitle: <gray>{text}</gray>
+tokens.styles.title: <gold><bold>{text}</bold></gold>
+tokens.styles.warn: <yellow>{text}</yellow>

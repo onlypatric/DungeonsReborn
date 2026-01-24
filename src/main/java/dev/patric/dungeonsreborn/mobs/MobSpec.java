@@ -19,6 +19,9 @@ import net.kyori.adventure.text.Component;
 public final class MobSpec {
   private final String id;
   private final EntityType entityType;
+  private final String tier;
+  private final MobModelSpec modelSpec;
+  private final MobStyleSpec style;
   private final Component displayName;
   private final boolean showName;
   private final MobBossBarSpec bossBar;
@@ -39,16 +42,23 @@ public final class MobSpec {
   private final List<MobPassiveSpec> passives;
   private final Map<Attribute, Double> attributes;
   private final List<MobVariantSpec> variants;
+  private final List<MobTraitSpec> traits;
   private final List<MobPhaseSpec> phases;
   private final Map<DamageType, Double> resistances;
   private final MobManaDropSpec manaDrop;
+  private final MobManaDrainSpec manaDrain;
   private final MobLootSpec loot;
+  private final List<MobDamageBonusSpec> damageBonuses;
+  private final MobCombatSpec combatSpec;
   private final MobSummonSpec summonSpec;
   private final MobProgressionSpec progressionSpec;
   private final MobAdvancementRewardSpec advancementRewards;
   private final int minXpLevel;
   private final boolean allowBlockDamage;
+  private final Boolean collidable;
   private final double scaleVariance;
+  private final MobCompositeSpec composite;
+  private final MobEventSpec events;
   private final Consumer<MobContext> onSpawn;
   private final Consumer<MobContext> onDeath;
   private final BiConsumer<MobContext, MobRemovalReason> onRemove;
@@ -56,6 +66,9 @@ public final class MobSpec {
   private MobSpec(Builder builder) {
     this.id = Ids.normalize(builder.id);
     this.entityType = Objects.requireNonNull(builder.entityType, "entityType");
+    this.tier = builder.tier;
+    this.modelSpec = builder.modelSpec;
+    this.style = builder.style;
     this.displayName = builder.displayName;
     this.showName = builder.showName;
     this.bossBar = builder.bossBar;
@@ -76,16 +89,23 @@ public final class MobSpec {
     this.passives = Collections.unmodifiableList(new ArrayList<>(builder.passives));
     this.attributes = Collections.unmodifiableMap(new java.util.LinkedHashMap<>(builder.attributes));
     this.variants = Collections.unmodifiableList(new ArrayList<>(builder.variants));
+    this.traits = Collections.unmodifiableList(new ArrayList<>(builder.traits));
     this.phases = Collections.unmodifiableList(new ArrayList<>(builder.phases));
     this.resistances = Collections.unmodifiableMap(new java.util.EnumMap<>(builder.resistances));
     this.manaDrop = builder.manaDrop;
+    this.manaDrain = builder.manaDrain;
     this.loot = builder.loot;
+    this.damageBonuses = Collections.unmodifiableList(new ArrayList<>(builder.damageBonuses));
+    this.combatSpec = builder.combatSpec;
     this.summonSpec = builder.summonSpec;
     this.progressionSpec = builder.progressionSpec;
     this.advancementRewards = builder.advancementRewards;
     this.minXpLevel = builder.minXpLevel;
     this.allowBlockDamage = builder.allowBlockDamage;
+    this.collidable = builder.collidable;
     this.scaleVariance = builder.scaleVariance;
+    this.composite = builder.composite;
+    this.events = builder.events;
     this.onSpawn = builder.onSpawn;
     this.onDeath = builder.onDeath;
     this.onRemove = builder.onRemove;
@@ -97,6 +117,18 @@ public final class MobSpec {
 
   public EntityType entityType() {
     return entityType;
+  }
+
+  public String tier() {
+    return tier;
+  }
+
+  public MobModelSpec modelSpec() {
+    return modelSpec;
+  }
+
+  public MobStyleSpec style() {
+    return style;
   }
 
   public Component displayName() {
@@ -179,6 +211,10 @@ public final class MobSpec {
     return variants;
   }
 
+  public List<MobTraitSpec> traits() {
+    return traits;
+  }
+
   public List<MobPhaseSpec> phases() {
     return phases;
   }
@@ -191,8 +227,20 @@ public final class MobSpec {
     return manaDrop;
   }
 
+  public MobManaDrainSpec manaDrain() {
+    return manaDrain;
+  }
+
   public MobLootSpec loot() {
     return loot;
+  }
+
+  public List<MobDamageBonusSpec> damageBonuses() {
+    return damageBonuses;
+  }
+
+  public MobCombatSpec combatSpec() {
+    return combatSpec;
   }
 
   public MobSummonSpec summonSpec() {
@@ -215,8 +263,20 @@ public final class MobSpec {
     return allowBlockDamage;
   }
 
+  public Boolean collidable() {
+    return collidable;
+  }
+
   public double scaleVariance() {
     return scaleVariance;
+  }
+
+  public MobCompositeSpec composite() {
+    return composite;
+  }
+
+  public MobEventSpec events() {
+    return events;
   }
 
   public Consumer<MobContext> onSpawn() {
@@ -238,6 +298,9 @@ public final class MobSpec {
   public static final class Builder {
     private final String id;
     private final EntityType entityType;
+    private String tier;
+    private MobModelSpec modelSpec;
+    private MobStyleSpec style;
     private Component displayName;
     private boolean showName;
     private MobBossBarSpec bossBar;
@@ -258,16 +321,23 @@ public final class MobSpec {
     private final List<MobPassiveSpec> passives = new ArrayList<>();
     private final Map<Attribute, Double> attributes = new java.util.LinkedHashMap<>();
     private final List<MobVariantSpec> variants = new ArrayList<>();
+    private final List<MobTraitSpec> traits = new ArrayList<>();
     private final List<MobPhaseSpec> phases = new ArrayList<>();
     private final Map<DamageType, Double> resistances = new java.util.EnumMap<>(DamageType.class);
     private MobManaDropSpec manaDrop;
+    private MobManaDrainSpec manaDrain;
     private MobLootSpec loot;
+    private final List<MobDamageBonusSpec> damageBonuses = new ArrayList<>();
+    private MobCombatSpec combatSpec;
     private MobSummonSpec summonSpec;
     private MobProgressionSpec progressionSpec;
     private MobAdvancementRewardSpec advancementRewards;
     private int minXpLevel;
     private boolean allowBlockDamage = true;
+    private Boolean collidable;
     private double scaleVariance;
+    private MobCompositeSpec composite;
+    private MobEventSpec events;
     private Consumer<MobContext> onSpawn = ctx -> {
     };
     private Consumer<MobContext> onDeath = ctx -> {
@@ -294,6 +364,21 @@ public final class MobSpec {
 
     public Builder showName(boolean showName) {
       this.showName = showName;
+      return this;
+    }
+
+    public Builder tier(String tier) {
+      this.tier = tier == null || tier.isBlank() ? null : Ids.normalize(tier);
+      return this;
+    }
+
+    public Builder modelSpec(MobModelSpec modelSpec) {
+      this.modelSpec = modelSpec;
+      return this;
+    }
+
+    public Builder style(MobStyleSpec style) {
+      this.style = style;
       return this;
     }
 
@@ -387,6 +472,11 @@ public final class MobSpec {
       return this;
     }
 
+    public Builder addTrait(MobTraitSpec trait) {
+      this.traits.add(Objects.requireNonNull(trait, "trait"));
+      return this;
+    }
+
     public Builder addPhase(MobPhaseSpec phase) {
       this.phases.add(Objects.requireNonNull(phase, "phase"));
       return this;
@@ -402,8 +492,25 @@ public final class MobSpec {
       return this;
     }
 
+    public Builder manaDrain(MobManaDrainSpec manaDrain) {
+      this.manaDrain = manaDrain;
+      return this;
+    }
+
     public Builder loot(MobLootSpec loot) {
       this.loot = loot;
+      return this;
+    }
+
+    public Builder addDamageBonus(MobDamageBonusSpec bonus) {
+      if (bonus != null) {
+        this.damageBonuses.add(bonus);
+      }
+      return this;
+    }
+
+    public Builder combatSpec(MobCombatSpec combatSpec) {
+      this.combatSpec = combatSpec;
       return this;
     }
 
@@ -435,11 +542,26 @@ public final class MobSpec {
       return this;
     }
 
+    public Builder collidable(Boolean collidable) {
+      this.collidable = collidable;
+      return this;
+    }
+
     public Builder scaleVariance(double scaleVariance) {
       if (scaleVariance < 0.0) {
         throw new IllegalArgumentException("scaleVariance must be >= 0");
       }
       this.scaleVariance = scaleVariance;
+      return this;
+    }
+
+    public Builder composite(MobCompositeSpec composite) {
+      this.composite = composite;
+      return this;
+    }
+
+    public Builder events(MobEventSpec events) {
+      this.events = events;
       return this;
     }
 

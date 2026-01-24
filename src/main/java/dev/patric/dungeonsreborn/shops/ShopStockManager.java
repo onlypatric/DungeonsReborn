@@ -1,6 +1,7 @@
 package dev.patric.dungeonsreborn.shops;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,10 +16,18 @@ public final class ShopStockManager {
   }
 
   public boolean consume(String shopId, ShopStockSpec spec) {
+    return consume(shopId, -1, null, spec);
+  }
+
+  public boolean consume(String shopId, int tradeIndex, UUID playerId, ShopStockSpec spec) {
     if (shopId == null || spec == null || !spec.enabled()) {
       return true;
     }
-    StockState state = states.computeIfAbsent(shopId, id -> new StockState(shopId, spec));
+    String key = keyFor(shopId, tradeIndex, playerId, spec.scope());
+    if (key == null) {
+      return true;
+    }
+    StockState state = states.computeIfAbsent(key, id -> new StockState(key, spec));
     state.refresh(spec);
     if (state.currentStock <= 0) {
       return false;
@@ -28,12 +37,36 @@ public final class ShopStockManager {
   }
 
   public int currentStock(String shopId, ShopStockSpec spec) {
+    return currentStock(shopId, -1, null, spec);
+  }
+
+  public int currentStock(String shopId, int tradeIndex, UUID playerId, ShopStockSpec spec) {
     if (shopId == null || spec == null || !spec.enabled()) {
       return -1;
     }
-    StockState state = states.computeIfAbsent(shopId, id -> new StockState(shopId, spec));
+    String key = keyFor(shopId, tradeIndex, playerId, spec.scope());
+    if (key == null) {
+      return -1;
+    }
+    StockState state = states.computeIfAbsent(key, id -> new StockState(key, spec));
     state.refresh(spec);
     return state.currentStock;
+  }
+
+  private static String keyFor(String shopId, int tradeIndex, UUID playerId, ShopStockScope scope) {
+    if (scope == null) {
+      scope = ShopStockScope.GLOBAL;
+    }
+    return switch (scope) {
+      case GLOBAL -> shopId;
+      case TRADE -> shopId + "#trade#" + tradeIndex;
+      case PLAYER -> {
+        if (playerId == null) {
+          yield null;
+        }
+        yield shopId + "#player#" + playerId + "#trade#" + tradeIndex;
+      }
+    };
   }
 
   private final class StockState {

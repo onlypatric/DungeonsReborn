@@ -1,0 +1,14 @@
+schemaVersion: 1
+abilities:
+  example_vfx_morph:
+    name: <light_purple>Morph Helix</light_purple>
+    description: <gray>Animated morph + gradient helix.</gray>
+    script:
+      language: dsl-v1
+      source: |-
+        on_cast {
+          particles.morph_ring particle=DUST startRadius=0.6 endRadius=2.8 durationTicks=60 periodTicks=2 points=48 easing=IN_OUT_CUBIC count=1 at=origin
+          repeat times=30 every=4 {
+            particles.gradient_helix particle=DUST radius=1.6 length=4.4 turns=6 points=120 startColor="#7fd4ff" endColor="#ff6a00" count=1 color="#7fd4ff" at=origin
+          }
+        }

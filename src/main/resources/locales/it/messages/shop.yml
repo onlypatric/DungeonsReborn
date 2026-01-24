@@ -1,0 +1,41 @@
+messages.shop.classes.export.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.export.errors: <red>Esportazione classi fallita ({count} errori):</red> <white>{path}</white>
+messages.shop.classes.export.ok: <green>Classi esportate:</green> <white>{count}</white> <gray>su</gray> <white>{path}</white>
+messages.shop.classes.import.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.import.errors: <red>Importazione classi fallita ({count} errori):</red> <white>{path}</white>
+messages.shop.classes.import.missing: <red>Nome file import mancante.</red>
+messages.shop.classes.import.ok: <green>Classi importate:</green> <white>{count}</white> <gray>da</gray> <white>{path}</white>
+  <gray>(caricate {loaded}, errori {errors})</gray>
+messages.shop.classes.missingSpec: <red>Classe selezionata mancante nel YAML.</red>
+messages.shop.classes.selectFirst: <red>Seleziona prima una classe.</red>
+messages.shop.classes.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.shop.classes.validate.errors: '<yellow>Validazione classi: {count} problemi trovati.</yellow>'
+messages.shop.classes.validate.ok: <green>Classi:</green> <white>nessun errore di validazione.</white>
+messages.shop.editor.exists: Messages shop editor exists
+messages.shop.editor.missingId: Messages shop editor missingId
+messages.shop.editor.saveFailed: Messages shop editor saveFailed
+messages.shop.editor.saved: Messages shop editor saved
+messages.shop.itemGiven: <green>Dato oggetto</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>a</green>
+  <white>{player}</white>
+messages.shop.kits.list.entry: <gray>-</gray> <white>{id}</white> <dark_gray>({title})</dark_gray>
+messages.shop.kits.list.header: <gold><bold>DungeonsReborn</bold></gold> <gray>Kit</gray>
+messages.shop.reload.classesSummary: <green>Classi ricaricate:</green> <white>{loaded}</white><gray>, errori:</gray> <white>{errors}</white>
+messages.shop.reload.craftingSummary: <green>Ricette ricaricate:</green> <white>{loaded}</white><gray>, errori:</gray> <white>{errors}</white>
+messages.shop.reload.dir: <gray>Cartella:</gray> <white>{path}</white>
+messages.shop.reload.dungeonsSummary: <green>Dungeon ricaricato:</green> <white>{loaded}</white><gray>, errori:</gray> <white>{errors}</white>
+messages.shop.reload.file: <gray>File:</gray> <white>{path}</white>
+messages.shop.reload.kitsSummary: <green>Kit ricaricati:</green> <white>{loaded}</white><gray>, errori:</gray> <white>{errors}</white>
+messages.shop.reload.questsGiversFile: <gray>File giver:</gray> <white>{path}</white>
+messages.shop.reload.questsSummary: <green>Missioni ricaricate:</green> <white>{loaded}</white><gray>, errori:</gray> <white>{errors}</white><gray>,
+  giver:</gray> <white>{givers}</white><gray>, errori giver:</gray> <white>{giverErrors}</white>
+messages.shop.reload.upgradesSummary: <green>Potenziamenti ricaricati:</green> <white>{loaded}</white><gray>, errori:</gray>
+  <white>{errors}</white><gray>, oggetti migrati:</gray> <white>{migrated}</white>
+messages.shop.result.error: <red>{message}</red>
+messages.shop.result.success: <green>{message}</green>
+messages.shop.systemUnavailable: <red>{system} non disponibile.</red>
+messages.shop.targetNotFound: <red>Giocatore non trovato.</red>
+messages.shop.tokens.added: <green>Stack di gettoni aggiunto.</green>
+messages.shop.tokens.missing: <red>Oggetto gettone non configurato.</red>
+messages.shop.unknownItem: <red>Oggetto sconosciuto:</red> <white>{id}</white>
+messages.shop.unknownUpgrade: <red>Potenziamento sconosciuto:</red> <white>{id}</white>
+messages.shop.upgradeGiven: <green>Potenziamento dato a</green> <white>{player}</white>

@@ -9,5 +9,7 @@ public record MobVariantSpec(
     double healthMultiplier,
     double damageMultiplier,
     double speedMultiplier,
-    double followRangeMultiplier) {
+    double followRangeMultiplier,
+    double scaleMultiplier,
+    Boolean collidable) {
 }

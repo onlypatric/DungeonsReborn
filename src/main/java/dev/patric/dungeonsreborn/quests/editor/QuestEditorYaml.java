@@ -326,6 +326,16 @@ public final class QuestEditorYaml {
         map.put("recipeId", "example_recipe");
         map.put("count", Math.max(1, count));
       }
+      case BREAK_BLOCK -> {
+        map.put("type", "break_block");
+        map.put("material", "STONE");
+        map.put("count", Math.max(1, count));
+      }
+      case PLACE_BLOCK -> {
+        map.put("type", "place_block");
+        map.put("material", "STONE");
+        map.put("count", Math.max(1, count));
+      }
     }
     return map;
   }

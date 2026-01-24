@@ -1,0 +1,12 @@
+messages.effects.cast.cooldown: <yellow>Abilita in ricarica.</yellow>
+messages.effects.cast.cost: <red>Risorse insufficienti.</red>
+messages.effects.cast.invalid: <red>Abilita sconosciuta:</red> <white>{ability}</white>
+messages.effects.cast.ok: <green>Lancio:</green> <white>{ability}</white>
+messages.effects.editor.cannotEdit: Messages effects editor cannotEdit
+messages.effects.editor.dsl.none: None
+messages.effects.editor.locked: Locked
+messages.effects.editor.publish.failure: Failure
+messages.effects.editor.publish.success: Success
+messages.effects.editor.unableOpenDraft: <red>Impossibile aprire la bozza di questa abilita.</red>
+messages.effects.reload.errors: <red>Ricarica effetti con {errors} errori. Controlla i log.</red>
+messages.effects.reload.ok: <green>Effetti caricati:</green> <white>{count}</white>

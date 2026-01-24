@@ -18,6 +18,7 @@ public final class MobSpawnerMarkers {
   public static final NamespacedKey SPAWNER_ID = new NamespacedKey("dungeonsreborn", "mob_spawner_id");
   public static final NamespacedKey SPAWNER_MOB_ID = new NamespacedKey("dungeonsreborn", "mob_spawner_mob_id");
   public static final NamespacedKey SPAWNER_BLOCK_ID = new NamespacedKey("dungeonsreborn", "mob_spawner_block_id");
+  public static final NamespacedKey SPAWNER_OWNER = new NamespacedKey("dungeonsreborn", "mob_spawner_owner");
 
   private MobSpawnerMarkers() {
   }
@@ -60,6 +61,22 @@ public final class MobSpawnerMarkers {
 
   public static void setSpawnerMobId(Block block, String id) {
     setString(block, SPAWNER_MOB_ID, id);
+  }
+
+  public static java.util.UUID getSpawnerOwner(Block block) {
+    String raw = getString(block, SPAWNER_OWNER);
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    try {
+      return java.util.UUID.fromString(raw.trim());
+    } catch (IllegalArgumentException ex) {
+      return null;
+    }
+  }
+
+  public static void setSpawnerOwner(Block block, java.util.UUID ownerId) {
+    setString(block, SPAWNER_OWNER, ownerId == null ? null : ownerId.toString());
   }
 
   private static String getString(ItemStack item, NamespacedKey key) {

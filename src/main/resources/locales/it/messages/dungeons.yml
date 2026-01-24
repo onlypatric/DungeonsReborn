@@ -1,0 +1,48 @@
+messages.dungeons.action.boss: <red>Ondata boss!</red>{affixSuffix}
+messages.dungeons.action.wave: <yellow>Ondata {wave} iniziata</yellow>{affixSuffix}
+messages.dungeons.broadcast.affixes: <gray>Affissi:</gray> <white>{affixes}</white>
+messages.dungeons.broadcast.duration: <gray>Durata:</gray> <white>{seconds}s</white>
+messages.dungeons.broadcast.header: <gold>Rapporto Dungeon</gold> <dark_gray>:</dark_gray> <white>{dungeon}</white>
+messages.dungeons.broadcast.level: <gray>Livello:</gray> <white>{level}</white>
+messages.dungeons.broadcast.players: <gray>Giocatori:</gray> <white>{players}</white>
+messages.dungeons.broadcast.result: <gray>Risultato:</gray> <white>{result}</white>
+messages.dungeons.broadcast.separator: <dark_gray>--------------------------------</dark_gray>
+messages.dungeons.end.lose: <red>Dungeon fallito.</red>
+messages.dungeons.end.summary: <gray>Livello:</gray> <white>{level}</white> <gray>Giocatori:</gray> <white>{players}</white>
+messages.dungeons.end.win: <green>Dungeon completato!</green>
+messages.dungeons.queue.error.alreadyActive: <red>Sei gia in un dungeon attivo.</red>
+messages.dungeons.queue.error.alreadyQueued: <red>Sei gia in coda per il livello {level}.</red>
+messages.dungeons.queue.error.full: <red>La coda e piena per questo livello.</red>
+messages.dungeons.queue.error.invalidLevel: <red>Livello dungeon non valido.</red>
+messages.dungeons.queue.error.mustComplete: <red>Completa prima il livello {level}.</red>
+messages.dungeons.queue.error.notConfigured: <red>Dungeon non configurato.</red>
+messages.dungeons.queue.error.notQueued: <red>Non sei in coda.</red>
+messages.dungeons.queue.error.partyMember: <red>Il membro {player} non puo entrare in coda.</red>
+messages.dungeons.queue.error.playerMissing: <red>Giocatore mancante.</red>
+messages.dungeons.queue.error.worldDisabled: <red>Le code dungeon sono disabilitate in questo mondo.</red>
+messages.dungeons.queue.result.left: <gray>Sei uscito dalla coda.</gray>
+messages.dungeons.queue.result.queued: <green>In coda per il livello dungeon {level}.</green>
+messages.dungeons.queue.status: <gray>Posizione in coda:</gray> <white>{position}</white>
+messages.dungeons.queue.stubStart: <gray>Avvio del dungeon...</gray>
+messages.dungeons.result.defeat: Sconfitta
+messages.dungeons.result.victory: Vittoria
+messages.dungeons.rewards.extraLoot: <gray>Loot extra:</gray> <white>{detail}</white>
+messages.dungeons.rewards.header: <gold><bold>Ricompense del Dungeon</bold></gold>
+messages.dungeons.rewards.skillPoints: <gray>Punti abilita:</gray> <white>{skillPoints}</white>
+messages.dungeons.rewards.tokens: <gray>Gettoni:</gray> <white>{tokens}</white>
+messages.dungeons.session.fail.death: <red>Dungeon fallito (giocatore morto).</red>
+messages.dungeons.session.fail.left: <red>Dungeon fallito (giocatore uscito).</red>
+messages.dungeons.session.fail.time: <red>Dungeon fallito (tempo scaduto).</red>
+messages.dungeons.session.fail.world: <red>Dungeon fallito (fuori dal mondo del dungeon).</red>
+messages.dungeons.session.start: <green>Avvio del dungeon in corso.</green>
+messages.dungeons.titles.boss.subtitle: <gray>Resta all'erta</gray>
+messages.dungeons.titles.boss.title: <red><bold>Boss in arrivo</bold></red>
+messages.dungeons.titles.end.lose: <red><bold>Dungeon fallito</bold></red>
+messages.dungeons.titles.end.subtitle: <gray>Risultato:</gray> <white>{result}</white> <dark_gray>|</dark_gray> <white>{dungeon}</white>
+messages.dungeons.titles.end.win: <green><bold>Dungeon completato</bold></green>
+messages.dungeons.titles.wave.subtitle: <gray>Ondata {wave} di {total}</gray>
+messages.dungeons.titles.wave.subtitlePrepare: <gray>Preparati</gray>
+messages.dungeons.titles.wave.title: <gold><bold>Ondata {wave}</bold></gold>
+messages.dungeons.unavailable: <gray>Dungeons in arrivo...</gray>
+messages.dungeons.wave.boss: <red>Ondata boss!</red>
+messages.dungeons.wave.start: <gold>Ondata {wave}</gold> <gray>iniziata.</gray>

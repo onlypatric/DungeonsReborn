@@ -38,7 +38,7 @@ public final class PrevPageButton extends Button {
     Component pageText = Locales.component(player, "gui.list.page",
         Locales.placeholders("current", window.page() + 1, "total", window.pageCount()));
     if (window.hasPrevious()) {
-      return GuiItems.named(Material.ARROW, titleLabel, List.of(pageText));
+      return GuiItems.head("LEFT", titleLabel, List.of(pageText));
     }
     return GuiItems.named(Material.GRAY_DYE, titleLabel, List.of(pageText, disabledLabel));
   }
