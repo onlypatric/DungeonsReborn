@@ -1,0 +1,34 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_ancient_14:
+    name: Ability Upgrade Lowlands Ancient 14
+    costs:
+      -
+        type: mana
+        amount: 15.2
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: HAPPY_VILLAGER
+          radius: 3.4250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 22
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 23.9
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

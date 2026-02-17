@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_nightbark_03:
+    name: Ability Upgrade Dark Oak Nightbark 03
+    costs:
+      -
+        type: mana
+        amount: 11.6
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: ENCHANT
+          radius: 2.9250000000000003
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 16
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 14.45
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

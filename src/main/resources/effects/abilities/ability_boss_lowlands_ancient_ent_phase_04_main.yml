@@ -1,0 +1,91 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_ancient_ent_phase_04_main:
+    name: Ability Boss Lowlands Ancient Ent Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_physics_points
+          particle: GLOW
+          points:
+            -
+              x: 6.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.31
+              y: 0.0
+              z: 5.73
+            -
+              x: -3.31
+              y: 0.0
+              z: -5.73
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: OMINOUS_SPAWNING
+          points:
+            -
+              x: 5.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.81
+              y: 0.0
+              z: 4.87
+            -
+              x: -2.81
+              y: 0.0
+              z: -4.87
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: GLOW
+          points:
+            -
+              x: 6.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.31
+              y: 0.0
+              z: 5.73
+            -
+              x: -3.31
+              y: 0.0
+              z: -5.73
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: OMINOUS_SPAWNING
+          points:
+            -
+              x: 5.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.81
+              y: 0.0
+              z: 4.87
+            -
+              x: -2.81
+              y: 0.0
+              z: -4.87
+          up: -1.0
+        -
+          type: damage
+          amount: 8.0
+          radius: 6.3
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 6.3

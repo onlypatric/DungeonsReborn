@@ -1,0 +1,25 @@
+quests:
+  quest_desert_boss_059:
+    name: "Desert Slayer's Oath XII"
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_desert_boss_relic_colossus
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 320
+    rewards:
+      xp: 120
+      tokens: 8
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_upgrade_core_01
+        -
+          id: item_desert_material_relic_03
+          amount: 2

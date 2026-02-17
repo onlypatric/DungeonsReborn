@@ -1,0 +1,26 @@
+name: <red><bold>Nether Brimstone</bold></red> <gray>XII</gray>
+description: <gray>Sulfurous wrath lingers on your strikes.</gray> <gray>Boosts Damage Mult by 1.30.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_brimstone_12
+  activator: LEFT_CLICK
+requirements:
+  level: 379
+modifiers:
+  -
+    type: damage_mult
+    value: 1.303
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: lure
+    level: 1
+allowUnsafe: true

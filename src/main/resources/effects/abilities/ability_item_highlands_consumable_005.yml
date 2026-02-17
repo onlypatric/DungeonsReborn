@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_highlands_consumable_005:
+    name: Ability Item Highlands Consumable 005
+    cooldown:
+      ticks: 130
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FIREFLY
+          type: particles_points
+          points:
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.02
+            -
+              x: 0.39
+              y: 0.0
+              z: -0.14
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.3
+          up: -1.0
+        -
+          particle: FIREWORK
+          type: particles_points
+          points:
+            -
+              x: -0.04
+              y: 0.0
+              z: -0.02
+            -
+              x: 0.14
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          particle: FISHING
+          type: particles_points
+          points:
+            -
+              x: 0.05
+              y: 0.0
+              z: 0.32
+            -
+              x: -0.15
+              y: 0.0
+              z: 0.02
+            -
+              x: 0.02
+              y: 0.0
+              z: -0.39
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 16.5
+            policy: any

@@ -1,0 +1,22 @@
+quests:
+  quest_nether_gather_037:
+    name: Nether Foraging II
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_nether_material_inferno_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 330
+    rewards:
+      xp: 90
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_consumable_025

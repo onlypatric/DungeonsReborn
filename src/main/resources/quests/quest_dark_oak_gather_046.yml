@@ -1,0 +1,22 @@
+quests:
+  quest_dark_oak_gather_046:
+    name: Dark Oak Foraging XI
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_dark_oak_material_shadow_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 659
+    rewards:
+      xp: 110
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_consumable_041

@@ -1,0 +1,26 @@
+name: <green><bold>Plains Farmhand</bold></green> <gray>IV</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Loot Mult by 0.97.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_farmhand_04
+  activator: SHIFT_RIGHT
+requirements:
+  level: 17
+modifiers:
+  -
+    type: loot_mult
+    value: 0.967
+  -
+    type: duration_mult
+    value: 1.014
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: power
+    level: 2
+allowUnsafe: true

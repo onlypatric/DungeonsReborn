@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <green><bold>Stoneheart Shard</bold></green> <gray>IV</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Plains wilds.</gray>
+  meta:
+    skull:
+      head: REQ_10_YEAR_CAKE
+gui:
+  head: ICON_ITEMS

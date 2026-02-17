@@ -1,0 +1,23 @@
+quests:
+  quest_plains_kill_014:
+    name: Plains Culling III
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_plains_meadow_fauna_14
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 15
+    rewards:
+      xp: 40
+      tokens: 1
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_plains_material_earth_02
+          amount: 2

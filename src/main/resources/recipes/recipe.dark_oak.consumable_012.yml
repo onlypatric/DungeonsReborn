@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: recipe_dark_oak_consumable_012
+name: Dark_Oak Consumable 12
+costs:
+  -
+    type: tokens
+    amount: 3
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: DARK_OAK_LOG
+        amount: 2
+      -
+        material: BONE
+      -
+        material: SPIDER_EYE
+outputs:
+  -
+    item: item_dark_oak_consumable_012

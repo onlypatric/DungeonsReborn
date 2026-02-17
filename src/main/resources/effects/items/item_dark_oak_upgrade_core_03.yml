@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua>Dark Oak Core III</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+  meta:
+    skull:
+      head: REQ_SOLID_MUSHROOM_BLOCK_HOT_PINK_2
+gui:
+  head: ICON_ITEMS

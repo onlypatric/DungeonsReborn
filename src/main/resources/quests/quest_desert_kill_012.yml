@@ -1,0 +1,23 @@
+quests:
+  quest_desert_kill_012:
+    name: Wrath of Desert I
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_desert_dune_beasts_12
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 149
+    rewards:
+      xp: 60
+      tokens: 2
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_fire_01
+          amount: 3

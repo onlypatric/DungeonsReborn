@@ -1,0 +1,14 @@
+schemaVersion: 1
+mobs:
+  mob_trial_lowlands_ominous_brute:
+    type: WITHER_SKELETON
+    name: <red>Ominous Lowlands Brute</red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1326.08
+      ATTACK_DAMAGE: 37.16
+      MOVEMENT_SPEED: 0.26
+      ARMOR: 3.02
+      ATTACK_SPEED: 1.159

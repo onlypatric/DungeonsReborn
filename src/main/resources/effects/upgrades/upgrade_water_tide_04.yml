@@ -1,0 +1,26 @@
+name: <aqua><bold>Water Tide</bold></aqua> <gray>IV</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Mana Mult by 0.82.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_water_tide_04
+  activator: PASSIVE
+requirements:
+  level: 149
+modifiers:
+  -
+    type: mana_mult
+    value: 0.819
+  -
+    type: duration_add
+    value: 0.484
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: luck_of_the_sea
+    level: 1
+allowUnsafe: true

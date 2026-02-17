@@ -35,8 +35,7 @@ public final class ChatCommand {
     }
     PartyService.Result result = parties.sendChat(player, message);
     if (!result.success()) {
-      CommandMessages.send(sender, "messages.command.result.error",
-          Locales.placeholders("message", result.message()));
+      CommandMessages.sendResult(sender, false, result.message());
     }
     return Command.SINGLE_SUCCESS;
   }

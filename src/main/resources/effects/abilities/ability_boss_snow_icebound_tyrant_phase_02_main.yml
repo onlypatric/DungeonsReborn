@@ -1,0 +1,69 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_icebound_tyrant_phase_02_main:
+    name: Ability Boss Snow Icebound Tyrant Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_physics
+          particle: SMOKE
+          count: 2
+          up: -1.0
+        -
+          type: particles_helix
+          particle: WAX_OFF
+          radius: 7.825440000000001
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: SMOKE
+          length: 11.406400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: WAX_OFF
+          length: 10.42528
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CRIT
+          points:
+            -
+              x: 8.4
+              y: 0.0
+              z: 0.0
+            -
+              x: -4.2
+              y: 0.0
+              z: 7.27
+            -
+              x: -4.2
+              y: 0.0
+              z: -7.27
+          up: -1.0
+        -
+          type: damage
+          amount: 8.2
+          radius: 6.4
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 6.4
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 7.2
+          points: 18

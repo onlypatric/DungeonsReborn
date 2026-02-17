@@ -1,0 +1,81 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_brimstone_titan_phase_01_aura:
+    name: Ability Boss Nether Brimstone Titan Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: LAVA
+          radius: 4.384799999999999
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: POOF
+          radius: 3.9082575
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: LAVA
+          radius: 4.59795
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: POOF
+          radius: 4.089435
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: LAVA
+          points:
+            -
+              x: 3.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.64
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.64
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: POOF
+          points:
+            -
+              x: 2.59
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.29
+              y: 0.0
+              z: 2.24
+            -
+              x: -1.29
+              y: 0.0
+              z: -2.24
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 2.9
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 2.9
+        -
+          particle: LAVA
+          type: preset_shockwave
+          radius: 3.7
+          points: 18

@@ -1,0 +1,25 @@
+item:
+  type: material
+  material: COOKED_SALMON
+  display:
+    name: <white><bold>Glacierheart Tonic V</bold></white>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Flares with raw elemental force.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Regeneration 1 for 11s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>9s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Snow</gray>
+  meta:
+    components:
+      use_cooldown:
+        seconds: 9.9
+bindings:
+  -
+    ability: ability_item_snow_consumable_052
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

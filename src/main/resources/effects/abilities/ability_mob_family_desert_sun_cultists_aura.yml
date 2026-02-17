@@ -1,0 +1,62 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_sun_cultists_aura:
+    name: Desert Sun_Cultists
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: LAVA
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: SCULK_CHARGE_POP
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: LAVA
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.54
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.54
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SCULK_CHARGE_POP
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 2.35
+        -
+          type: damage_over_time
+          amount: 0.6
+          durationTicks: 40
+          radius: 2.35

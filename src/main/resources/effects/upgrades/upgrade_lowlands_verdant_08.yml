@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>VIII</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 1.26.</gray> <gray>Grants Generic Max Health +2.08.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_08
+  activator: LEFT_CLICK
+requirements:
+  level: 2277
+modifiers:
+  -
+    type: duration_add
+    value: 1.256
+  -
+    type: damage_add
+    value: 0.441
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 2.084
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: infinity
+    level: 3
+  -
+    enchant: luck_of_the_sea
+    level: 3
+allowUnsafe: true

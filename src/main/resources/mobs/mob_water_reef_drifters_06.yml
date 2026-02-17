@@ -1,0 +1,26 @@
+schemaVersion: 1
+mobs:
+  mob_water_reef_drifters_06:
+    type: PUFFERFISH
+    name: <green>Water Pufferfish Watcher</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 22.8
+      ATTACK_DAMAGE: 0.0
+      scaleVariance: 0.9
+    passives:
+      -
+        ability: ability_mob_family_water_reef_drifters_aura
+        periodTicks: 80
+      -
+        ability: ability_mob_family_water_reef_drifters_panic
+        periodTicks: 140
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_water_reef_drifters_passive
+    xpGating:
+      minLevel: 121

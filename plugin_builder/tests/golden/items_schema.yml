@@ -1,0 +1,11 @@
+items:
+  schema_item:
+    item:
+      type: material
+      material: STONE
+      display:
+        name: <gray>Schema Item</gray>
+        description: <gray>Example item schema.</gray>
+    bindings:
+    - ability: schema_ability
+      click: RIGHT_CLICK

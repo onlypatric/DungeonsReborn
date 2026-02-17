@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <gold><bold>Desert Sigil</bold></gold> <gray>VI</gray>
+    lore:
+      - <gold>Keystone</gold> <dark_gray>❯</dark_gray> <gray>Focuses crafted power.</gray>
+gui:
+  head: ICON_ITEMS

@@ -1,0 +1,23 @@
+quests:
+  quest_swamp_kill_015:
+    name: Wrath of Swamp IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_swamp_bog_stalkers_02
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 990
+    rewards:
+      xp: 120
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_swamp_material_venom_02
+          amount: 2

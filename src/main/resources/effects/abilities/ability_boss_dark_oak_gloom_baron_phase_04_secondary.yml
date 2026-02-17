@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_gloom_baron_phase_04_secondary:
+    name: Ability Boss Dark Oak Gloom Baron Phase 04 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_cylinder
+          particle: DRAGON_BREATH
+          radius: 6.9678
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: SMOKE
+          radius: 4.87305
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: DRAGON_BREATH
+          radius: 5.7330000000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: SMOKE
+          radius: 5.135445000000001
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 140
+          amplifier: 2
+          radius: 4.2
+        -
+          type: damage_over_time
+          amount: 0.97
+          durationTicks: 108
+          radius: 4.2

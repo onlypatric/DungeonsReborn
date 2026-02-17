@@ -1,0 +1,154 @@
+schemaVersion: 1
+mobs:
+  mob_highlands_boss_sky_wyrm:
+    type: ENDER_DRAGON
+    name: <red><bold>Highlands Sky Wyrm</bold></red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1024.0
+      ATTACK_DAMAGE: 10.5
+      scaleVariance: 1.3
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_highlands_boss
+    resistances:
+      PHYSICAL: 0.512
+      MAGIC: 0.512
+      FIRE: 0.512
+      ICE: 0.512
+      LIGHTNING: 0.512
+      POISON: 0.512
+      WITHER: 0.512
+      BLEED: 0.512
+      HOLY: 0.512
+      ARCANE: 0.512
+      VOID: 0.512
+      EXPLOSION: 0.512
+      PROJECTILE: 0.512
+    xpGating:
+      minLevel: 2100
+    phases:
+      -
+        id: highlands_sky_wyrm_phase_1
+        healthBelow: 0.8
+        attacks:
+          main:
+            ability: ability_boss_highlands_sky_wyrm_phase_01_main
+            trigger: MELEE
+            cooldownTicks: 65
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_highlands_sky_wyrm_phase_01_secondary
+            trigger: MELEE
+            cooldownTicks: 97
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_highlands_sky_wyrm_phase_01_aura
+            periodTicks: 40
+      -
+        id: highlands_sky_wyrm_phase_2
+        healthBelow: 0.6
+        attacks:
+          main:
+            ability: ability_boss_highlands_sky_wyrm_phase_02_main
+            trigger: MELEE
+            cooldownTicks: 70
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_highlands_sky_wyrm_phase_02_secondary
+            trigger: MELEE
+            cooldownTicks: 104
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_highlands_sky_wyrm_phase_02_aura
+            periodTicks: 40
+      -
+        id: highlands_sky_wyrm_phase_3
+        healthBelow: 0.4
+        attacks:
+          main:
+            ability: ability_boss_highlands_sky_wyrm_phase_03_main
+            trigger: MELEE
+            cooldownTicks: 75
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_highlands_sky_wyrm_phase_03_secondary
+            trigger: MELEE
+            cooldownTicks: 111
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_highlands_sky_wyrm_phase_03_aura
+            periodTicks: 40
+      -
+        id: highlands_sky_wyrm_phase_4
+        healthBelow: 0.2
+        attacks:
+          main:
+            ability: ability_boss_highlands_sky_wyrm_phase_04_main
+            trigger: MELEE
+            cooldownTicks: 80
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_highlands_sky_wyrm_phase_04_secondary
+            trigger: MELEE
+            cooldownTicks: 118
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_highlands_sky_wyrm_phase_04_aura
+            periodTicks: 40

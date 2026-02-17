@@ -19,6 +19,10 @@ public final class MobSpawnerMarkers {
   public static final NamespacedKey SPAWNER_MOB_ID = new NamespacedKey("dungeonsreborn", "mob_spawner_mob_id");
   public static final NamespacedKey SPAWNER_BLOCK_ID = new NamespacedKey("dungeonsreborn", "mob_spawner_block_id");
   public static final NamespacedKey SPAWNER_OWNER = new NamespacedKey("dungeonsreborn", "mob_spawner_owner");
+  public static final NamespacedKey TRIAL_SPAWNER_ID = new NamespacedKey("dungeonsreborn", "trial_spawner_id");
+  public static final NamespacedKey TRIAL_SPAWNER_OWNER = new NamespacedKey("dungeonsreborn", "trial_spawner_owner");
+  public static final NamespacedKey VAULT_ID = new NamespacedKey("dungeonsreborn", "vault_id");
+  public static final NamespacedKey VAULT_OWNER = new NamespacedKey("dungeonsreborn", "vault_owner");
 
   private MobSpawnerMarkers() {
   }
@@ -37,6 +41,22 @@ public final class MobSpawnerMarkers {
 
   public static ItemStack setSpawnerMobId(ItemStack item, String id) {
     return setString(item, SPAWNER_MOB_ID, id);
+  }
+
+  public static String getTrialSpawnerId(ItemStack item) {
+    return getString(item, TRIAL_SPAWNER_ID);
+  }
+
+  public static ItemStack setTrialSpawnerId(ItemStack item, String id) {
+    return setString(item, TRIAL_SPAWNER_ID, id);
+  }
+
+  public static String getVaultId(ItemStack item) {
+    return getString(item, VAULT_ID);
+  }
+
+  public static ItemStack setVaultId(ItemStack item, String id) {
+    return setString(item, VAULT_ID, id);
   }
 
   public static String getSpawnerBlockId(ItemStack item) {
@@ -63,6 +83,22 @@ public final class MobSpawnerMarkers {
     setString(block, SPAWNER_MOB_ID, id);
   }
 
+  public static String getTrialSpawnerId(Block block) {
+    return getString(block, TRIAL_SPAWNER_ID);
+  }
+
+  public static void setTrialSpawnerId(Block block, String id) {
+    setString(block, TRIAL_SPAWNER_ID, id);
+  }
+
+  public static String getVaultId(Block block) {
+    return getString(block, VAULT_ID);
+  }
+
+  public static void setVaultId(Block block, String id) {
+    setString(block, VAULT_ID, id);
+  }
+
   public static java.util.UUID getSpawnerOwner(Block block) {
     String raw = getString(block, SPAWNER_OWNER);
     if (raw == null || raw.isBlank()) {
@@ -77,6 +113,38 @@ public final class MobSpawnerMarkers {
 
   public static void setSpawnerOwner(Block block, java.util.UUID ownerId) {
     setString(block, SPAWNER_OWNER, ownerId == null ? null : ownerId.toString());
+  }
+
+  public static java.util.UUID getTrialSpawnerOwner(Block block) {
+    String raw = getString(block, TRIAL_SPAWNER_OWNER);
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    try {
+      return java.util.UUID.fromString(raw.trim());
+    } catch (IllegalArgumentException ex) {
+      return null;
+    }
+  }
+
+  public static void setTrialSpawnerOwner(Block block, java.util.UUID ownerId) {
+    setString(block, TRIAL_SPAWNER_OWNER, ownerId == null ? null : ownerId.toString());
+  }
+
+  public static java.util.UUID getVaultOwner(Block block) {
+    String raw = getString(block, VAULT_OWNER);
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    try {
+      return java.util.UUID.fromString(raw.trim());
+    } catch (IllegalArgumentException ex) {
+      return null;
+    }
+  }
+
+  public static void setVaultOwner(Block block, java.util.UUID ownerId) {
+    setString(block, VAULT_OWNER, ownerId == null ? null : ownerId.toString());
   }
 
   private static String getString(ItemStack item, NamespacedKey key) {

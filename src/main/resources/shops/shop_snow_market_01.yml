@@ -1,0 +1,486 @@
+shops:
+  shop_snow_market_01:
+    title: Snow Market 1
+    trades:
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_001
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_002
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_003
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_004
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_005
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_006
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_007
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_008
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 25
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_009
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_010
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_011
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_012
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_013
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_014
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_015
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_016
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_017
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_018
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_019
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_020
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_021
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_022
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_023
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_024
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_025
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_026
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_027
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_028
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_029
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_030
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_031
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_032
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_033
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 25
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_034
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_035
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_036
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_037
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_038
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 25
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_039
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_040
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 25
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_041
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_042
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_043
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_044
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_045
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_046
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_047
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_048
+    gui:
+      head: ICON_SHOPS

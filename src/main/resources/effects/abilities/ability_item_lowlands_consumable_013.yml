@@ -1,0 +1,52 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_013:
+    name: Ability Item Lowlands Consumable 013
+    cooldown:
+      ticks: 184
+    action:
+      type: sequence
+      actions:
+        -
+          particle: VIBRATION
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+          type: particles_points
+          points:
+            -
+              x: -0.13
+              y: 0.0
+              z: -0.35
+            -
+              x: -0.1
+              y: 0.0
+              z: 0.04
+          up: -1.0
+        -
+          particle: WARPED_SPORE
+          type: particles_points
+          points:
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.29
+            -
+              x: 0.1
+              y: 0.0
+              z: 0.09
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: regeneration
+            durationTicks: 200
+            amplifier: 0

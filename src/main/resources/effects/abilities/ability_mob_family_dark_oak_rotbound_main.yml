@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_dark_oak_rotbound_main:
+    name: Dark_Oak Rotbound Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: LARGE_SMOKE
+          count: 2
+          up: -1.0
+        -
+          type: damage
+          amount: 8.26
+          radius: 2.97
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 70
+          amplifier: 0
+          radius: 2.8

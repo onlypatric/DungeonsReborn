@@ -1,0 +1,30 @@
+name: <dark_purple><bold>Dark Oak Nightbark</bold></dark_purple> <gray>IV</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Grants Generic Max Health +0.09.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_nightbark_04
+  activator: LEFT_CLICK
+requirements:
+  level: 714
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_SCALAR
+    amount: 0.088
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.069
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: frost_walker
+    level: 2
+allowUnsafe: true

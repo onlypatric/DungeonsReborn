@@ -1,0 +1,59 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_dune_mother_phase_03_aura:
+    name: Ability Boss Desert Dune Mother Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: TRIAL_OMEN
+          radius: 3.822
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: CRIT
+          radius: 3.4236300000000006
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: SMOKE
+          points:
+            -
+              x: 3.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.54
+              y: 0.0
+              z: 2.67
+            -
+              x: -1.54
+              y: 0.0
+              z: -2.67
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: TRIAL_OMEN
+          radius: 4.0278
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: CRIT
+          radius: 3.59856
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.75
+          durationTicks: 40
+          radius: 2.8
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 2.8

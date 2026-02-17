@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_plains_meadow_fauna_aura:
+    name: Plains Meadow_Fauna
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: ELDER_GUARDIAN
+          radius: 3.58625
+          points: 1
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: HAPPY_VILLAGER
+          radius: 3.189625
+          points: 3
+          up: -1.0
+        -
+          particle: HAPPY_VILLAGER
+          type: preset_swirl
+          radius: 1.9
+          points: 3
+          up: -2.0

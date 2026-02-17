@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_ancient_06:
+    name: Ability Upgrade Lowlands Ancient 06
+    costs:
+      -
+        type: mana
+        amount: 17.2
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: CLOUD
+          points:
+            -
+              x: 2.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.37
+              y: 0.0
+              z: 2.38
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.38
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.0
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 11.56

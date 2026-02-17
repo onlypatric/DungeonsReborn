@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_mirage_11:
+    name: Ability Upgrade Desert Mirage 11
+    costs:
+      -
+        type: mana
+        amount: 15.6
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_points
+          particle: SONIC_BOOM
+          points:
+            -
+              x: 3.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.5
+              y: 0.0
+              z: 2.6
+            -
+              x: -1.5
+              y: 0.0
+              z: -2.6
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 1.75
+            times: 4
+            periodTicks: 10

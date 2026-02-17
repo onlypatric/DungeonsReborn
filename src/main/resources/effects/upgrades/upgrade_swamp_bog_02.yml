@@ -1,0 +1,29 @@
+name: <dark_green><bold>Swamp Bog</bold></dark_green> <gray>II</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Duration Mult by 1.12.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_swamp_bog_02
+  activator: LEFT_CLICK
+requirements:
+  level: 965
+modifiers:
+  -
+    type: duration_mult
+    value: 1.117
+  -
+    type: cooldown_mult
+    value: 0.926
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: riptide
+    level: 2
+  -
+    enchant: smite
+    level: 2
+allowUnsafe: true

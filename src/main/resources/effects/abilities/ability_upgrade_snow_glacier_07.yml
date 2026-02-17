@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_07:
+    name: Ability Upgrade Snow Glacier 07
+    costs:
+      -
+        type: mana
+        amount: 16.4
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: BLOCK
+          radius: 5.935
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+          data:
+            material: STONE
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 27.55

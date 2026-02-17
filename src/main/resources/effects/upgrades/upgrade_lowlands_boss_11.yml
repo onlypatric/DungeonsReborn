@@ -1,0 +1,59 @@
+name: <dark_green><bold>Lowlands Boss</bold></dark_green> <gray>XI</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.23.</gray> <gray>Grants Generic Max Health +11.78.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_boss_11
+  activator: LEFT_CLICK
+requirements:
+  level: 3200
+modifiers:
+  -
+    type: damage_mult
+    value: 1.225
+  -
+    type: cooldown_mult
+    value: 0.917
+  -
+    type: radius_add
+    value: 3.768
+  -
+    type: duration_mult
+    value: 1.125
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 11.777
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.133
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.2
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.095
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: frost_walker
+    level: 3
+  -
+    enchant: looting
+    level: 3
+  -
+    enchant: multishot
+    level: 3
+allowUnsafe: true

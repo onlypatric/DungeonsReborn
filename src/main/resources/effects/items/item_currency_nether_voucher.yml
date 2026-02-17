@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <red><bold>Nether Voucher</bold></red>
+    lore:
+      - <gold>Redeem</gold> <dark_gray>❯</dark_gray> <gray>Exchange for biome‑bound wonders.</gray>
+  meta:
+    skull:
+      head: REQ_REDSTONE_BLOCK
+gui:
+  head: ICON_ITEMS

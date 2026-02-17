@@ -1,0 +1,26 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_hearth_08:
+    name: Ability Upgrade Plains Hearth 08
+    costs:
+      -
+        type: mana
+        amount: 8.0
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: LARGE_SMOKE
+          length: 5.625
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 10
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 6.0

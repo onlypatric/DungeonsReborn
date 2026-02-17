@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_120:
+    name: Wrath of Snow I
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_snow_glacier_raiders_30
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3525
+    rewards:
+      xp: 180
+      tokens: 13
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_whiteout_04
+          amount: 4

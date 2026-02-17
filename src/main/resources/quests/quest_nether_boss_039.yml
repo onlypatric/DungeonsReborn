@@ -1,0 +1,25 @@
+quests:
+  quest_nether_boss_039:
+    name: Nether Ascendance IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_nether_boss_infernal_warden
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 644
+    rewards:
+      xp: 140
+      tokens: 16
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_upgrade_core_06
+        -
+          id: item_nether_material_inferno_02
+          amount: 3

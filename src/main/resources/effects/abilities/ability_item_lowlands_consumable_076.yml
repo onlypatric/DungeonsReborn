@@ -1,0 +1,66 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_076:
+    name: Ability Item Lowlands Consumable 076
+    cooldown:
+      ticks: 204
+    action:
+      type: sequence
+      actions:
+        -
+          particle: ENTITY_EFFECT
+          type: particles_points
+          points:
+            -
+              x: -0.07
+              y: 0.0
+              z: -0.05
+            -
+              x: -0.11
+              y: 0.0
+              z: 0.11
+            -
+              x: -0.16
+              y: 0.0
+              z: -0.29
+          up: -1.0
+        -
+          particle: EXPLOSION
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.48
+            -
+              x: -0.37
+              y: 0.0
+              z: 0.27
+          up: -1.0
+        -
+          particle: EXPLOSION_EMITTER
+          type: particles_points
+          points:
+            -
+              x: 0.37
+              y: 0.0
+              z: -0.29
+            -
+              x: 0.44
+              y: 0.0
+              z: -0.11
+            -
+              x: -0.39
+              y: 0.0
+              z: -0.17
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: strength
+            durationTicks: 143
+            amplifier: 1

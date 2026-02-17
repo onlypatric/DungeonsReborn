@@ -1,0 +1,32 @@
+name: <gray><bold>Highlands Gale</bold></gray> <gray>III</gray>
+description: <gray>Tempests lift your speed and aim.</gray> <gray>Boosts Duration Add by 0.44.</gray> <gray>Grants Generic Movement Speed +0.07.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_gale_03
+  activator: SHIFT_RIGHT
+requirements:
+  level: 1520
+modifiers:
+  -
+    type: duration_add
+    value: 0.44
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.075
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: impaling
+    level: 2
+  -
+    enchant: luck_of_the_sea
+    level: 2
+allowUnsafe: true

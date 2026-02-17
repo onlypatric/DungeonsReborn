@@ -1,0 +1,38 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>XII</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 0.59.</gray> <gray>Grants Generic Max Health +2.73.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_12
+  activator: PASSIVE
+requirements:
+  level: 2299
+modifiers:
+  -
+    type: duration_add
+    value: 0.589
+  -
+    type: damage_add
+    value: 0.397
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 2.727
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: luck_of_the_sea
+    level: 3
+  -
+    enchant: punch
+    level: 3
+allowUnsafe: true

@@ -1,0 +1,33 @@
+name: <gold><bold>Desert Dune</bold></gold> <gray>XXI</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Grants Generic Armor +0.06.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_desert_dune_21
+  activator: RIGHT_CLICK
+requirements:
+  level: 145
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.059
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: -0.001
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: knockback
+    level: 1
+allowUnsafe: true

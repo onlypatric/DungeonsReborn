@@ -1,0 +1,22 @@
+quests:
+  quest_lowlands_gather_037:
+    name: Lowlands Foraging II
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_lowlands_material_wild_04
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2134
+    rewards:
+      xp: 170
+      tokens: 8
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_lowlands_consumable_076

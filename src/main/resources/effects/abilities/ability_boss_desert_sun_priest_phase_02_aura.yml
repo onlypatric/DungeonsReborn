@@ -1,0 +1,81 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sun_priest_phase_02_aura:
+    name: Ability Boss Desert Sun Priest Phase 02 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          radius: 3.883950000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: EGG_CRACK
+          radius: 3.4700400000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          radius: 4.082400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: EGG_CRACK
+          radius: 3.6387225000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          points:
+            -
+              x: 2.84
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.42
+              y: 0.0
+              z: 2.46
+            -
+              x: -1.42
+              y: 0.0
+              z: -2.46
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: EGG_CRACK
+          points:
+            -
+              x: 2.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.2
+              y: 0.0
+              z: 2.09
+            -
+              x: -1.2
+              y: 0.0
+              z: -2.09
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.75
+          durationTicks: 40
+          radius: 2.7
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 46
+          amplifier: 0
+          radius: 2.7
+        -
+          particle: FLAME
+          type: preset_shockwave
+          radius: 3.5
+          points: 18

@@ -1,0 +1,57 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_brine_hunters_aura:
+    name: Water Brine_Hunters
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: ENCHANT
+          count: 4
+          up: -1.0
+        -
+          type: particles_point
+          particle: LARGE_SMOKE
+          count: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: ENCHANT
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.54
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.54
+          up: -1.0
+        -
+          type: particles_points
+          particle: LARGE_SMOKE
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.35

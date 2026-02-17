@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_051:
+    name: Wrath of Snow IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_snow_frost_fauna_51
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3507
+    rewards:
+      xp: 180
+      tokens: 13
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_glacier_02
+          amount: 3

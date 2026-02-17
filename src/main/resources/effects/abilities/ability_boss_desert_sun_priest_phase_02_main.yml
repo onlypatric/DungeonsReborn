@@ -1,0 +1,142 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sun_priest_phase_02_main:
+    name: Ability Boss Desert Sun Priest Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_polygon
+          particle: DUST_COLOR_TRANSITION
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+          data:
+            color: "#b8918d"
+            toColor: "#a52446"
+            size: 1.4
+        -
+          type: particles_polygon
+          particle: WHITE_SMOKE
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: DUST_COLOR_TRANSITION
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+          data:
+            color: "#ddec9e"
+            toColor: "#ca7f57"
+            size: 1.6
+        -
+          type: particles_polyline
+          particle: WHITE_SMOKE
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: DUST_COLOR_TRANSITION
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+          data:
+            color: "#0247af"
+            toColor: "#efda68"
+            size: 1.2
+        -
+          type: particles_physics_points
+          particle: WHITE_SMOKE
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          up: -1.0
+        -
+          type: damage
+          amount: 3.4
+          radius: 3.4
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 3.4
+        -
+          particle: FLAME
+          type: preset_shockwave
+          radius: 4.2
+          points: 18

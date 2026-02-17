@@ -1,0 +1,121 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_whiteout_oracle_phase_04_aura:
+    name: Ability Boss Snow Whiteout Oracle Phase 04 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: BUBBLE
+          width: 12.831000000000001
+          height: 2.2
+          depth: 12.831000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: SNOWFLAKE
+          width: 11.493615
+          height: 2.2
+          depth: 11.493615
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: DRIPPING_DRIPSTONE_LAVA
+          points:
+            -
+              x: 5.68
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.84
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_cone
+          particle: BUBBLE
+          radius: 7.560950000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: SNOWFLAKE
+          radius: 6.840439999999999
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_physics_polyline
+          particle: DRIPPING_DRIPSTONE_LAVA
+          points:
+            -
+              x: 5.68
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.84
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: BUBBLE
+          points:
+            -
+              x: 4.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.47
+              y: 0.0
+              z: 4.27
+            -
+              x: -2.47
+              y: 0.0
+              z: -4.27
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SNOWFLAKE
+          points:
+            -
+              x: 4.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.1
+              y: 0.0
+              z: 3.63
+            -
+              x: -2.1
+              y: 0.0
+              z: -3.63
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.65
+          durationTicks: 40
+          radius: 4.7
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 62
+          amplifier: 0
+          radius: 4.7
+        -
+          particle: SNOWFLAKE
+          type: preset_shockwave
+          radius: 5.5
+          points: 18

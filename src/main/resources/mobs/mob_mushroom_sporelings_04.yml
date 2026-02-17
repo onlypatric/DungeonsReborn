@@ -1,0 +1,26 @@
+schemaVersion: 1
+mobs:
+  mob_mushroom_sporelings_04:
+    type: SLIME
+    name: <green>Mushroom Slime Wildling</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 46.2
+      ATTACK_DAMAGE: 0.0
+      scaleVariance: 0.9
+    passives:
+      -
+        ability: ability_mob_family_mushroom_sporelings_aura
+        periodTicks: 80
+      -
+        ability: ability_mob_family_mushroom_sporelings_panic
+        periodTicks: 140
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_mushroom_sporelings_passive
+    xpGating:
+      minLevel: 915

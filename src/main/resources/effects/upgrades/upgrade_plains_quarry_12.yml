@@ -1,0 +1,26 @@
+name: <green><bold>Plains Quarry</bold></green> <gray>XII</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Damage Mult by 1.22.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_quarry_12
+  activator: LEFT_CLICK
+requirements:
+  level: 21
+modifiers:
+  -
+    type: damage_mult
+    value: 1.215
+  -
+    type: damage_add
+    value: 0.522
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: sharpness
+    level: 2
+allowUnsafe: true

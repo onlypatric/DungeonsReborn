@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <dark_purple><bold>Dark Oak Voucher</bold></dark_purple>
+    lore:
+      - <gold>Redeem</gold> <dark_gray>❯</dark_gray> <gray>Exchange for biome‑bound wonders.</gray>
+  meta:
+    skull:
+      head: REQ_X_LOGO
+gui:
+  head: ICON_ITEMS

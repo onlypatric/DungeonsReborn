@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Water Voucher</bold></aqua>
+    lore:
+      - <gold>Redeem</gold> <dark_gray>❯</dark_gray> <gray>Exchange for biome‑bound wonders.</gray>
+  meta:
+    skull:
+      head: REQ_OAK_PLANKS
+gui:
+  head: ICON_ITEMS

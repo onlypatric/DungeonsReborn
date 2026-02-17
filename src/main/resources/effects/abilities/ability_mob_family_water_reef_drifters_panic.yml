@@ -1,0 +1,34 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_reef_drifters_panic:
+    name: Water Reef_Drifters Panic
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_points
+          particle: FALLING_SPORE_BLOSSOM
+          points:
+            -
+              x: 2.31
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.16
+              y: 0.0
+              z: 2.0
+            -
+              x: -1.16
+              y: 0.0
+              z: -2.0
+          up: -1.0
+        -
+          type: potion
+          effect: SPEED
+          durationTicks: 60
+          amplifier: 0
+        -
+          type: potion
+          effect: "minecraft:jump_boost"
+          durationTicks: 40
+          amplifier: 0

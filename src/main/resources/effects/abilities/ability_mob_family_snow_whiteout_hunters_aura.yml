@@ -1,0 +1,68 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_snow_whiteout_hunters_aura:
+    name: Snow Whiteout_Hunters
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: CRIT
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: TRIAL_SPAWNER_DETECTION
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CRIT
+          points:
+            -
+              x: 2.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.09
+              y: 0.0
+              z: 1.89
+            -
+              x: -1.09
+              y: 0.0
+              z: -1.89
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: TRIAL_SPAWNER_DETECTION
+          points:
+            -
+              x: 1.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.93
+              y: 0.0
+              z: 1.61
+            -
+              x: -0.93
+              y: 0.0
+              z: -1.61
+          up: -1.0
+        -
+          particle: CRIT
+          type: preset_swirl
+          radius: 1.75
+          points: 3
+          up: -2.0
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 2.95
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 1.75

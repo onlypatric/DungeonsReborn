@@ -1,0 +1,27 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Brineheart Tonic VIII</bold></aqua>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Flares with raw elemental force.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Water Breathing for 6s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>9s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Water</gray>
+  meta:
+    skull:
+      head: REQ_WINTER_GLOW_COFFEE
+    components:
+      use_cooldown:
+        seconds: 9.0
+bindings:
+  -
+    ability: ability_item_water_consumable_007
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_plains_village_raiders_main:
+    name: Plains Village_Raiders Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: ELDER_GUARDIAN
+          radius: 4.71875
+          points: 1
+          up: -1.0
+        -
+          type: damage
+          amount: 2.66
+          radius: 2.25
+          damageCause: DIRECT

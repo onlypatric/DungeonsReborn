@@ -15,4 +15,6 @@ messages.common.playersOnly: <red>Comando solo per giocatori.</red>
 messages.common.prefix: '<gold>[DungeonsReborn]</gold> '
 messages.common.saved: <green>Salvato.</green>
 messages.common.updated: <green>Aggiornato.</green>
+messages.common.true: vero
+messages.common.false: falso
 messages.common.yes: 'Yes'

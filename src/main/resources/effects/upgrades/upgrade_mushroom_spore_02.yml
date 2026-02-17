@@ -1,0 +1,29 @@
+name: <light_purple><bold>Mushroom Spore</bold></light_purple> <gray>II</gray>
+description: <gray>Spores bloom into restorative power.</gray> <gray>Boosts Cooldown Add by -1.95.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_mushroom_spore_02
+  activator: PASSIVE
+requirements:
+  level: 965
+modifiers:
+  -
+    type: cooldown_add
+    value: -1.948
+  -
+    type: duration_add
+    value: 0.608
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: power
+    level: 4
+  -
+    enchant: sharpness
+    level: 4
+allowUnsafe: true

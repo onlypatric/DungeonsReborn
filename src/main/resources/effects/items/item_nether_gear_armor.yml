@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <red><bold>Stormhide</bold></red> <gray>of Nether</gray>
+    lore:
+      - <gold>Ward</gold> <dark_gray>❯</dark_gray> <gray>Fortifies with +ARM 3.6–4.9.</gray>
+  meta:
+    skull:
+      head: REQ_FIRE_AND_ICE
+attributes:
+  ARMOR: 3.6
+gui:
+  head: ICON_ITEMS

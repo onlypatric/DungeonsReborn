@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: recipe_snow_upgrade_094
+name: Snow Upgrade Core 94
+costs:
+  -
+    type: tokens
+    amount: 6
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+  -
+    type: item
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    item:
+      item: item_currency_snow_voucher
+variants:
+  -
+    inputs:
+      -
+        item: item_snow_material_frost_01
+      -
+        item: item_snow_material_frost_02
+      -
+        item: item_snow_material_whiteout_05
+outputs:
+  -
+    item: item_snow_upgrade_core_06

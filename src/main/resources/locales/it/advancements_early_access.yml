@@ -1,0 +1,120 @@
+advancements.early_access.title: Early Access
+advancements.early_access.description: Early access progression path.
+advancements.early.first_kill.title: First Blood
+advancements.early.first_kill.description: Defeat your first foe.
+advancements.early.first_craft.title: First Craft
+advancements.early.first_craft.description: Craft a basic consumable.
+advancements.early.first_shop.title: First Purchase
+advancements.early.first_shop.description: Buy an item from a shop.
+advancements.early.plains_hunter.title: Plains Hunter
+advancements.early.plains_hunter.description: Defeat 10 plains raiders.
+advancements.early.plains_boss.title: Plains Boss
+advancements.early.plains_boss.description: Defeat the Stagwarden.
+advancements.early.desert_scout.title: Desert Scout
+advancements.early.desert_scout.description: Defeat 10 desert raiders.
+advancements.early.desert_boss.title: Desert Boss
+advancements.early.desert_boss.description: Defeat the Sand King.
+advancements.early.first_upgrade.title: First Upgrade
+advancements.early.first_upgrade.description: Earn enough tokens to upgrade.
+advancements.early.tier1_gear.title: Tier One
+advancements.early.tier1_gear.description: Reach level 3.
+advancements.early.kill.mob_plains_rabbit.title: Hunt Mob Plains Rabbit
+advancements.early.kill.mob_plains_rabbit.description: Defeat 5 Mob Plains Rabbit.
+advancements.early.kill.mob_plains_chicken.title: Hunt Mob Plains Chicken
+advancements.early.kill.mob_plains_chicken.description: Defeat 5 Mob Plains Chicken.
+advancements.early.kill.mob_plains_sheep.title: Hunt Mob Plains Sheep
+advancements.early.kill.mob_plains_sheep.description: Defeat 5 Mob Plains Sheep.
+advancements.early.kill.mob_plains_cow.title: Hunt Mob Plains Cow
+advancements.early.kill.mob_plains_cow.description: Defeat 5 Mob Plains Cow.
+advancements.early.kill.mob_plains_deer.title: Hunt Mob Plains Deer
+advancements.early.kill.mob_plains_deer.description: Defeat 5 Mob Plains Deer.
+advancements.early.kill.mob_plains_boar.title: Hunt Mob Plains Boar
+advancements.early.kill.mob_plains_boar.description: Defeat 5 Mob Plains Boar.
+advancements.early.kill.mob_plains_fox.title: Hunt Mob Plains Fox
+advancements.early.kill.mob_plains_fox.description: Defeat 5 Mob Plains Fox.
+advancements.early.kill.mob_plains_bee.title: Hunt Mob Plains Bee
+advancements.early.kill.mob_plains_bee.description: Defeat 5 Mob Plains Bee.
+advancements.early.kill.mob_plains_tortoise.title: Hunt Mob Plains Tortoise
+advancements.early.kill.mob_plains_tortoise.description: Defeat 5 Mob Plains Tortoise.
+advancements.early.kill.mob_plains_songbird.title: Hunt Mob Plains Songbird
+advancements.early.kill.mob_plains_songbird.description: Defeat 5 Mob Plains Songbird.
+advancements.early.kill.mob_plains_gnoll_scout.title: Hunt Mob Plains Gnoll Scout
+advancements.early.kill.mob_plains_gnoll_scout.description: Defeat 5 Mob Plains Gnoll Scout.
+advancements.early.kill.mob_plains_gnoll_rustler.title: Hunt Mob Plains Gnoll Rustler
+advancements.early.kill.mob_plains_gnoll_rustler.description: Defeat 5 Mob Plains Gnoll Rustler.
+advancements.early.kill.mob_plains_bandit.title: Hunt Mob Plains Bandit
+advancements.early.kill.mob_plains_bandit.description: Defeat 5 Mob Plains Bandit.
+advancements.early.kill.mob_plains_bandit_skirmisher.title: Hunt Mob Plains Bandit Skirmisher
+advancements.early.kill.mob_plains_bandit_skirmisher.description: Defeat 5 Mob Plains Bandit Skirmisher.
+advancements.early.kill.mob_plains_wolf.title: Hunt Mob Plains Wolf
+advancements.early.kill.mob_plains_wolf.description: Defeat 5 Mob Plains Wolf.
+advancements.early.kill.mob_plains_warg.title: Hunt Mob Plains Warg
+advancements.early.kill.mob_plains_warg.description: Defeat 5 Mob Plains Warg.
+advancements.early.kill.mob_plains_slime_small.title: Hunt Mob Plains Slime Small
+advancements.early.kill.mob_plains_slime_small.description: Defeat 5 Mob Plains Slime Small.
+advancements.early.kill.mob_plains_bog_mite.title: Hunt Mob Plains Bog Mite
+advancements.early.kill.mob_plains_bog_mite.description: Defeat 5 Mob Plains Bog Mite.
+advancements.early.kill.mob_plains_crow_swarm.title: Hunt Mob Plains Crow Swarm
+advancements.early.kill.mob_plains_crow_swarm.description: Defeat 5 Mob Plains Crow Swarm.
+advancements.early.kill.mob_plains_scarecrow.title: Hunt Mob Plains Scarecrow
+advancements.early.kill.mob_plains_scarecrow.description: Defeat 5 Mob Plains Scarecrow.
+advancements.early.kill.mob_desert_scarab.title: Hunt Mob Desert Scarab
+advancements.early.kill.mob_desert_scarab.description: Defeat 5 Mob Desert Scarab.
+advancements.early.kill.mob_desert_lizard.title: Hunt Mob Desert Lizard
+advancements.early.kill.mob_desert_lizard.description: Defeat 5 Mob Desert Lizard.
+advancements.early.kill.mob_desert_goat.title: Hunt Mob Desert Goat
+advancements.early.kill.mob_desert_goat.description: Defeat 5 Mob Desert Goat.
+advancements.early.kill.mob_desert_camel.title: Hunt Mob Desert Camel
+advancements.early.kill.mob_desert_camel.description: Defeat 5 Mob Desert Camel.
+advancements.early.kill.mob_desert_ostrich.title: Hunt Mob Desert Ostrich
+advancements.early.kill.mob_desert_ostrich.description: Defeat 5 Mob Desert Ostrich.
+advancements.early.kill.mob_desert_raider.title: Hunt Mob Desert Raider
+advancements.early.kill.mob_desert_raider.description: Defeat 5 Mob Desert Raider.
+advancements.early.kill.mob_desert_raider_archer.title: Hunt Mob Desert Raider Archer
+advancements.early.kill.mob_desert_raider_archer.description: Defeat 5 Mob Desert Raider Archer.
+advancements.early.kill.mob_desert_sand_wolf.title: Hunt Mob Desert Sand Wolf
+advancements.early.kill.mob_desert_sand_wolf.description: Defeat 5 Mob Desert Sand Wolf.
+advancements.early.kill.mob_desert_jackal.title: Hunt Mob Desert Jackal
+advancements.early.kill.mob_desert_jackal.description: Defeat 5 Mob Desert Jackal.
+advancements.early.kill.mob_desert_cactus_golem.title: Hunt Mob Desert Cactus Golem
+advancements.early.kill.mob_desert_cactus_golem.description: Defeat 5 Mob Desert Cactus Golem.
+advancements.early.kill.mob_desert_burrow_beetle.title: Hunt Mob Desert Burrow Beetle
+advancements.early.kill.mob_desert_burrow_beetle.description: Defeat 5 Mob Desert Burrow Beetle.
+advancements.early.kill.mob_desert_scorpion.title: Hunt Mob Desert Scorpion
+advancements.early.kill.mob_desert_scorpion.description: Defeat 5 Mob Desert Scorpion.
+advancements.early.kill.mob_desert_bone_scout.title: Hunt Mob Desert Bone Scout
+advancements.early.kill.mob_desert_bone_scout.description: Defeat 5 Mob Desert Bone Scout.
+advancements.early.kill.mob_desert_sun_cultist.title: Hunt Mob Desert Sun Cultist
+advancements.early.kill.mob_desert_sun_cultist.description: Defeat 5 Mob Desert Sun Cultist.
+advancements.early.kill.mob_desert_mummy.title: Hunt Mob Desert Mummy
+advancements.early.kill.mob_desert_mummy.description: Defeat 5 Mob Desert Mummy.
+advancements.early.kill.mob_desert_dune_serpent.title: Hunt Mob Desert Dune Serpent
+advancements.early.kill.mob_desert_dune_serpent.description: Defeat 5 Mob Desert Dune Serpent.
+advancements.early.kill.mob_desert_glass_sprite.title: Hunt Mob Desert Glass Sprite
+advancements.early.kill.mob_desert_glass_sprite.description: Defeat 5 Mob Desert Glass Sprite.
+advancements.early.kill.mob_desert_sand_turtle.title: Hunt Mob Desert Sand Turtle
+advancements.early.kill.mob_desert_sand_turtle.description: Defeat 5 Mob Desert Sand Turtle.
+advancements.early.kill.mob_desert_rabid_hyena.title: Hunt Mob Desert Rabid Hyena
+advancements.early.kill.mob_desert_rabid_hyena.description: Defeat 5 Mob Desert Rabid Hyena.
+advancements.early.kill.mob_desert_dust_imp.title: Hunt Mob Desert Dust Imp
+advancements.early.kill.mob_desert_dust_imp.description: Defeat 5 Mob Desert Dust Imp.
+advancements.early.kill.mob_desert_elite_raider.title: Hunt Mob Desert Elite Raider
+advancements.early.kill.mob_desert_elite_raider.description: Defeat 5 Mob Desert Elite Raider.
+advancements.early.kill.mob_desert_elite_sand_wolf.title: Hunt Mob Desert Elite Sand Wolf
+advancements.early.kill.mob_desert_elite_sand_wolf.description: Defeat 5 Mob Desert Elite Sand Wolf.
+advancements.early.kill.mob_desert_elite_cactus_golem.title: Hunt Mob Desert Elite Cactus Golem
+advancements.early.kill.mob_desert_elite_cactus_golem.description: Defeat 5 Mob Desert Elite Cactus Golem.
+advancements.early.kill.mob_desert_elite_scorpion.title: Hunt Mob Desert Elite Scorpion
+advancements.early.kill.mob_desert_elite_scorpion.description: Defeat 5 Mob Desert Elite Scorpion.
+advancements.early.kill.mob_desert_elite_mummy.title: Hunt Mob Desert Elite Mummy
+advancements.early.kill.mob_desert_elite_mummy.description: Defeat 5 Mob Desert Elite Mummy.
+advancements.early.kill.mob_desert_elite_dune_serpent.title: Hunt Mob Desert Elite Dune Serpent
+advancements.early.kill.mob_desert_elite_dune_serpent.description: Defeat 5 Mob Desert Elite Dune Serpent.
+advancements.early.kill.mob_desert_elite_burrow_beetle.title: Hunt Mob Desert Elite Burrow Beetle
+advancements.early.kill.mob_desert_elite_burrow_beetle.description: Defeat 5 Mob Desert Elite Burrow Beetle.
+advancements.early.kill.mob_desert_elite_sun_cultist.title: Hunt Mob Desert Elite Sun Cultist
+advancements.early.kill.mob_desert_elite_sun_cultist.description: Defeat 5 Mob Desert Elite Sun Cultist.
+advancements.early.kill.mob_desert_elite_glass_sprite.title: Hunt Mob Desert Elite Glass Sprite
+advancements.early.kill.mob_desert_elite_glass_sprite.description: Defeat 5 Mob Desert Elite Glass Sprite.
+advancements.early.kill.mob_desert_elite_bone_scout.title: Hunt Mob Desert Elite Bone Scout
+advancements.early.kill.mob_desert_elite_bone_scout.description: Defeat 5 Mob Desert Elite Bone Scout.

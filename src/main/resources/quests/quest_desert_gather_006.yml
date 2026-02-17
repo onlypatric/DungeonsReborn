@@ -1,0 +1,22 @@
+quests:
+  quest_desert_gather_006:
+    name: Harvest of Desert VII
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 3
+        itemId: item_desert_material_sand_06
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 123
+    rewards:
+      xp: 70
+      tokens: 2
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_consumable_009

@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_ancient_39:
+    name: Ability Upgrade Lowlands Ancient 39
+    costs:
+      -
+        type: mana
+        amount: 17.2
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: SCULK_CHARGE
+          radius: 4.530000000000001
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.0
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 12.88

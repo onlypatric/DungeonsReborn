@@ -1,0 +1,23 @@
+quests:
+  quest_highlands_kill_012:
+    name: Wrath of Highlands I
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_highlands_wind_critters_12
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1499
+    rewards:
+      xp: 140
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_material_sky_04
+          amount: 3

@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_011:
+    name: Ability Item Snow Consumable 011
+    cooldown:
+      ticks: 154
+    action:
+      type: sequence
+      actions:
+        -
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.05
+              y: 0.0
+              z: -0.5
+            -
+              x: -0.08
+              y: 0.0
+              z: 0.11
+            -
+              x: 0.25
+              y: 0.0
+              z: 0.05
+          up: -1.0
+        -
+          particle: CHERRY_LEAVES
+          type: particles_points
+          points:
+            -
+              x: -0.04
+              y: 0.0
+              z: 0.01
+            -
+              x: -0.28
+              y: 0.0
+              z: 0.29
+          up: -1.0
+        -
+          particle: CLOUD
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: -0.02
+            -
+              x: 0.02
+              y: 0.0
+              z: -0.29
+            -
+              x: -0.22
+              y: 0.0
+              z: 0.18
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 21.8
+            policy: any

@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_49:
+    name: Ability Upgrade Snow Whiteout 49
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: FALLING_HONEY
+          radius: 3.96
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

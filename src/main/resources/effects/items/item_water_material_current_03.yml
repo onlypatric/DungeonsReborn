@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Tidal Essence</bold></aqua> <gray>III</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Water wilds.</gray>
+  meta:
+    skull:
+      head: REQ_BIRTHDAY_CAKE_ICE_CREAM_SCOOP_2
+gui:
+  head: ICON_ITEMS

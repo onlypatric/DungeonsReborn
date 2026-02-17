@@ -1,0 +1,80 @@
+schemaVersion: 1
+mobs:
+  mob_plains_boss_stagwarden:
+    type: RAVAGER
+    name: <red><bold>Plains Stagwarden</bold></red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 350
+      ATTACK_DAMAGE: 4.75
+      scaleVariance: 1.25
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_plains_boss
+    xpGating:
+      minLevel: 120
+    phases:
+      -
+        id: plains_stagwarden_phase_1
+        healthBelow: 0.7
+        attacks:
+          main:
+            ability: ability_boss_plains_stagwarden_phase_01_main
+            trigger: MELEE
+            cooldownTicks: 65
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_plains_stagwarden_phase_01_secondary
+            trigger: MELEE
+            cooldownTicks: 97
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_plains_stagwarden_phase_01_aura
+            periodTicks: 40
+      -
+        id: plains_stagwarden_phase_2
+        healthBelow: 0.4
+        attacks:
+          main:
+            ability: ability_boss_plains_stagwarden_phase_02_main
+            trigger: MELEE
+            cooldownTicks: 70
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_plains_stagwarden_phase_02_secondary
+            trigger: MELEE
+            cooldownTicks: 104
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_plains_stagwarden_phase_02_aura
+            periodTicks: 40

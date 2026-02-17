@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_wayfarer_05:
+    name: Ability Upgrade Plains Wayfarer 05
+    costs:
+      -
+        type: mana
+        amount: 12.0
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: OMINOUS_SPAWNING
+          count: 6
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.2
+          maxDistance: 16
+          hitRadius: 0.35
+          trail:
+            particle: HAPPY_VILLAGER
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 4.29
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

@@ -1,0 +1,22 @@
+quests:
+  quest_mushroom_kill_003:
+    name: Wrath of Mushroom IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_mushroom_sporelings_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 980
+    rewards:
+      xp: 120
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_mushroom_material_spore_01

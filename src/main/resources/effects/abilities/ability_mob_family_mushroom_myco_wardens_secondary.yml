@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_mushroom_myco_wardens_secondary:
+    name: Mushroom Myco_Wardens Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: CRIT
+          radius: 6.889375
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 3.46
+          durationTicks: 80
+          radius: 4.02
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 80
+          amplifier: 0
+          radius: 3.83

@@ -1,0 +1,69 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_infernal_warden_phase_02_main:
+    name: Ability Boss Nether Infernal Warden Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_ring
+          particle: ELDER_GUARDIAN
+          radius: 6.4700999999999995
+          points: 1
+          up: -1.0
+        -
+          type: particles_ring
+          particle: SMOKE
+          radius: 4.5249749999999995
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: SMOKE
+          points:
+            -
+              x: 4.3
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.15
+              y: 0.0
+              z: 3.72
+            -
+              x: -2.15
+              y: 0.0
+              z: -3.72
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: SMOKE
+          radius: 5.3235
+          points: 1
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: SMOKE
+          radius: 4.7686275
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 4.2
+          radius: 3.9
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 3.9
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.7
+          points: 18

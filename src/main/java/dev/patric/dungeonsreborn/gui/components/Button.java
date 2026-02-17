@@ -115,6 +115,8 @@ public class Button implements GuiComponent {
   private boolean autoDescribeInLore = true;
   private ControlsFormatter controlsFormatter;
   private Function<ClickType, Component> titleProvider;
+  private boolean cachePerPlayer;
+  private final java.util.concurrent.ConcurrentHashMap<java.util.UUID, ItemStack> renderCache = new java.util.concurrent.ConcurrentHashMap<>();
 
   private static volatile ControlsFormatter defaultControlsFormatter = ControlsFormatter.defaultFormatter();
   private static volatile Function<ClickType, Component> defaultTitleProvider = Button::defaultTitle;
@@ -174,6 +176,27 @@ public class Button implements GuiComponent {
   public Button autoDescribeInLore(boolean enabled) {
     this.autoDescribeInLore = enabled;
     return this;
+  }
+
+  /**
+   * Memoize the rendered item per player for immutable buttons.
+   * Use with care: only for buttons whose appearance does not change at runtime.
+   */
+  public Button cachePerPlayer() {
+    this.cachePerPlayer = true;
+    return this;
+  }
+
+  public Button cachePerPlayer(boolean enabled) {
+    this.cachePerPlayer = enabled;
+    if (!enabled) {
+      renderCache.clear();
+    }
+    return this;
+  }
+
+  public void clearCache() {
+    renderCache.clear();
   }
 
   /**
@@ -414,12 +437,21 @@ public class Button implements GuiComponent {
 
   @Override
   public ItemStack render(Player player) {
+    if (cachePerPlayer && player != null) {
+      ItemStack cached = renderCache.get(player.getUniqueId());
+      if (cached != null) {
+        return cached.clone();
+      }
+    }
     ItemStack base = item.apply(player);
     if (base == null) {
       return null;
     }
     ItemStack stack = base.clone();
     if (!autoDescribeInLore || bindings.isEmpty()) {
+      if (cachePerPlayer && player != null) {
+        renderCache.put(player.getUniqueId(), stack.clone());
+      }
       return stack;
     }
 
@@ -450,6 +482,9 @@ public class Button implements GuiComponent {
     }
     meta.lore(next);
     stack.setItemMeta(meta);
+    if (cachePerPlayer && player != null) {
+      renderCache.put(player.getUniqueId(), stack.clone());
+    }
     return stack;
   }
 }

@@ -1,0 +1,55 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_gloom_baron_phase_03_main:
+    name: Ability Boss Dark Oak Gloom Baron Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_sphere_fill
+          particle: DUST_COLOR_TRANSITION
+          radius: 6.617100000000001
+          points: 3
+          up: -1.0
+          data:
+            color: "#b51416"
+            toColor: "#a2a7cf"
+            size: 1.4
+        -
+          type: particles_sphere_fill
+          particle: FALLING_WATER
+          radius: 5.91192
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: DUST_COLOR_TRANSITION
+          radius: 6.9552
+          points: 3
+          up: -1.0
+          data:
+            color: "#da6f27"
+            toColor: "#c702e0"
+            size: 1.6
+        -
+          type: particles_sphere_filled
+          particle: FALLING_WATER
+          radius: 6.199305
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 5.3
+          radius: 4.6
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 4.6

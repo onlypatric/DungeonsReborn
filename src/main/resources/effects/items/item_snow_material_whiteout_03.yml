@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <white><bold>Whiteout Prism</bold></white> <gray>III</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Snow wilds.</gray>
+gui:
+  head: ICON_ITEMS

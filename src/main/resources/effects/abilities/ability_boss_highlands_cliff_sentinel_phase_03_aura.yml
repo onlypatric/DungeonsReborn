@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_cliff_sentinel_phase_03_aura:
+    name: Ability Boss Highlands Cliff Sentinel Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_helix
+          particle: CRIT
+          radius: 6.3420000000000005
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+        -
+          type: particles_line
+          particle: CRIT
+          length: 8.836000000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          length: 6.841
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.35
+          durationTicks: 40
+          radius: 4.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 4.0

@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_gale_01:
+    name: Ability Upgrade Highlands Gale 01
+    costs:
+      -
+        type: mana
+        amount: 20.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: DUST_PILLAR
+          radius: 3.4250000000000003
+          height: 3.0
+          points: 3
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: raycast_hit_entity
+          maxDistance: 20
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 22.8
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

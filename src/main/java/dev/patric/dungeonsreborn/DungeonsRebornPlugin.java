@@ -68,6 +68,12 @@ import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockListener;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore;
+import dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockListener;
+import dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockStore;
+import dev.patric.dungeonsreborn.mobs.TrialSpawnerManager;
+import dev.patric.dungeonsreborn.mobs.VaultBlockListener;
+import dev.patric.dungeonsreborn.mobs.VaultBlockStore;
+import dev.patric.dungeonsreborn.mobs.VaultManager;
 import dev.patric.dungeonsreborn.mobs.MobPersistenceStore;
 import dev.patric.dungeonsreborn.mobs.editor.MobDebugOverlayService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
@@ -150,6 +156,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private MobDebugOverlayService mobDebugOverlayService;
     private MobYamlRegistry mobYamlRegistry;
     private MobSpawnerBlockStore spawnerBlockStore;
+    private TrialSpawnerBlockStore trialSpawnerBlockStore;
+    private TrialSpawnerManager trialSpawnerManager;
+    private VaultBlockStore vaultBlockStore;
+    private VaultManager vaultManager;
     private MobPersistenceStore mobPersistenceStore;
     private boolean mobPersistenceEnabled;
     private MinionManager minionManager;
@@ -449,12 +459,29 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         spawnerBlockStore.rehydrateMarkers();
         mobSpawnManager.setSpawnerBlockStore(spawnerBlockStore);
         mobSpawnManager.setYamlRegistry(mobYamlRegistry);
+        trialSpawnerBlockStore = new TrialSpawnerBlockStore(getDataFolder(), serviceLog.mobs());
+        trialSpawnerBlockStore.load();
+        trialSpawnerBlockStore.rehydrateMarkers();
+        trialSpawnerManager = new TrialSpawnerManager(effectsEngine, mobRegistry, mobYamlRegistry, trialSpawnerBlockStore,
+            serviceLog.mobs());
+        vaultBlockStore = new VaultBlockStore(getDataFolder(), serviceLog.mobs());
+        vaultBlockStore.load();
+        vaultBlockStore.rehydrateMarkers();
+        vaultManager = new VaultManager(effectsEngine, mobYamlRegistry, yamlAbilities, vaultBlockStore, serviceLog.mobs());
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
+        Bukkit.getPluginManager().registerEvents(trialSpawnerManager, this);
+        Bukkit.getPluginManager().registerEvents(vaultManager, this);
         boolean spawnerOwnershipEnabled = getConfig().getBoolean("mobs.spawners.ownership.enabled", false);
         boolean spawnerAdminOnly = getConfig().getBoolean("mobs.spawners.ownership.adminOnly", false);
         String spawnerAdminPermission = getConfig().getString("mobs.spawners.ownership.adminPermission", "dungeonsreborn.spawner.admin");
         Bukkit.getPluginManager().registerEvents(
             new MobSpawnerBlockListener(mobYamlRegistry, mobRegistry, mobSpawnManager, spawnerBlockStore, serviceLog.mobs(),
+                spawnerOwnershipEnabled, spawnerAdminOnly, spawnerAdminPermission), this);
+        Bukkit.getPluginManager().registerEvents(
+            new TrialSpawnerBlockListener(mobYamlRegistry, trialSpawnerManager, trialSpawnerBlockStore, serviceLog.mobs(),
+                spawnerOwnershipEnabled, spawnerAdminOnly, spawnerAdminPermission), this);
+        Bukkit.getPluginManager().registerEvents(
+            new VaultBlockListener(mobYamlRegistry, vaultBlockStore, vaultManager, serviceLog.mobs(),
                 spawnerOwnershipEnabled, spawnerAdminOnly, spawnerAdminPermission), this);
 
         mobPersistenceEnabled = getConfig().getBoolean("mobs.persistence.enabled", false);
@@ -598,6 +625,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobSpawnManager,
                     mobDebugOverlayService,
                     spawnerBlockStore,
+                    trialSpawnerBlockStore,
+                    vaultBlockStore,
                     craftingRecipes,
                     craftingSessions,
                     craftingDiscovery,
@@ -634,6 +663,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobSpawnManager,
                     mobDebugOverlayService,
                     spawnerBlockStore,
+                    trialSpawnerBlockStore,
+                    vaultBlockStore,
                     craftingRecipes,
                     craftingSessions,
                     craftingDiscovery,
@@ -670,6 +701,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     mobSpawnManager,
                     mobDebugOverlayService,
                     spawnerBlockStore,
+                    trialSpawnerBlockStore,
+                    vaultBlockStore,
                     craftingRecipes,
                     craftingSessions,
                     craftingDiscovery,

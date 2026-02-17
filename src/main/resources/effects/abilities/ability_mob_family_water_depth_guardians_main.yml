@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_depth_guardians_main:
+    name: Water Depth_Guardians Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: ITEM_SLIME
+          count: 2
+          up: -1.0
+        -
+          type: damage
+          amount: 5.21
+          radius: 2.12
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.0

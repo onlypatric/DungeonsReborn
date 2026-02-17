@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_dark_oak_consumable_027:
+    name: Ability Item Dark Oak Consumable 027
+    cooldown:
+      ticks: 132
+    action:
+      type: sequence
+      actions:
+        -
+          particle: SONIC_BOOM
+          type: particles_points
+          points:
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.42
+            -
+              x: -0.23
+              y: 0.0
+              z: -0.09
+            -
+              x: 0.31
+              y: 0.0
+              z: -0.07
+          up: -1.0
+        -
+          particle: SOUL
+          type: particles_points
+          points:
+            -
+              x: 0.1
+              y: 0.0
+              z: 0.17
+            -
+              x: 0.13
+              y: 0.0
+              z: -0.07
+          up: -1.0
+        -
+          particle: SOUL_FIRE_FLAME
+          type: particles_points
+          points:
+            -
+              x: -0.07
+              y: 0.0
+              z: -0.14
+            -
+              x: 0.37
+              y: 0.0
+              z: 0.08
+            -
+              x: -0.15
+              y: 0.0
+              z: 0.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 3.2
+            times: 4
+            periodTicks: 10
+            policy: any

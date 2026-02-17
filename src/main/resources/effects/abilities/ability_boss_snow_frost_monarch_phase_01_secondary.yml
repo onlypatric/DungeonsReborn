@@ -1,0 +1,83 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_01_secondary:
+    name: Ability Boss Snow Frost Monarch Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_arc
+          particle: VIBRATION
+          radius: 9.1959
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_arc
+          particle: RAIN
+          radius: 8.17887
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: VIBRATION
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 3.84888
+            right: 7.69776
+            up: 0.4
+          p2:
+            forward: 7.69776
+            right: -5.773319999999999
+            up: 0.8
+          p3:
+            forward: 11.546639999999998
+            right: 0.0
+            up: 1.0
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_bezier
+          particle: RAIN
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.69178
+            right: 5.38356
+            up: 0.4
+          p2:
+            forward: 5.38356
+            right: -4.037669999999999
+            up: 0.8
+          p3:
+            forward: 8.075339999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.03
+          durationTicks: 72
+          radius: 5.8

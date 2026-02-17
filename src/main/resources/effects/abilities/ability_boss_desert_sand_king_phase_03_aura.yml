@@ -1,0 +1,42 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sand_king_phase_03_aura:
+    name: Ability Boss Desert Sand King Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_helix
+          particle: WARPED_SPORE
+          radius: 4.6452
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics
+          particle: REVERSE_PORTAL
+          count: 2
+          up: -1.0
+        -
+          type: particles_line
+          particle: WARPED_SPORE
+          length: 6.022
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: REVERSE_PORTAL
+          length: 5.62363
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.75
+          durationTicks: 40
+          radius: 2.8
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 2.8

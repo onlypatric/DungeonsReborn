@@ -1,0 +1,150 @@
+shops:
+  shop_plains_starter:
+    title: Plains Starter Goods
+    trades:
+      -
+        buy:
+          -
+            type: token
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_043
+      -
+        buy:
+          -
+            type: token
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_038
+      -
+        buy:
+          -
+            type: token
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_027
+      -
+        buy:
+          -
+            type: token
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_009
+      -
+        buy:
+          -
+            type: token
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_048
+      -
+        buy:
+          -
+            type: token
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_wood_03
+      -
+        buy:
+          -
+            type: token
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_05
+      -
+        buy:
+          -
+            type: token
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_03
+      -
+        buy:
+          -
+            type: token
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_01
+      -
+        buy:
+          -
+            type: token
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_02
+      -
+        buy:
+          -
+            type: token
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_03
+      -
+        buy:
+          -
+            type: token
+            amount: 11
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: token
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: token
+            amount: 2
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_armor
+      -
+        buy:
+          -
+            type: token
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_weapon
+      -
+        buy:
+          -
+            type: token
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_trinket
+    gui:
+      head: ICON_SHOPS

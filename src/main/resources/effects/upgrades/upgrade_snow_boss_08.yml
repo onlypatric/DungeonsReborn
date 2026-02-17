@@ -1,0 +1,62 @@
+name: <white><bold>Snow Boss</bold></white> <gray>VIII</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.20.</gray> <gray>Grants Generic Max Health +26.41.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_boss_08
+  activator: PASSIVE
+requirements:
+  level: 5000
+modifiers:
+  -
+    type: damage_mult
+    value: 1.196
+  -
+    type: cooldown_mult
+    value: 0.936
+  -
+    type: radius_add
+    value: 6.359
+  -
+    type: duration_mult
+    value: 1.198
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 26.405
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.183
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.285
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.104
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: punch
+    level: 3
+  -
+    enchant: sharpness
+    level: 5
+  -
+    enchant: sweeping_edge
+    level: 3
+  -
+    enchant: vanishing_curse
+    level: 1
+allowUnsafe: true

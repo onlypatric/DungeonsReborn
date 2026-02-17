@@ -1,0 +1,26 @@
+schemaVersion: 1
+mobs:
+  mob_desert_scavengers_14:
+    type: FOX
+    name: <green>Desert Fox Watcher</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 29.7
+      ATTACK_DAMAGE: 0.0
+      scaleVariance: 1.15
+    passives:
+      -
+        ability: ability_mob_family_desert_scavengers_aura
+        periodTicks: 80
+      -
+        ability: ability_mob_family_desert_scavengers_panic
+        periodTicks: 140
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_desert_scavengers_passive
+    xpGating:
+      minLevel: 121

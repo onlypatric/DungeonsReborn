@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_stone_06:
+    name: Ability Upgrade Highlands Stone 06
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: ITEM
+          radius: 2.9250000000000003
+          points: 3
+          up: -1.0
+          data:
+            type: STONE
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

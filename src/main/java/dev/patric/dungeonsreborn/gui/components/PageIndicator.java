@@ -2,13 +2,12 @@ package dev.patric.dungeonsreborn.gui.components;
 
 import java.util.Objects;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.PaginatedWindow;
 import dev.patric.dungeonsreborn.gui.GuiComponent;
+import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
@@ -17,21 +16,15 @@ import net.kyori.adventure.text.Component;
  */
 public final class PageIndicator implements GuiComponent {
   private final PaginatedWindow window;
-  private final Material material;
 
   public PageIndicator(PaginatedWindow window) {
-    this(window, Material.PAPER);
-  }
-
-  public PageIndicator(PaginatedWindow window, Material material) {
     this.window = Objects.requireNonNull(window, "window");
-    this.material = Objects.requireNonNull(material, "material");
   }
 
   @Override
   public ItemStack render(Player player) {
     Component label = Locales.component(player, "gui.list.page",
         Locales.placeholders("current", window.page() + 1, "total", window.pageCount()));
-    return GuiItems.named(material, label);
+    return GuiButtons.item(GuiButtons.Type.PAGE, label);
   }
 }

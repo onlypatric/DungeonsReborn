@@ -1,0 +1,23 @@
+quests:
+  quest_mushroom_kill_005:
+    name: Mushroom Culling VI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_mushroom_mossbiters_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 970
+    rewards:
+      xp: 120
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_mushroom_material_myco_01
+          amount: 2

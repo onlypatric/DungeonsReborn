@@ -1,0 +1,22 @@
+quests:
+  quest_dark_oak_explore_038:
+    name: Dark Oak Charting III
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - dark_oak
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 651
+    rewards:
+      xp: 115
+      tokens: 11
+      compressed: 0
+      pallet: 0
+      mana: 0.0

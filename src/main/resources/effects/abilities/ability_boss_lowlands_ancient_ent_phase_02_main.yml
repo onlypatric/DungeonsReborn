@@ -1,0 +1,76 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_ancient_ent_phase_02_main:
+    name: Ability Boss Lowlands Ancient Ent Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_sphere_shell
+          particle: NAUTILUS
+          radius: 9.35445
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: HAPPY_VILLAGER
+          radius: 8.319885
+          points: 3
+          up: -1.0
+        -
+          type: particles_helix
+          particle: NAUTILUS
+          radius: 9.7881
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_spline
+          particle: HAPPY_VILLAGER
+          points:
+            -
+              x: 5.27
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.63
+              y: 0.0
+              z: 4.56
+            -
+              x: -2.63
+              y: 0.0
+              z: -4.56
+          up: -1.0
+        -
+          type: particles_points
+          particle: ITEM_SNOWBALL
+          points:
+            -
+              x: 6.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.25
+              y: 0.0
+              z: 5.63
+            -
+              x: -3.25
+              y: 0.0
+              z: -5.63
+          up: -1.0
+        -
+          type: damage
+          amount: 7.4
+          radius: 5.9
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 5.9

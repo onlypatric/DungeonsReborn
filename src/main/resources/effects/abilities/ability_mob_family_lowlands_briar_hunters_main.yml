@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_briar_hunters_main:
+    name: Lowlands Briar_Hunters Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: CRIT
+          radius: 7.7387500000000005
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 8.33
+          radius: 3.69
+          damageCause: DIRECT

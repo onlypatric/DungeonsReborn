@@ -517,12 +517,27 @@ public final class UpgradeLore {
       String name = spec.name() != null && !spec.name().isBlank() ? spec.name() : record;
       Component line = Component.text("• ", NamedTextColor.GRAY).append(parseRichText(name));
       if (!spec.spells().isEmpty()) {
-        String activators = spec.spells().stream()
+        List<String> activatorLabels = spec.spells().stream()
             .map(spell -> label(spell.activator()))
             .distinct()
             .sorted()
-            .collect(java.util.stream.Collectors.joining(", "));
-        line = line.append(Component.text(" [" + activators + "]", NamedTextColor.DARK_GRAY));
+            .toList();
+        Component activatorsComponent = null;
+        for (String activatorLabel : activatorLabels) {
+          Component rendered = parseRichText(activatorLabel);
+          if (activatorsComponent == null) {
+            activatorsComponent = rendered;
+          } else {
+            activatorsComponent = activatorsComponent
+                .append(Component.text(", ", NamedTextColor.DARK_GRAY))
+                .append(rendered);
+          }
+        }
+        if (activatorsComponent != null) {
+          line = line.append(Component.text(" [", NamedTextColor.DARK_GRAY))
+              .append(activatorsComponent)
+              .append(Component.text("]", NamedTextColor.DARK_GRAY));
+        }
       }
       out.add(line);
       if (spec.behaviors() != null && spec.behaviors().inventoryActive()) {

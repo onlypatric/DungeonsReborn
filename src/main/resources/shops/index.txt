@@ -1,0 +1,10 @@
+shop_dark_oak_starter.yml
+shop_desert_starter.yml
+shop_highlands_starter.yml
+shop_lowlands_starter.yml
+shop_mushroom_starter.yml
+shop_nether_starter.yml
+shop_plains_starter.yml
+shop_snow_starter.yml
+shop_swamp_starter.yml
+shop_water_starter.yml

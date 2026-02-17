@@ -1,0 +1,422 @@
+gui.button.back: Indietro
+gui.button.close: Chiudi
+gui.button.search: Cerca
+gui.button.clear: Pulisci
+gui.common.arrow: "->"
+gui.click.left: Click sinistro
+gui.click.shift_left: Shift + sinistro
+gui.click.right: Click destro
+gui.click.shift_right: Shift + destro
+gui.controls.action: Azione
+gui.controls.blank_line: "true"
+gui.controls.bullet: <dark_gray>-</dark_gray> <gray>
+gui.controls.continuation: <dark_gray>  </dark_gray><gray>
+gui.controls.header: <yellow><bold>Controlli</bold></yellow>
+gui.controls.separator: "<dark_gray>: </dark_gray><gray>"
+gui.dropdown.next: Opzione successiva
+gui.dropdown.prev: Opzione precedente
+gui.dropdown.selected: <gray>Selezionato:</gray> <white>
+gui.dropdown.hint: <dark_gray>Clic sinistro/destro per scorrere.</dark_gray>
+gui.cycle.next: Opzione successiva
+gui.cycle.previous: Opzione precedente
+gui.cycle.hint: <dark_gray>Clic sinistro/destro per scorrere.</dark_gray>
+gui.textInput.title: <gold><bold>Input</bold></gold>
+gui.textInput.tooltip: <gray>Clicca per inserire testo.</gray>
+gui.textInput.cancelWord: annulla
+gui.textInput.cancelHint: <gray>Scrivi</gray> <white>{cancel}</white> <gray>per annullare.</gray>
+gui.textInput.commandHint: <gray>Usa</gray> <white>/dr input <messaggio></white> <gray>per inviare.</gray>
+gui.textInput.anvilTitle: Input
+gui.textInput.error.minLength: <red>Lunghezza minima {min}.</red>
+gui.textInput.error.maxLength: <red>Lunghezza massima {max}.</red>
+gui.textInput.error.invalidFormat: <red>Formato non valido.</red>
+gui.textInput.error.integer: <red>Inserisci un numero intero.</red>
+gui.textInput.error.integerRange: <red>Inserisci un numero tra {min} e {max}.</red>
+gui.itemPicker.invalid: <red>Questo oggetto non può essere selezionato.</red>
+gui.list.filter: <gray>Filtro:</gray> <white>{query}</white>
+gui.list.items: <gray>Oggetti:</gray> <white>{count}</white>
+gui.list.next.action: Pagina successiva
+gui.list.next.disabled: <dark_gray>Nessuna pagina successiva</dark_gray>
+gui.list.next.title: Avanti
+gui.list.empty.title: <gray>Nessun elemento</gray>
+gui.list.empty.hint: <dark_gray>Prova a cambiare filtri o ricerca.</dark_gray>
+gui.list.page: <gray>Pagina</gray> <white>{current}</white><gray>/</gray><white>{total}</white>
+gui.list.prev.action: Pagina precedente
+gui.list.prev.disabled: <dark_gray>Nessuna pagina precedente</dark_gray>
+gui.list.prev.title: Indietro
+gui.list.truncated: <yellow>Lista troncata</yellow>
+gui.search.clear_hint: <gray>Pulisci il filtro corrente</gray>
+gui.search.current: <gray>Corrente:</gray> <white>{query}</white>
+gui.search.hint: <gray>Scrivi una ricerca</gray>
+gui.search.none: <dark_gray>Nessuno</dark_gray>
+gui.search.prompt: <yellow>Ricerca:</yellow> <gray>scrivi la tua query</gray>
+gui.toggle.off: <red>Off</red>
+gui.toggle.on: <green>On</green>
+gui.loading.title: <yellow>Caricamento...</yellow>
+gui.loading.hint: <gray>Recupero dati, attendi.</gray>
+gui.numericInput.label: Valore
+gui.numericInput.prompt: <yellow>Inserisci un numero:</yellow>
+gui.numericInput.minus: Diminuisci
+gui.numericInput.plus: Aumenta
+gui.numericInput.value: <gray>Valore:</gray> <white>{value}</white>
+gui.numericInput.min: <red>Minimo:</red> <white>{min}</white>
+gui.numericInput.max: <red>Massimo:</red> <white>{max}</white>
+gui.numericInput.stepMinus: -{step}
+gui.numericInput.stepPlus: +{step}
+gui.numericInput.clickToType: <gray>Clicca per inserire</gray> <dark_gray>(/dr input)</dark_gray>
+gui.action.save.title: Salva
+gui.action.save.desc: Salva le modifiche.
+gui.action.save.action: Salva
+gui.action.preview.title: Anteprima
+gui.action.preview.desc: Anteprima delle modifiche.
+gui.action.preview.action: Anteprima
+gui.action.test.title: Test
+gui.action.test.desc: Prova la configurazione.
+gui.action.test.action: Test
+gui.action.reset.title: Ripristina
+gui.action.reset.desc: Ripristina i predefiniti.
+gui.action.reset.action: Ripristina
+gui.userHub.title: <gold><bold>DungeonsReborn</bold></gold>
+gui.userHub.info.title: Che cos'è?
+gui.userHub.info.desc: Hub principale per tutti i sistemi giocatore.
+gui.userHub.classes.desc: Alberi abilità e bonus classe.
+gui.userHub.classes.title: Classi
+gui.userHub.crafting.desc: Scopri e testa ricette.
+gui.userHub.crafting.title: Crafting
+gui.userHub.dungeons.desc: Coda e stato.
+gui.userHub.dungeons.title: Dungeon
+gui.userHub.items.desc: Sfoglia e ispeziona oggetti.
+gui.userHub.items.title: Oggetti
+gui.userHub.kits.desc: Riscatta i kit disponibili.
+gui.userHub.kits.title: Kit
+gui.userHub.minions.desc: Gestisci i loadout dei minion.
+gui.userHub.minions.title: Minion
+gui.userHub.mobs.desc: Sfoglia info mob.
+gui.userHub.mobs.title: Mob
+gui.userHub.party.desc: Membri e impostazioni party.
+gui.userHub.party.title: Party
+gui.userHub.quests.desc: Diario e progressi.
+gui.userHub.quests.title: Missioni
+gui.userHub.settings.desc: Lingua, mana, particelle, cinematic.
+gui.userHub.settings.title: Impostazioni
+gui.userHub.shops.desc: Sfoglia negozi e scambi.
+gui.userHub.shops.title: Negozi
+gui.userHub.upgrades.desc: Migliora e unisci oggetti.
+gui.userHub.upgrades.title: Migliorie
+gui.adminHub.info.title: Che cos'è?
+gui.adminHub.info.desc: Hub admin per indici, strumenti e debug.
+gui.classes.requirements.currencies: Valute richieste
+gui.classes.requirements.items: Oggetti richiesti
+gui.classes.requirements.level: Livello richiesto
+gui.classes.requirements.quests: Missioni richieste
+gui.classes.requirements.tokens: Token richiesti
+gui.classes.requirements.world: Mondo richiesto
+gui.cinematic.debugOverlay.desc: Mostra overlay debug.
+gui.cinematic.debugOverlay.title: Overlay Debug
+gui.cinematic.flash.desc: Effetti flash schermo.
+gui.cinematic.flash.title: Flash Schermo
+gui.cinematic.overlay.desc: Overlay cinematici.
+gui.cinematic.overlay.title: Overlay
+gui.cinematic.shake.desc: Effetti shake camera.
+gui.cinematic.shake.title: Scossa Camera
+gui.locale.clear.desc: Usa la lingua predefinita del server.
+gui.locale.clear.title: Ripristina Lingua
+gui.locale.current: <gray>Lingua corrente:</gray> <white>{locale}</white>
+gui.locale.entry.current: <green>Corrente</green>
+gui.locale.entry.select: <gray>Clicca per selezionare</gray>
+gui.mana.actionbar.desc: Mostra costo mana nell'action bar.
+gui.mana.actionbar.title: Action Bar
+gui.mana.scoreboard.desc: Mana nello scoreboard HUD.
+gui.mana.scoreboard.title: Scoreboard
+gui.mana.warnings.desc: Avvisi per mana basso.
+gui.mana.warnings.title: Avvisi
+gui.particles.hint: <gray>Usa /dr effects particles per cambiare qualità o budget.</gray>
+gui.particles.info.desc: <gray>Budget per tick:</gray> <white>{max}</white>
+gui.particles.info.title: Budget Particelle
+gui.settings.cinematic.desc: Attiva/disattiva effetti schermo.
+gui.settings.cinematic.title: Cinematic
+gui.settings.locale.desc: Cambia lingua.
+gui.settings.locale.title: Lingua
+gui.settings.mana.desc: Attiva/disattiva UI mana.
+gui.settings.mana.title: Mana
+gui.settings.particles.desc: Impostazioni particelle e budget.
+gui.settings.particles.title: Particelle
+gui.settings.title: <gold><bold>Impostazioni</bold></gold>
+messages.gui.comingSoon: <gray>In arrivo.</gray>
+messages.gui.locale.cleared: <green>Lingua ripristinata.</green>
+messages.gui.locale.overrideDisabled: <red>Override lingua disabilitato.</red>
+messages.gui.locale.set: <green>Lingua impostata a</green> <white>{locale}</white>
+messages.gui.textInput.none: <red>Nessun input in attesa.</red>
+gui.party.title: Party
+gui.party.status.none: <gray>Nessun party.</gray>
+gui.party.status.inParty: <gray>Leader:</gray> <white>{leader}</white>
+gui.party.status.members: <gray>Membri:</gray> <white>{count}</white>
+gui.party.list.public.title: <yellow>Party</yellow> <white>{leader}</white>
+gui.party.list.public.members: <gray>Membri:</gray> <white>{count}</white>
+gui.party.list.public.open: <green>Aperto alle richieste</green>
+gui.party.list.public.closed: <red>Solo invito</red>
+gui.party.member.role.leader: <gold>Leader</gold>
+gui.party.member.role.officer: <yellow>Ufficiale</yellow>
+gui.party.member.role.member: <gray>Membro</gray>
+gui.party.member.online: <green>Online</green>
+gui.party.member.offline: <dark_gray>Offline</dark_gray>
+gui.party.action.create.title: Crea Party
+gui.party.action.create.desc: Crea un nuovo party.
+gui.party.action.accept.title: Accetta Invito
+gui.party.action.accept.desc: Entra nel party con il nome del leader.
+gui.party.accept.prompt: <yellow>Nome leader:</yellow>
+gui.party.action.invite.title: Invita Giocatore
+gui.party.action.invite.desc: Invita un giocatore nel party.
+gui.party.invite.prompt: <yellow>Nome giocatore:</yellow>
+gui.party.invite.notFound: <red>Giocatore non trovato:</red> <white>{player}</white>
+gui.party.invite.received: <yellow>{leader}</yellow> <gray>ti ha invitato al party.</gray>
+gui.party.action.public.title: Party Pubblico
+gui.party.action.public.desc: Attiva/disattiva richieste pubbliche.
+gui.party.action.leave.title: Lascia Party
+gui.party.action.leave.desc: Esci dal party corrente.
+gui.quests.title: Missioni
+gui.quests.header: <gold><bold>Missioni</bold></gold>
+gui.quests.givers.title: Quest Giver
+gui.quests.givers.desc: Sfoglia i quest giver disponibili.
+gui.quests.giverIndex.title: Quest Giver
+gui.quests.giverIndex.header: <gold><bold>Quest Giver</bold></gold>
+gui.quests.giverIndex.count: <gray>Missioni:</gray> <white>{count}</white>
+gui.quests.giver.title: <gold><bold>{giver}</bold></gold>
+gui.quests.giver.header: <yellow>{giver}</yellow>
+gui.quests.inspect.title: "Missione: {quest}"
+gui.quests.inspect.header: <gold><bold>{quest}</bold></gold>
+gui.quests.inspect.description: <yellow>Descrizione</yellow>
+gui.quests.inspect.info: Dettagli Missione
+gui.quests.inspect.objectives: <gray>Obiettivi:</gray> <white>{count}</white>
+gui.quests.inspect.rewardXp: <gray>XP:</gray> <white>{xp}</white>
+gui.quests.inspect.rewardTokens: <gray>Token:</gray> <white>{tokens}</white>
+gui.quests.inspect.rewardItems: <gray>Oggetti:</gray> <white>{count}</white>
+gui.quests.inspect.cooldown: <gray>Ricarica:</gray> <white>{seconds}s</white>
+gui.shops.title: Negozi
+gui.shops.header: <gold><bold>Negozi</bold></gold>
+gui.shops.list.trades: <gray>Scambi:</gray> <white>{count}</white>
+gui.shops.preview.title: "<gold>Negozio: {shop}</gold>"
+gui.shops.preview.header: <yellow>{shop}</yellow>
+gui.shops.favorite.title: Preferito
+gui.shops.favorite.on: <green>Preferito</green>
+gui.shops.favorite.off: <gray>Non preferito</gray>
+gui.shops.trade.title: <gold>Scambio - {shop}</gold>
+gui.shops.trade.header: <yellow>Scambio #{index}</yellow>
+gui.shops.trade.reward: Ricompensa
+gui.shops.trade.costItem: Costo
+gui.shops.trade.cost: <gray>Costo</gray>
+gui.shops.trade.costTitle: <yellow>Costi</yellow>
+gui.shops.trade.buy.title: Compra
+gui.shops.trade.buy.desc: Acquista questo oggetto.
+gui.shops.trade.status.ready: <green>Pronto per lo scambio</green>
+gui.shops.trade.status.partial: <yellow>Mancano alcuni oggetti</yellow>
+gui.shops.trade.status.missing: <red>Requisiti mancanti</red>
+gui.crafting.discovery.title: Crafting
+gui.crafting.discovery.header: <gray>Ricette:</gray> <white>{count}</white>
+gui.crafting.status.available: <green>Disponibile</green>
+gui.crafting.status.locked: <red>Bloccato</red>
+gui.crafting.test.title: "<gold>Ricetta: {recipe}</gold>"
+gui.crafting.test.header: <yellow>{recipe}</yellow>
+gui.crafting.test.output: Output
+gui.crafting.test.requirements: <gray>Requisiti:</gray> <white>{count}</white>
+gui.crafting.test.costs: <gray>Costi:</gray> <white>{count}</white>
+gui.crafting.test.info: Info
+gui.crafting.test.button.title: Prova Craft
+gui.crafting.test.button.desc: Prova a craftare usando l'inventario.
+gui.crafting.available.title: <gold>Ricette Disponibili</gold>
+gui.crafting.available.header: <yellow>Ricette Disponibili</yellow>
+gui.crafting.available.desc: <gray>Solo ricette craftabili ora.</gray>
+gui.crafting.available.ready: <green>Pronto a craftare</green>
+gui.crafting.grid.title: <gold>Crafting</gold>
+gui.crafting.grid.header: <yellow>Griglia Crafting</yellow>
+gui.crafting.grid.desc: <gray>Posiziona gli oggetti per craftare.</gray>
+gui.crafting.grid.output: Output
+gui.crafting.grid.noMatch: <red>Nessuna corrispondenza</red>
+gui.crafting.grid.noMatch.desc: <gray>Metti oggetti per trovare una ricetta.</gray>
+gui.crafting.grid.locked: <gray>Bloccato</gray>
+gui.crafting.grid.locked.desc: <gray>Ricetta non scoperta.</gray>
+gui.crafting.grid.recipes.title: Ricette
+gui.crafting.grid.recipes.desc: Mostra ricette craftabili.
+gui.crafting.grid.clear.title: Pulisci
+gui.crafting.grid.clear.desc: Ritorna gli oggetti all'inventario.
+gui.crafting.grid.craft.title: Crafta
+gui.crafting.grid.craft.desc: Crafta la ricetta trovata.
+messages.gui.crafting.test.locked: <red>Ricetta bloccata.</red>
+messages.gui.crafting.test.invalid: <red>Ricetta non valida.</red>
+messages.gui.crafting.test.missing: <red>Ingredienti mancanti.</red>
+messages.gui.crafting.test.ready: <green>Ingredienti disponibili.</green>
+gui.items.title: Oggetti
+gui.items.header: <gray>Oggetti:</gray> <white>{count}</white>
+gui.items.entry.rarity: <gray>Rarità:</gray> <white>{rarity}</white>
+gui.items.entry.stats: <gray>Statistiche:</gray> <white>{count}</white>
+gui.items.entry.affixes: <gray>Affissi:</gray> <white>Sì</white>
+gui.items.entry.giveOne: <gray>Clic sinistro:</gray> <white>Dai 1</white>
+gui.items.entry.giveStack: <gray>Shift + clic sinistro:</gray> <white>Dai 64</white>
+gui.items.entry.inspectHint: <gray>Clic destro per dettagli</gray>
+gui.items.inspect.title: "<gold>Oggetto: {item}</gold>"
+gui.items.inspect.header: <yellow>{item}</yellow>
+gui.items.inspect.info: Info
+gui.items.inspect.missing: <red>Template mancante</red>
+gui.items.inspect.version: <gray>Versione:</gray> <white>{version}</white>
+gui.items.inspect.rarity: <gray>Rarità:</gray> <white>{rarity}</white>
+gui.items.inspect.stats: <gray>Statistiche:</gray> <white>{count}</white>
+gui.items.inspect.affixes: <gray>Affissi:</gray> <white>Sì</white>
+gui.items.inspect.hooks: <gray>Hook:</gray> <white>{count}</white>
+gui.upgrades.title: Migliorie
+gui.upgrades.header: <gray>Migliorie:</gray> <white>{count}</white>
+gui.upgrades.inspect.title: "<gold>Miglioria: {upgrade}</gold>"
+gui.upgrades.inspect.header: <yellow>{upgrade}</yellow>
+gui.upgrades.inspect.info: Info
+gui.upgrades.inspect.modifiers: <gray>Modificatori:</gray> <white>{count}</white>
+gui.upgrades.inspect.attributes: <gray>Attributi:</gray> <white>{count}</white>
+gui.upgrades.inspect.enchants: <gray>Incantesimi:</gray> <white>{count}</white>
+gui.upgrades.inspect.spells: <gray>Incantesimi:</gray> <white>{count}</white>
+gui.upgrades.inspect.apply.title: Applica Miglioria
+gui.upgrades.inspect.apply.desc: Applica all'oggetto nella mano principale.
+gui.upgrades.apply.title: Forgia delle Migliorie
+gui.upgrades.apply.header: Forgia delle Migliorie
+gui.upgrades.apply.desc: Inserisci un libro miglioramento e un oggetto da potenziare.
+gui.upgrades.apply.upgrade.title: Slot Miglioria
+gui.upgrades.apply.upgrade.desc: Inserisci qui un libro miglioramento.
+gui.upgrades.apply.target.title: Slot Bersaglio
+gui.upgrades.apply.target.desc: Inserisci qui l'oggetto da potenziare.
+gui.upgrades.apply.action.title: Applica Miglioria
+gui.upgrades.apply.action.desc: Fonde la miglioria con l'oggetto.
+gui.upgrades.apply.error.noUpgrade: <red>Inserisci prima un libro miglioramento.</red>
+gui.upgrades.apply.error.noTarget: <red>Inserisci prima un oggetto bersaglio.</red>
+gui.upgrades.entry.giveOne: <gray>Clic sinistro:</gray> <white>Dai 1</white>
+gui.upgrades.entry.giveStack: <gray>Shift + clic sinistro:</gray> <white>Dai 64</white>
+gui.upgrades.entry.inspectHint: <gray>Clic destro per dettagli</gray>
+gui.minions.title: Minion
+gui.minions.header: <gray>Attivi:</gray> <white>{count}</white>
+gui.minions.entry.count: <gray>Quantità:</gray> <white>{count}</white>
+gui.minions.entry.mob: <gray>Mob:</gray> <white>{mob}</white>
+gui.minions.mode.title: Modalità
+gui.minions.mode.desc: Cambia comportamento dei minion.
+gui.minions.mode.label: <gray>Modalità:</gray> <white>{mode}</white>
+gui.minions.dismissAll.title: Rimuovi Tutti
+gui.minions.dismissAll.desc: Rimuove tutti i minion attivi.
+gui.minions.loadout.title: "<gold>Minion: {minion}</gold>"
+gui.minions.loadout.header: <yellow>{minion}</yellow>
+gui.minions.loadout.info: Info
+gui.minions.loadout.count: <gray>Quantità:</gray> <white>{count}</white>
+gui.minions.loadout.mob: <gray>Mob:</gray> <white>{mob}</white>
+gui.minions.loadout.mode: <gray>Modalità:</gray> <white>{mode}</white>
+gui.minions.loadout.mainAttack: <gray>Principale:</gray> <white>{attack}</white>
+gui.minions.loadout.secondaryAttack: <gray>Secondario:</gray> <white>{attack}</white>
+gui.minions.loadout.disablePassives: <gray>Passivi:</gray> <white>{state}</white>
+gui.minions.loadout.disableAttacks: <gray>Attacchi:</gray> <white>{state}</white>
+gui.minions.loadout.disableAi: <gray>AI:</gray> <white>{state}</white>
+gui.minions.loadout.dismiss.title: Rimuovi
+gui.minions.loadout.dismiss.desc: Rimuove questo gruppo di minion.
+gui.mobs.title: Mob
+gui.mobs.header: <gray>Mob:</gray> <white>{count}</white>
+gui.mobs.entry.type: <gray>Tipo:</gray> <white>{type}</white>
+gui.mobs.entry.tier: <gray>Tier:</gray> <white>{tier}</white>
+gui.mobs.entry.giveEgg: <gray>Clic sinistro:</gray> <white>Dai uovo</white>
+gui.mobs.entry.giveEggStack: <gray>Shift + clic sinistro:</gray> <white>Dai 64 uova</white>
+gui.mobs.entry.giveSpawner: <gray>Clic destro:</gray> <white>Dai spawner</white>
+gui.mobs.inspect.title: "Mob: {mob}"
+gui.mobs.inspect.header: <gold><bold>{mob}</bold></gold>
+gui.mobs.inspect.info: Dettagli Mob
+gui.mobs.inspect.type: <gray>Tipo:</gray> <white>{type}</white>
+gui.mobs.inspect.tier: <gray>Tier:</gray> <white>{tier}</white>
+gui.mobs.inspect.traits: <gray>Tratti:</gray> <white>{count}</white>
+gui.mobs.inspect.phases: <gray>Fasi:</gray> <white>{count}</white>
+gui.mobs.inspect.attacks: <gray>Attacchi:</gray> <white>{count}</white>
+gui.dungeons.title: Dungeon
+gui.dungeons.header: <gray>Livelli:</gray> <white>{count}</white>
+gui.dungeons.status.title: Stato Dungeon
+gui.dungeons.status.header: <gold><bold>Stato Dungeon</bold></gold>
+gui.dungeons.status.none: <gray>Nessun dungeon attivo.</gray>
+gui.dungeons.status.active: <green>Dungeon attivo</green>
+gui.dungeons.status.queue.none: <gray>Non in coda.</gray>
+gui.dungeons.status.queue.queued: <gray>In coda:</gray> <white>Livello {level}</white> <gray>({position}/{total})</gray>
+gui.dungeons.status.queue.active: <green>Attivo:</green> <white>Livello {level}</white>
+gui.dungeons.status.session.state: <gray>Stato:</gray> <white>{state}</white>
+gui.dungeons.status.session.wave: <gray>Ondata:</gray> <white>{wave}/{total}</white>
+gui.dungeons.status.session.boss.on: <gray>Fase boss:</gray> <white>Sì</white>
+gui.dungeons.status.session.boss.off: <gray>Fase boss:</gray> <white>No</white>
+gui.dungeons.status.session.timeLeft: <gray>Tempo rimasto:</gray> <white>{time}</white>
+gui.dungeons.status.session.wait: <gray>Prossima ondata:</gray> <white>{time}</white>
+gui.dungeons.status.session.affixes: <gray>Affissi:</gray> <white>{count}</white>
+gui.dungeons.level.title: <yellow>Dungeon Livello {level}</yellow>
+gui.dungeons.level.queueTokens: <gray>Token coda:</gray> <white>{tokens}</white>
+gui.dungeons.level.wait: <gray>Attesa:</gray> <white>{seconds}s</white>
+gui.dungeons.level.timeLimit: <gray>Limite tempo:</gray> <white>{seconds}s</white>
+gui.dungeons.level.affixes: <gray>Affissi:</gray> <white>{count}</white>
+gui.dungeons.level.rewards.tokens: <gray>Token premio:</gray> <white>{min}-{max}</white>
+gui.dungeons.level.rewards.skill: <gray>Punti abilità:</gray> <white>{points}</white>
+gui.dungeons.level.locked: "<red>Bloccato: completa il livello {level}.</red>"
+gui.dungeons.level.action.queue: <green>Click sinistro per metterti in coda</green>
+gui.dungeons.level.action.queueParty: <yellow>Click destro per coda party</yellow>
+gui.dungeons.action.status.title: Stato
+gui.dungeons.action.status.desc: Visualizza lo stato del dungeon.
+gui.dungeons.action.leave.title: Esci dalla coda
+gui.dungeons.action.leave.desc: Esci dalla coda corrente.
+gui.kits.title: Kit
+gui.kits.header: <gray>Kit:</gray> <white>{count}</white>
+gui.kits.inspect.title: "<gold>Kit: {kit}</gold>"
+gui.kits.inspect.header: <yellow>{kit}</yellow>
+gui.kits.inspect.info: Info
+gui.kits.inspect.items: <gray>Oggetti:</gray> <white>{count}</white>
+gui.kits.entry.items: <gray>Oggetti:</gray> <white>{count}</white>
+gui.kits.entry.xp: <gray>XP:</gray> <white>{amount}</white>
+gui.kits.entry.tokens: <gray>Token:</gray> <white>{amount}</white>
+gui.kits.entry.compressed: <gray>Compressi:</gray> <white>{amount}</white>
+gui.kits.entry.pallets: <gray>Pallet:</gray> <white>{amount}</white>
+gui.kits.entry.oneTime: <gray>Kit una sola volta</gray>
+gui.kits.entry.permission: <gray>Richiede:</gray> <white>{permission}</white>
+gui.kits.entry.view: <gray>Clicca per vedere</gray>
+gui.kits.entry.give: <gray>Clic sinistro:</gray> <white>Dai oggetti kit</white>
+gui.kits.status.available: <green>Disponibile</green>
+gui.kits.status.unavailable: <red>Non disponibile</red>
+gui.kits.status.cooldown: "<yellow>Ricarica: {time}</yellow>"
+gui.kits.claim.title: Riscatta Kit
+gui.kits.claim.desc: Riscatta questo kit.
+gui.adminHub.title: <gold><bold>Hub Admin</bold></gold>
+gui.adminHub.header: <gray>Indice admin</gray>
+gui.adminHub.items.title: Oggetti
+gui.adminHub.items.desc: Sfoglia e dai oggetti.
+gui.adminHub.upgrades.title: Upgrade
+gui.adminHub.upgrades.desc: Sfoglia e dai upgrade.
+gui.adminHub.mobs.title: Mob
+gui.adminHub.mobs.desc: Sfoglia mob e dai uova/spawner.
+gui.adminHub.kits.title: Kit
+gui.adminHub.kits.desc: Sfoglia e dai kit.
+gui.adminHub.shops.title: Negozi
+gui.adminHub.shops.desc: Sfoglia negozi e scambi.
+gui.adminHub.quests.title: Missioni
+gui.adminHub.quests.desc: Vedi log missioni e progressi.
+gui.adminHub.questGivers.title: Quest Giver
+gui.adminHub.questGivers.desc: Sfoglia i quest giver.
+gui.adminHub.crafting.title: Crafting
+gui.adminHub.crafting.desc: Sfoglia ricette scoperte.
+gui.adminHub.dungeons.title: Dungeon
+gui.adminHub.dungeons.desc: Coda e stato dungeon.
+gui.adminHub.systemStatus.title: Stato Sistema
+gui.adminHub.systemStatus.desc: Stato di reload e validazione.
+gui.adminHub.give.title: Dai Token
+gui.adminHub.give.desc: Dai rapidamente token del negozio.
+gui.adminHub.classes.title: Classi
+gui.adminHub.classes.desc: Sfoglia le classi.
+gui.adminHub.advancements.title: Avanzamenti
+gui.adminHub.advancements.desc: Sfoglia gli ID avanzamenti.
+gui.adminGive.title: Dai (Admin)
+gui.adminGive.header: <gray>Token:</gray> <white>{count}</white>
+gui.adminGive.entry.id: <gray>ID:</gray> <white>{id}</white>
+gui.adminGive.entry.giveOne: <gray>Clic sinistro:</gray> <white>Dai 1</white>
+gui.adminGive.entry.giveStack: <gray>Shift + clic sinistro:</gray> <white>Dai 64</white>
+gui.systemStatus.title: Stato Sistema
+gui.systemStatus.header: <gray>Sistemi:</gray> <white>{count}</white>
+gui.systemStatus.entry.source: <gray>Sorgente:</gray> <white>{source}</white>
+gui.systemStatus.entry.detail: <gray>Dettaglio:</gray> <white>{detail}</white>
+gui.systemStatus.entry.errors: <red>Errori:</red> <white>{count}</white>
+gui.systemStatus.errors.title: <gold>Errori - {label}</gold>
+gui.systemStatus.errors.header: <gray>Errori:</gray> <white>{count}</white>
+gui.classes.index.title: Classi
+gui.classes.index.header: <gray>Classi:</gray> <white>{count}</white>
+gui.classes.index.entry.enabled: <green>Attivo</green>
+gui.classes.index.entry.disabled: <red>Disattivo</red>
+gui.advancements.index.title: Avanzamenti
+gui.advancements.index.header: <gray>Avanzamenti:</gray> <white>{count}</white>
+gui.advancements.index.entry.id: <gray>ID:</gray> <white>{id}</white>

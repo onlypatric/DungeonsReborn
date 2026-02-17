@@ -1,0 +1,43 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_boss_01:
+    name: Ability Upgrade Highlands Boss 01
+    costs:
+      -
+        type: mana
+        amount: 35.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: ITEM_SLIME
+          length: 5.652400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: SHRIEK
+          length: 5.28448
+          points: 3
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.7
+          maxDistance: 26
+          hitRadius: 0.35
+          trail:
+            particle: CRIT
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 32.5
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

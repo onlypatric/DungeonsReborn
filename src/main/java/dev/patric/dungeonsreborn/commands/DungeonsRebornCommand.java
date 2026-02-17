@@ -50,12 +50,15 @@ import dev.patric.dungeonsreborn.quests.QuestGiverYamlRegistry;
 import dev.patric.dungeonsreborn.quests.QuestService;
 import dev.patric.dungeonsreborn.quests.QuestYamlRegistry;
 import dev.patric.dungeonsreborn.party.PartyService;
-import dev.patric.dungeonsreborn.system.SystemStatusStore;
 import dev.patric.dungeonsreborn.locale.LocaleService;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.menus.UserHubMenu;
+import dev.patric.dungeonsreborn.menus.UserSettingsMenu;
+import dev.patric.dungeonsreborn.menus.UpgradeApplyMenu;
+import dev.patric.dungeonsreborn.menus.AdminHubMenu;
+import dev.patric.dungeonsreborn.menus.CraftingDiscoveryMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import net.kyori.adventure.text.Component;
 
 public final class DungeonsRebornCommand {
   private DungeonsRebornCommand() {
@@ -74,6 +77,8 @@ public final class DungeonsRebornCommand {
       MobSpawnManager mobSpawns,
       MobDebugOverlayService mobDebugOverlay,
       dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore spawnerStore,
+      dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockStore trialSpawnerStore,
+      dev.patric.dungeonsreborn.mobs.VaultBlockStore vaultStore,
       CraftingYamlRegistry crafting,
       CraftingGuiSessionManager craftingSessions,
       CraftingDiscoveryService craftingDiscovery,
@@ -98,9 +103,26 @@ public final class DungeonsRebornCommand {
     return Commands.literal(root)
         .executes(ctx -> help(ctx, root))
         .then(Commands.literal("help").executes(ctx -> help(ctx, root)))
+        .then(Commands.literal("input")
+            .then(Commands.argument("message", StringArgumentType.greedyString())
+                .executes(ctx -> inputMessage(ctx, StringArgumentType.getString(ctx, "message")))))
+        .then(Commands.literal("user").executes(ctx -> openUserHub(ctx, engine, yaml, upgrades, minions, mobsRegistry,
+            parties, quests, questGivers, shops, shopSessions, crafting, craftingDiscovery, dungeonRegistry,
+            dungeonQueue, dungeonSessions, kits, locales)))
+        .then(Commands.literal("crafting")
+            .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, false))
+            .then(Commands.literal("open")
+                .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, false)))
+            .then(Commands.literal("all")
+                .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, true))))
+        .then(Commands.literal("settings").executes(ctx -> openUserSettings(ctx, engine, locales)))
         .then(Commands.literal("admin")
             .executes(ctx -> helpAdmin(ctx, root))
             .then(Commands.literal("help").executes(ctx -> helpAdmin(ctx, root)))
+            .then(Commands.literal("gui")
+                .executes(ctx -> openAdminHub(ctx, yaml, upgrades, mobsYaml, mobsRegistry, shops, shopSessions, quests,
+                    questGivers, crafting, craftingDiscovery, dungeonRegistry, dungeonQueue, dungeonSessions, parties,
+                    advancements, kits, classRegistry)))
             .then(Commands.literal("reload").executes(ctx -> reloadAll(ctx, plugin, yaml, mobsYaml, mobsRegistry,
                 crafting, advancements, upgrades, shops, kits, classRegistry, dungeonRegistry, questRegistry,
                 questGivers, locales, spawnerStore)))
@@ -209,8 +231,8 @@ public final class DungeonsRebornCommand {
                                     StringArgumentType.getString(ctx, "player"),
                                     IntegerArgumentType.getInteger(ctx, "amount")))))))))
             .then(EffectsCommand.createCommand(engine, yaml, bindings, editor, minions))
-            .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore))
-            .then(ShopsCommand.createCommand(shops))
+            .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore, trialSpawnerStore, vaultStore))
+            .then(ShopsCommand.createCommand(shops, shopSessions))
             .then(KitsCommand.createAdminCommand(kits))
             .then(ClassesCommand.createAdminCommand(classRegistry, classService, classSkills, classAbilityBindings))
             .then(DungeonCommand.createAdminCommand(dungeonRegistry, dungeonQueue, dungeonSessions, parties))
@@ -218,6 +240,7 @@ public final class DungeonsRebornCommand {
             .then(PartyCommand.createCommand(parties))
             .then(ChatCommand.createCommand(parties))
             .then(Commands.literal("upgrades")
+                .then(Commands.literal("open").executes(ctx -> upgradesOpen(ctx, upgrades)))
                 .then(Commands.literal("reload").executes(ctx -> upgradesReload(ctx, upgrades)))
                 .then(Commands.literal("debug")
                     .then(Commands.literal("scan").executes(ctx -> upgradesDebugScan(ctx, upgrades)))
@@ -252,6 +275,8 @@ public final class DungeonsRebornCommand {
     var placeholders = Locales.placeholders("root", root);
     CommandMessages.send(sender, "messages.command.help.header", placeholders);
     CommandMessages.send(sender, "messages.command.help.root", placeholders);
+    CommandMessages.send(sender, "messages.command.help.user", placeholders);
+    CommandMessages.send(sender, "messages.command.help.settings", placeholders);
     CommandMessages.send(sender, "messages.command.help.kits", placeholders);
     CommandMessages.send(sender, "messages.command.help.classes", placeholders);
     CommandMessages.send(sender, "messages.command.help.dungeon", placeholders);
@@ -290,6 +315,119 @@ public final class DungeonsRebornCommand {
     CommandMessages.send(sender, "messages.command.help.adminUpgradesGive", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminCraftingReload", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminCraftingValidate", placeholders);
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int openUserHub(CommandContext<CommandSourceStack> ctx,
+      EffectsEngine engine,
+      EffectsYamlAbilities yaml,
+      UpgradeService upgrades,
+      MinionManager minions,
+      MobRegistry mobs,
+      PartyService parties,
+      QuestService quests,
+      QuestGiverYamlRegistry questGivers,
+      ShopYamlRegistry shops,
+      ShopSessionManager shopSessions,
+      CraftingYamlRegistry crafting,
+      CraftingDiscoveryService craftingDiscovery,
+      DungeonYamlRegistry dungeonRegistry,
+      DungeonQueueService dungeonQueue,
+      DungeonSessionManager dungeonSessions,
+      KitService kits,
+      LocaleService locales) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    UserHubMenu.open(player, locales, engine, yaml, upgrades, minions, mobs, parties, quests, questGivers, shops,
+        shopSessions, crafting, craftingDiscovery, dungeonRegistry, dungeonQueue, dungeonSessions, kits);
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int openAdminHub(CommandContext<CommandSourceStack> ctx,
+      EffectsYamlAbilities yaml,
+      UpgradeService upgrades,
+      MobYamlRegistry mobsYaml,
+      MobRegistry mobsRegistry,
+      ShopYamlRegistry shops,
+      ShopSessionManager shopSessions,
+      QuestService quests,
+      QuestGiverYamlRegistry questGivers,
+      CraftingYamlRegistry crafting,
+      CraftingDiscoveryService craftingDiscovery,
+      DungeonYamlRegistry dungeonRegistry,
+      DungeonQueueService dungeonQueue,
+      DungeonSessionManager dungeonSessions,
+      PartyService parties,
+      AdvancementService advancements,
+      KitService kits,
+      ClassYamlRegistry classes) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.admin.gui")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.admin.gui"));
+      return Command.SINGLE_SUCCESS;
+    }
+    AdminHubMenu.open(player, yaml, upgrades, mobsRegistry, mobsYaml, kits, shops, shopSessions, quests, questGivers,
+        crafting, craftingDiscovery, dungeonRegistry, dungeonQueue, dungeonSessions, parties, advancements, classes);
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int openUserSettings(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, LocaleService locales) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    dev.patric.dungeonsreborn.gui.GuiManager.get().open(player, new UserSettingsMenu(locales, engine));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int openCrafting(CommandContext<CommandSourceStack> ctx,
+      CraftingYamlRegistry crafting,
+      CraftingDiscoveryService discovery,
+      CraftingGuiSessionManager craftingSessions,
+      boolean showAll) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (crafting == null || discovery == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (craftingSessions == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (showAll && !player.hasPermission("dungeonsreborn.crafting.preview")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.crafting.preview"));
+      return Command.SINGLE_SUCCESS;
+    }
+    dev.patric.dungeonsreborn.menus.CraftingGridMenu.open(player, crafting, discovery, craftingSessions, showAll);
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int inputMessage(CommandContext<CommandSourceStack> ctx, String message) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    boolean accepted = dev.patric.dungeonsreborn.gui.GuiManager.get().submitText(player, message);
+    if (!accepted) {
+      CommandMessages.send(sender, "messages.gui.textInput.none");
+    }
     return Command.SINGLE_SUCCESS;
   }
 
@@ -511,6 +649,20 @@ public final class DungeonsRebornCommand {
         "loaded", result.loaded(),
         "errors", result.errors().size(),
         "migrated", migrated));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int upgradesOpen(CommandContext<CommandSourceStack> ctx, UpgradeService upgrades) {
+    var sender = ctx.getSource().getSender();
+    if (!(sender instanceof Player player)) {
+      sender.sendMessage(CommandMessages.text(sender, "messages.command.playerOnly"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (upgrades == null) {
+      sender.sendMessage(CommandMessages.text(sender, "labels.system.upgrades"));
+      return Command.SINGLE_SUCCESS;
+    }
+    UpgradeApplyMenu.open(player, upgrades);
     return Command.SINGLE_SUCCESS;
   }
 

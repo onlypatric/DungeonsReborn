@@ -1,0 +1,22 @@
+quests:
+  quest_desert_explore_058:
+    name: Desert Recon XI
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - desert
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 121
+    rewards:
+      xp: 75
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0

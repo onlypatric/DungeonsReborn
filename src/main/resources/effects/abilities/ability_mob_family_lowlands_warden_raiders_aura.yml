@@ -1,0 +1,107 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_warden_raiders_aura:
+    name: Lowlands Warden_Raiders
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: DAMAGE_INDICATOR
+          radius: 3.25375
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: EXPLOSION
+          radius: 1.4534999999999998
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: DAMAGE_INDICATOR
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.368
+            right: 2.736
+            up: 0.4
+          p2:
+            forward: 2.736
+            right: -2.052
+            up: 0.8
+          p3:
+            forward: 4.104
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: EXPLOSION
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 0.6096625
+            right: 1.219325
+            up: 0.4
+          p2:
+            forward: 1.219325
+            right: -0.9144937499999999
+            up: 0.8
+          p3:
+            forward: 1.8289874999999998
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: DAMAGE_INDICATOR
+          points:
+            -
+              x: 2.38
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.19
+              y: 0.0
+              z: 2.06
+            -
+              x: -1.19
+              y: 0.0
+              z: -2.06
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: EXPLOSION
+          points:
+            -
+              x: 2.02
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.01
+              y: 0.0
+              z: 1.75
+            -
+              x: -1.01
+              y: 0.0
+              z: -1.75
+          up: -1.0
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_swirl
+          radius: 1.9
+          points: 3
+          up: -2.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 1.9

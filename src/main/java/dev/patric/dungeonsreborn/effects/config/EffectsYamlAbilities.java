@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Biome;
 import org.bukkit.Color;
+import org.bukkit.EntityEffect;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -52,6 +53,7 @@ import org.bukkit.util.Vector;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 
 import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
@@ -2132,6 +2134,8 @@ public final class EffectsYamlAbilities {
       errors.add(base + ": " + ex.getMessage());
       return 0;
     }
+    // Require the itemId tag so material-only matchers don't bind every similar item.
+    baseMatcher = ItemMatchers.and(ItemMatchers.itemId(itemId), baseMatcher);
 
     String bindingKey = "bindings";
     List<?> bindingList = mapList(root, "bindings", base + ".bindings");
@@ -6897,6 +6901,24 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      case "totem" -> {
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          if (target != null) {
+            target.playEffect(EntityEffect.PROTECTED_FROM_DEATH);
+            if (ctx.engine().isDebugEnabled() && target instanceof Player player) {
+              ItemStack main = player.getInventory().getItemInMainHand();
+              ItemStack off = player.getInventory().getItemInOffHand();
+              effectsLog.info("[Effects][Totem] player=" + player.getName()
+                  + " main=" + describeItem(main) + " deathProtection=" + hasDeathProtection(main)
+                  + " off=" + describeItem(off) + " deathProtection=" + hasDeathProtection(off));
+            }
+          }
+        };
+      }
       case "knockback" -> {
         NumValue horizontal = numValue(node, "horizontal", 1.0, path);
         NumValue vertical = numValue(node, "vertical", 0.35, path);
@@ -6986,17 +7008,20 @@ public final class EffectsYamlAbilities {
 
           b.onHit(hit -> {
             CastContext cast = hit.cast();
-            cast.state().put(YAML_LAST_ENTITY, hit.hitEntity());
-            if (finalDamageTemplate != null) {
-              DamageSpec spec = finalDamageTemplate.toSpec(cast);
-              if (spec != null) {
-                cast.engine().applyDamage(cast, hit.hitEntity(), spec);
+            LivingEntity target = hit.hitEntity();
+            if (target != null) {
+              cast.state().put(YAML_LAST_ENTITY, target);
+              if (finalDamageTemplate != null) {
+                DamageSpec spec = finalDamageTemplate.toSpec(cast);
+                if (spec != null) {
+                  cast.engine().applyDamage(cast, target, spec);
+                }
               }
-            }
-            finalOnHit.execute(cast);
-            Object hook = cast.state().get(DSL_ON_HIT);
-            if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
-              hookAction.execute(cast);
+              finalOnHit.execute(cast);
+              Object hook = cast.state().get(DSL_ON_HIT);
+              if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
+                hookAction.execute(cast);
+              }
             }
           });
 
@@ -15919,6 +15944,12 @@ public final class EffectsYamlAbilities {
     }
     String value = String.valueOf(raw);
     String normalized = value.trim().toUpperCase(Locale.ROOT);
+    if (normalized.equals("HEAL")) {
+      return HealType.DIRECT;
+    }
+    if (normalized.equals("HEAL_OVER_TIME") || normalized.equals("HEAL_HOT") || normalized.equals("HOT")) {
+      return HealType.HOT;
+    }
     try {
       return HealType.valueOf(normalized);
     } catch (IllegalArgumentException ex) {
@@ -15929,6 +15960,29 @@ public final class EffectsYamlAbilities {
       }
       throw new IllegalArgumentException(msg);
     }
+  }
+
+  private static boolean hasDeathProtection(ItemStack item) {
+    if (item == null || item.getType() == Material.AIR) {
+      return false;
+    }
+    return item.getData(DataComponentTypes.DEATH_PROTECTION) != null;
+  }
+
+  private static String describeItem(ItemStack item) {
+    if (item == null || item.getType() == Material.AIR) {
+      return "EMPTY";
+    }
+    ItemMeta meta = item.getItemMeta();
+    String name = null;
+    if (meta != null && meta.hasDisplayName()) {
+      name = String.valueOf(meta.displayName());
+    }
+    String base = item.getType().name() + "x" + item.getAmount();
+    if (name == null || name.isBlank()) {
+      return base;
+    }
+    return base + " name=" + name;
   }
 
   private static DamageCause damageCauseValue(Map<String, Object> node, String path, DamageCause def) {

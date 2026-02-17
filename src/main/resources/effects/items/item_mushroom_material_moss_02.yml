@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <light_purple><bold>Mosslight Fragment</bold></light_purple> <gray>II</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Mushroom wilds.</gray>
+gui:
+  head: ICON_ITEMS

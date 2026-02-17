@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_ember_30:
+    name: Ability Upgrade Desert Ember 30
+    costs:
+      -
+        type: mana
+        amount: 20.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_spline
+          particle: CRIT
+          points:
+            -
+              x: 3.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.5
+              y: 0.0
+              z: 2.6
+            -
+              x: -1.5
+              y: 0.0
+              z: -2.6
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 3.6
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 5.7

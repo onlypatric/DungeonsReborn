@@ -1,0 +1,26 @@
+name: <dark_purple><bold>Dark Oak Dread</bold></dark_purple> <gray>II</gray>
+description: <gray>Shadowed fear unsettles your foes.</gray> <gray>Boosts Duration Add by 0.71.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_dread_02
+  activator: PASSIVE
+requirements:
+  level: 710
+modifiers:
+  -
+    type: duration_add
+    value: 0.708
+  -
+    type: loot_add
+    value: 0.059
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: vanishing_curse
+    level: 2
+allowUnsafe: true

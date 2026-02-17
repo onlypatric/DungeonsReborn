@@ -1,0 +1,39 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_61:
+    name: Ability Upgrade Snow Glacier 61
+    costs:
+      -
+        type: mana
+        amount: 16.4
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_points
+          particle: BLOCK
+          points:
+            -
+              x: 3.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.62
+              y: 0.0
+              z: 2.81
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.81
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 26.22

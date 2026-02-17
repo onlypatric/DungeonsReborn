@@ -1,0 +1,38 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>IV</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 1.09.</gray> <gray>Grants Generic Max Health +3.13.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_04
+  activator: PASSIVE
+requirements:
+  level: 2255
+modifiers:
+  -
+    type: duration_add
+    value: 1.094
+  -
+    type: damage_add
+    value: 0.293
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 3.131
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: flame
+    level: 3
+  -
+    enchant: knockback
+    level: 3
+allowUnsafe: true

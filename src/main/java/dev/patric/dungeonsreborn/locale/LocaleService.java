@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -48,6 +49,7 @@ public final class LocaleService {
   private final Set<String> missingLogged = ConcurrentHashMap.newKeySet();
   private static final List<String> DEFAULT_LOCALE_FILES = List.of(
       "advancements.yml",
+      "advancements_early_access.yml",
       "bindings.yml",
       "cancel.yml",
       "labels.yml",
@@ -63,6 +65,7 @@ public final class LocaleService {
       "messages/input.yml",
       "messages/items.yml",
       "messages/kits.yml",
+      "messages/gui.yml",
       "messages/locale.yml",
       "messages/mana.yml",
       "messages/mobs.yml",
@@ -79,6 +82,7 @@ public final class LocaleService {
   private String defaultLocale = "en";
   private Set<String> enabledLocales = Set.of("en");
   private boolean allowPlayerOverrides = false;
+  private boolean warnMissing = true;
   private Map<UUID, String> playerOverrides = new HashMap<>();
 
   public LocaleService(JavaPlugin plugin, ServiceLogger logger) {
@@ -93,6 +97,7 @@ public final class LocaleService {
     String configuredDefault = cfg == null ? "en" : cfg.getString("default", "en");
     defaultLocale = normalizeLocale(configuredDefault);
     allowPlayerOverrides = cfg != null && cfg.getBoolean("allowPlayerOverrides", false);
+    warnMissing = cfg == null || cfg.getBoolean("warnMissing", true);
     List<String> enabled = cfg == null ? List.of() : cfg.getStringList("enabled");
     if (enabled.isEmpty()) {
       enabledLocales = new HashSet<>(List.of(defaultLocale));
@@ -306,6 +311,10 @@ public final class LocaleService {
         return text;
       }
     }
+    text = lookupInAnyLocale(key);
+    if (text != null) {
+      return text;
+    }
     logMissing(normalizedLocale, key);
     return key;
   }
@@ -318,7 +327,27 @@ public final class LocaleService {
     return bundle.get(key);
   }
 
+  private String lookupInAnyLocale(String key) {
+    if (key == null || key.isBlank()) {
+      return null;
+    }
+    for (Map.Entry<String, Map<String, String>> entry : new TreeMap<>(bundles).entrySet()) {
+      Map<String, String> bundle = entry.getValue();
+      if (bundle == null) {
+        continue;
+      }
+      String text = bundle.get(key);
+      if (text != null) {
+        return text;
+      }
+    }
+    return null;
+  }
+
   private void logMissing(String locale, String key) {
+    if (!warnMissing) {
+      return;
+    }
     String id = locale + ":" + key;
     if (!missingLogged.add(id)) {
       return;

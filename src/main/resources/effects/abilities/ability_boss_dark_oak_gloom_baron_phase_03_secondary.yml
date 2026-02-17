@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_gloom_baron_phase_03_secondary:
+    name: Ability Boss Dark Oak Gloom Baron Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_sphere_shell
+          particle: ELDER_GUARDIAN
+          radius: 6.6591000000000005
+          points: 1
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: LARGE_SMOKE
+          radius: 5.92263
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 4.2
+        -
+          type: damage_over_time
+          amount: 0.89
+          durationTicks: 96
+          radius: 4.2
+        -
+          particle: LARGE_SMOKE
+          type: preset_shockwave
+          radius: 5.0
+          points: 18

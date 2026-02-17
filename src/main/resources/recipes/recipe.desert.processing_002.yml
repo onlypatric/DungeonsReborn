@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_desert_processing_002
+name: Desert Processing 2
+costs:
+  -
+    type: tokens
+    amount: 1
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: SAND
+        amount: 2
+      -
+        material: BONE
+        amount: 2
+outputs:
+  -
+    item: item_desert_material_sand_02

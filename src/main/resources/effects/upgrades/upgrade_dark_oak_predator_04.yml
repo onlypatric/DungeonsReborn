@@ -1,0 +1,32 @@
+name: <dark_purple><bold>Dark Oak Predator</bold></dark_purple> <gray>IV</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Damage Mult by 1.25.</gray> <gray>Grants Generic Movement Speed +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_predator_04
+  activator: PASSIVE
+requirements:
+  level: 714
+modifiers:
+  -
+    type: damage_mult
+    value: 1.251
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.047
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: blast_protection
+    level: 2
+allowUnsafe: true

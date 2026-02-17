@@ -1,0 +1,51 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_dune_21:
+    name: Ability Upgrade Desert Dune 21
+    costs:
+      -
+        type: mana
+        amount: 9.2
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: WHITE_SMOKE
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.8120000000000005
+            right: 3.624000000000001
+            up: 0.4
+          p2:
+            forward: 3.624000000000001
+            right: -2.7180000000000004
+            up: 0.8
+          p3:
+            forward: 5.436000000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.3
+          maxDistance: 18
+          hitRadius: 0.35
+          trail:
+            particle: LAVA
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 9.04
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

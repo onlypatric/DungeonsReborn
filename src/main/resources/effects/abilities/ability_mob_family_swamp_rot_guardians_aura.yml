@@ -1,0 +1,87 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_swamp_rot_guardians_aura:
+    name: Swamp Rot_Guardians
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: SMOKE
+          radius: 3.96
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: INSTANT_EFFECT
+          radius: 3.529625
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: SMOKE
+          radius: 4.1525
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: INSTANT_EFFECT
+          radius: 3.69325
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SMOKE
+          points:
+            -
+              x: 2.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.37
+              y: 0.0
+              z: 2.38
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.38
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: INSTANT_EFFECT
+          points:
+            -
+              x: 2.34
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.17
+              y: 0.0
+              z: 2.02
+            -
+              x: -1.17
+              y: 0.0
+              z: -2.02
+          up: -1.0
+        -
+          particle: WITCH
+          type: preset_swirl
+          radius: 2.2
+          points: 3
+          up: -2.0
+        -
+          particle: WITCH
+          type: preset_shockwave
+          radius: 3.4000000000000004
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 2.2
+        -
+          type: damage_over_time
+          amount: 0.7
+          durationTicks: 40
+          radius: 2.2

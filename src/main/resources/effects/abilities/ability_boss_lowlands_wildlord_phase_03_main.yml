@@ -1,0 +1,95 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_wildlord_phase_03_main:
+    name: Ability Boss Lowlands Wildlord Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_mesh
+          particle: DRIPPING_DRIPSTONE_WATER
+          points:
+            -
+              x: 6.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.2
+              y: 0.0
+              z: 5.55
+            -
+              x: -3.2
+              y: 0.0
+              z: -5.55
+          triangles:
+            -
+              -
+                x: 6.41
+                y: 0.0
+                z: 0.0
+              -
+                x: -3.2
+                y: 0.0
+                z: 5.55
+              -
+                x: -3.2
+                y: 0.0
+                z: -5.55
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: VAULT_CONNECTION
+          points:
+            -
+              x: 5.44
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.72
+              y: 0.0
+              z: 4.71
+            -
+              x: -2.72
+              y: 0.0
+              z: -4.71
+          triangles:
+            -
+              -
+                x: 5.44
+                y: 0.0
+                z: 0.0
+              -
+                x: -2.72
+                y: 0.0
+                z: 4.71
+              -
+                x: -2.72
+                y: 0.0
+                z: -4.71
+          up: -1.0
+        -
+          type: particles_physics
+          particle: DRIPPING_DRIPSTONE_WATER
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: VAULT_CONNECTION
+          count: 2
+          up: -1.0
+        -
+          type: damage
+          amount: 7.7
+          radius: 6.1
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 6.1

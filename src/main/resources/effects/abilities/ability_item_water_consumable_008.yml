@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_water_consumable_008:
+    name: Ability Item Water Consumable 008
+    cooldown:
+      ticks: 82
+    action:
+      type: sequence
+      actions:
+        -
+          particle: EXPLOSION
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: -0.06
+            -
+              x: 0.25
+              y: 0.0
+              z: -0.35
+            -
+              x: 0.32
+              y: 0.0
+              z: 0.35
+          up: -1.0
+        -
+          particle: EXPLOSION_EMITTER
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.04
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.03
+          up: -1.0
+        -
+          particle: FALLING_DRIPSTONE_LAVA
+          type: particles_points
+          points:
+            -
+              x: 0.32
+              y: 0.0
+              z: -0.24
+            -
+              x: -0.14
+              y: 0.0
+              z: -0.11
+            -
+              x: -0.39
+              y: 0.0
+              z: 0.27
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 6.9
+            policy: any

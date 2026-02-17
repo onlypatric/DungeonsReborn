@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_24:
+    name: Ability Upgrade Snow Glacier 24
+    costs:
+      -
+        type: mana
+        amount: 18.4
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: WARPED_SPORE
+          radius: 4.530000000000001
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.2
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 14.73

@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_sun_cultists_main:
+    name: Desert Sun_Cultists Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: FLAME
+          radius: 4.2250000000000005
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 5.35
+          radius: 2.34
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.21

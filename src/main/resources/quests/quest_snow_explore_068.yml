@@ -1,0 +1,22 @@
+quests:
+  quest_snow_explore_068:
+    name: Snow Charting IX
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - snow
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3219
+    rewards:
+      xp: 195
+      tokens: 14
+      compressed: 0
+      pallet: 0
+      mana: 0.0

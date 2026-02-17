@@ -1,0 +1,62 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_snow_icebound_guardians_aura:
+    name: Snow Icebound_Guardians
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: CAMPFIRE_COSY_SMOKE
+          points:
+            -
+              x: 2.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.09
+              y: 0.0
+              z: 1.89
+            -
+              x: -1.09
+              y: 0.0
+              z: -1.89
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: EFFECT
+          points:
+            -
+              x: 1.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.93
+              y: 0.0
+              z: 1.61
+            -
+              x: -0.93
+              y: 0.0
+              z: -1.61
+          up: -1.0
+        -
+          type: particles_point
+          particle: CAMPFIRE_COSY_SMOKE
+          count: 3
+          up: -1.0
+        -
+          type: particles_point
+          particle: EFFECT
+          count: 6
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 1.75
+        -
+          type: damage_over_time
+          amount: 0.5
+          durationTicks: 40
+          radius: 1.75

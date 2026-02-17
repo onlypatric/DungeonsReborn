@@ -1,0 +1,86 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_dark_oak_rotbound_aura:
+    name: Dark_Oak Rotbound
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: FIREFLY
+          points:
+            -
+              x: 2.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.09
+              y: 0.0
+              z: 1.89
+            -
+              x: -1.09
+              y: 0.0
+              z: -1.89
+          up: -1.0
+        -
+          type: particles_polygon
+          particle: POOF
+          points:
+            -
+              x: 1.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.93
+              y: 0.0
+              z: 1.61
+            -
+              x: -0.93
+              y: 0.0
+              z: -1.61
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: FIREFLY
+          points:
+            -
+              x: 2.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.09
+              y: 0.0
+              z: 1.89
+            -
+              x: -1.09
+              y: 0.0
+              z: -1.89
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: POOF
+          points:
+            -
+              x: 1.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.93
+              y: 0.0
+              z: 1.61
+            -
+              x: -0.93
+              y: 0.0
+              z: -1.61
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 1.75
+        -
+          type: damage_over_time
+          amount: 0.6
+          durationTicks: 40
+          radius: 1.75

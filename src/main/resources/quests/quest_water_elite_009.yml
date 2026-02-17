@@ -1,0 +1,22 @@
+quests:
+  quest_water_elite_009:
+    name: Water Vengeance X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_water_brine_hunters_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 199
+    rewards:
+      xp: 80
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_water_material_current_01

@@ -1,0 +1,23 @@
+quests:
+  quest_water_kill_005:
+    name: Water Culling VI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_water_reef_drifters_05
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 149
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_water_material_current_03
+          amount: 2

@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_12:
+    name: Ability Upgrade Snow Glacier 12
+    costs:
+      -
+        type: mana
+        amount: 18.4
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_mesh
+          particle: SCULK_SOUL
+          points:
+            -
+              x: 2.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.12
+              y: 0.0
+              z: 1.95
+            -
+              x: -1.13
+              y: 0.0
+              z: -1.95
+          triangles:
+            -
+              -
+                x: 2.25
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.12
+                y: 0.0
+                z: 1.95
+              -
+                x: -1.13
+                y: 0.0
+                z: -1.95
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.2
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 13.71

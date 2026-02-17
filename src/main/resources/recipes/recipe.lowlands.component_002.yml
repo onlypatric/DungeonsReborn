@@ -1,0 +1,19 @@
+schemaVersion: 1
+id: recipe_lowlands_component_002
+name: Lowlands Component 2
+costs:
+  -
+    type: tokens
+    amount: 4
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        item: item_lowlands_material_ancient_01
+      -
+        item: item_lowlands_material_wild_05
+outputs:
+  -
+    item: item_lowlands_component_02

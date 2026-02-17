@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_21:
+    name: Ability Upgrade Snow Boss 21
+    costs:
+      -
+        type: mana
+        amount: 41.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          particle: ENCHANT
+          type: preset_gradient_cone
+          radius: 2.6
+          points: 3
+        -
+          type: projectile
+          speedPerTick: 1.9
+          maxDistance: 30
+          hitRadius: 0.35
+          trail:
+            particle: SNOWFLAKE
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 42.5
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

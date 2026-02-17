@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_mushroom_mossbiters_main:
+    name: Mushroom Mossbiters Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: CRIT
+          radius: 6.715
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 6.02
+          radius: 3.06
+          damageCause: DIRECT

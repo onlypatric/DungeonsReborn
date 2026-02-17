@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_warden_raiders_secondary:
+    name: Lowlands Warden_Raiders Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: CLOUD
+          radius: 8.28
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 2.9
+          durationTicks: 100
+          radius: 5.06
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 100
+          amplifier: 0
+          radius: 4.83

@@ -17,13 +17,17 @@ import dev.patric.dungeonsreborn.quests.QuestService;
 public final class ShopSessionManager {
   private final ShopYamlRegistry registry;
   private final ServiceLogger logger;
+  @SuppressWarnings("unused")
   private final ShopStockManager stockManager;
   @SuppressWarnings("unused")
   private final boolean allowExperienceReward;
+  @SuppressWarnings("unused")
   private ShopTradeMetrics metrics;
   private ShopTradeAuditLog auditLog;
+  @SuppressWarnings("unused")
   private AdvancementService advancements;
   private CustomXpService customXpService;
+  @SuppressWarnings("unused")
   private int customXpReward;
   private QuestService questService;
   private ClassService classService;

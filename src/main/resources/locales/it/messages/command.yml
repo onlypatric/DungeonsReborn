@@ -5,6 +5,16 @@ messages.command.classes.nodes.header: <gold>Nodi per</gold> <white>{id}</white>
 messages.command.classes.nodes.headerAll: <gold>Nodi classe</gold>
 messages.command.classes.nodes.unknown: <red>Classe sconosciuta:</red> <white>{id}</white>
 messages.command.classes.selectFirst: <red>Seleziona prima una classe.</red>
+messages.command.classes.export.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.export.errors: <red>Esportazione classi con {count} errori per</red> <white>{path}</white>
+messages.command.classes.export.ok: <green>Esportate</green> <white>{count}</white> <green>classi in</green> <white>{path}</white>
+messages.command.classes.import.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.import.errors: <red>Importazione classi con {count} errori per</red> <white>{path}</white>
+messages.command.classes.import.missing: <red>File di import mancante.</red>
+messages.command.classes.import.ok: <green>Importate</green> <white>{count}</white> <green>classi da</green> <white>{path}</white> <gray>(ricaricate {loaded}, errori {errors})</gray>
+messages.command.classes.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.validate.errors: <red>Validazione classi con {count} errori.</red>
+messages.command.classes.validate.ok: <green>Classi valide:</green> <white>{count}</white>
 messages.command.classes.state.header: <gold>Stato classe</gold> <dark_gray>-</dark_gray> <white>{player}</white> <gray>({id})</gray>
 messages.command.classes.state.noClass: <red>{player} non ha selezionato una classe.</red>
 messages.command.classes.state.playerMissing: <red>Giocatore non trovato:</red> <white>{player}</white>
@@ -21,8 +31,13 @@ messages.command.crafting.info.name: <gray>Nome:</gray> <white>{name}</white>
 messages.command.crafting.info.outputs: <gray>Uscite:</gray> <white>{count}</white>
 messages.command.crafting.info.permissions: <gray>Permessi:</gray> <white>{count}</white>
 messages.command.crafting.info.variants: <gray>Varianti:</gray> <white>{count}</white>
+messages.command.crafting.discovered: <green>Ricetta sbloccata</green> <white>{id}</white> <green>per</green> <white>{player}</white>
 messages.command.crafting.outputMissing: <red>Ricetta senza output:</red> <white>{id}</white>
 messages.command.crafting.unknown: <red>Ricetta sconosciuta:</red> <white>{id}</white>
+messages.command.crafting.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.command.crafting.validate.errors: <red>Validazione crafting con {count} errori.</red>
+messages.command.crafting.validate.ok: <green>Validazione crafting OK.</green>
+messages.command.itemGiven: <green>Dato oggetto</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>a</green> <white>{player}</white>
 messages.command.dungeons.abortedReload: Messages command dungeons abortedReload
 messages.command.dungeons.active: Active
 messages.command.dungeons.queued: Queued
@@ -30,6 +45,8 @@ messages.command.dungeons.validate.entry: Entry
 messages.command.dungeons.validate.errors: Errors
 messages.command.dungeons.validate.ok: Ok
 messages.command.effects.mana.state.details: Messages command effects mana state details
+messages.command.effects.status.on: <green>attivo</green>
+messages.command.effects.status.off: <red>disattivo</red>
 messages.command.help.adminAdvancementsReload: <gray>/{root} admin advancements reload</gray> <dark_gray>- ricarica avanzamenti</dark_gray>
 messages.command.help.adminClassesExport: <gray>/{root} admin classes export [name]</gray> <dark_gray>- esporta classes.yml</dark_gray>
 messages.command.help.adminClassesImport: <gray>/{root} admin classes import &lt;name&gt; [replace]</gray> <dark_gray>- importa
@@ -65,6 +82,8 @@ messages.command.help.party: <gray>/{root} party</gray> <dark_gray>- menu party<
 messages.command.help.partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- chat party</dark_gray>
 messages.command.help.partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- messaggio party</dark_gray>
 messages.command.help.root: <gray>/{root}</gray> <dark_gray>- apri hub utente</dark_gray>
+messages.command.help.user: <gray>/{root} user</gray> <dark_gray>- apri hub utente</dark_gray>
+messages.command.help.settings: <gray>/{root} settings</gray> <dark_gray>- apri impostazioni</dark_gray>
 messages.command.kits.list.entry: Entry
 messages.command.kits.list.header: Header
 messages.command.missingPermission: <red>Permesso mancante:</red> <white>{permission}</white>
@@ -94,6 +113,7 @@ messages.command.mobs.snapshot.pos: Pos
 messages.command.mobs.snapshot.variant: Variant
 messages.command.mobs.snapshot.world: World
 messages.command.mobs.spawned: Spawned
+messages.command.mobs.spawnFailed: <red>Spawn fallito:</red> <white>{message}</white>
 messages.command.party.admin.cleanup: <green>Pulizia completata.</green> <gray>Inviti</gray> <white>{invites}</white> <gray>Richieste</gray>
   <white>{requests}</white> <gray>Party</gray> <white>{parties}</white>
 messages.command.party.admin.disbanded: <green>Party sciolto.</green>
@@ -120,6 +140,7 @@ messages.command.shops.give: Give
 messages.command.shops.help.give: Give
 messages.command.shops.help.info: Info
 messages.command.shops.help.list: List
+messages.command.shops.help.open: Open
 messages.command.shops.help.reload: Reload
 messages.command.shops.help.token: Gettone
 messages.command.shops.info.header: Header
@@ -135,3 +156,199 @@ messages.command.shops.unknown: Unknown
 messages.command.systemUnavailable: Messages command systemUnavailable
 messages.command.unknownUpgrade: Messages command unknownUpgrade
 messages.command.upgradeGiven: Messages command upgradeGiven
+
+# --- missing keys copied from en (TODO translate) ---
+messages.command.classes.nodes.nodeEntry: <gray>-</gray> <white>{id}</white>  # TODO: translate
+messages.command.effects.abilityInvalid: <red>Invalid ability id:</red> <white>{message}</white>  # TODO: translate
+messages.command.effects.abilityNoSpec: <red>No spec found per:</red> <white>{id}</white>  # TODO: auto-translated
+messages.command.effects.abilityUnknown: <red>Unknown ability:</red> <white>{id}</white>  # TODO: translate
+messages.command.effects.bind.add: <green>Bound</green> <white>{id}</white> <green>a held item</green> <gray>({key})</gray>  # TODO: auto-translated
+messages.command.effects.bind.clear: <green>Cleared bindings</green> <gray>({key})</gray> <green>on held item</green>  # TODO: translate
+messages.command.effects.bind.clearAll: <green>Cleared all bindings on held item</green>  # TODO: translate
+messages.command.effects.bind.list.left: <gray>Left-click abilities:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.bind.list.none: (none)  # TODO: translate
+messages.command.effects.bind.list.right: <gray>Right-click abilities:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.bind.remove: <green>Unbound</green> <white>{id}</white> <green>da held item</green> <gray>({key})</gray>  # TODO: auto-translated
+messages.command.effects.bindingsMissing: <red>Bindings integration not installed.</red>  # TODO: translate
+messages.command.effects.cast.error: <red>{message}</red>  # TODO: translate
+messages.command.effects.cast.failed: <red>Cast failed:</red> <white>{error}</white>  # TODO: translate
+messages.command.effects.cast.success: <green>Cast</green> <white>{ability}</white> <green>on</green> <white>{player}</white>  # TODO: translate
+messages.command.effects.consoleNeedsPlayer: <red>Console must specify un player.</red>  # TODO: auto-translated
+messages.command.effects.debug: <green>Effects debug</green> <white>{status}</white>  # TODO: translate
+messages.command.effects.debugScript: <green>Effects script debug</green> <white>{status}</white>  # TODO: translate
+messages.command.effects.debugScriptTrace: <green>Effects script trace</green> <white>{status}</white>  # TODO: translate
+messages.command.effects.explain.line: <gray>{line}</gray>  # TODO: translate
+messages.command.effects.explain.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.help.bindAdd: <gray>/dr effects bind add &lt;right|left&gt; &lt;ability&gt;</gray>  # TODO: translate
+messages.command.effects.help.bindClear: <gray>/dr effects bind clear &lt;right|left|all&gt;</gray>  # TODO: translate
+messages.command.effects.help.bindList: <gray>/dr effects bind list</gray>  # TODO: translate
+messages.command.effects.help.bindRemove: <gray>/dr effects bind remove &lt;right|left&gt; &lt;ability&gt;</gray>  # TODO: translate
+messages.command.effects.help.cast: <gray>/dr effects cast &lt;ability&gt; [player]</gray>  # TODO: translate
+messages.command.effects.help.debug: '<gray>/dr effects debug &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'  # TODO: translate
+messages.command.effects.help.debugScript: '<gray>/dr effects debug script &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'  # TODO: translate
+messages.command.effects.help.debugScriptTrace: '<gray>/dr effects debug script trace &lt;on|off&gt;</gray> <dark_gray>(current:
+  {status})</dark_gray>'  # TODO: translate
+messages.command.effects.help.explain: <gray>/dr effects explain &lt;right|left&gt;</gray>  # TODO: translate
+messages.command.effects.help.info: <gray>/dr effects info &lt;ability&gt;</gray>  # TODO: translate
+messages.command.effects.help.itemDiff: <gray>/dr effects item diff [itemId]</gray>  # TODO: translate
+messages.command.effects.help.itemInspect: <gray>/dr effects item inspect &lt;itemId&gt;</gray>  # TODO: translate
+messages.command.effects.help.itemReport: <gray>/dr effects item report</gray>  # TODO: translate
+messages.command.effects.help.lint: <gray>/dr effects lint [script]</gray>  # TODO: translate
+messages.command.effects.help.list: <gray>/dr effects list</gray>  # TODO: translate
+messages.command.effects.help.loggingReload: <gray>/dr effects logging reload</gray> <dark_gray>(reload logging levels)</dark_gray>  # TODO: translate
+messages.command.effects.help.mana: <gray>/dr effects mana &lt;show|set|add|max&gt;</gray>  # TODO: translate
+messages.command.effects.help.minions: <gray>/dr effects minions &lt;recall|dismiss|mode|list|stats|test&gt;</gray>  # TODO: translate
+messages.command.effects.help.particlesBudget: '<gray>/dr effects particles budget &lt;maxPerPlayerTick&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'  # TODO: translate
+messages.command.effects.help.particlesQuality: '<gray>/dr effects particles quality &lt;multiplier&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'  # TODO: translate
+messages.command.effects.help.particlesQueue: '<gray>/dr effects particles queue &lt;maxRequestsPerTick&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'  # TODO: translate
+messages.command.effects.help.particlesRange: '<gray>/dr effects particles range &lt;blocks&gt;</gray> <dark_gray>(current:
+  {value})</dark_gray>'  # TODO: translate
+messages.command.effects.help.particlesStats: <gray>/dr effects particles stats</gray>  # TODO: translate
+messages.command.effects.help.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.help.reload: <gray>/dr effects reload</gray> <dark_gray>(reload YAML abilities)</dark_gray>  # TODO: translate
+messages.command.effects.help.scriptRun: <gray>/dr effects script run &lt;file&gt;</gray>  # TODO: translate
+messages.command.effects.help.scriptStats: <gray>/dr effects script stats</gray>  # TODO: translate
+messages.command.effects.help.stats: <gray>/dr effects stats</gray>  # TODO: translate
+messages.command.effects.help.tag: <gray>/dr effects tag &lt;on|off&gt;</gray> <dark_gray>(tags held item con {marker})</dark_gray>  # TODO: auto-translated
+messages.command.effects.help.timings: <gray>/dr effects timings &lt;last [player]|cast &lt;uuid&gt;&gt;</gray>  # TODO: translate
+messages.command.effects.help.types: <gray>/dr effects types &lt;actions|targeters|conditions&gt;</gray>  # TODO: translate
+messages.command.effects.info.ability: <green>Ability</green> <white>{id}</white>  # TODO: translate
+messages.command.effects.info.cooldown: <gray>Cooldown:</gray> <white>{ticks}t</white> <dark_gray>(key={key})</dark_gray>  # TODO: translate
+messages.command.effects.info.costs: <gray>Costs:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.info.interacts: <gray>Interact triggers:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.info.label.description: 'Description: '  # TODO: translate
+messages.command.effects.info.label.name: 'Name: '  # TODO: translate
+messages.command.effects.info.requirements: <gray>Requirements:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.invalidUuid: <red>Invalid UUID.</red>  # TODO: translate
+messages.command.effects.items.diff.entry: <gray>-</gray> <white>{diff}</white>  # TODO: translate
+messages.command.effects.items.diff.header: <gold>[Oggettos]</gold> <white>Diff per</white> <yellow>{id}</yellow>  # TODO: auto-translated
+messages.command.effects.items.diff.none: <green>No differences detected.</green>  # TODO: translate
+messages.command.effects.items.heldMissingId: <red>Held item has no item_id; provide un itemId argument.</red>  # TODO: auto-translated
+messages.command.effects.items.inspect.affixPool: <gray>affix pool:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.baseStats: <gray>base stats:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.durability: <gray>durability:</gray> <white>{min}-{max}</white>  # TODO: translate
+messages.command.effects.items.inspect.header: <gold>[Oggettos]</gold> <white>{id}</white> <gray>(v{version})</gray>  # TODO: auto-translated
+messages.command.effects.items.inspect.hooks: <gray>hooks:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.items.inspect.loreLines: <gray>lore lines:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.items.inspect.material: <gray>material:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.name: <gray>name:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.rarity: <gray>rarity:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.rolledAffixes: <gray>rolled affixes:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.rolledStats: <gray>rolled stats:</gray> <white>{value}</white>  # TODO: translate
+messages.command.effects.items.inspect.tier: <gray>tier:</gray> <white>{id}</white> <gray>scale=</gray><white>{scale}</white>  # TODO: translate
+messages.command.effects.items.report.entry: <gray>-</gray> <white>{error}</white>  # TODO: translate
+messages.command.effects.items.report.header: <gold>[Oggettos]</gold> <white>Validation report</white>  # TODO: auto-translated
+messages.command.effects.items.report.more: <gray>... +{count} more</gray>  # TODO: translate
+messages.command.effects.items.report.none: <green>No item template errors recorded in last reload.</green>  # TODO: translate
+messages.command.effects.items.unknown: <red>Unknown item template:</red> <white>{id}</white>  # TODO: translate
+messages.command.effects.lint.errorEntry: <red>-</red> <white>{error}</white>  # TODO: translate
+messages.command.effects.lint.header: <gold>[Effects]</gold> <white>DSL lint</white>  # TODO: translate
+messages.command.effects.lint.more: <gray>... +{count} more</gray>  # TODO: translate
+messages.command.effects.lint.summary: <gray>Scripts:</gray> <white>{scripts}</white> <gray>Errors:</gray> <white>{errors}</white>  # TODO: translate
+messages.command.effects.list.header: <green>Abilities</green> <gray>({count})</gray><white>:</white> <white>{list}</white>  # TODO: translate
+messages.command.effects.list.none: <gray>No abilities registered.</gray>  # TODO: translate
+messages.command.effects.loggingReload.ok: <green>Reloaded logging levels da config.yml</green>  # TODO: auto-translated
+messages.command.effects.loggingReload.unavailable: <red>Logging configuration not available.</red>  # TODO: translate
+messages.command.effects.mana.add: <green>Mana:</green> <white>{current}</white><gray>/</gray><white>{max}</white>  # TODO: translate
+messages.command.effects.mana.max: <green>Mana max set a</green> <white>{max}</white>  # TODO: auto-translated
+messages.command.effects.mana.missingProvider: <red>No mana provider installed.</red>  # TODO: translate
+messages.command.effects.mana.pulse: <green>Pulse scheduled:</green> <white>resource={resource}</white> <gray>amount=</gray><white>{amount}</white>  # TODO: translate
+messages.command.effects.mana.set: <green>Mana set a</green> <white>{current}</white><gray>/</gray><white>{max}</white>  # TODO: auto-translated
+messages.command.effects.mana.show: <aqua>Mana:</aqua> <white>{current}</white><gray>/</gray><white>{max}</white>  # TODO: translate
+messages.command.effects.mana.state.entry: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green>  # TODO: translate
+messages.command.effects.mana.state.entryDetailed: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green><dark_gray>{details}</dark_gray>  # TODO: translate
+messages.command.effects.mana.state.header: <aqua>Resources per {player}:</aqua>  # TODO: auto-translated
+messages.command.effects.mana.stats.antiExploit: <gray>- antiExploit:</gray> <white>gainCapPerTick={capPerTick}</white>  # TODO: translate
+messages.command.effects.mana.stats.header: <aqua>Mana stats:</aqua>  # TODO: translate
+messages.command.effects.mana.stats.regen: <gray>- regen:</gray> <white>period={period}</white> <gray>amount=</gray><white>{amount}</white>  # TODO: translate
+messages.command.effects.mana.stats.timed: <gray>- timed:</gray> <white>enabled={enabled}</white> <gray>period=</gray><white>{period}</white>  # TODO: translate
+messages.command.effects.minions.dismissed: <gray>Dismissed minions:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.minions.listEntry: <white>-</white> <white>{owner}</white> <gray>x</gray><white>{count}</white>  # TODO: translate
+messages.command.effects.minions.listHeader: <gray>Active minions by owner:</gray>  # TODO: translate
+messages.command.effects.minions.mode: <gray>Minion mode set a</gray> <white>{mode}</white>  # TODO: auto-translated
+messages.command.effects.minions.none: <gray>No active minions.</gray>  # TODO: translate
+messages.command.effects.minions.recalled: <gray>Recalled minions:</gray> <white>{count}</white>  # TODO: translate
+messages.command.effects.minions.statsActive: <gray>- active:</gray> <green>{count}</green>  # TODO: translate
+messages.command.effects.minions.statsDespawned: <gray>- despawned:</gray> <green>{count}</green>  # TODO: translate
+messages.command.effects.minions.statsHeader: <gray>Minion stats</gray>  # TODO: translate
+messages.command.effects.minions.statsSpawned: <gray>- spawned:</gray> <green>{count}</green>  # TODO: translate
+messages.command.effects.minions.test: <gray>Summoned test minions:</gray> <white>{mob}</white>  # TODO: translate
+messages.command.effects.particles.budget: <green>Particles budget set a</green> <white>{value}</white> <gray>per player  # TODO: auto-translated
+messages.command.effects.particles.quality: <green>Particles quality set a</green> <white>{value}</white>  # TODO: auto-translated
+messages.command.effects.particles.queue: <green>Particles queue cap set a</green> <white>{value}</white> <gray>requests  # TODO: auto-translated
+messages.command.effects.particles.range: <green>Particles default range set a</green> <white>{value}</white>  # TODO: auto-translated
+messages.command.effects.particles.stats.flush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>  # TODO: translate
+messages.command.effects.particles.stats.header: <gold>[Effects]</gold> <white>Particles stats</white>  # TODO: translate
+messages.command.effects.particles.stats.queue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{maxQueued}</white>  # TODO: translate
+messages.command.effects.playerNotFound: <red>Player not found.</red>  # TODO: translate
+messages.command.effects.playerNotOnline: <red>Player not online.</red>  # TODO: translate
+messages.command.effects.reload.errorEntry: <red>-</red> <white>{error}</white>  # TODO: translate
+messages.command.effects.reload.file: <gray>File:</gray> <white>{path}</white>  # TODO: translate
+messages.command.effects.reload.more: <gray>... +{count} more</gray>  # TODO: translate
+messages.command.effects.reload.summary: <green>Reloaded YAML abilities:</green> <white>{abilities}</white> <green>loaded,  # TODO: translate
+item bindings: </green> <white>{bindings}</white> <green>, errors:</green> <white>{errors}</white>  # TODO: translate
+messages.command.effects.reload.updated: <green>Updated</green> <white>{count}</white> <green>items per online players.</green>  # TODO: auto-translated
+messages.command.effects.script.error: <red>Script error:</red> <white>{message}</white>  # TODO: translate
+messages.command.effects.script.playersOnly: <red>Only players can run scripts.</red>  # TODO: translate
+messages.command.effects.script.run: <green>Ran script:</green> <white>{path}</white>  # TODO: translate
+messages.command.effects.script.stats.entry: <gray>-</gray> <white>{id}</white> <gray>exec=</gray><white>{execs}</white> <gray>avg=</gray><white>{avgMs}</white>  # TODO: translate
+messages.command.effects.script.stats.header: <gold>[Effects]</gold> <white>Script metrics (top {count})</white>  # TODO: translate
+messages.command.effects.script.stats.none: <gray>No script metrics recorded.</gray>  # TODO: translate
+messages.command.effects.stats.header: <gold>[Effects]</gold> <white>Engine stats</white>  # TODO: translate
+messages.command.effects.stats.particlesFlush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>  # TODO: translate
+messages.command.effects.stats.particlesHeader: <gold>[Effects]</gold> <white>Particles</white>  # TODO: translate
+messages.command.effects.stats.particlesQueue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{max}</white>  # TODO: translate
+messages.command.effects.stats.scheduled: <gray>scheduled:</gray> <white>tick={tick}</white> <gray>rt=</gray><white>{rt}</white>  # TODO: translate
+messages.command.effects.stats.tick: <gray>tick=</gray><white>{tick}</white> <gray>lastTick=</gray><white>{lastTickMs}ms</white>  # TODO: translate
+messages.command.effects.stats.tracked: <gray>tracked:</gray> <white>casts={casts}</white> <gray>cooldowns=</gray><white>{cooldowns}</white>  # TODO: translate
+messages.command.effects.status.False: false  # TODO: translate
+messages.command.effects.status.True: true  # TODO: translate
+messages.command.effects.status.disabled: disabled  # TODO: translate
+messages.command.effects.status.enabled: enabled  # TODO: translate
+messages.command.effects.status.unavailable: unavailable  # TODO: translate
+messages.command.mobs.help.trialSpawnerList: <gray>/dr mobs trialspawner list</gray>
+messages.command.mobs.help.trialSpawnerGive: <gray>/dr mobs trialspawner give &lt;id&gt;</gray>
+messages.command.mobs.help.trialSpawnerBind: <gray>/dr mobs trialspawner bind &lt;id&gt;</gray>
+messages.command.mobs.help.vaultList: <gray>/dr mobs vault list</gray>
+messages.command.mobs.help.vaultGive: <gray>/dr mobs vault give &lt;id&gt;</gray>
+messages.command.mobs.help.vaultBind: <gray>/dr mobs vault bind &lt;id&gt;</gray>
+messages.command.mobs.trialSpawner.listHeader: <gold>Trial spawner</gold> <gray>({count})</gray>
+messages.command.mobs.trialSpawner.listEntry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.trialSpawner.listNone: <gray>Nessun trial spawner configurato.</gray>
+messages.command.mobs.trialSpawner.unknown: <red>Trial spawner sconosciuto:</red> <white>{id}</white>
+messages.command.mobs.trialSpawner.given: <green>Dato item trial spawner:</green> <white>{id}</white>
+messages.command.mobs.trialSpawner.bindTarget: <red>Guarda un blocco trial spawner per associarlo.</red>
+messages.command.mobs.trialSpawner.bound: <green>Blocco trial spawner associato a:</green> <white>{id}</white>
+messages.command.mobs.vault.listHeader: <gold>Vault</gold> <gray>({count})</gray>
+messages.command.mobs.vault.listEntry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.vault.listNone: <gray>Nessuna vault configurata.</gray>
+messages.command.mobs.vault.unknown: <red>Vault sconosciuta:</red> <white>{id}</white>
+messages.command.mobs.vault.given: <green>Dato item vault:</green> <white>{id}</white>
+messages.command.mobs.vault.bindTarget: <red>Guarda un blocco vault per associarlo.</red>
+messages.command.mobs.vault.bound: <green>Blocco vault associato a:</green> <white>{id}</white>
+messages.command.effects.tag: <green>Tag</green> <white>{status}</white> <green>on held item</green>  # TODO: translate
+messages.command.effects.timings.entry: <white>{key}</white><gray>:</gray> <white>{ms}ms</white> <dark_gray>({count}x, avg  # TODO: translate
+messages.command.effects.timings.header: <green>Timings per</green> <white>{ability}</white> <gray>(castId={castId})</gray>  # TODO: auto-translated
+messages.command.effects.timings.noCastRecord: <gray>No cast record found.</gray>  # TODO: translate
+messages.command.effects.timings.none: <gray>No timings recorded per castId={castId} (wrap actions con Actions.timed(...)).</gray>  # TODO: auto-translated
+messages.command.effects.timings.total: <gray>Total recorded:</gray> <white>{ms}ms</white> <dark_gray>({keys} keys)</dark_gray>  # TODO: translate
+messages.command.effects.types.actions: <green>Action types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>  # TODO: translate
+messages.command.effects.types.conditions: <green>Condition types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>  # TODO: translate
+messages.command.effects.types.targeters: <green>Targeter types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>  # TODO: translate
+messages.command.effects.types.unknown: <red>Unknown kind.</red>  # TODO: translate
+messages.command.effects.yamlMissing: <red>YAML loader not installed.</red>  # TODO: translate
+messages.command.help.adminLocaleValidate: <gray>/{root} admin locale validate</gray> <dark_gray>- validate locale coverage</dark_gray>  # TODO: translate
+messages.command.items.holdMainHand: <red>Hold un item in tuo main hand.</red>  # TODO: auto-translated
+messages.command.upgrades.debug.entry: <gray>-</gray> <white>{record}</white> <dark_gray>({status})</dark_gray>  # TODO: translate
+messages.command.upgrades.debug.none: <gray>No upgrade records found.</gray>  # TODO: translate
+messages.command.upgrades.debug.recordsHeader: <gold>[Potenziamentos]</gold> <white>Records:</white> <white>{count}</white>  # TODO: auto-translated
+messages.command.upgrades.debug.status.empty: empty  # TODO: translate
+messages.command.upgrades.debug.status.missing: missing  # TODO: translate
+messages.command.upgrades.debug.status.ok: ok  # TODO: translate
+messages.command.upgrades.debug.status.vanilla: vanilla  # TODO: translate
+messages.command.upgrades.debug.validationEntry: <gray>-</gray> <white>{issue}</white>  # TODO: translate
+messages.command.upgrades.debug.validationHeader: <gold>[Potenziamentos]</gold> <white>Validation report</white>  # TODO: auto-translated
+messages.command.upgrades.debug.validationNone: <green>No upgrade issues detected.</green>  # TODO: translate

@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_plains_village_raiders_03:
+    type: ZOMBIE_VILLAGER
+    name: <yellow>Plains Zombie Villager Reaver</yellow>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 44.6
+      ATTACK_DAMAGE: 1.79
+      scaleVariance: 1.2
+    attacks:
+      main:
+        ability: ability_mob_family_plains_village_raiders_main
+        trigger: MELEE
+        cooldownTicks: 44
+        targetMode: NEAREST_PLAYER
+        range: 3.8
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_plains_village_raiders_secondary
+        trigger: MELEE
+        cooldownTicks: 82
+        targetMode: NEAREST_PLAYER
+        range: 6.0
+        chance: 0.45
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_plains_village_raiders_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_plains_village_raiders_aggressive
+    xpGating:
+      minLevel: 16

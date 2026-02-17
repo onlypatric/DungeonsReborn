@@ -1,0 +1,19 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <dark_purple><bold>Nightbark Totem II</bold></dark_purple>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>An ancient charm bound to your soul.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Prevents death once.</white>
+      - <red>Consumes on trigger.</red>
+  meta:
+    skull:
+      head: REQ_SUPER_MUSHROOM_2
+    components:
+      death_protection: true
+consumable:
+  mode: NONE
+  amount: 1
+gui:
+  head: ICON_ITEMS

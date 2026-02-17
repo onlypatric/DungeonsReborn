@@ -1,0 +1,154 @@
+schemaVersion: 1
+mobs:
+  mob_lowlands_boss_wildlord:
+    type: POLAR_BEAR
+    name: <red><bold>Lowlands Wildlord</bold></red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1024.0
+      ATTACK_DAMAGE: 12.5
+      scaleVariance: 1.3
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_lowlands_boss
+    resistances:
+      PHYSICAL: 0.4096
+      MAGIC: 0.4096
+      FIRE: 0.4096
+      ICE: 0.4096
+      LIGHTNING: 0.4096
+      POISON: 0.4096
+      WITHER: 0.4096
+      BLEED: 0.4096
+      HOLY: 0.4096
+      ARCANE: 0.4096
+      VOID: 0.4096
+      EXPLOSION: 0.4096
+      PROJECTILE: 0.4096
+    xpGating:
+      minLevel: 3178
+    phases:
+      -
+        id: lowlands_wildlord_phase_1
+        healthBelow: 0.8
+        attacks:
+          main:
+            ability: ability_boss_lowlands_wildlord_phase_01_main
+            trigger: MELEE
+            cooldownTicks: 65
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_lowlands_wildlord_phase_01_secondary
+            trigger: MELEE
+            cooldownTicks: 97
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_lowlands_wildlord_phase_01_aura
+            periodTicks: 40
+      -
+        id: lowlands_wildlord_phase_2
+        healthBelow: 0.6
+        attacks:
+          main:
+            ability: ability_boss_lowlands_wildlord_phase_02_main
+            trigger: MELEE
+            cooldownTicks: 70
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_lowlands_wildlord_phase_02_secondary
+            trigger: MELEE
+            cooldownTicks: 104
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_lowlands_wildlord_phase_02_aura
+            periodTicks: 40
+      -
+        id: lowlands_wildlord_phase_3
+        healthBelow: 0.4
+        attacks:
+          main:
+            ability: ability_boss_lowlands_wildlord_phase_03_main
+            trigger: MELEE
+            cooldownTicks: 75
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_lowlands_wildlord_phase_03_secondary
+            trigger: MELEE
+            cooldownTicks: 111
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_lowlands_wildlord_phase_03_aura
+            periodTicks: 40
+      -
+        id: lowlands_wildlord_phase_4
+        healthBelow: 0.2
+        attacks:
+          main:
+            ability: ability_boss_lowlands_wildlord_phase_04_main
+            trigger: MELEE
+            cooldownTicks: 80
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_lowlands_wildlord_phase_04_secondary
+            trigger: MELEE
+            cooldownTicks: 118
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_lowlands_wildlord_phase_04_aura
+            periodTicks: 40

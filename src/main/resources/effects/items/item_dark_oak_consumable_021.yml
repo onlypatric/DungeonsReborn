@@ -1,0 +1,25 @@
+item:
+  type: material
+  material: LINGERING_POTION
+  display:
+    name: <dark_purple><bold>Dreadbark Elixir X</bold></dark_purple>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Awakens ancient rites within.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Heal 3.2 x4 over 2s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>6s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Dark Oak</gray>
+  meta:
+    components:
+      use_cooldown:
+        seconds: 6.6
+bindings:
+  -
+    ability: ability_item_dark_oak_consumable_021
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

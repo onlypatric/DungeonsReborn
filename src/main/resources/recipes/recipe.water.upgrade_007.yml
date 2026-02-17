@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: recipe_water_upgrade_007
+name: Water Upgrade Core 7
+costs:
+  -
+    type: tokens
+    amount: 3
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+  -
+    type: item
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    item:
+      item: item_currency_water_voucher
+variants:
+  -
+    inputs:
+      -
+        item: item_water_material_brine_01
+      -
+        item: item_water_material_brine_02
+      -
+        item: item_water_material_current_03
+outputs:
+  -
+    item: item_water_upgrade_core_01

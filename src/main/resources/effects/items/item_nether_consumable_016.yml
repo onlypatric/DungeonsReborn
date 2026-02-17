@@ -1,0 +1,27 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <red><bold>Brimstone Elixir V</bold></red>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Flares with raw elemental force.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Fire Resistance for 7s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>10s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Nether</gray>
+  meta:
+    skull:
+      head: REQ_GRASS_BLOCK_FOREST_2
+    components:
+      use_cooldown:
+        seconds: 10.0
+bindings:
+  -
+    ability: ability_item_nether_consumable_016
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

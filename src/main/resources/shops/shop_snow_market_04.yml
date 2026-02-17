@@ -1,0 +1,573 @@
+shops:
+  shop_snow_market_04:
+    title: Snow Market 4
+    trades:
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_145
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_146
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_147
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 27
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_148
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_149
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_consumable_150
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 36
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 37
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 36
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 33
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 36
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_material_frost_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 31
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 33
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 28
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 36
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_component_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 50
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 77
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 59
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 64
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 68
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 53
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 69
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 80
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_08
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 58
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_09
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 79
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_10
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 71
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_11
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 60
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_12
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 80
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_13
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 54
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_14
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 52
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_15
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 66
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_16
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 54
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_17
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 78
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_18
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 59
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_19
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 64
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_20
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 55
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_21
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 68
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_22
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 82
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 51
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 48
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 65
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 60
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 51
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 62
+          -
+            type: item_id
+            itemId: item_currency_snow_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_snow_upgrade_core_07
+    gui:
+      head: ICON_SHOPS

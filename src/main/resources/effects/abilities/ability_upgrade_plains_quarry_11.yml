@@ -1,0 +1,27 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_quarry_11:
+    name: Ability Upgrade Plains Quarry 11
+    costs:
+      -
+        type: mana
+        amount: 16.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: CLOUD
+          radius: 2.9250000000000003
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 10
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 5.6

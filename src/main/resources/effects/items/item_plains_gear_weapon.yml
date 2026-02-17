@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <green><bold>Dreadedge</bold></green> <gray>of Plains</gray>
+    lore:
+      - <gold>Edge</gold> <dark_gray>❯</dark_gray> <gray>Strikes with +DMG 1.0–1.4.</gray>
+  meta:
+    skull:
+      head: REQ_FISH_EATING_PENGUIN_2
+attributes:
+  ATTACK_DAMAGE: 1.0
+gui:
+  head: ICON_ITEMS

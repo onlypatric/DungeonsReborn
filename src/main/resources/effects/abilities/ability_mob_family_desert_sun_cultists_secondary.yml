@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_sun_cultists_secondary:
+    name: Desert Sun_Cultists Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: TRIAL_SPAWNER_DETECTION_OMINOUS
+          radius: 5.13
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 2.0
+          durationTicks: 50
+          radius: 3.14
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.99

@@ -1,0 +1,52 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_whiteout_oracle_phase_03_secondary:
+    name: Ability Boss Snow Whiteout Oracle Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_ring
+          particle: CRIT
+          radius: 8.769599999999999
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: SCULK_SOUL
+          radius: 7.816515
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: CRIT
+          radius: 9.1959
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: SCULK_SOUL
+          radius: 8.17887
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.29
+          durationTicks: 96
+          radius: 5.8
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_022:
+    name: Snow Hunt XI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_snow_frost_fauna_22
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3525
+    rewards:
+      xp: 180
+      tokens: 13
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_glacier_01
+          amount: 3

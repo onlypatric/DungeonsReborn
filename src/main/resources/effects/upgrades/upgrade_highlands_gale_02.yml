@@ -1,0 +1,32 @@
+name: <gray><bold>Highlands Gale</bold></gray> <gray>II</gray>
+description: <gray>Tempests lift your speed and aim.</gray> <gray>Boosts Duration Add by 0.20.</gray> <gray>Grants Generic Movement Speed +0.06.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_gale_02
+  activator: LEFT_CLICK
+requirements:
+  level: 1492
+modifiers:
+  -
+    type: duration_add
+    value: 0.203
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.058
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: frost_walker
+    level: 2
+  -
+    enchant: looting
+    level: 2
+allowUnsafe: true

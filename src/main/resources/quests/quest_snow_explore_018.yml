@@ -1,0 +1,22 @@
+quests:
+  quest_snow_explore_018:
+    name: Path of Snow VII
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - snow
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3255
+    rewards:
+      xp: 195
+      tokens: 17
+      compressed: 0
+      pallet: 0
+      mana: 0.0

@@ -23,7 +23,7 @@ public enum GuiTheme {
   WARNING(Material.ORANGE_CONCRETE, "<gold><bold><text></bold></gold>", "<gray><text></gray>"),
   INFO(Material.LIGHT_BLUE_CONCRETE, "<aqua><bold><text></bold></aqua>", "<gray><text></gray>"),
   NEUTRAL(Material.GRAY_CONCRETE, "<white><bold><text></bold></white>", "<gray><text></gray>"),
-  MUTED(Material.GRAY_STAINED_GLASS_PANE, "<dark_gray><text></dark_gray>", "<dark_gray><text></dark_gray>"),
+  MUTED(Material.GRAY_STAINED_GLASS_PANE, "<gray><text></gray>", "<gray><text></gray>"),
   NAV(Material.ARROW, "<white><bold><text></bold></white>", "<gray><text></gray>"),
   ACCENT(Material.PURPLE_CONCRETE, "<light_purple><bold><text></bold></light_purple>", "<gray><text></gray>");
 

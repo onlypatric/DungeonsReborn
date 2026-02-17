@@ -1,0 +1,486 @@
+shops:
+  shop_lowlands_market_01:
+    title: Lowlands Market 1
+    trades:
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_001
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_002
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_003
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_004
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_005
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_006
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 15
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_007
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_008
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_009
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_010
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_011
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_012
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_013
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_014
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_015
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 15
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_016
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_017
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_018
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_019
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_020
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_021
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_022
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 17
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_023
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_024
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_025
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_026
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 18
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_027
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_028
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_029
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_030
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_031
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_032
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_033
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_034
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_035
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 24
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_036
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_037
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 15
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_038
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_039
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_040
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 20
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_041
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 15
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_042
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_043
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_044
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 15
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_045
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 14
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_046
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_047
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 23
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_048
+    gui:
+      head: ICON_SHOPS

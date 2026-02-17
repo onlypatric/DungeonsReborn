@@ -1,0 +1,31 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_boss_07:
+    name: Ability Upgrade Dark Oak Boss 07
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: FLASH
+          radius: 4.977000000000001
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: NOTE
+          radius: 3.4807500000000005
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

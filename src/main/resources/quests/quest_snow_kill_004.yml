@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_004:
+    name: Snow Hunt V
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_snow_frost_fauna_04
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3471
+    rewards:
+      xp: 180
+      tokens: 15
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_glacier_01
+          amount: 3

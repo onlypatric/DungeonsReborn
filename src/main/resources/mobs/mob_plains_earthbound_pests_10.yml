@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_plains_earthbound_pests_10:
+    type: ENDERMITE
+    name: <yellow>Plains Endermite Fang</yellow>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 38.2
+      ATTACK_DAMAGE: 1.53
+      scaleVariance: 0.95
+    attacks:
+      main:
+        ability: ability_mob_family_plains_earthbound_pests_main
+        trigger: MELEE
+        cooldownTicks: 46
+        targetMode: NEAREST_PLAYER
+        range: 3.8
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_plains_earthbound_pests_secondary
+        trigger: MELEE
+        cooldownTicks: 73
+        targetMode: NEAREST_PLAYER
+        range: 6.0
+        chance: 0.45
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_plains_earthbound_pests_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_plains_earthbound_pests_aggressive
+    xpGating:
+      minLevel: 16

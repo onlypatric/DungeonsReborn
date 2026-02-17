@@ -1,0 +1,29 @@
+name: <white><bold>Snow Frost</bold></white> <gray>XI</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_11
+  activator: SHIFT_LEFT
+requirements:
+  level: 3453
+modifiers:
+  -
+    type: duration_mult
+    value: 1.05
+  -
+    type: radius_add
+    value: 0.977
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: silk_touch
+    level: 3
+  -
+    enchant: thorns
+    level: 3
+allowUnsafe: true

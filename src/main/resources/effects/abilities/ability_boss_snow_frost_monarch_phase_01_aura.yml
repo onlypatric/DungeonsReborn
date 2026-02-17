@@ -1,0 +1,121 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_01_aura:
+    name: Ability Boss Snow Frost Monarch Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: VAULT_CONNECTION
+          width: 12.012000000000002
+          height: 2.2
+          depth: 12.012000000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: CRIMSON_SPORE
+          width: 10.759980000000004
+          height: 2.2
+          depth: 10.759980000000004
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: BUBBLE_COLUMN_UP
+          points:
+            -
+              x: 5.31
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.66
+              y: 0.0
+              z: 4.6
+            -
+              x: -2.66
+              y: 0.0
+              z: -4.6
+          up: -1.0
+        -
+          type: particles_cone
+          particle: VAULT_CONNECTION
+          radius: 7.129400000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: CRIMSON_SPORE
+          radius: 6.454880000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_physics_polyline
+          particle: BUBBLE_COLUMN_UP
+          points:
+            -
+              x: 5.31
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.66
+              y: 0.0
+              z: 4.6
+            -
+              x: -2.66
+              y: 0.0
+              z: -4.6
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: VAULT_CONNECTION
+          points:
+            -
+              x: 4.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.31
+              y: 0.0
+              z: 4.0
+            -
+              x: -2.31
+              y: 0.0
+              z: -4.0
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CRIMSON_SPORE
+          points:
+            -
+              x: 3.93
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.96
+              y: 0.0
+              z: 3.4
+            -
+              x: -1.96
+              y: 0.0
+              z: -3.4
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.65
+          durationTicks: 40
+          radius: 4.4
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 4.4
+        -
+          particle: SNOWFLAKE
+          type: preset_shockwave
+          radius: 5.2
+          points: 18

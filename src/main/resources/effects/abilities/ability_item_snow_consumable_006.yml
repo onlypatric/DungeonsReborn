@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_006:
+    name: Ability Item Snow Consumable 006
+    cooldown:
+      ticks: 154
+    action:
+      type: sequence
+      actions:
+        -
+          particle: WHITE_ASH
+          type: particles_points
+          points:
+            -
+              x: -0.47
+              y: 0.0
+              z: 0.06
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.02
+            -
+              x: -0.14
+              y: 0.0
+              z: 0.27
+          up: -1.0
+        -
+          particle: WHITE_SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.11
+              y: 0.0
+              z: 0.01
+            -
+              x: 0.19
+              y: 0.0
+              z: 0.11
+          up: -1.0
+        -
+          particle: WITCH
+          type: particles_points
+          points:
+            -
+              x: -0.11
+              y: 0.0
+              z: 0.25
+            -
+              x: 0.05
+              y: 0.0
+              z: -0.01
+            -
+              x: 0.36
+              y: 0.0
+              z: -0.27
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 20.8
+            policy: any

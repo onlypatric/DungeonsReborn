@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_018:
+    name: Ability Item Lowlands Consumable 018
+    cooldown:
+      ticks: 142
+    action:
+      type: sequence
+      actions:
+        -
+          particle: BUBBLE
+          type: particles_points
+          points:
+            -
+              x: -0.18
+              y: 0.0
+              z: 0.07
+            -
+              x: 0.21
+              y: 0.0
+              z: -0.14
+            -
+              x: 0.39
+              y: 0.0
+              z: 0.25
+          up: -1.0
+        -
+          particle: BUBBLE_COLUMN_UP
+          type: particles_points
+          points:
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.14
+            -
+              x: -0.1
+              y: 0.0
+              z: -0.26
+          up: -1.0
+        -
+          particle: BUBBLE_POP
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.03
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.46
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.11
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 19.4
+            policy: any

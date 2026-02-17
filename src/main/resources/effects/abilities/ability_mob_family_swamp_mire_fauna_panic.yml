@@ -1,0 +1,34 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_swamp_mire_fauna_panic:
+    name: Swamp Mire_Fauna Panic
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: ENTITY_EFFECT
+          points:
+            -
+              x: 2.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.0
+              y: 0.0
+              z: 1.73
+            -
+              x: -1.0
+              y: 0.0
+              z: -1.73
+          up: -1.0
+        -
+          type: potion
+          effect: SPEED
+          durationTicks: 60
+          amplifier: 0
+        -
+          type: potion
+          effect: "minecraft:jump_boost"
+          durationTicks: 40
+          amplifier: 0

@@ -1,0 +1,22 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_38:
+    name: Ability Upgrade Snow Glacier 38
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: ENCHANT
+          count: 6
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

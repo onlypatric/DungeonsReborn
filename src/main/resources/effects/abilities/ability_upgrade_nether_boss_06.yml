@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_boss_06:
+    name: Ability Upgrade Nether Boss 06
+    costs:
+      -
+        type: mana
+        amount: 26.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: SOUL_FIRE_FLAME
+          radius: 3.452400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: SQUID_INK
+          radius: 3.0844800000000006
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 14
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 17.5
+              -
+                type: potion
+                effect: WITHER
+                durationTicks: 40
+                amplifier: 0

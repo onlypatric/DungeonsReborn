@@ -1,0 +1,86 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_icebound_tyrant_phase_04_main:
+    name: Ability Boss Snow Icebound Tyrant Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_sphere_fill
+          particle: SNOWFLAKE
+          radius: 10.2816
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: WHITE_ASH
+          radius: 9.16419
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: SNOWFLAKE
+          radius: 10.7814
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: WHITE_ASH
+          radius: 9.58902
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SNOWFLAKE
+          points:
+            -
+              x: 7.14
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.57
+              y: 0.0
+              z: 6.18
+            -
+              x: -3.57
+              y: 0.0
+              z: -6.18
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: WHITE_ASH
+          points:
+            -
+              x: 6.07
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.03
+              y: 0.0
+              z: 5.26
+            -
+              x: -3.03
+              y: 0.0
+              z: -5.26
+          up: -1.0
+        -
+          type: damage
+          amount: 8.8
+          radius: 6.8
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 6.8
+        -
+          particle: SNOWFLAKE
+          type: preset_shockwave
+          radius: 7.6
+          points: 18

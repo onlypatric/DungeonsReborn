@@ -14,7 +14,6 @@ import dev.patric.dungeonsreborn.classes.ClassYamlRegistry;
 import dev.patric.dungeonsreborn.classes.skills.ClassSkillService;
 import dev.patric.dungeonsreborn.classes.skills.SkillNodeSpec;
 import dev.patric.dungeonsreborn.locale.Locales;
-import net.kyori.adventure.text.Component;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import com.mojang.brigadier.arguments.StringArgumentType;

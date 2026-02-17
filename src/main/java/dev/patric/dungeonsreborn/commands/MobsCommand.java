@@ -18,6 +18,9 @@ import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobSpawnSpec;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerItems;
+import dev.patric.dungeonsreborn.mobs.MobSpawnerMarkers;
+import dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockStore;
+import dev.patric.dungeonsreborn.mobs.VaultBlockStore;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.locale.Locales;
@@ -29,7 +32,8 @@ public final class MobsCommand {
   }
 
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(MobYamlRegistry yaml, MobRegistry registry,
-      MobSpawnManager spawns, MobSpawnerBlockStore spawnerStore) {
+      MobSpawnManager spawns, MobSpawnerBlockStore spawnerStore, TrialSpawnerBlockStore trialStore,
+      VaultBlockStore vaultStore) {
     return Commands.literal("mobs")
         .executes(ctx -> help(ctx))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml)))
@@ -81,6 +85,28 @@ public final class MobsCommand {
                 .then(Commands.argument("id", StringArgumentType.word())
                     .suggests((ctx, builder) -> suggestSpawnIds(spawns, builder))
                     .executes(ctx -> spawnerSpawn(ctx, spawns, StringArgumentType.getString(ctx, "id"))))))
+        .then(Commands.literal("trialspawner")
+            .then(Commands.literal("list")
+                .executes(ctx -> trialSpawnerList(ctx, yaml)))
+            .then(Commands.literal("give")
+                .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestTrialSpawners(yaml, builder))
+                    .executes(ctx -> trialSpawnerGive(ctx, yaml, StringArgumentType.getString(ctx, "id")))))
+            .then(Commands.literal("bind")
+                .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestTrialSpawners(yaml, builder))
+                    .executes(ctx -> trialSpawnerBind(ctx, yaml, trialStore, StringArgumentType.getString(ctx, "id"))))))
+        .then(Commands.literal("vault")
+            .then(Commands.literal("list")
+                .executes(ctx -> vaultList(ctx, yaml)))
+            .then(Commands.literal("give")
+                .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestVaults(yaml, builder))
+                    .executes(ctx -> vaultGive(ctx, yaml, StringArgumentType.getString(ctx, "id")))))
+            .then(Commands.literal("bind")
+                .then(Commands.argument("id", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestVaults(yaml, builder))
+                    .executes(ctx -> vaultBind(ctx, yaml, vaultStore, StringArgumentType.getString(ctx, "id"))))))
         .then(Commands.literal("dump")
             .then(Commands.argument("uuid", StringArgumentType.word())
                 .executes(ctx -> dump(ctx, registry, StringArgumentType.getString(ctx, "uuid")))))
@@ -111,6 +137,12 @@ public final class MobsCommand {
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerPause");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerResume");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerSpawn");
+    CommandMessages.send(sender, "messages.command.mobs.help.trialSpawnerList");
+    CommandMessages.send(sender, "messages.command.mobs.help.trialSpawnerGive");
+    CommandMessages.send(sender, "messages.command.mobs.help.trialSpawnerBind");
+    CommandMessages.send(sender, "messages.command.mobs.help.vaultList");
+    CommandMessages.send(sender, "messages.command.mobs.help.vaultGive");
+    CommandMessages.send(sender, "messages.command.mobs.help.vaultBind");
     CommandMessages.send(sender, "messages.command.mobs.help.dump");
     CommandMessages.send(sender, "messages.command.mobs.help.spawn");
     CommandMessages.send(sender, "messages.command.mobs.help.egg");
@@ -152,6 +184,26 @@ public final class MobsCommand {
       return builder.buildFuture();
     }
     for (String id : yaml.lootPoolIds()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
+  }
+
+  private static CompletableFuture<Suggestions> suggestTrialSpawners(MobYamlRegistry yaml, SuggestionsBuilder builder) {
+    if (yaml == null) {
+      return builder.buildFuture();
+    }
+    for (String id : yaml.trialSpawnerIds()) {
+      builder.suggest(id);
+    }
+    return builder.buildFuture();
+  }
+
+  private static CompletableFuture<Suggestions> suggestVaults(MobYamlRegistry yaml, SuggestionsBuilder builder) {
+    if (yaml == null) {
+      return builder.buildFuture();
+    }
+    for (String id : yaml.vaultIds()) {
       builder.suggest(id);
     }
     return builder.buildFuture();
@@ -207,7 +259,7 @@ public final class MobsCommand {
           Locales.placeholders("id", id));
     } catch (Exception ex) {
       CommandMessages.send(player, "messages.command.mobs.spawnFailed",
-          Locales.placeholders("error", ex.getMessage()));
+          Locales.placeholders("message", ex.getMessage()));
     }
     return Command.SINGLE_SUCCESS;
   }
@@ -492,6 +544,187 @@ public final class MobsCommand {
     }
     CommandMessages.send(sender, "messages.command.mobs.spawnerForced",
         Locales.placeholders("id", id));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int trialSpawnerList(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml) {
+    var sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.mobs.trialspawner.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.trialspawner.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var ids = yaml.trialSpawnerIds();
+    CommandMessages.send(sender, "messages.command.mobs.trialSpawner.listHeader",
+        Locales.placeholders("count", ids.size()));
+    if (ids.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.mobs.trialSpawner.listNone");
+      return Command.SINGLE_SUCCESS;
+    }
+    for (String id : ids) {
+      CommandMessages.send(sender, "messages.command.mobs.trialSpawner.listEntry", Locales.placeholders("id", id));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int trialSpawnerGive(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, String id) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.mobs.trialspawner.give")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.trialspawner.give"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml.trialSpawnerSpec(id) == null) {
+      CommandMessages.send(sender, "messages.command.mobs.trialSpawner.unknown", Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.trialSpawnerIds());
+      return Command.SINGLE_SUCCESS;
+    }
+    ItemStack item = MobSpawnerItems.createTrialSpawnerItem(id);
+    java.util.Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
+    if (!leftovers.isEmpty()) {
+      for (ItemStack stack : leftovers.values()) {
+        player.getWorld().dropItemNaturally(player.getLocation(), stack);
+      }
+    }
+    CommandMessages.send(player, "messages.command.mobs.trialSpawner.given", Locales.placeholders("id", id));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int trialSpawnerBind(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, TrialSpawnerBlockStore store,
+      String id) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml == null || store == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.mobs.trialspawner.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.trialspawner.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml.trialSpawnerSpec(id) == null) {
+      CommandMessages.send(sender, "messages.command.mobs.trialSpawner.unknown", Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.trialSpawnerIds());
+      return Command.SINGLE_SUCCESS;
+    }
+    org.bukkit.block.Block block = player.getTargetBlockExact(6);
+    if (block == null || block.getType() != org.bukkit.Material.TRIAL_SPAWNER) {
+      CommandMessages.send(sender, "messages.command.mobs.trialSpawner.bindTarget");
+      return Command.SINGLE_SUCCESS;
+    }
+    MobSpawnerMarkers.setTrialSpawnerId(block, id);
+    MobSpawnerMarkers.setTrialSpawnerOwner(block, player.getUniqueId());
+    store.upsert(block, id, player.getUniqueId().toString());
+    CommandMessages.send(sender, "messages.command.mobs.trialSpawner.bound", Locales.placeholders("id", id));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int vaultList(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml) {
+    var sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.mobs.vault.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.vault.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    var ids = yaml.vaultIds();
+    CommandMessages.send(sender, "messages.command.mobs.vault.listHeader", Locales.placeholders("count", ids.size()));
+    if (ids.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.mobs.vault.listNone");
+      return Command.SINGLE_SUCCESS;
+    }
+    for (String id : ids) {
+      CommandMessages.send(sender, "messages.command.mobs.vault.listEntry", Locales.placeholders("id", id));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int vaultGive(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, String id) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.mobs.vault.give")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.vault.give"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml.vaultSpec(id) == null) {
+      CommandMessages.send(sender, "messages.command.mobs.vault.unknown", Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.vaultIds());
+      return Command.SINGLE_SUCCESS;
+    }
+    ItemStack item = MobSpawnerItems.createVaultItem(id);
+    java.util.Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
+    if (!leftovers.isEmpty()) {
+      for (ItemStack stack : leftovers.values()) {
+        player.getWorld().dropItemNaturally(player.getLocation(), stack);
+      }
+    }
+    CommandMessages.send(player, "messages.command.mobs.vault.given", Locales.placeholders("id", id));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int vaultBind(CommandContext<CommandSourceStack> ctx, MobYamlRegistry yaml, VaultBlockStore store,
+      String id) {
+    var sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml == null || store == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobSpawners")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.mobs.vault.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.vault.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (yaml.vaultSpec(id) == null) {
+      CommandMessages.send(sender, "messages.command.mobs.vault.unknown", Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, yaml.vaultIds());
+      return Command.SINGLE_SUCCESS;
+    }
+    org.bukkit.block.Block block = player.getTargetBlockExact(6);
+    if (block == null || block.getType() != org.bukkit.Material.VAULT) {
+      CommandMessages.send(sender, "messages.command.mobs.vault.bindTarget");
+      return Command.SINGLE_SUCCESS;
+    }
+    MobSpawnerMarkers.setVaultId(block, id);
+    MobSpawnerMarkers.setVaultOwner(block, player.getUniqueId());
+    store.upsert(block, id, player.getUniqueId().toString());
+    CommandMessages.send(sender, "messages.command.mobs.vault.bound", Locales.placeholders("id", id));
     return Command.SINGLE_SUCCESS;
   }
 

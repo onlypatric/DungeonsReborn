@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sand_king_phase_03_secondary:
+    name: Ability Boss Desert Sand King Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_cylinder
+          particle: INFESTED
+          radius: 5.1408
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: SCRAPE
+          radius: 4.582095
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: INFESTED
+          radius: 5.3907
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: SCRAPE
+          radius: 4.79451
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 1
+          radius: 3.4
+        -
+          type: damage_over_time
+          amount: 0.64
+          durationTicks: 96
+          radius: 3.4
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.2
+          points: 18

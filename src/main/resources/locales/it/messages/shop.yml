@@ -39,3 +39,19 @@ messages.shop.tokens.missing: <red>Oggetto gettone non configurato.</red>
 messages.shop.unknownItem: <red>Oggetto sconosciuto:</red> <white>{id}</white>
 messages.shop.unknownUpgrade: <red>Potenziamento sconosciuto:</red> <white>{id}</white>
 messages.shop.upgradeGiven: <green>Potenziamento dato a</green> <white>{player}</white>
+
+# --- missing keys copied from en (TODO translate) ---
+messages.shop.party.admin.cleanup: <green>Cleanup complete.</green> <gray>Invites</gray> <white>{invites}</white> <gray>Requests</gray>  # TODO: translate
+messages.shop.party.admin.disbanded: <green>Party disbanded.</green>  # TODO: translate
+messages.shop.party.admin.info.header: <gold>Party</gold> <white>{id}</white>  # TODO: translate
+messages.shop.party.admin.info.invites: <gray>Invites:</gray> <white>{count}</white>  # TODO: translate
+messages.shop.party.admin.info.leader: <gray>Leader:</gray> <white>{leader}</white>  # TODO: translate
+messages.shop.party.admin.info.member: <gray>-</gray> <white>{player}</white> <dark_gray>({role})</dark_gray> <gray>online:</gray>  # TODO: translate
+messages.shop.party.admin.info.members: <gray>Members</gray> <dark_gray>({count})</dark_gray>  # TODO: translate
+messages.shop.party.admin.info.public: <gray>Public:</gray> <white>{public}</white>  # TODO: translate
+messages.shop.party.admin.info.requests: <gray>Join requests:</gray> <white>{count}</white>  # TODO: translate
+messages.shop.party.admin.info.world: <gray>World:</gray> <white>{world}</white>  # TODO: translate
+messages.shop.party.admin.list.entry: <gray>-</gray> <white>{id}</white> <gray>leader</gray> <white>{leader}</white> <gray>size</gray>  # TODO: translate
+messages.shop.party.admin.list.header: <gold>Parties</gold> <gray>({count})</gray>  # TODO: translate
+givers: </gray> <white>{givers}</white><gray>, giver errors:</gray> <white>{giverErrors}</white>  # TODO: translate
+migrated items: </gray> <white>{migrated}</white>  # TODO: translate

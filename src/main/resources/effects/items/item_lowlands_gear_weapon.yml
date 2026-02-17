@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <dark_green><bold>Sunshard</bold></dark_green> <gray>of Lowlands</gray>
+    lore:
+      - <gold>Edge</gold> <dark_gray>❯</dark_gray> <gray>Strikes with +DMG 4.6–6.4.</gray>
+  meta:
+    skull:
+      head: REQ_MOSSY_STONE_STAGE_3_2
+attributes:
+  ATTACK_DAMAGE: 4.6
+gui:
+  head: ICON_ITEMS

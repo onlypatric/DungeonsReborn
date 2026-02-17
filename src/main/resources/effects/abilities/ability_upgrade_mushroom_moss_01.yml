@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_mushroom_moss_01:
+    name: Ability Upgrade Mushroom Moss 01
+    costs:
+      -
+        type: mana
+        amount: 12.8
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_spline
+          particle: FALLING_DRIPSTONE_WATER
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.17
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.17
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.6
+          maxDistance: 24
+          hitRadius: 0.35
+          trail:
+            particle: CRIMSON_SPORE
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 18.28
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

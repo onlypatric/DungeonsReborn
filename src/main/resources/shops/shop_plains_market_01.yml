@@ -1,0 +1,486 @@
+shops:
+  shop_plains_market_01:
+    title: Plains Market 1
+    trades:
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_001
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_002
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_003
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_004
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_005
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_006
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 2
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_007
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_008
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_009
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_010
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_011
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_012
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_013
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_014
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_015
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 2
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_016
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_017
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_018
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_019
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_020
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_021
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_022
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_023
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_024
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_025
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_026
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_027
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_028
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_029
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_030
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_031
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_032
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_033
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_034
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_035
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_036
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_037
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 2
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_consumable_038
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_material_earth_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 4
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_05
+    gui:
+      head: ICON_SHOPS

@@ -101,6 +101,8 @@ public final class MobYamlRegistry {
   private final Set<String> loadedScriptAbilityIds = new HashSet<>();
   private final Map<String, MobEggSpec> eggSpecs = new HashMap<>();
   private final Map<String, MobSpawnerBlockSpec> spawnerBlocks = new HashMap<>();
+  private final Map<String, TrialSpawnerSpec> trialSpawners = new HashMap<>();
+  private final Map<String, VaultSpec> vaults = new HashMap<>();
   private final Map<String, MobLootSpec> lootPools = new HashMap<>();
   private final Map<String, MobStyleSpec> stylePresets = new HashMap<>();
   private List<String> lastErrors = List.of();
@@ -219,6 +221,28 @@ public final class MobYamlRegistry {
     return Set.copyOf(spawnerBlocks.keySet());
   }
 
+  public TrialSpawnerSpec trialSpawnerSpec(String id) {
+    if (id == null || id.isBlank()) {
+      return null;
+    }
+    return trialSpawners.get(Ids.normalize(id));
+  }
+
+  public Set<String> trialSpawnerIds() {
+    return Set.copyOf(trialSpawners.keySet());
+  }
+
+  public VaultSpec vaultSpec(String id) {
+    if (id == null || id.isBlank()) {
+      return null;
+    }
+    return vaults.get(Ids.normalize(id));
+  }
+
+  public Set<String> vaultIds() {
+    return Set.copyOf(vaults.keySet());
+  }
+
   public Set<String> lootPoolIds() {
     return Set.copyOf(lootPools.keySet());
   }
@@ -328,6 +352,12 @@ public final class MobYamlRegistry {
     for (YamlSource source : sources) {
       parseMobs(source.cfg(), specs, errors, source.source());
     }
+    Map<String, TrialSpawnerSpec> nextTrialSpawners = new HashMap<>();
+    Map<String, VaultSpec> nextVaults = new HashMap<>();
+    for (YamlSource source : sources) {
+      parseTrialSpawners(source.cfg(), specs, nextTrialSpawners, errors, source.source());
+      parseVaults(source.cfg(), nextVaults, errors, source.source());
+    }
 
     Map<String, MobEggSpec> nextEggs = new HashMap<>();
     Map<String, MobSpawnerBlockSpec> nextBlocks = new HashMap<>();
@@ -357,6 +387,10 @@ public final class MobYamlRegistry {
     eggSpecs.putAll(nextEggs);
     spawnerBlocks.clear();
     spawnerBlocks.putAll(nextBlocks);
+    trialSpawners.clear();
+    trialSpawners.putAll(nextTrialSpawners);
+    vaults.clear();
+    vaults.putAll(nextVaults);
     spawns.setMaxSpawnersPerTick(maxSpawnersPerTick);
     spawns.reload(spawnSpecs, enabledWorlds, despawnOnReload);
 
@@ -367,14 +401,16 @@ public final class MobYamlRegistry {
       }
     } else {
       logger.info("[Mobs] YAML loaded " + loaded + " mobs, " + loadedEggs + " eggs, "
-          + loadedBlocks + " spawner blocks, and " + spawns.activeSpawns() + " spawns");
+          + loadedBlocks + " spawner blocks, " + nextTrialSpawners.size() + " trial spawners, "
+          + nextVaults.size() + " vaults, and " + spawns.activeSpawns() + " spawns");
     }
     lastErrors = List.copyOf(errors);
     SystemStatusStore.get().record(
         "mobs",
         "Mobs",
         file().getPath(),
-        "mobs=" + loaded + ", spawns=" + spawns.activeSpawns() + ", eggs=" + loadedEggs,
+        "mobs=" + loaded + ", spawns=" + spawns.activeSpawns() + ", eggs=" + loadedEggs
+            + ", trialSpawners=" + nextTrialSpawners.size() + ", vaults=" + nextVaults.size(),
         errors);
     SystemStatusStore.get().record(
         "mobLoot",
@@ -758,6 +794,257 @@ public final class MobYamlRegistry {
     return loaded;
   }
 
+  private void parseTrialSpawners(YamlConfiguration cfg, Map<String, MobSpec> specs,
+                                  Map<String, TrialSpawnerSpec> out, List<String> errors, String source) {
+    ConfigurationSection sec = cfg.getConfigurationSection("trialSpawners");
+    if (sec == null) {
+      return;
+    }
+    for (String rawId : sec.getKeys(false)) {
+      String base = prefix(source) + "trialSpawners." + rawId;
+      ConfigurationSection node = sec.getConfigurationSection(rawId);
+      if (node == null) {
+        errors.add(base + ": must be an object");
+        continue;
+      }
+      try {
+        String id = Ids.normalize(rawId);
+        if (out.containsKey(id)) {
+          errors.add(base + ": duplicate trial spawner id");
+          continue;
+        }
+
+        List<TrialSpawnerMobEntry> mobPool = parseTrialSpawnerMobPool(node.get("mobPool"), specs, base + ".mobPool");
+        if (mobPool.isEmpty()) {
+          throw new IllegalArgumentException(base + ".mobPool: expected at least 1 entry");
+        }
+        int waves = requireInt(node, "waves", base + ".waves", 1);
+        int simultaneous = requireInt(node, "simultaneous", base + ".simultaneous", 1);
+        int cooldownTicks = requireInt(node, "cooldownTicks", base + ".cooldownTicks", 0);
+        int requiredPlayers = requireInt(node, "requiredPlayers", base + ".requiredPlayers", 1);
+        double activationRange = requirePositiveDouble(node, "activationRange", base + ".activationRange");
+        String keyLootPool = Ids.normalize(YamlValues.requireString(node, "keyLootPool", base + ".keyLootPool"));
+        if (!lootPools.containsKey(keyLootPool)) {
+          throw new IllegalArgumentException(base + ".keyLootPool: unknown loot pool id: " + keyLootPool);
+        }
+
+        TrialSpawnerProfile ominousProfile = null;
+        ConfigurationSection ominous = node.getConfigurationSection("ominousProfile");
+        if (ominous != null) {
+          List<TrialSpawnerMobEntry> ominousPool = List.of();
+          if (ominous.contains("mobPool")) {
+            ominousPool = parseTrialSpawnerMobPool(ominous.get("mobPool"), specs, base + ".ominousProfile.mobPool");
+            if (ominousPool.isEmpty()) {
+              throw new IllegalArgumentException(base + ".ominousProfile.mobPool: expected at least 1 entry");
+            }
+          }
+          Integer ominousWaves = optionalInt(ominous, "waves", base + ".ominousProfile.waves", 1);
+          Integer ominousSimultaneous = optionalInt(ominous, "simultaneous", base + ".ominousProfile.simultaneous", 1);
+          Integer ominousCooldownTicks = optionalInt(ominous, "cooldownTicks", base + ".ominousProfile.cooldownTicks", 0);
+          String ominousKeyLootPool = null;
+          if (ominous.contains("keyLootPool")) {
+            ominousKeyLootPool = Ids.normalize(YamlValues.requireString(ominous, "keyLootPool", base + ".ominousProfile.keyLootPool"));
+            if (!lootPools.containsKey(ominousKeyLootPool)) {
+              throw new IllegalArgumentException(base + ".ominousProfile.keyLootPool: unknown loot pool id: " + ominousKeyLootPool);
+            }
+          }
+          ominousProfile = new TrialSpawnerProfile(
+              ominousPool,
+              ominousWaves,
+              ominousSimultaneous,
+              ominousCooldownTicks,
+              ominousKeyLootPool);
+        }
+
+        out.put(id, new TrialSpawnerSpec(
+            id,
+            mobPool,
+            waves,
+            simultaneous,
+            cooldownTicks,
+            requiredPlayers,
+            activationRange,
+            keyLootPool,
+            ominousProfile));
+      } catch (Exception ex) {
+        errors.add(base + ": " + ex.getMessage());
+      }
+    }
+  }
+
+  private List<TrialSpawnerMobEntry> parseTrialSpawnerMobPool(Object raw, Map<String, MobSpec> specs, String base) {
+    if (!(raw instanceof List<?> list)) {
+      throw new IllegalArgumentException(base + ": expected a list");
+    }
+    List<TrialSpawnerMobEntry> entries = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      Object item = list.get(i);
+      String entryBase = base + "[" + i + "]";
+      String mobId;
+      double weight = 1.0;
+      if (item instanceof String s) {
+        mobId = Ids.normalize(s);
+      } else if (item instanceof Map<?, ?> map) {
+        Object mobRaw = map.get("mobId");
+        if (mobRaw == null) {
+          mobRaw = map.get("mob");
+        }
+        if (mobRaw == null) {
+          mobRaw = map.get("id");
+        }
+        if (!(mobRaw instanceof String s) || s.isBlank()) {
+          throw new IllegalArgumentException(entryBase + ".mobId: must be set");
+        }
+        mobId = Ids.normalize(s);
+        Object weightRaw = map.get("weight");
+        if (weightRaw instanceof Number num) {
+          weight = num.doubleValue();
+        }
+      } else {
+        throw new IllegalArgumentException(entryBase + ": entry must be string or object");
+      }
+      if (!specs.containsKey(mobId) && !registry.has(mobId)) {
+        throw new IllegalArgumentException(entryBase + ".mobId: unknown mob id: " + mobId);
+      }
+      entries.add(new TrialSpawnerMobEntry(mobId, weight));
+    }
+    return entries;
+  }
+
+  private void parseVaults(YamlConfiguration cfg, Map<String, VaultSpec> out, List<String> errors, String source) {
+    ConfigurationSection sec = cfg.getConfigurationSection("vaults");
+    if (sec == null) {
+      return;
+    }
+    Set<String> itemIds = yamlAbilities.loadedItemIds();
+    for (String rawId : sec.getKeys(false)) {
+      String base = prefix(source) + "vaults." + rawId;
+      ConfigurationSection node = sec.getConfigurationSection(rawId);
+      if (node == null) {
+        errors.add(base + ": must be an object");
+        continue;
+      }
+      try {
+        String id = Ids.normalize(rawId);
+        if (out.containsKey(id)) {
+          errors.add(base + ": duplicate vault id");
+          continue;
+        }
+        String keyItem = Ids.normalize(YamlValues.requireString(node, "keyItem", base + ".keyItem"));
+        if (!itemIds.contains(keyItem)) {
+          throw new IllegalArgumentException(base + ".keyItem: unknown item id: " + keyItem);
+        }
+        String lootPoolNormal = Ids.normalize(YamlValues.requireString(node, "lootPoolNormal", base + ".lootPoolNormal"));
+        if (!lootPools.containsKey(lootPoolNormal)) {
+          throw new IllegalArgumentException(base + ".lootPoolNormal: unknown loot pool id: " + lootPoolNormal);
+        }
+        String lootPoolOminous = Ids.normalize(YamlValues.requireString(node, "lootPoolOminous", base + ".lootPoolOminous"));
+        if (!lootPools.containsKey(lootPoolOminous)) {
+          throw new IllegalArgumentException(base + ".lootPoolOminous: unknown loot pool id: " + lootPoolOminous);
+        }
+        double activationRange = requirePositiveDouble(node, "activationRange", base + ".activationRange");
+        double deactivationRange = requireDoubleGreaterThan(node, "deactivationRange", base + ".deactivationRange", activationRange);
+        List<VaultDisplayItemEntry> displayedItemPool = List.of();
+        if (node.contains("displayedItemPool")) {
+          displayedItemPool = parseVaultDisplayItemPool(node.get("displayedItemPool"), itemIds, base + ".displayedItemPool");
+        }
+        out.put(id, new VaultSpec(
+            id,
+            keyItem,
+            lootPoolNormal,
+            lootPoolOminous,
+            activationRange,
+            deactivationRange,
+            displayedItemPool));
+      } catch (Exception ex) {
+        errors.add(base + ": " + ex.getMessage());
+      }
+    }
+  }
+
+  private List<VaultDisplayItemEntry> parseVaultDisplayItemPool(Object raw, Set<String> itemIds, String base) {
+    if (!(raw instanceof List<?> list)) {
+      throw new IllegalArgumentException(base + ": expected a list");
+    }
+    List<VaultDisplayItemEntry> entries = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      Object item = list.get(i);
+      String entryBase = base + "[" + i + "]";
+      String itemId;
+      double weight = 1.0;
+      if (item instanceof String s) {
+        itemId = Ids.normalize(s);
+      } else if (item instanceof Map<?, ?> map) {
+        Object itemRaw = map.get("itemId");
+        if (itemRaw == null) {
+          itemRaw = map.get("item");
+        }
+        if (itemRaw == null) {
+          itemRaw = map.get("id");
+        }
+        if (!(itemRaw instanceof String s) || s.isBlank()) {
+          throw new IllegalArgumentException(entryBase + ".itemId: must be set");
+        }
+        itemId = Ids.normalize(s);
+        Object weightRaw = map.get("weight");
+        if (weightRaw instanceof Number num) {
+          weight = num.doubleValue();
+        }
+      } else {
+        throw new IllegalArgumentException(entryBase + ": entry must be string or object");
+      }
+      if (!itemIds.contains(itemId)) {
+        throw new IllegalArgumentException(entryBase + ".itemId: unknown item id: " + itemId);
+      }
+      entries.add(new VaultDisplayItemEntry(itemId, weight));
+    }
+    return entries;
+  }
+
+  private int requireInt(ConfigurationSection node, String key, String path, int minInclusive) {
+    if (!node.contains(key)) {
+      throw new IllegalArgumentException(path + ": missing value");
+    }
+    int value = node.getInt(key);
+    if (value < minInclusive) {
+      throw new IllegalArgumentException(path + ": must be >= " + minInclusive);
+    }
+    return value;
+  }
+
+  private Integer optionalInt(ConfigurationSection node, String key, String path, int minInclusive) {
+    if (!node.contains(key)) {
+      return null;
+    }
+    int value = node.getInt(key);
+    if (value < minInclusive) {
+      throw new IllegalArgumentException(path + ": must be >= " + minInclusive);
+    }
+    return value;
+  }
+
+  private double requirePositiveDouble(ConfigurationSection node, String key, String path) {
+    if (!node.contains(key)) {
+      throw new IllegalArgumentException(path + ": missing value");
+    }
+    double value = node.getDouble(key);
+    if (!Double.isFinite(value) || value <= 0.0) {
+      throw new IllegalArgumentException(path + ": must be > 0");
+    }
+    return value;
+  }
+
+  private double requireDoubleGreaterThan(ConfigurationSection node, String key, String path, double threshold) {
+    if (!node.contains(key)) {
+      throw new IllegalArgumentException(path + ": missing value");
+    }
+    double value = node.getDouble(key);
+    if (!Double.isFinite(value) || value <= threshold) {
+      throw new IllegalArgumentException(path + ": must be > " + threshold);
+    }
+    return value;
+  }
+
   private MobSpawnerTemplate parseSpawnerTemplate(ConfigurationSection node, String base) {
     Integer count = node.contains("count") ? node.getInt("count") : null;
     Integer maxAlive = node.contains("maxAlive") ? node.getInt("maxAlive") : null;
@@ -958,6 +1245,9 @@ public final class MobYamlRegistry {
     }
     if (node.contains("collidable")) {
       builder.collidable(node.getBoolean("collidable"));
+    }
+    if (node.contains("invulnerable")) {
+      builder.invulnerable(node.getBoolean("invulnerable"));
     }
 
     ConfigurationSection bossBroadcast = node.getConfigurationSection("bossBroadcast");

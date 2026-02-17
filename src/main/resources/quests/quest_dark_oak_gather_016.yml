@@ -1,0 +1,22 @@
+quests:
+  quest_dark_oak_gather_016:
+    name: Dark Oak Foraging V
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_dark_oak_material_shadow_05
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 663
+    rewards:
+      xp: 110
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_consumable_008

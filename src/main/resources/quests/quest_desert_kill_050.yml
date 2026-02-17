@@ -1,0 +1,22 @@
+quests:
+  quest_desert_kill_050:
+    name: Desert Culling III
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_desert_dune_beasts_50
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 157
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_sand_07

@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_swamp_consumable_004:
+    name: Ability Item Swamp Consumable 004
+    cooldown:
+      ticks: 240
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FLASH
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: 0.03
+            -
+              x: -0.21
+              y: 0.0
+              z: 0.25
+          up: -1.0
+        -
+          particle: GLOW
+          type: particles_points
+          points:
+            -
+              x: -0.16
+              y: 0.0
+              z: -0.03
+            -
+              x: -0.02
+              y: 0.0
+              z: -0.4
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.13
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: night_vision
+            durationTicks: 206
+            amplifier: 0

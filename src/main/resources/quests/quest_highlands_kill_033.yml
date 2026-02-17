@@ -1,0 +1,23 @@
+quests:
+  quest_highlands_kill_033:
+    name: Wrath of Highlands X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_highlands_cliff_raiders_18
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1499
+    rewards:
+      xp: 140
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_material_stone_01
+          amount: 3

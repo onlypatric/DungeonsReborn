@@ -17,10 +17,12 @@ import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiComponent;
 import dev.patric.dungeonsreborn.gui.GuiItem;
-import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
+import dev.patric.dungeonsreborn.gui.components.LoadingIndicator;
+import dev.patric.dungeonsreborn.gui.components.StatusPanel;
 import dev.patric.dungeonsreborn.gui.layout.Placement;
+import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
@@ -59,6 +61,7 @@ public final class VirtualList<T> {
 
   private ItemStack emptyCellItem = GuiItem.of(Material.GRAY_STAINED_GLASS_PANE).displayName(Component.text(" ")).build();
   private Function<Player, ItemStack> emptyStateItem;
+  private Function<Player, ItemStack> loadingStateItem = LoadingIndicator.item();
 
   // Mounted slots for targeted redraw.
   private final int[] cellSlots;
@@ -86,10 +89,32 @@ public final class VirtualList<T> {
     this.onClick = Objects.requireNonNull(onClick, "onClick");
     this.cellSlots = new int[rows * cols];
     java.util.Arrays.fill(this.cellSlots, -1);
+    this.emptyStateItem = StatusPanel.item(StatusPanel.Type.INFO,
+        tr(null, "gui.list.empty.title"),
+        List.of(tr(null, "gui.list.empty.hint")));
   }
 
   public int pageSize() {
     return rows * cols;
+  }
+
+  public T visibleEntry(Player player, int index) {
+    Objects.requireNonNull(player, "player");
+    if (index < 0 || index >= pageSize()) {
+      return null;
+    }
+    State<T> state = state(player);
+    resolve(player, state);
+    Resolved<T> resolved = state.cache;
+    if (resolved == null || resolved.filtered().isEmpty()) {
+      return null;
+    }
+    int start = resolved.page() * pageSize();
+    int absoluteIndex = start + index;
+    if (absoluteIndex < 0 || absoluteIndex >= resolved.filtered().size()) {
+      return null;
+    }
+    return resolved.filtered().get(absoluteIndex);
   }
 
   public VirtualList<T> emptyCellItem(ItemStack item) {
@@ -105,6 +130,16 @@ public final class VirtualList<T> {
   public VirtualList<T> emptyStateItem(ItemStack item) {
     Objects.requireNonNull(item, "item");
     return emptyStateItem(p -> item);
+  }
+
+  public VirtualList<T> loadingStateItem(Function<Player, ItemStack> item) {
+    this.loadingStateItem = Objects.requireNonNull(item, "item");
+    return this;
+  }
+
+  public VirtualList<T> loadingStateItem(ItemStack item) {
+    Objects.requireNonNull(item, "item");
+    return loadingStateItem(p -> item);
   }
 
   public VirtualList<T> filter(Predicate<T> predicate) {
@@ -214,10 +249,12 @@ public final class VirtualList<T> {
       boolean enabled = state.page > 0;
       Component name = tr(p, "gui.list.prev.title");
       Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
-      if (enabled) {
-        return GuiItems.head("LEFT", name, List.of(lore));
+      List<Component> loreList = new ArrayList<>();
+      loreList.add(lore);
+      if (!enabled) {
+        loreList.add(tr(p, "gui.list.prev.disabled"));
       }
-      return GuiItems.named(Material.GRAY_DYE, name, List.of(lore));
+      return GuiButtons.item(GuiButtons.Type.PREV, name, loreList);
       });
       left(tr(null, "gui.list.prev.action"), ctx -> {
         State<T> state = state(ctx.player());
@@ -251,10 +288,12 @@ public final class VirtualList<T> {
       boolean enabled = state.page + 1 < Math.max(1, state.lastTotalPages);
       Component name = tr(p, "gui.list.next.title");
       Component lore = tr(p, "gui.list.page", "current", state.page + 1, "total", Math.max(1, state.lastTotalPages));
-      if (enabled) {
-        return GuiItems.head("RIGHT", name, List.of(lore));
+      List<Component> loreList = new ArrayList<>();
+      loreList.add(lore);
+      if (!enabled) {
+        loreList.add(tr(p, "gui.list.next.disabled"));
       }
-      return GuiItems.named(Material.GRAY_DYE, name, List.of(lore));
+      return GuiButtons.item(GuiButtons.Type.NEXT, name, loreList);
       });
       left(tr(null, "gui.list.next.action"), ctx -> {
         State<T> state = state(ctx.player());
@@ -337,6 +376,7 @@ public final class VirtualList<T> {
     }
 
     List<T> raw = entries.apply(player);
+    state.loading = raw == null;
     if (raw == null || raw.isEmpty()) {
       raw = List.of();
     }
@@ -411,6 +451,7 @@ public final class VirtualList<T> {
     private int lastTotalItems;
     private int lastTotalPages = 1;
     private boolean truncated;
+    private boolean loading;
 
     private void invalidate() {
       cacheTick = Integer.MIN_VALUE;
@@ -441,7 +482,17 @@ public final class VirtualList<T> {
       if (resolved == null) {
         return emptyCellItem.clone();
       }
+      if (state.loading && loadingStateItem != null) {
+        if (index != 0) {
+          return emptyCellItem.clone();
+        }
+        ItemStack item = loadingStateItem.apply(player);
+        return item == null ? emptyCellItem.clone() : item.clone();
+      }
       if (resolved.filtered().isEmpty() && emptyStateItem != null) {
+        if (index != 0) {
+          return emptyCellItem.clone();
+        }
         ItemStack item = emptyStateItem.apply(player);
         return item == null ? emptyCellItem.clone() : item.clone();
       }
@@ -500,7 +551,7 @@ public final class VirtualList<T> {
       if (state.query != null && !state.query.isBlank()) {
         lore.add(tr(player, "gui.list.filter", "query", state.query));
       }
-      return GuiItems.named(Material.PAPER, name, lore);
+      return GuiButtons.item(GuiButtons.Type.PAGE, name, lore);
     }
   }
 }

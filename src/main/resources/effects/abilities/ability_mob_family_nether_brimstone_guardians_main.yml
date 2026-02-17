@@ -1,0 +1,19 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_nether_brimstone_guardians_main:
+    name: Nether Brimstone_Guardians Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: CRIT
+          radius: 6.04
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 7.07
+          radius: 2.88
+          damageCause: DIRECT

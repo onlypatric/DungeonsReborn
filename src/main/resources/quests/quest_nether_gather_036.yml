@@ -1,0 +1,22 @@
+quests:
+  quest_nether_gather_036:
+    name: Harvest of Nether I
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 3
+        itemId: item_nether_material_ash_06
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 321
+    rewards:
+      xp: 90
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_consumable_003

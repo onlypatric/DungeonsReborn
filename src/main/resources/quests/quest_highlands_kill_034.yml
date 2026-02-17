@@ -1,0 +1,23 @@
+quests:
+  quest_highlands_kill_034:
+    name: Highlands Hunt XI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_highlands_cliff_raiders_19
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1492
+    rewards:
+      xp: 140
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_material_sky_03
+          amount: 3

@@ -1,0 +1,68 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_010:
+    name: Ability Item Lowlands Consumable 010
+    cooldown:
+      ticks: 142
+    action:
+      type: sequence
+      actions:
+        -
+          particle: TINTED_LEAVES
+          type: particles_points
+          points:
+            -
+              x: 0.14
+              y: 0.0
+              z: 0.01
+            -
+              x: 0.05
+              y: 0.0
+              z: 0.14
+            -
+              x: -0.25
+              y: 0.0
+              z: 0.17
+          up: -1.0
+        -
+          particle: TOTEM_OF_UNDYING
+          type: particles_points
+          points:
+            -
+              x: -0.15
+              y: 0.0
+              z: -0.19
+            -
+              x: 0.13
+              y: 0.0
+              z: 0.39
+          up: -1.0
+        -
+          particle: TRAIL
+          data:
+            color: "#ddec9e"
+            durationTicks: 24
+          type: particles_points
+          points:
+            -
+              x: -0.21
+              y: 0.0
+              z: -0.01
+            -
+              x: -0.44
+              y: 0.0
+              z: -0.16
+            -
+              x: 0.38
+              y: 0.0
+              z: -0.12
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 18.4
+            policy: any

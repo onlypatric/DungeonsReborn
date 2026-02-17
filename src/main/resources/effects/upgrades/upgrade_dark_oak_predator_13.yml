@@ -1,0 +1,32 @@
+name: <dark_purple><bold>Dark Oak Predator</bold></dark_purple> <gray>XIII</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Damage Mult by 1.22.</gray> <gray>Grants Generic Movement Speed +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_predator_13
+  activator: SHIFT_LEFT
+requirements:
+  level: 718
+modifiers:
+  -
+    type: damage_mult
+    value: 1.215
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.053
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: flame
+    level: 2
+allowUnsafe: true

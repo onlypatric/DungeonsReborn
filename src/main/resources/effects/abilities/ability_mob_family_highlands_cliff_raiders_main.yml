@@ -1,0 +1,17 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_highlands_cliff_raiders_main:
+    name: Highlands Cliff_Raiders Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: BUBBLE_COLUMN_UP
+          count: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 6.98
+          radius: 3.83
+          damageCause: DIRECT

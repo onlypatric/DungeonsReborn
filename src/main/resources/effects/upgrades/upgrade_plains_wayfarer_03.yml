@@ -1,0 +1,32 @@
+name: <green><bold>Plains Wayfarer</bold></green> <gray>III</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Cooldown Mult by 0.93.</gray> <gray>Grants Generic Movement Speed +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_wayfarer_03
+  activator: LEFT_CLICK
+requirements:
+  level: 20
+modifiers:
+  -
+    type: cooldown_mult
+    value: 0.925
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.051
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: infinity
+    level: 1
+allowUnsafe: true

@@ -1,0 +1,91 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_night_stag_phase_02_main:
+    name: Ability Boss Dark Oak Night Stag Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_polygon
+          particle: FALLING_LAVA
+          points:
+            -
+              x: 4.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.31
+              y: 0.0
+              z: 4.0
+            -
+              x: -2.31
+              y: 0.0
+              z: -4.0
+          up: -1.0
+        -
+          type: particles_polygon
+          particle: ITEM_SLIME
+          points:
+            -
+              x: 3.93
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.96
+              y: 0.0
+              z: 3.4
+            -
+              x: -1.96
+              y: 0.0
+              z: -3.4
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: FALLING_LAVA
+          points:
+            -
+              x: 4.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.31
+              y: 0.0
+              z: 4.0
+            -
+              x: -2.31
+              y: 0.0
+              z: -4.0
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: ITEM_SLIME
+          points:
+            -
+              x: 3.93
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.96
+              y: 0.0
+              z: 3.4
+            -
+              x: -1.96
+              y: 0.0
+              z: -3.4
+          up: -1.0
+        -
+          type: damage
+          amount: 5.0
+          radius: 4.4
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 4.4

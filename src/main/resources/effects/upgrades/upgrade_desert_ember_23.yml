@@ -1,0 +1,26 @@
+name: <gold><bold>Desert Ember</bold></gold> <gray>XXIII</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Damage Add by 1.24.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_desert_ember_23
+  activator: SHIFT_RIGHT
+requirements:
+  level: 147
+modifiers:
+  -
+    type: damage_add
+    value: 1.235
+  -
+    type: loot_add
+    value: 0.09
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: swift_sneak
+    level: 1
+allowUnsafe: true

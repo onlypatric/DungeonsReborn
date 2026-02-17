@@ -1,0 +1,25 @@
+quests:
+  quest_highlands_boss_029:
+    name: "Highlands Slayer's Oath VI"
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_highlands_boss_sky_wyrm
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2093
+    rewards:
+      xp: 200
+      tokens: 21
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_upgrade_core_01
+        -
+          id: item_highlands_material_sky_02
+          amount: 3

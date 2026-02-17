@@ -100,4 +100,36 @@ public final class MobSpawnerItems {
     }
     return item;
   }
+
+  public static ItemStack createTrialSpawnerItem(String trialSpawnerId) {
+    Objects.requireNonNull(trialSpawnerId, "trialSpawnerId");
+    ItemStack item = new ItemStack(Material.TRIAL_SPAWNER);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(TextStyles.noItalic(MobText.parse("<gold>Trial Spawner</gold>")));
+      List<Component> lore = new ArrayList<>();
+      lore.add(TextStyles.noItalic(MobText.parse("<gray>Profile:</gray> <white>" + trialSpawnerId + "</white>")));
+      lore.add(TextStyles.noItalic(MobText.parse("<dark_gray>Place to bind custom trial behavior.</dark_gray>")));
+      meta.lore(lore);
+      item.setItemMeta(meta);
+    }
+    MobSpawnerMarkers.setTrialSpawnerId(item, trialSpawnerId);
+    return item;
+  }
+
+  public static ItemStack createVaultItem(String vaultId) {
+    Objects.requireNonNull(vaultId, "vaultId");
+    ItemStack item = new ItemStack(Material.VAULT);
+    ItemMeta meta = item.getItemMeta();
+    if (meta != null) {
+      meta.displayName(TextStyles.noItalic(MobText.parse("<gold>Vault</gold>")));
+      List<Component> lore = new ArrayList<>();
+      lore.add(TextStyles.noItalic(MobText.parse("<gray>Profile:</gray> <white>" + vaultId + "</white>")));
+      lore.add(TextStyles.noItalic(MobText.parse("<dark_gray>Place to bind custom vault rewards.</dark_gray>")));
+      meta.lore(lore);
+      item.setItemMeta(meta);
+    }
+    MobSpawnerMarkers.setVaultId(item, vaultId);
+    return item;
+  }
 }

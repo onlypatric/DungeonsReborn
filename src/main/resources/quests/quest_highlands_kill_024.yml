@@ -1,0 +1,23 @@
+quests:
+  quest_highlands_kill_024:
+    name: Wrath of Highlands I
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_highlands_cliff_raiders_09
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1513
+    rewards:
+      xp: 140
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_material_sky_01
+          amount: 3

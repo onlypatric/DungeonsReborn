@@ -1,0 +1,32 @@
+name: <white><bold>Snow Glacier</bold></white> <gray>XXIX</gray>
+description: <gray>Glacial mass hardens your stance.</gray> <gray>Boosts Duration Add by 1.70.</gray> <gray>Grants Generic Armor +0.09.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_glacier_29
+  activator: RIGHT_CLICK
+requirements:
+  level: 3489
+modifiers:
+  -
+    type: duration_add
+    value: 1.697
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.087
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: impaling
+    level: 3
+  -
+    enchant: looting
+    level: 3
+allowUnsafe: true

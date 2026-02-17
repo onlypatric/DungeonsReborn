@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_brimstone_titan_phase_03_main:
+    name: Ability Boss Nether Brimstone Titan Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_cylinder
+          particle: SMOKE
+          radius: 5.5965
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: OMINOUS_SPAWNING
+          radius: 5.0131725
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: SMOKE
+          radius: 5.89785
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: OMINOUS_SPAWNING
+          radius: 5.26932
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 4.5
+          radius: 4.1
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 4.1
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.8999999999999995
+          points: 18

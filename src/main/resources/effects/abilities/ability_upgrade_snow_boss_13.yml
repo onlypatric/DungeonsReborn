@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_13:
+    name: Ability Upgrade Snow Boss 13
+    costs:
+      -
+        type: mana
+        amount: 43.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 4.439400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: CLOUD
+          radius: 3.9484200000000005
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 4.51
+            times: 4
+            periodTicks: 10

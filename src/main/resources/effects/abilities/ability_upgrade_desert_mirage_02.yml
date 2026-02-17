@@ -1,0 +1,43 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_mirage_02:
+    name: Ability Upgrade Desert Mirage 02
+    costs:
+      -
+        type: mana
+        amount: 15.6
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: SONIC_BOOM
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 0.9060000000000002
+            right: 1.8120000000000005
+            up: 0.4
+          p2:
+            forward: 1.8120000000000005
+            right: -1.3590000000000002
+            up: 0.8
+          p3:
+            forward: 2.7180000000000004
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 3.6
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 4.03

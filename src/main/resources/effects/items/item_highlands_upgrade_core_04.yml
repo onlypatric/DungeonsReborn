@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua>Highlands Core IV</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+  meta:
+    skull:
+      head: REQ_BUTTERSCOTCH_ICE_CREAM_SCOOP
+gui:
+  head: ICON_ITEMS

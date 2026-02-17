@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_swamp_rot_guardians_secondary:
+    name: Swamp Rot_Guardians Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polyline
+          particle: SCULK_CHARGE
+          points:
+            -
+              x: 4.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.12
+              y: 0.0
+              z: 3.68
+            -
+              x: -2.13
+              y: 0.0
+              z: -3.68
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 3.46
+          durationTicks: 80
+          radius: 3.74
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 80
+          amplifier: 0
+          radius: 3.57

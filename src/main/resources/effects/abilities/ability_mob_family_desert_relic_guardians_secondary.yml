@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_relic_guardians_secondary:
+    name: Desert Relic_Guardians Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: ANGRY_VILLAGER
+          radius: 6.42875
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: damage_over_time
+          amount: 2.13
+          durationTicks: 50
+          radius: 3.14
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.99

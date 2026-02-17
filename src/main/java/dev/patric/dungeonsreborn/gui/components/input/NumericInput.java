@@ -20,7 +20,7 @@ import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
- * A small 3-slot numeric input: [-] [value] [+], with optional chat typing.
+ * A small 3-slot numeric input: [-] [value] [+], with optional command typing.
  */
 public final class NumericInput implements Layout {
   private final int row;

@@ -1,0 +1,62 @@
+name: <dark_green><bold>Lowlands Boss</bold></dark_green> <gray>VI</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.18.</gray> <gray>Grants Generic Max Health +19.74.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_boss_06
+  activator: PASSIVE
+requirements:
+  level: 3200
+modifiers:
+  -
+    type: damage_mult
+    value: 1.175
+  -
+    type: cooldown_mult
+    value: 0.937
+  -
+    type: radius_add
+    value: 5.473
+  -
+    type: duration_mult
+    value: 1.145
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 19.739
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.18
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.234
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.121
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: feather_falling
+    level: 3
+  -
+    enchant: frost_walker
+    level: 3
+  -
+    enchant: loyalty
+    level: 3
+  -
+    enchant: vanishing_curse
+    level: 1
+allowUnsafe: true

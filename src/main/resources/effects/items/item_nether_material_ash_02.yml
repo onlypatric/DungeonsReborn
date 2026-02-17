@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <red><bold>Ashen Sigil</bold></red> <gray>II</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Nether wilds.</gray>
+  meta:
+    skull:
+      head: REQ_BOILED_BLUE_EGG_IN_EGGCUP
+gui:
+  head: ICON_ITEMS

@@ -1,0 +1,23 @@
+quests:
+  quest_water_kill_014:
+    name: Water Culling III
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_water_brine_hunters_06
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 145
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_water_material_brine_02
+          amount: 2

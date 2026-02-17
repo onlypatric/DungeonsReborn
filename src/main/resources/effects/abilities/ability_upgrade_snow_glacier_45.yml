@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_45:
+    name: Ability Upgrade Snow Glacier 45
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: CRIT
+          radius: 3.4250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

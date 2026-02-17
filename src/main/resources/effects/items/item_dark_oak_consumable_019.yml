@@ -1,0 +1,25 @@
+item:
+  type: material
+  material: POTION
+  display:
+    name: <dark_purple><bold>Graveleaf Draught VIII</bold></dark_purple>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Flares with raw elemental force.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Night Vision for 8s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>11s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Dark Oak</gray>
+  meta:
+    components:
+      use_cooldown:
+        seconds: 11.0
+bindings:
+  -
+    ability: ability_item_dark_oak_consumable_019
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

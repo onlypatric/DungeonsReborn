@@ -1,0 +1,50 @@
+schemaVersion: 1
+abilities:
+  ability_item_water_consumable_009:
+    name: Ability Item Water Consumable 009
+    cooldown:
+      ticks: 104
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FALLING_DRIPSTONE_WATER
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: 0.03
+            -
+              x: -0.21
+              y: 0.0
+              z: 0.25
+          up: -1.0
+        -
+          particle: CLOUD
+          type: particles_points
+          points:
+            -
+              x: -0.16
+              y: 0.0
+              z: -0.03
+            -
+              x: -0.02
+              y: 0.0
+              z: -0.4
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.13
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.0
+            times: 4
+            periodTicks: 10
+            policy: any

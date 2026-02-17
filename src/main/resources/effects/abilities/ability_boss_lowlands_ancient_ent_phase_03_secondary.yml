@@ -1,0 +1,59 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_ancient_ent_phase_03_secondary:
+    name: Ability Boss Lowlands Ancient Ent Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_helix
+          particle: EFFECT
+          radius: 7.767900000000002
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: FISHING
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          up: -1.0
+        -
+          type: particles_line
+          particle: EFFECT
+          length: 10.364800000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: FISHING
+          length: 9.477445000000001
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 1.04
+          durationTicks: 96
+          radius: 5.4

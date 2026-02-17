@@ -1,10 +1,5 @@
-# DungeonsReborn advancements configuration.
-#
-# Disable any category by setting it to false.
 advancements:
   schemaVersion: 1
-  # Optional: migrate old ids to new ids (old -> new). Multiple old ids can map to the same new id.
-  idMigrations: {}
   categories:
     bosses: false
     dungeons: false
@@ -12,43 +7,975 @@ advancements:
     xpLevels: false
     xpTotals: false
     tokens: false
-  # YAML-driven advancements (custom definitions).
   definitions:
     categories:
-      example:
-        order: 10
-        titleKey: "advancements.example.title"
-        descriptionKey: "advancements.example.description"
-        icon: "NETHER_STAR"
-        frame: "TASK"
+      world_plains:
+        order: 1
+        title: Plains Dominion
+        description: Conquer the trials of Plains.
+        icon: GRASS_BLOCK
+        frame: TASK
         tab: true
-        background: "textures/block/obsidian.png"
+        background: textures/block/grass_block_side.png
         x: 0
         y: 0
         nodes:
-          earn_tokens:
-            titleKey: "advancements.example.earnTokens.title"
-            descriptionKey: "advancements.example.earnTokens.description"
-            icon: "EMERALD"
-            frame: "TASK"
+          kill_mob_mob_plains_meadow_fauna_01:
+            title: "Wards of the Wild: Plains"
+            description: Cleanse the land of lesser threats. (Plains)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.plains.meadow_fauna_01
+              amount: 3
+            rewards:
+              tokens: 1
+              xp: 60
+          kill_mob_mob_plains_forest_critters_01:
+            title: "Wards of the Wild: Plains"
+            description: Cleanse the land of lesser threats. (Plains)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
             x: 2
             y: 0
             criteria:
-              type: "TOKENS"
-              amount: 10
+              type: MOB_KILL
+              mob: mob.plains.forest_critters_01
+              amount: 3
             rewards:
-              tokens: 5
-          reach_level:
-            titleKey: "advancements.example.reachLevel.title"
-            descriptionKey: "advancements.example.reachLevel.description"
-            icon: "EXPERIENCE_BOTTLE"
-            frame: "TASK"
+              tokens: 1
+              xp: 60
+            requires:
+              - kill_mob_mob_plains_meadow_fauna_01
+          kill_mob_mob_plains_earthbound_pests_01:
+            title: "Blood of the Frontier: Plains"
+            description: Break the hostile ranks that haunt the roads. (Plains)
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: TASK
             x: 4
             y: 0
-            requires:
-              - earn_tokens
             criteria:
-              type: "XP_LEVEL"
+              type: MOB_KILL
+              mob: mob.plains.earthbound_pests_01
               amount: 5
             rewards:
+              tokens: 1
+              xp: 100
+            requires:
+              - kill_mob_mob_plains_meadow_fauna_01
+          kill_mob_mob_plains_village_raiders_01:
+            title: "Blood of the Frontier: Plains"
+            description: Break the hostile ranks that haunt the roads. (Plains)
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: TASK
+            x: 6
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.plains.village_raiders_01
+              amount: 5
+            rewards:
+              tokens: 1
+              xp: 100
+            requires:
+              - kill_mob_mob_plains_meadow_fauna_01
+          kill_boss_mob_plains_boss_stagwarden:
+            title: "Oath of the Slayer: Plains"
+            description: "Slay the biome's champion and claim its relics. (Plains)"
+            icon: "head:REQ_MONSTER_SHEEP_ZOMBIE"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_plains_boss_stagwarden
+              amount: 1
+            rewards:
+              tokens: 4
               xp: 250
+            requires:
+              - kill_mob_mob_plains_meadow_fauna_01
+      world_desert:
+        order: 2
+        title: Desert Dominion
+        description: Conquer the trials of Desert.
+        icon: SAND
+        frame: TASK
+        tab: true
+        background: textures/block/sand.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_desert_dune_beasts_01:
+            title: "Blood of the Frontier: Desert"
+            description: Break the hostile ranks that haunt the roads. (Desert)
+            icon: "head:REQ_EYES_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.desert.dune_beasts_01
+              amount: 8
+            rewards:
+              tokens: 2
+              xp: 160
+          kill_mob_mob_desert_sand_hunters_01:
+            title: "Blood of the Frontier: Desert"
+            description: Break the hostile ranks that haunt the roads. (Desert)
+            icon: "head:REQ_EYES_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.desert.sand_hunters_01
+              amount: 8
+            rewards:
+              tokens: 2
+              xp: 160
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_mob_mob_desert_scavengers_01:
+            title: "Wards of the Wild: Desert"
+            description: Cleanse the land of lesser threats. (Desert)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.desert.scavengers_01
+              amount: 5
+            rewards:
+              tokens: 2
+              xp: 100
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_mob_mob_desert_relic_guardians_01:
+            title: "Trial of the Apex: Desert"
+            description: "Defeat elite prey that guards the biome's secrets. (Desert)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: GOAL
+            x: 6
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.desert.relic_guardians_01
+              amount: 10
+            rewards:
+              tokens: 2
+              xp: 200
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_mob_mob_desert_sun_cultists_01:
+            title: "Trial of the Apex: Desert"
+            description: "Defeat elite prey that guards the biome's secrets. (Desert)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: GOAL
+            x: 8
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.desert.sun_cultists_01
+              amount: 10
+            rewards:
+              tokens: 2
+              xp: 200
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_boss_mob_desert_boss_sand_king:
+            title: "Oath of the Slayer: Desert"
+            description: "Slay the biome's champion and claim its relics. (Desert)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: CHALLENGE
+            x: 10
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_desert_boss_sand_king
+              amount: 1
+            rewards:
+              tokens: 6
+              xp: 350
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_boss_mob_desert_boss_sun_priest:
+            title: "Oath of the Slayer: Desert"
+            description: "Slay the biome's champion and claim its relics. (Desert)"
+            icon: "head:REQ_MONSTER_SHEEP_DEMON"
+            frame: CHALLENGE
+            x: 0
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_desert_boss_sun_priest
+              amount: 1
+            rewards:
+              tokens: 6
+              xp: 350
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_boss_mob_desert_boss_relic_colossus:
+            title: "Oath of the Slayer: Desert"
+            description: "Slay the biome's champion and claim its relics. (Desert)"
+            icon: "head:REQ_MONSTER_SHEEP_SKELETON"
+            frame: CHALLENGE
+            x: 2
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_desert_boss_relic_colossus
+              amount: 1
+            rewards:
+              tokens: 6
+              xp: 350
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+          kill_boss_mob_desert_boss_dune_mother:
+            title: "Oath of the Slayer: Desert"
+            description: "Slay the biome's champion and claim its relics. (Desert)"
+            icon: "head:REQ_MONSTER_SHEEP_ZOMBIE"
+            frame: CHALLENGE
+            x: 4
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_desert_boss_dune_mother
+              amount: 1
+            rewards:
+              tokens: 6
+              xp: 350
+            requires:
+              - kill_mob_mob_desert_dune_beasts_01
+      world_water:
+        order: 2
+        title: Water Dominion
+        description: Conquer the trials of Water.
+        icon: PRISMARINE
+        frame: TASK
+        tab: true
+        background: textures/block/prismarine.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_water_reef_drifters_01:
+            title: "Wards of the Wild: Water"
+            description: Cleanse the land of lesser threats. (Water)
+            icon: "head:REQ_FISH_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.water.reef_drifters_01
+              amount: 5
+            rewards:
+              tokens: 2
+              xp: 100
+          kill_mob_mob_water_brine_hunters_01:
+            title: "Blood of the Frontier: Water"
+            description: Break the hostile ranks that haunt the roads. (Water)
+            icon: "head:REQ_WATER_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.water.brine_hunters_01
+              amount: 8
+            rewards:
+              tokens: 2
+              xp: 160
+            requires:
+              - kill_mob_mob_water_reef_drifters_01
+          kill_mob_mob_water_depth_guardians_01:
+            title: "Trial of the Apex: Water"
+            description: "Defeat elite prey that guards the biome's secrets. (Water)"
+            icon: "head:REQ_WATER_MONSTER"
+            frame: GOAL
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.water.depth_guardians_01
+              amount: 10
+            rewards:
+              tokens: 2
+              xp: 200
+            requires:
+              - kill_mob_mob_water_reef_drifters_01
+      world_swamp:
+        order: 5
+        title: Swamp Dominion
+        description: Conquer the trials of Swamp.
+        icon: SLIME_BALL
+        frame: TASK
+        tab: true
+        background: textures/block/slime_block.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_swamp_mire_fauna_01:
+            title: "Wards of the Wild: Swamp"
+            description: Cleanse the land of lesser threats. (Swamp)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.swamp.mire_fauna_01
+              amount: 11
+            rewards:
+              tokens: 5
+              xp: 220
+          kill_mob_mob_swamp_bog_stalkers_01:
+            title: "Blood of the Frontier: Swamp"
+            description: Break the hostile ranks that haunt the roads. (Swamp)
+            icon: "head:REQ_SLIME_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.swamp.bog_stalkers_01
+              amount: 17
+            rewards:
+              tokens: 5
+              xp: 340
+            requires:
+              - kill_mob_mob_swamp_mire_fauna_01
+          kill_mob_mob_swamp_rot_guardians_01:
+            title: "Trial of the Apex: Swamp"
+            description: "Defeat elite prey that guards the biome's secrets. (Swamp)"
+            icon: "head:REQ_SLIME_MONSTER"
+            frame: GOAL
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.swamp.rot_guardians_01
+              amount: 22
+            rewards:
+              tokens: 5
+              xp: 440
+            requires:
+              - kill_mob_mob_swamp_mire_fauna_01
+      world_mushroom:
+        order: 5
+        title: Mushroom Dominion
+        description: Conquer the trials of Mushroom.
+        icon: RED_MUSHROOM
+        frame: TASK
+        tab: true
+        background: textures/block/red_mushroom_block.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_mushroom_sporelings_01:
+            title: "Wards of the Wild: Mushroom"
+            description: Cleanse the land of lesser threats. (Mushroom)
+            icon: "head:REQ_MUSHROOM_ICON_2"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.mushroom.sporelings_01
+              amount: 11
+            rewards:
+              tokens: 5
+              xp: 220
+          kill_mob_mob_mushroom_mossbiters_01:
+            title: "Blood of the Frontier: Mushroom"
+            description: Break the hostile ranks that haunt the roads. (Mushroom)
+            icon: "head:REQ_MONSTER_EYE"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.mushroom.mossbiters_01
+              amount: 17
+            rewards:
+              tokens: 5
+              xp: 340
+            requires:
+              - kill_mob_mob_mushroom_sporelings_01
+          kill_mob_mob_mushroom_myco_wardens_01:
+            title: "Trial of the Apex: Mushroom"
+            description: "Defeat elite prey that guards the biome's secrets. (Mushroom)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: GOAL
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.mushroom.myco_wardens_01
+              amount: 22
+            rewards:
+              tokens: 5
+              xp: 440
+            requires:
+              - kill_mob_mob_mushroom_sporelings_01
+      world_nether:
+        order: 3
+        title: Nether Dominion
+        description: Conquer the trials of Nether.
+        icon: NETHERRACK
+        frame: TASK
+        tab: true
+        background: textures/block/netherrack.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_nether_netherlings_01:
+            title: "Wards of the Wild: Nether"
+            description: Cleanse the land of lesser threats. (Nether)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.nether.netherlings_01
+              amount: 7
+            rewards:
+              tokens: 3
+              xp: 140
+          kill_mob_mob_nether_ash_legion_01:
+            title: "Blood of the Frontier: Nether"
+            description: Break the hostile ranks that haunt the roads. (Nether)
+            icon: "head:REQ_MAGMA_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.nether.ash_legion_01
+              amount: 11
+            rewards:
+              tokens: 3
+              xp: 220
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+          kill_mob_mob_nether_blaze_swarm_01:
+            title: "Blood of the Frontier: Nether"
+            description: Break the hostile ranks that haunt the roads. (Nether)
+            icon: "head:REQ_MONSTER_EYE"
+            frame: TASK
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.nether.blaze_swarm_01
+              amount: 11
+            rewards:
+              tokens: 3
+              xp: 220
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+          kill_mob_mob_nether_brimstone_guardians_01:
+            title: "Trial of the Apex: Nether"
+            description: "Defeat elite prey that guards the biome's secrets. (Nether)"
+            icon: "head:REQ_LAVA_MONSTER"
+            frame: GOAL
+            x: 6
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.nether.brimstone_guardians_01
+              amount: 14
+            rewards:
+              tokens: 3
+              xp: 280
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+          kill_boss_mob_nether_boss_ash_warlord:
+            title: "Oath of the Slayer: Nether"
+            description: "Slay the biome's champion and claim its relics. (Nether)"
+            icon: "head:REQ_LAVA_MONSTER"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_nether_boss_ash_warlord
+              amount: 1
+            rewards:
+              tokens: 8
+              xp: 450
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+          kill_boss_mob_nether_boss_brimstone_titan:
+            title: "Oath of the Slayer: Nether"
+            description: "Slay the biome's champion and claim its relics. (Nether)"
+            icon: "head:REQ_MAGMA_MONSTER"
+            frame: CHALLENGE
+            x: 10
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_nether_boss_brimstone_titan
+              amount: 1
+            rewards:
+              tokens: 8
+              xp: 450
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+          kill_boss_mob_nether_boss_infernal_warden:
+            title: "Oath of the Slayer: Nether"
+            description: "Slay the biome's champion and claim its relics. (Nether)"
+            icon: "head:REQ_SOUL_SAND_MONSTER"
+            frame: CHALLENGE
+            x: 0
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_nether_boss_infernal_warden
+              amount: 1
+            rewards:
+              tokens: 8
+              xp: 450
+            requires:
+              - kill_mob_mob_nether_netherlings_01
+      world_dark_oak:
+        order: 4
+        title: Dark Oak Dominion
+        description: Conquer the trials of Dark Oak.
+        icon: DARK_OAK_LOG
+        frame: TASK
+        tab: true
+        background: textures/block/dark_oak_log.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_dark_oak_shadow_fauna_01:
+            title: "Wards of the Wild: Dark Oak"
+            description: Cleanse the land of lesser threats. (Dark Oak)
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.dark_oak.shadow_fauna_01
+              amount: 9
+            rewards:
+              tokens: 4
+              xp: 180
+          kill_mob_mob_dark_oak_gloom_stalkers_01:
+            title: "Blood of the Frontier: Dark Oak"
+            description: Break the hostile ranks that haunt the roads. (Dark Oak)
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.dark_oak.gloom_stalkers_01
+              amount: 14
+            rewards:
+              tokens: 4
+              xp: 280
+            requires:
+              - kill_mob_mob_dark_oak_shadow_fauna_01
+          kill_mob_mob_dark_oak_rotbound_01:
+            title: "Trial of the Apex: Dark Oak"
+            description: "Defeat elite prey that guards the biome's secrets. (Dark Oak)"
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: GOAL
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.dark_oak.rotbound_01
+              amount: 18
+            rewards:
+              tokens: 4
+              xp: 360
+            requires:
+              - kill_mob_mob_dark_oak_shadow_fauna_01
+          kill_boss_mob_dark_oak_boss_gloom_baron:
+            title: "Oath of the Slayer: Dark Oak"
+            description: "Slay the biome's champion and claim its relics. (Dark Oak)"
+            icon: "head:REQ_MONSTER_EYE"
+            frame: CHALLENGE
+            x: 6
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_dark_oak_boss_gloom_baron
+              amount: 1
+            rewards:
+              tokens: 10
+              xp: 550
+            requires:
+              - kill_mob_mob_dark_oak_shadow_fauna_01
+          kill_boss_mob_dark_oak_boss_night_stag:
+            title: "Oath of the Slayer: Dark Oak"
+            description: "Slay the biome's champion and claim its relics. (Dark Oak)"
+            icon: "head:REQ_MONSTER_SHEEP_DEMON"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_dark_oak_boss_night_stag
+              amount: 1
+            rewards:
+              tokens: 10
+              xp: 550
+            requires:
+              - kill_mob_mob_dark_oak_shadow_fauna_01
+      world_highlands:
+        order: 6
+        title: Highlands Dominion
+        description: Conquer the trials of Highlands.
+        icon: STONE
+        frame: TASK
+        tab: true
+        background: textures/block/stone.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_highlands_wind_critters_01:
+            title: "Wards of the Wild: Highlands"
+            description: Cleanse the land of lesser threats. (Highlands)
+            icon: "head:REQ_COPPER_CAGE_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.highlands.wind_critters_01
+              amount: 13
+            rewards:
+              tokens: 6
+              xp: 260
+          kill_mob_mob_highlands_cliff_raiders_01:
+            title: "Blood of the Frontier: Highlands"
+            description: Break the hostile ranks that haunt the roads. (Highlands)
+            icon: "head:REQ_MONSTER_EYE"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.highlands.cliff_raiders_01
+              amount: 20
+            rewards:
+              tokens: 6
+              xp: 400
+            requires:
+              - kill_mob_mob_highlands_wind_critters_01
+          kill_mob_mob_highlands_stone_sentinels_01:
+            title: "Trial of the Apex: Highlands"
+            description: "Defeat elite prey that guards the biome's secrets. (Highlands)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: GOAL
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.highlands.stone_sentinels_01
+              amount: 26
+            rewards:
+              tokens: 6
+              xp: 520
+            requires:
+              - kill_mob_mob_highlands_wind_critters_01
+          kill_boss_mob_highlands_boss_sky_wyrm:
+            title: "Oath of the Slayer: Highlands"
+            description: "Slay the biome's champion and claim its relics. (Highlands)"
+            icon: "head:REQ_MONSTER_SHEEP_SKELETON"
+            frame: CHALLENGE
+            x: 6
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_highlands_boss_sky_wyrm
+              amount: 1
+            rewards:
+              tokens: 14
+              xp: 750
+            requires:
+              - kill_mob_mob_highlands_wind_critters_01
+          kill_boss_mob_highlands_boss_cliff_sentinel:
+            title: "Oath of the Slayer: Highlands"
+            description: "Slay the biome's champion and claim its relics. (Highlands)"
+            icon: "head:REQ_MONSTER_SHEEP_ZOMBIE"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_highlands_boss_cliff_sentinel
+              amount: 1
+            rewards:
+              tokens: 14
+              xp: 750
+            requires:
+              - kill_mob_mob_highlands_wind_critters_01
+      world_lowlands:
+        order: 7
+        title: Lowlands Dominion
+        description: Conquer the trials of Lowlands.
+        icon: OAK_LOG
+        frame: TASK
+        tab: true
+        background: textures/block/oak_log.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_lowlands_grove_fauna_01:
+            title: "Wards of the Wild: Lowlands"
+            description: Cleanse the land of lesser threats. (Lowlands)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.lowlands.grove_fauna_01
+              amount: 15
+            rewards:
+              tokens: 7
+              xp: 300
+          kill_mob_mob_lowlands_warden_raiders_01:
+            title: "Blood of the Frontier: Lowlands"
+            description: Break the hostile ranks that haunt the roads. (Lowlands)
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.lowlands.warden_raiders_01
+              amount: 23
+            rewards:
+              tokens: 7
+              xp: 460
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+          kill_mob_mob_lowlands_briar_hunters_01:
+            title: "Blood of the Frontier: Lowlands"
+            description: Break the hostile ranks that haunt the roads. (Lowlands)
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: TASK
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.lowlands.briar_hunters_01
+              amount: 23
+            rewards:
+              tokens: 7
+              xp: 460
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+          kill_mob_mob_lowlands_ancient_sentinels_01:
+            title: "Trial of the Apex: Lowlands"
+            description: "Defeat elite prey that guards the biome's secrets. (Lowlands)"
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: GOAL
+            x: 6
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.lowlands.ancient_sentinels_01
+              amount: 30
+            rewards:
+              tokens: 7
+              xp: 600
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+          kill_boss_mob_lowlands_boss_ancient_ent:
+            title: "Oath of the Slayer: Lowlands"
+            description: "Slay the biome's champion and claim its relics. (Lowlands)"
+            icon: "head:REQ_PLANT_MONSTER"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_lowlands_boss_ancient_ent
+              amount: 1
+            rewards:
+              tokens: 16
+              xp: 850
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+          kill_boss_mob_lowlands_boss_verdant_colossus:
+            title: "Oath of the Slayer: Lowlands"
+            description: "Slay the biome's champion and claim its relics. (Lowlands)"
+            icon: "head:REQ_WOOD_MONSTER"
+            frame: CHALLENGE
+            x: 10
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_lowlands_boss_verdant_colossus
+              amount: 1
+            rewards:
+              tokens: 16
+              xp: 850
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+          kill_boss_mob_lowlands_boss_wildlord:
+            title: "Oath of the Slayer: Lowlands"
+            description: "Slay the biome's champion and claim its relics. (Lowlands)"
+            icon: "head:REQ_MONSTER_SHEEP_DEMON"
+            frame: CHALLENGE
+            x: 0
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_lowlands_boss_wildlord
+              amount: 1
+            rewards:
+              tokens: 16
+              xp: 850
+            requires:
+              - kill_mob_mob_lowlands_grove_fauna_01
+      world_snow:
+        order: 8
+        title: Snow Dominion
+        description: Conquer the trials of Snow.
+        icon: PACKED_ICE
+        frame: TASK
+        tab: true
+        background: textures/block/packed_ice.png
+        x: 0
+        y: 0
+        nodes:
+          kill_mob_mob_snow_frost_fauna_01:
+            title: "Wards of the Wild: Snow"
+            description: Cleanse the land of lesser threats. (Snow)
+            icon: "head:REQ_SOUL_SAND_MONSTER"
+            frame: TASK
+            x: 0
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.snow.frost_fauna_01
+              amount: 17
+            rewards:
+              tokens: 8
+              xp: 340
+          kill_mob_mob_snow_glacier_raiders_01:
+            title: "Blood of the Frontier: Snow"
+            description: Break the hostile ranks that haunt the roads. (Snow)
+            icon: "head:REQ_MONSTER_EYE"
+            frame: TASK
+            x: 2
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.snow.glacier_raiders_01
+              amount: 26
+            rewards:
+              tokens: 8
+              xp: 520
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_mob_mob_snow_whiteout_hunters_01:
+            title: "Blood of the Frontier: Snow"
+            description: Break the hostile ranks that haunt the roads. (Snow)
+            icon: "head:REQ_SOUL_SAND_MONSTER"
+            frame: TASK
+            x: 4
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.snow.whiteout_hunters_01
+              amount: 26
+            rewards:
+              tokens: 8
+              xp: 520
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_mob_mob_snow_icebound_guardians_01:
+            title: "Trial of the Apex: Snow"
+            description: "Defeat elite prey that guards the biome's secrets. (Snow)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: GOAL
+            x: 6
+            y: 0
+            criteria:
+              type: MOB_KILL
+              mob: mob.snow.icebound_guardians_01
+              amount: 34
+            rewards:
+              tokens: 8
+              xp: 680
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_boss_mob_snow_boss_frost_monarch:
+            title: "Oath of the Slayer: Snow"
+            description: "Slay the biome's champion and claim its relics. (Snow)"
+            icon: "head:REQ_EYES_MONSTER"
+            frame: CHALLENGE
+            x: 8
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_snow_boss_frost_monarch
+              amount: 1
+            rewards:
+              tokens: 18
+              xp: 950
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_boss_mob_snow_boss_icebound_tyrant:
+            title: "Oath of the Slayer: Snow"
+            description: "Slay the biome's champion and claim its relics. (Snow)"
+            icon: "head:REQ_MONSTER_SHEEP_DEMON"
+            frame: CHALLENGE
+            x: 10
+            y: 0
+            criteria:
+              type: BOSS_KILL
+              mob: mob_snow_boss_icebound_tyrant
+              amount: 1
+            rewards:
+              tokens: 18
+              xp: 950
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_boss_mob_snow_boss_whiteout_oracle:
+            title: "Oath of the Slayer: Snow"
+            description: "Slay the biome's champion and claim its relics. (Snow)"
+            icon: "head:REQ_MONSTER_SHEEP_SKELETON"
+            frame: CHALLENGE
+            x: 0
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_snow_boss_whiteout_oracle
+              amount: 1
+            rewards:
+              tokens: 18
+              xp: 950
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01
+          kill_boss_mob_snow_boss_abyssal_warden:
+            title: "Oath of the Slayer: Snow"
+            description: "Slay the biome's champion and claim its relics. (Snow)"
+            icon: "head:REQ_MONSTER_SHEEP_ZOMBIE"
+            frame: CHALLENGE
+            x: 2
+            y: 2
+            criteria:
+              type: BOSS_KILL
+              mob: mob_snow_boss_abyssal_warden
+              amount: 1
+            rewards:
+              tokens: 18
+              xp: 950
+            requires:
+              - kill_mob_mob_snow_frost_fauna_01

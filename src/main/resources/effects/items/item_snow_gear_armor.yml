@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <white><bold>Stormhide</bold></white> <gray>of Snow</gray>
+    lore:
+      - <gold>Ward</gold> <dark_gray>❯</dark_gray> <gray>Fortifies with +ARM 7.6–10.3.</gray>
+  meta:
+    skull:
+      head: REQ_BLUE_PLANKS
+attributes:
+  ARMOR: 7.6
+gui:
+  head: ICON_ITEMS

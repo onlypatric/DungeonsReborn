@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_boss_04:
+    name: Ability Upgrade Lowlands Boss 04
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: HAPPY_VILLAGER
+          length: 5.652400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: SNEEZE
+          length: 5.28448
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

@@ -1,0 +1,98 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_wildlord_phase_01_secondary:
+    name: Ability Boss Lowlands Wildlord Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_sphere_shell
+          particle: TRIAL_OMEN
+          radius: 8.958600000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: OMINOUS_SPAWNING
+          radius: 6.265350000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_spline
+          particle: TRIAL_OMEN
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_cone
+          particle: OMINOUS_SPAWNING
+          radius: 7.4027150000000015
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_physics_points
+          particle: TRIAL_OMEN
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: OMINOUS_SPAWNING
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 0.83
+          durationTicks: 72
+          radius: 5.4
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_shockwave
+          radius: 6.2
+          points: 18

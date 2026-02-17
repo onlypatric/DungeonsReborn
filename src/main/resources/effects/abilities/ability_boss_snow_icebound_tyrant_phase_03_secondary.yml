@@ -1,0 +1,102 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_icebound_tyrant_phase_03_secondary:
+    name: Ability Boss Snow Icebound Tyrant Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_polygon
+          particle: REVERSE_PORTAL
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          up: -1.0
+        -
+          type: particles_polygon
+          particle: TRAIL
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          up: -1.0
+          data:
+            color: "#7950ca"
+            durationTicks: 24
+        -
+          type: particles_polyline
+          particle: REVERSE_PORTAL
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: TRAIL
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          up: -1.0
+          data:
+            color: "#9eabdb"
+            durationTicks: 24
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.24
+          durationTicks: 96
+          radius: 5.8
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

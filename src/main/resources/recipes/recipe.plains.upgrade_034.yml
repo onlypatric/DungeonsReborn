@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_plains_upgrade_034
+name: Plains Upgrade Core 34
+costs:
+  -
+    type: tokens
+    amount: 3
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        item: item_plains_material_earth_01
+      -
+        item: item_plains_material_earth_02
+      -
+        item: item_plains_material_stone_05
+outputs:
+  -
+    item: item_plains_upgrade_core_06

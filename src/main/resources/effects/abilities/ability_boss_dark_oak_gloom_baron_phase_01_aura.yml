@@ -1,0 +1,86 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_gloom_baron_phase_01_aura:
+    name: Ability Boss Dark Oak Gloom Baron Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: FALLING_HONEY
+          points:
+            -
+              x: 3.36
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.68
+              y: 0.0
+              z: 2.91
+            -
+              x: -1.68
+              y: 0.0
+              z: -2.91
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CRIT
+          points:
+            -
+              x: 2.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.43
+              y: 0.0
+              z: 2.47
+            -
+              x: -1.43
+              y: 0.0
+              z: -2.47
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: FALLING_HONEY
+          points:
+            -
+              x: 3.36
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.68
+              y: 0.0
+              z: 2.91
+            -
+              x: -1.68
+              y: 0.0
+              z: -2.91
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: CRIT
+          points:
+            -
+              x: 2.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.43
+              y: 0.0
+              z: 2.47
+            -
+              x: -1.43
+              y: 0.0
+              z: -2.47
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.05
+          durationTicks: 40
+          radius: 3.2
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 3.2

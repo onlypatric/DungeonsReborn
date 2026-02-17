@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_050:
+    name: Ability Item Lowlands Consumable 050
+    cooldown:
+      ticks: 142
+    action:
+      type: sequence
+      actions:
+        -
+          particle: SHRIEK
+          type: particles_points
+          points:
+            -
+              x: -0.24
+              y: 0.0
+              z: -0.26
+            -
+              x: 0.26
+              y: 0.0
+              z: 0.15
+            -
+              x: -0.14
+              y: 0.0
+              z: -0.2
+          up: -1.0
+        -
+          particle: SMALL_FLAME
+          type: particles_points
+          points:
+            -
+              x: 0.09
+              y: 0.0
+              z: 0.1
+            -
+              x: 0.17
+              y: 0.0
+              z: -0.06
+          up: -1.0
+        -
+          particle: SMALL_GUST
+          type: particles_points
+          points:
+            -
+              x: 0.16
+              y: 0.0
+              z: 0.12
+            -
+              x: -0.18
+              y: 0.0
+              z: 0.36
+            -
+              x: 0.03
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          type: totem
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 18.9
+            policy: any

@@ -1,0 +1,32 @@
+name: <light_purple><bold>Mushroom Moss</bold></light_purple> <gray>I</gray>
+description: <gray>Mossborne vitality steadies you.</gray> <gray>Boosts Duration Add by 0.32.</gray> <gray>Grants Generic Max Health +0.04.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_mushroom_moss_01
+  activator: RIGHT_CLICK
+requirements:
+  level: 980
+modifiers:
+  -
+    type: duration_add
+    value: 0.32
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_SCALAR
+    amount: 0.037
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: thorns
+    level: 2
+  -
+    enchant: aqua_affinity
+    level: 2
+allowUnsafe: true

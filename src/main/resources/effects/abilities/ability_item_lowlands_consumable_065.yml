@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_065:
+    name: Ability Item Lowlands Consumable 065
+    cooldown:
+      ticks: 174
+    action:
+      type: sequence
+      actions:
+        -
+          particle: CAMPFIRE_COSY_SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.17
+              y: 0.0
+              z: 0.24
+            -
+              x: -0.05
+              y: 0.0
+              z: -0.18
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.15
+          up: -1.0
+        -
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.02
+              y: 0.0
+              z: -0.01
+            -
+              x: -0.03
+              y: 0.0
+              z: -0.4
+          up: -1.0
+        -
+          particle: CHERRY_LEAVES
+          type: particles_points
+          points:
+            -
+              x: -0.01
+              y: 0.0
+              z: 0.2
+            -
+              x: -0.23
+              y: 0.0
+              z: -0.05
+            -
+              x: -0.01
+              y: 0.0
+              z: -0.23
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 5.0
+            times: 4
+            periodTicks: 10
+            policy: any

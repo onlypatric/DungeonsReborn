@@ -1,0 +1,25 @@
+quests:
+  quest_dark_oak_boss_049:
+    name: Dark Oak Doomcall II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_dark_oak_boss_gloom_baron
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1088
+    rewards:
+      xp: 160
+      tokens: 19
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_upgrade_core_01
+        -
+          id: item_dark_oak_material_bark_03
+          amount: 3

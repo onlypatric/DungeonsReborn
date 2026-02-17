@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_31:
+    name: Ability Upgrade Snow Whiteout 31
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: DUST_COLOR_TRANSITION
+          count: 2
+          up: -1.0
+          data:
+            color: "#8ebb0b"
+            toColor: "#7b4ec4"
+            size: 1.2
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 34.0

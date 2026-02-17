@@ -1,0 +1,39 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_hearth_03:
+    name: Ability Upgrade Plains Hearth 03
+    costs:
+      -
+        type: mana
+        amount: 8.0
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: SOUL
+          width: 6.8500000000000005
+          height: 2.2
+          depth: 6.8500000000000005
+          points: 3
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.2
+          maxDistance: 16
+          hitRadius: 0.35
+          trail:
+            particle: CLOUD
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 6.0
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

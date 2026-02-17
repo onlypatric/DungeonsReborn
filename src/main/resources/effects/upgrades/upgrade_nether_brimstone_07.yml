@@ -1,0 +1,23 @@
+name: <red><bold>Nether Brimstone</bold></red> <gray>VII</gray>
+description: <gray>Sulfurous wrath lingers on your strikes.</gray> <gray>Boosts Damage Mult by 1.32.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_brimstone_07
+  activator: LEFT_CLICK
+requirements:
+  level: 361
+modifiers:
+  -
+    type: damage_mult
+    value: 1.318
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: infinity
+    level: 1
+allowUnsafe: true

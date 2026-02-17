@@ -1,0 +1,22 @@
+quests:
+  quest_plains_explore_008:
+    name: Plains Charting IX
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - plains
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2
+    rewards:
+      xp: 55
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0

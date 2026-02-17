@@ -1,0 +1,19 @@
+schemaVersion: 1
+id: recipe_water_component_004
+name: Water Component 4
+costs:
+  -
+    type: tokens
+    amount: 1
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        item: item_water_material_brine_01
+      -
+        item: item_water_material_current_03
+outputs:
+  -
+    item: item_water_component_04

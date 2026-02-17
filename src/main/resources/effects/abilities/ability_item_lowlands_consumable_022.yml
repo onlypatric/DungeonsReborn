@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_022:
+    name: Ability Item Lowlands Consumable 022
+    cooldown:
+      ticks: 226
+    action:
+      type: sequence
+      actions:
+        -
+          particle: CURRENT_DOWN
+          type: particles_points
+          points:
+            -
+              x: -0.13
+              y: 0.0
+              z: -0.35
+            -
+              x: -0.1
+              y: 0.0
+              z: 0.04
+          up: -1.0
+        -
+          particle: DAMAGE_INDICATOR
+          type: particles_points
+          points:
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.29
+            -
+              x: 0.1
+              y: 0.0
+              z: 0.09
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: resistance
+            durationTicks: 143
+            amplifier: 0

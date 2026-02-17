@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_114:
+    name: Wrath of Snow VII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_snow_glacier_raiders_24
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3507
+    rewards:
+      xp: 180
+      tokens: 12
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_frost_04
+          amount: 3

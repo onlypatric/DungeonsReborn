@@ -143,7 +143,7 @@ public final class Costs {
     if (!settings.tryWarn(player.getUniqueId(), now, warnings.cooldownTicks())) {
       return;
     }
-    player.sendMessage(Locales.text(player, warnings.messageKey(), Locales.placeholders(
+    player.sendMessage(Locales.component(player, warnings.messageKey(), Locales.placeholders(
         "resource", displayName(resourceId),
         "current", format(current),
         "max", format(max),

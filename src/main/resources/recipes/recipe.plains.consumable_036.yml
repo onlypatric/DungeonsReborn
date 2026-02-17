@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: recipe_plains_consumable_036
+name: Plains Consumable 36
+costs:
+  -
+    type: tokens
+    amount: 2
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: LEATHER
+        amount: 2
+      -
+        material: WHEAT
+      -
+        material: BONE
+outputs:
+  -
+    item: item_plains_consumable_036

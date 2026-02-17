@@ -1,0 +1,382 @@
+# Auto-seeded missing IT keys (copied from EN).
+# Replace values with Italian translations; keep keys intact.
+# MISSING: - <gray>Value
+<gray>Value: </gray> <white>64 compressed tokens</white>
+# MISSING: givers
+givers: </gray> <white>{givers}</white><gray>, giver errors:</gray> <white>{giverErrors}</white>
+# MISSING: item bindings
+item bindings: </green> <white>{bindings}</white> <green>, errors:</green> <white>{errors}</white>
+# MISSING: messages.command.classes.nodes.nodeEntry
+messages.command.classes.nodes.nodeEntry: <gray>-</gray> <white>{id}</white>
+# MISSING: messages.command.effects.abilityInvalid
+messages.command.effects.abilityInvalid: <red>Invalid ability id:</red> <white>{message}</white>
+# MISSING: messages.command.effects.abilityNoSpec
+messages.command.effects.abilityNoSpec: <red>No spec found for:</red> <white>{id}</white>
+# MISSING: messages.command.effects.abilityUnknown
+messages.command.effects.abilityUnknown: <red>Unknown ability:</red> <white>{id}</white>
+# MISSING: messages.command.effects.bind.add
+messages.command.effects.bind.add: <green>Bound</green> <white>{id}</white> <green>to held item</green> <gray>({key})</gray>
+# MISSING: messages.command.effects.bind.clear
+messages.command.effects.bind.clear: <green>Cleared bindings</green> <gray>({key})</gray> <green>on held item</green>
+# MISSING: messages.command.effects.bind.clearAll
+messages.command.effects.bind.clearAll: <green>Cleared all bindings on held item</green>
+# MISSING: messages.command.effects.bind.list.left
+messages.command.effects.bind.list.left: <gray>Left-click abilities:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.bind.list.none
+messages.command.effects.bind.list.none: (none)
+# MISSING: messages.command.effects.bind.list.right
+messages.command.effects.bind.list.right: <gray>Right-click abilities:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.bind.remove
+messages.command.effects.bind.remove: <green>Unbound</green> <white>{id}</white> <green>from held item</green> <gray>({key})</gray>
+# MISSING: messages.command.effects.bindingsMissing
+messages.command.effects.bindingsMissing: <red>Bindings integration not installed.</red>
+# MISSING: messages.command.effects.cast.error
+messages.command.effects.cast.error: <red>{message}</red>
+# MISSING: messages.command.effects.cast.failed
+messages.command.effects.cast.failed: <red>Cast failed:</red> <white>{error}</white>
+# MISSING: messages.command.effects.cast.success
+messages.command.effects.cast.success: <green>Cast</green> <white>{ability}</white> <green>on</green> <white>{player}</white>
+# MISSING: messages.command.effects.consoleNeedsPlayer
+messages.command.effects.consoleNeedsPlayer: <red>Console must specify a player.</red>
+# MISSING: messages.command.effects.debug
+messages.command.effects.debug: <green>Effects debug</green> <white>{status}</white>
+# MISSING: messages.command.effects.debugScript
+messages.command.effects.debugScript: <green>Effects script debug</green> <white>{status}</white>
+# MISSING: messages.command.effects.debugScriptTrace
+messages.command.effects.debugScriptTrace: <green>Effects script trace</green> <white>{status}</white>
+# MISSING: messages.command.effects.explain.line
+messages.command.effects.explain.line: <gray>{line}</gray>
+# MISSING: messages.command.effects.explain.registeredAbilities
+messages.command.effects.explain.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.help.bindAdd
+messages.command.effects.help.bindAdd: <gray>/dr effects bind add &lt;right|left&gt; &lt;ability&gt;</gray>
+# MISSING: messages.command.effects.help.bindClear
+messages.command.effects.help.bindClear: <gray>/dr effects bind clear &lt;right|left|all&gt;</gray>
+# MISSING: messages.command.effects.help.bindList
+messages.command.effects.help.bindList: <gray>/dr effects bind list</gray>
+# MISSING: messages.command.effects.help.bindRemove
+messages.command.effects.help.bindRemove: <gray>/dr effects bind remove &lt;right|left&gt; &lt;ability&gt;</gray>
+# MISSING: messages.command.effects.help.cast
+messages.command.effects.help.cast: <gray>/dr effects cast &lt;ability&gt; [player]</gray>
+# MISSING: messages.command.effects.help.debug
+messages.command.effects.help.debug: "'<gray>/dr effects debug &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'"
+# MISSING: messages.command.effects.help.debugScript
+messages.command.effects.help.debugScript: "'<gray>/dr effects debug script &lt;on|off&gt;</gray> <dark_gray>(current: {status})</dark_gray>'"
+# MISSING: messages.command.effects.help.debugScriptTrace
+messages.command.effects.help.debugScriptTrace: '<gray>/dr effects debug script trace &lt;on|off&gt;</gray>'
+# MISSING: messages.command.effects.help.explain
+messages.command.effects.help.explain: <gray>/dr effects explain &lt;right|left&gt;</gray>
+# MISSING: messages.command.effects.help.info
+messages.command.effects.help.info: <gray>/dr effects info &lt;ability&gt;</gray>
+# MISSING: messages.command.effects.help.itemDiff
+messages.command.effects.help.itemDiff: <gray>/dr effects item diff [itemId]</gray>
+# MISSING: messages.command.effects.help.itemInspect
+messages.command.effects.help.itemInspect: <gray>/dr effects item inspect &lt;itemId&gt;</gray>
+# MISSING: messages.command.effects.help.itemReport
+messages.command.effects.help.itemReport: <gray>/dr effects item report</gray>
+# MISSING: messages.command.effects.help.lint
+messages.command.effects.help.lint: <gray>/dr effects lint [script]</gray>
+# MISSING: messages.command.effects.help.list
+messages.command.effects.help.list: <gray>/dr effects list</gray>
+# MISSING: messages.command.effects.help.loggingReload
+messages.command.effects.help.loggingReload: <gray>/dr effects logging reload</gray> <dark_gray>(reload logging levels)</dark_gray>
+# MISSING: messages.command.effects.help.mana
+messages.command.effects.help.mana: <gray>/dr effects mana &lt;show|set|add|max&gt;</gray>
+# MISSING: messages.command.effects.help.minions
+messages.command.effects.help.minions: <gray>/dr effects minions &lt;recall|dismiss|mode|list|stats|test&gt;</gray>
+# MISSING: messages.command.effects.help.particlesBudget
+messages.command.effects.help.particlesBudget: '<gray>/dr effects particles budget &lt;maxPerPlayerTick&gt;</gray>'
+# MISSING: messages.command.effects.help.particlesQuality
+messages.command.effects.help.particlesQuality: '<gray>/dr effects particles quality &lt;multiplier&gt;</gray>'
+# MISSING: messages.command.effects.help.particlesQueue
+messages.command.effects.help.particlesQueue: '<gray>/dr effects particles queue &lt;maxRequestsPerTick&gt;</gray>'
+# MISSING: messages.command.effects.help.particlesRange
+messages.command.effects.help.particlesRange: '<gray>/dr effects particles range &lt;blocks&gt;</gray>'
+# MISSING: messages.command.effects.help.particlesStats
+messages.command.effects.help.particlesStats: <gray>/dr effects particles stats</gray>
+# MISSING: messages.command.effects.help.registeredAbilities
+messages.command.effects.help.registeredAbilities: <gray>Registered abilities:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.help.reload
+messages.command.effects.help.reload: <gray>/dr effects reload</gray> <dark_gray>(reload YAML abilities)</dark_gray>
+# MISSING: messages.command.effects.help.scriptRun
+messages.command.effects.help.scriptRun: <gray>/dr effects script run &lt;file&gt;</gray>
+# MISSING: messages.command.effects.help.scriptStats
+messages.command.effects.help.scriptStats: <gray>/dr effects script stats</gray>
+# MISSING: messages.command.effects.help.stats
+messages.command.effects.help.stats: <gray>/dr effects stats</gray>
+# MISSING: messages.command.effects.help.tag
+messages.command.effects.help.tag: <gray>/dr effects tag &lt;on|off&gt;</gray> <dark_gray>(tags held item with {marker})</dark_gray>
+# MISSING: messages.command.effects.help.timings
+messages.command.effects.help.timings: <gray>/dr effects timings &lt;last [player]|cast &lt;uuid&gt;&gt;</gray>
+# MISSING: messages.command.effects.help.types
+messages.command.effects.help.types: <gray>/dr effects types &lt;actions|targeters|conditions&gt;</gray>
+# MISSING: messages.command.effects.info.ability
+messages.command.effects.info.ability: <green>Ability</green> <white>{id}</white>
+# MISSING: messages.command.effects.info.cooldown
+messages.command.effects.info.cooldown: <gray>Cooldown:</gray> <white>{ticks}t</white> <dark_gray>(key={key})</dark_gray>
+# MISSING: messages.command.effects.info.costs
+messages.command.effects.info.costs: <gray>Costs:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.info.interacts
+messages.command.effects.info.interacts: <gray>Interact triggers:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.info.label.description
+messages.command.effects.info.label.description: "'Description: '"
+# MISSING: messages.command.effects.info.label.name
+messages.command.effects.info.label.name: "'Name: '"
+# MISSING: messages.command.effects.info.requirements
+messages.command.effects.info.requirements: <gray>Requirements:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.invalidUuid
+messages.command.effects.invalidUuid: <red>Invalid UUID.</red>
+# MISSING: messages.command.effects.items.diff.entry
+messages.command.effects.items.diff.entry: <gray>-</gray> <white>{diff}</white>
+# MISSING: messages.command.effects.items.diff.header
+messages.command.effects.items.diff.header: <gold>[Items]</gold> <white>Diff for</white> <yellow>{id}</yellow>
+# MISSING: messages.command.effects.items.diff.none
+messages.command.effects.items.diff.none: <green>No differences detected.</green>
+# MISSING: messages.command.effects.items.heldMissingId
+messages.command.effects.items.heldMissingId: <red>Held item has no item_id; provide an itemId argument.</red>
+# MISSING: messages.command.effects.items.inspect.affixPool
+messages.command.effects.items.inspect.affixPool: <gray>affix pool:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.baseStats
+messages.command.effects.items.inspect.baseStats: <gray>base stats:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.durability
+messages.command.effects.items.inspect.durability: <gray>durability:</gray> <white>{min}-{max}</white>
+# MISSING: messages.command.effects.items.inspect.header
+messages.command.effects.items.inspect.header: <gold>[Items]</gold> <white>{id}</white> <gray>(v{version})</gray>
+# MISSING: messages.command.effects.items.inspect.hooks
+messages.command.effects.items.inspect.hooks: <gray>hooks:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.items.inspect.loreLines
+messages.command.effects.items.inspect.loreLines: <gray>lore lines:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.items.inspect.material
+messages.command.effects.items.inspect.material: <gray>material:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.name
+messages.command.effects.items.inspect.name: <gray>name:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.rarity
+messages.command.effects.items.inspect.rarity: <gray>rarity:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.rolledAffixes
+messages.command.effects.items.inspect.rolledAffixes: <gray>rolled affixes:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.rolledStats
+messages.command.effects.items.inspect.rolledStats: <gray>rolled stats:</gray> <white>{value}</white>
+# MISSING: messages.command.effects.items.inspect.tier
+messages.command.effects.items.inspect.tier: <gray>tier:</gray> <white>{id}</white> <gray>scale=</gray><white>{scale}</white>
+# MISSING: messages.command.effects.items.report.entry
+messages.command.effects.items.report.entry: <gray>-</gray> <white>{error}</white>
+# MISSING: messages.command.effects.items.report.header
+messages.command.effects.items.report.header: <gold>[Items]</gold> <white>Validation report</white>
+# MISSING: messages.command.effects.items.report.more
+messages.command.effects.items.report.more: <gray>... +{count} more</gray>
+# MISSING: messages.command.effects.items.report.none
+messages.command.effects.items.report.none: <green>No item template errors recorded in last reload.</green>
+# MISSING: messages.command.effects.items.unknown
+messages.command.effects.items.unknown: <red>Unknown item template:</red> <white>{id}</white>
+# MISSING: messages.command.effects.lint.errorEntry
+messages.command.effects.lint.errorEntry: <red>-</red> <white>{error}</white>
+# MISSING: messages.command.effects.lint.header
+messages.command.effects.lint.header: <gold>[Effects]</gold> <white>DSL lint</white>
+# MISSING: messages.command.effects.lint.more
+messages.command.effects.lint.more: <gray>... +{count} more</gray>
+# MISSING: messages.command.effects.lint.summary
+messages.command.effects.lint.summary: <gray>Scripts:</gray> <white>{scripts}</white> <gray>Errors:</gray> <white>{errors}</white>
+# MISSING: messages.command.effects.list.header
+messages.command.effects.list.header: <green>Abilities</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+# MISSING: messages.command.effects.list.none
+messages.command.effects.list.none: <gray>No abilities registered.</gray>
+# MISSING: messages.command.effects.loggingReload.ok
+messages.command.effects.loggingReload.ok: <green>Reloaded logging levels from config.yml</green>
+# MISSING: messages.command.effects.loggingReload.unavailable
+messages.command.effects.loggingReload.unavailable: <red>Logging configuration not available.</red>
+# MISSING: messages.command.effects.mana.add
+messages.command.effects.mana.add: <green>Mana:</green> <white>{current}</white><gray>/</gray><white>{max}</white>
+# MISSING: messages.command.effects.mana.max
+messages.command.effects.mana.max: <green>Mana max set to</green> <white>{max}</white>
+# MISSING: messages.command.effects.mana.missingProvider
+messages.command.effects.mana.missingProvider: <red>No mana provider installed.</red>
+# MISSING: messages.command.effects.mana.pulse
+messages.command.effects.mana.pulse: <green>Pulse scheduled:</green> <white>resource={resource}</white> <gray>amount=</gray><white>{amount}</white>
+# MISSING: messages.command.effects.mana.set
+messages.command.effects.mana.set: <green>Mana set to</green> <white>{current}</white><gray>/</gray><white>{max}</white>
+# MISSING: messages.command.effects.mana.show
+messages.command.effects.mana.show: <aqua>Mana:</aqua> <white>{current}</white><gray>/</gray><white>{max}</white>
+# MISSING: messages.command.effects.mana.state.entry
+messages.command.effects.mana.state.entry: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green>
+# MISSING: messages.command.effects.mana.state.entryDetailed
+messages.command.effects.mana.state.entryDetailed: <gray>-</gray> <white>{resource}</white><gray>:</gray> <green>{current}</green><gray>/</gray><green>{max}</green><dark_gray>{details}</dark_gray>
+# MISSING: messages.command.effects.mana.state.header
+messages.command.effects.mana.state.header: <aqua>Resources for {player}:</aqua>
+# MISSING: messages.command.effects.mana.stats.antiExploit
+messages.command.effects.mana.stats.antiExploit: <gray>- antiExploit:</gray> <white>gainCapPerTick={capPerTick}</white>
+# MISSING: messages.command.effects.mana.stats.header
+messages.command.effects.mana.stats.header: <aqua>Mana stats:</aqua>
+# MISSING: messages.command.effects.mana.stats.regen
+messages.command.effects.mana.stats.regen: <gray>- regen:</gray> <white>period={period}</white> <gray>amount=</gray><white>{amount}</white>
+# MISSING: messages.command.effects.mana.stats.timed
+messages.command.effects.mana.stats.timed: <gray>- timed:</gray> <white>enabled={enabled}</white> <gray>period=</gray><white>{period}</white>
+# MISSING: messages.command.effects.minions.dismissed
+messages.command.effects.minions.dismissed: <gray>Dismissed minions:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.minions.listEntry
+messages.command.effects.minions.listEntry: <white>-</white> <white>{owner}</white> <gray>x</gray><white>{count}</white>
+# MISSING: messages.command.effects.minions.listHeader
+messages.command.effects.minions.listHeader: <gray>Active minions by owner:</gray>
+# MISSING: messages.command.effects.minions.mode
+messages.command.effects.minions.mode: <gray>Minion mode set to</gray> <white>{mode}</white>
+# MISSING: messages.command.effects.minions.none
+messages.command.effects.minions.none: <gray>No active minions.</gray>
+# MISSING: messages.command.effects.minions.recalled
+messages.command.effects.minions.recalled: <gray>Recalled minions:</gray> <white>{count}</white>
+# MISSING: messages.command.effects.minions.statsActive
+messages.command.effects.minions.statsActive: <gray>- active:</gray> <green>{count}</green>
+# MISSING: messages.command.effects.minions.statsDespawned
+messages.command.effects.minions.statsDespawned: <gray>- despawned:</gray> <green>{count}</green>
+# MISSING: messages.command.effects.minions.statsHeader
+messages.command.effects.minions.statsHeader: <gray>Minion stats</gray>
+# MISSING: messages.command.effects.minions.statsSpawned
+messages.command.effects.minions.statsSpawned: <gray>- spawned:</gray> <green>{count}</green>
+# MISSING: messages.command.effects.minions.test
+messages.command.effects.minions.test: <gray>Summoned test minions:</gray> <white>{mob}</white>
+# MISSING: messages.command.effects.particles.budget
+messages.command.effects.particles.budget: <green>Particles budget set to</green> <white>{value}</white> <gray>per player
+# MISSING: messages.command.effects.particles.quality
+messages.command.effects.particles.quality: <green>Particles quality set to</green> <white>{value}</white>
+# MISSING: messages.command.effects.particles.queue
+messages.command.effects.particles.queue: <green>Particles queue cap set to</green> <white>{value}</white> <gray>requests
+# MISSING: messages.command.effects.particles.range
+messages.command.effects.particles.range: <green>Particles default range set to</green> <white>{value}</white>
+# MISSING: messages.command.effects.particles.stats.flush
+messages.command.effects.particles.stats.flush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>
+# MISSING: messages.command.effects.particles.stats.header
+messages.command.effects.particles.stats.header: <gold>[Effects]</gold> <white>Particles stats</white>
+# MISSING: messages.command.effects.particles.stats.queue
+messages.command.effects.particles.stats.queue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{maxQueued}</white>
+# MISSING: messages.command.effects.playerNotFound
+messages.command.effects.playerNotFound: <red>Player not found.</red>
+# MISSING: messages.command.effects.playerNotOnline
+messages.command.effects.playerNotOnline: <red>Player not online.</red>
+# MISSING: messages.command.effects.reload.errorEntry
+messages.command.effects.reload.errorEntry: <red>-</red> <white>{error}</white>
+# MISSING: messages.command.effects.reload.file
+messages.command.effects.reload.file: <gray>File:</gray> <white>{path}</white>
+# MISSING: messages.command.effects.reload.more
+messages.command.effects.reload.more: <gray>... +{count} more</gray>
+# MISSING: messages.command.effects.reload.summary
+messages.command.effects.reload.summary: <green>Reloaded YAML abilities:</green> <white>{abilities}</white> <green>loaded,
+# MISSING: messages.command.effects.reload.updated
+messages.command.effects.reload.updated: <green>Updated</green> <white>{count}</white> <green>items for online players.</green>
+# MISSING: messages.command.effects.script.error
+messages.command.effects.script.error: <red>Script error:</red> <white>{message}</white>
+# MISSING: messages.command.effects.script.playersOnly
+messages.command.effects.script.playersOnly: <red>Only players can run scripts.</red>
+# MISSING: messages.command.effects.script.run
+messages.command.effects.script.run: <green>Ran script:</green> <white>{path}</white>
+# MISSING: messages.command.effects.script.stats.entry
+messages.command.effects.script.stats.entry: <gray>-</gray> <white>{id}</white> <gray>exec=</gray><white>{execs}</white> <gray>avg=</gray><white>{avgMs}</white>
+# MISSING: messages.command.effects.script.stats.header
+messages.command.effects.script.stats.header: <gold>[Effects]</gold> <white>Script metrics (top {count})</white>
+# MISSING: messages.command.effects.script.stats.none
+messages.command.effects.script.stats.none: <gray>No script metrics recorded.</gray>
+# MISSING: messages.command.effects.stats.header
+messages.command.effects.stats.header: <gold>[Effects]</gold> <white>Engine stats</white>
+# MISSING: messages.command.effects.stats.particlesFlush
+messages.command.effects.stats.particlesFlush: <gray>lastFlush=</gray><white>{lastFlushMs}ms</white> <gray>requests=</gray><white>{requests}</white>
+# MISSING: messages.command.effects.stats.particlesHeader
+messages.command.effects.stats.particlesHeader: <gold>[Effects]</gold> <white>Particles</white>
+# MISSING: messages.command.effects.stats.particlesQueue
+messages.command.effects.stats.particlesQueue: <gray>queue=</gray><white>{queued}</white><gray>/</gray><white>{max}</white>
+# MISSING: messages.command.effects.stats.scheduled
+messages.command.effects.stats.scheduled: <gray>scheduled:</gray> <white>tick={tick}</white> <gray>rt=</gray><white>{rt}</white>
+# MISSING: messages.command.effects.stats.tick
+messages.command.effects.stats.tick: <gray>tick=</gray><white>{tick}</white> <gray>lastTick=</gray><white>{lastTickMs}ms</white>
+# MISSING: messages.command.effects.stats.tracked
+messages.command.effects.stats.tracked: <gray>tracked:</gray> <white>casts={casts}</white> <gray>cooldowns=</gray><white>{cooldowns}</white>
+# MISSING: messages.command.effects.status.False
+messages.command.effects.status.False: false
+# MISSING: messages.command.effects.status.True
+messages.command.effects.status.True: true
+# MISSING: messages.command.effects.status.disabled
+messages.command.effects.status.disabled: disabled
+# MISSING: messages.command.effects.status.enabled
+messages.command.effects.status.enabled: enabled
+# MISSING: messages.command.effects.status.unavailable
+messages.command.effects.status.unavailable: unavailable
+# MISSING: messages.command.effects.tag
+messages.command.effects.tag: <green>Tag</green> <white>{status}</white> <green>on held item</green>
+# MISSING: messages.command.effects.timings.entry
+messages.command.effects.timings.entry: <white>{key}</white><gray>:</gray> <white>{ms}ms</white> <dark_gray>({count}x, avg
+# MISSING: messages.command.effects.timings.header
+messages.command.effects.timings.header: <green>Timings for</green> <white>{ability}</white> <gray>(castId={castId})</gray>
+# MISSING: messages.command.effects.timings.noCastRecord
+messages.command.effects.timings.noCastRecord: <gray>No cast record found.</gray>
+# MISSING: messages.command.effects.timings.none
+messages.command.effects.timings.none: <gray>No timings recorded for castId={castId} (wrap actions with Actions.timed(...)).</gray>
+# MISSING: messages.command.effects.timings.total
+messages.command.effects.timings.total: <gray>Total recorded:</gray> <white>{ms}ms</white> <dark_gray>({keys} keys)</dark_gray>
+# MISSING: messages.command.effects.types.actions
+messages.command.effects.types.actions: <green>Action types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+# MISSING: messages.command.effects.types.conditions
+messages.command.effects.types.conditions: <green>Condition types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+# MISSING: messages.command.effects.types.targeters
+messages.command.effects.types.targeters: <green>Targeter types</green> <gray>({count})</gray><white>:</white> <white>{list}</white>
+# MISSING: messages.command.effects.types.unknown
+messages.command.effects.types.unknown: <red>Unknown kind.</red>
+# MISSING: messages.command.effects.yamlMissing
+messages.command.effects.yamlMissing: <red>YAML loader not installed.</red>
+# MISSING: messages.command.help.adminLocaleValidate
+messages.command.help.adminLocaleValidate: <gray>/{root} admin locale validate</gray> <dark_gray>- validate locale coverage</dark_gray>
+# MISSING: messages.command.items.holdMainHand
+messages.command.items.holdMainHand: <red>Hold an item in your main hand.</red>
+# MISSING: messages.command.upgrades.debug.entry
+messages.command.upgrades.debug.entry: <gray>-</gray> <white>{record}</white> <dark_gray>({status})</dark_gray>
+# MISSING: messages.command.upgrades.debug.none
+messages.command.upgrades.debug.none: <gray>No upgrade records found.</gray>
+# MISSING: messages.command.upgrades.debug.recordsHeader
+messages.command.upgrades.debug.recordsHeader: <gold>[Upgrades]</gold> <white>Records:</white> <white>{count}</white>
+# MISSING: messages.command.upgrades.debug.status.empty
+messages.command.upgrades.debug.status.empty: empty
+# MISSING: messages.command.upgrades.debug.status.missing
+messages.command.upgrades.debug.status.missing: missing
+# MISSING: messages.command.upgrades.debug.status.ok
+messages.command.upgrades.debug.status.ok: ok
+# MISSING: messages.command.upgrades.debug.status.vanilla
+messages.command.upgrades.debug.status.vanilla: vanilla
+# MISSING: messages.command.upgrades.debug.validationEntry
+messages.command.upgrades.debug.validationEntry: <gray>-</gray> <white>{issue}</white>
+# MISSING: messages.command.upgrades.debug.validationHeader
+messages.command.upgrades.debug.validationHeader: <gold>[Upgrades]</gold> <white>Validation report</white>
+# MISSING: messages.command.upgrades.debug.validationNone
+messages.command.upgrades.debug.validationNone: <green>No upgrade issues detected.</green>
+# MISSING: messages.locale.validate.entry
+messages.locale.validate.entry: <dark_gray>-</dark_gray> <white>{key}</white>
+# MISSING: messages.locale.validate.header
+messages.locale.validate.header: <gold><bold>Locale Coverage</bold></gold> <gray>{total} keys</gray>
+# MISSING: messages.locale.validate.localeHeader
+messages.locale.validate.localeHeader: <yellow>{locale}</yellow> <gray>missing</gray> <white>{count}</white>
+# MISSING: messages.locale.validate.more
+messages.locale.validate.more: <gray>... and</gray> <white>{count}</white> <gray>more</gray>
+# MISSING: messages.locale.validate.ok
+messages.locale.validate.ok: <green>All locales have full coverage.</green>
+# MISSING: messages.locale.validate.unavailable
+messages.locale.validate.unavailable: <red>Locale validation unavailable.</red>
+# MISSING: messages.shop.party.admin.cleanup
+messages.shop.party.admin.cleanup: <green>Cleanup complete.</green> <gray>Invites</gray> <white>{invites}</white> <gray>Requests</gray>
+# MISSING: messages.shop.party.admin.disbanded
+messages.shop.party.admin.disbanded: <green>Party disbanded.</green>
+# MISSING: messages.shop.party.admin.info.header
+messages.shop.party.admin.info.header: <gold>Party</gold> <white>{id}</white>
+# MISSING: messages.shop.party.admin.info.invites
+messages.shop.party.admin.info.invites: <gray>Invites:</gray> <white>{count}</white>
+# MISSING: messages.shop.party.admin.info.leader
+messages.shop.party.admin.info.leader: <gray>Leader:</gray> <white>{leader}</white>
+# MISSING: messages.shop.party.admin.info.member
+messages.shop.party.admin.info.member: <gray>-</gray> <white>{player}</white> <dark_gray>({role})</dark_gray> <gray>online:</gray>
+# MISSING: messages.shop.party.admin.info.members
+messages.shop.party.admin.info.members: <gray>Members</gray> <dark_gray>({count})</dark_gray>
+# MISSING: messages.shop.party.admin.info.public
+messages.shop.party.admin.info.public: <gray>Public:</gray> <white>{public}</white>
+# MISSING: messages.shop.party.admin.info.requests
+messages.shop.party.admin.info.requests: <gray>Join requests:</gray> <white>{count}</white>
+# MISSING: messages.shop.party.admin.info.world
+messages.shop.party.admin.info.world: <gray>World:</gray> <white>{world}</white>
+# MISSING: messages.shop.party.admin.list.entry
+messages.shop.party.admin.list.entry: <gray>-</gray> <white>{id}</white> <gray>leader</gray> <white>{leader}</white> <gray>size</gray>
+# MISSING: messages.shop.party.admin.list.header
+messages.shop.party.admin.list.header: <gold>Parties</gold> <gray>({count})</gray>
+# MISSING: migrated items
+migrated items: </gray> <white>{migrated}</white>

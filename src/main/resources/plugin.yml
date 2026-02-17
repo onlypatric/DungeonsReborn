@@ -26,3 +26,15 @@ permissions:
   dungeonsreborn.classes.reload:
     description: Reload class YAML data.
     default: op
+  dungeonsreborn.mobs.trialspawner.give:
+    description: Give trial spawner profile items.
+    default: op
+  dungeonsreborn.mobs.trialspawner.admin:
+    description: Bind and inspect trial spawner profiles.
+    default: op
+  dungeonsreborn.mobs.vault.give:
+    description: Give vault profile items.
+    default: op
+  dungeonsreborn.mobs.vault.admin:
+    description: Bind and inspect vault profiles.
+    default: op

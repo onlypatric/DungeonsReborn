@@ -1,0 +1,26 @@
+schemaVersion: 1
+mobs:
+  mob_highlands_wind_critters_10:
+    type: RABBIT
+    name: <green>Highlands Rabbit Watcher</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 43.2
+      ATTACK_DAMAGE: 0.0
+      scaleVariance: 0.95
+    passives:
+      -
+        ability: ability_mob_family_highlands_wind_critters_aura
+        periodTicks: 80
+      -
+        ability: ability_mob_family_highlands_wind_critters_panic
+        periodTicks: 140
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_highlands_wind_critters_passive
+    xpGating:
+      minLevel: 1401

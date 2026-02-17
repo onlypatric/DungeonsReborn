@@ -1,0 +1,42 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_whiteout_oracle_phase_03_aura:
+    name: Ability Boss Snow Whiteout Oracle Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: WHITE_ASH
+          radius: 7.6314
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: DRAGON_BREATH
+          radius: 5.33715
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: WHITE_ASH
+          radius: 6.279
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: DRAGON_BREATH
+          radius: 5.624535000000001
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.65
+          durationTicks: 40
+          radius: 4.6
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 4.6

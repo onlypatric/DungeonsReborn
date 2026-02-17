@@ -1,0 +1,25 @@
+item:
+  type: material
+  material: GOLDEN_APPLE
+  display:
+    name: <red><bold>Hellforge Serum VI</bold></red>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Bound by runes of the old world.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Heal 9.3 HP</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>4s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Nether</gray>
+  meta:
+    components:
+      use_cooldown:
+        seconds: 4.7
+bindings:
+  -
+    ability: ability_item_nether_consumable_005
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

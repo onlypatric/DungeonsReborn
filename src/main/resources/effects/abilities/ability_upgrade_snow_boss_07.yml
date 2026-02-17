@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_07:
+    name: Ability Upgrade Snow Boss 07
+    costs:
+      -
+        type: mana
+        amount: 41.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: CLOUD
+          length: 5.652400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: DRIPPING_HONEY
+          length: 5.28448
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 42.5
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 60
+                amplifier: 1

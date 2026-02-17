@@ -69,6 +69,10 @@ public final class GuiItems {
     return item.build();
   }
 
+  public static ItemStack named(ItemStack base, Component name, List<Component> lore) {
+    return named(base, name, lore, true);
+  }
+
   public static ItemStack namedHidden(Material material, Component name) {
     return named(material, name, List.of(), true);
   }

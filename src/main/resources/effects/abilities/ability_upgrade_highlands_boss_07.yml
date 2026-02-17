@@ -1,0 +1,45 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_boss_07:
+    name: Ability Upgrade Highlands Boss 07
+    costs:
+      -
+        type: mana
+        amount: 35.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: ENCHANT
+          radius: 3.9312000000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: ITEM_COBWEB
+          radius: 3.503955000000001
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 20
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 32.5
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 40
+                amplifier: 1

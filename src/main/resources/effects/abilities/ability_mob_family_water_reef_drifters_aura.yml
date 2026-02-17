@@ -1,0 +1,41 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_reef_drifters_aura:
+    name: Water Reef_Drifters
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: ENCHANT
+          points:
+            -
+              x: 3.12
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.56
+              y: 0.0
+              z: 2.71
+            -
+              x: -1.56
+              y: 0.0
+              z: -2.71
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: FIREWORK
+          points:
+            -
+              x: 2.66
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.33
+              y: 0.0
+              z: 2.3
+            -
+              x: -1.33
+              y: 0.0
+              z: -2.3
+          up: -1.0

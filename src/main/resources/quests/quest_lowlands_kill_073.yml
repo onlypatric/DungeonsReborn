@@ -1,0 +1,23 @@
+quests:
+  quest_lowlands_kill_073:
+    name: Lowlands Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_lowlands_grove_fauna_73
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2277
+    rewards:
+      xp: 160
+      tokens: 8
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_lowlands_material_wild_04
+          amount: 4

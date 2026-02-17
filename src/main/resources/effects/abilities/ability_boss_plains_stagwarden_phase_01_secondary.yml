@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_boss_plains_stagwarden_phase_01_secondary:
+    name: Ability Boss Plains Stagwarden Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_box
+          particle: SMOKE
+          width: 8.190000000000001
+          height: 2.2
+          depth: 8.190000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: INFESTED
+          width: 7.336350000000001
+          height: 2.2
+          depth: 7.336350000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: SMOKE
+          radius: 5.115500000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: INFESTED
+          radius: 4.655600000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 3.0

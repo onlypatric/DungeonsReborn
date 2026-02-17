@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Runic Sigil</bold></aqua> <gray>of Water</gray>
+    lore:
+      - <gold>Relic</gold> <dark_gray>❯</dark_gray> <gray>Empowers hidden utility.</gray>
+  meta:
+    skull:
+      head: REQ_COPPER_ORE
+gui:
+  head: ICON_ITEMS

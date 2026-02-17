@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_water_consumable_006:
+    name: Ability Item Water Consumable 006
+    cooldown:
+      ticks: 82
+    action:
+      type: sequence
+      actions:
+        -
+          particle: ELECTRIC_SPARK
+          type: particles_points
+          points:
+            -
+              x: -0.07
+              y: 0.0
+              z: -0.45
+            -
+              x: 0.1
+              y: 0.0
+              z: 0.02
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.02
+          up: -1.0
+        -
+          particle: ENCHANT
+          type: particles_points
+          points:
+            -
+              x: -0.19
+              y: 0.0
+              z: -0.13
+            -
+              x: -0.48
+              y: 0.0
+              z: -0.04
+          up: -1.0
+        -
+          particle: ENCHANTED_HIT
+          type: particles_points
+          points:
+            -
+              x: 0.07
+              y: 0.0
+              z: 0.13
+            -
+              x: -0.11
+              y: 0.0
+              z: -0.1
+            -
+              x: 0.2
+              y: 0.0
+              z: -0.01
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 7.4
+            policy: any

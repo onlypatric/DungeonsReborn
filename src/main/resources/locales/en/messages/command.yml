@@ -6,6 +6,16 @@ messages.command.classes.nodes.headerAll: <gold>Class nodes</gold>
 messages.command.classes.nodes.nodeEntry: <gray>-</gray> <white>{id}</white>
 messages.command.classes.nodes.unknown: <red>Unknown class:</red> <white>{id}</white>
 messages.command.classes.selectFirst: <red>Select a class first.</red>
+messages.command.classes.export.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.export.errors: <red>Class export had {count} errors for</red> <white>{path}</white>
+messages.command.classes.export.ok: <green>Exported</green> <white>{count}</white> <green>classes to</green> <white>{path}</white>
+messages.command.classes.import.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.import.errors: <red>Class import had {count} errors for</red> <white>{path}</white>
+messages.command.classes.import.missing: <red>Import file missing.</red>
+messages.command.classes.import.ok: <green>Imported</green> <white>{count}</white> <green>classes from</green> <white>{path}</white> <gray>(reloaded {loaded}, errors {errors})</gray>
+messages.command.classes.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.command.classes.validate.errors: <red>Class validation had {count} errors.</red>
+messages.command.classes.validate.ok: <green>Classes valid:</green> <white>{count}</white>
 messages.command.classes.state.header: <gold>Class state</gold> <dark_gray>-</dark_gray> <white>{player}</white> <gray>({id})</gray>
 messages.command.classes.state.noClass: <red>{player} has no class selected.</red>
 messages.command.classes.state.playerMissing: <red>Player not found:</red> <white>{player}</white>
@@ -22,8 +32,12 @@ messages.command.crafting.info.name: <gray>Name:</gray> <white>{name}</white>
 messages.command.crafting.info.outputs: <gray>Outputs:</gray> <white>{count}</white>
 messages.command.crafting.info.permissions: <gray>Permissions:</gray> <white>{count}</white>
 messages.command.crafting.info.variants: <gray>Variants:</gray> <white>{count}</white>
+messages.command.crafting.discovered: <green>Discovered recipe</green> <white>{id}</white> <green>for</green> <white>{player}</white>
 messages.command.crafting.outputMissing: <red>Recipe has no output:</red> <white>{id}</white>
 messages.command.crafting.unknown: <red>Unknown recipe:</red> <white>{id}</white>
+messages.command.crafting.validate.entry: <gray>-</gray> <white>{error}</white>
+messages.command.crafting.validate.errors: <red>Crafting validation had {count} errors.</red>
+messages.command.crafting.validate.ok: <green>Crafting validation OK.</green>
 messages.command.dungeons.abortedReload: Messages command dungeons abortedReload
 messages.command.dungeons.active: Active
 messages.command.dungeons.queued: Queued
@@ -188,6 +202,8 @@ messages.command.effects.stats.scheduled: <gray>scheduled:</gray> <white>tick={t
 messages.command.effects.stats.tick: <gray>tick=</gray><white>{tick}</white> <gray>lastTick=</gray><white>{lastTickMs}ms</white>
 messages.command.effects.stats.tracked: <gray>tracked:</gray> <white>casts={casts}</white> <gray>cooldowns=</gray><white>{cooldowns}</white>
   <gray>immunities=</gray><white>{immunities}</white>
+messages.command.effects.status.on: <green>on</green>
+messages.command.effects.status.off: <red>off</red>
 messages.command.effects.status.False: false
 messages.command.effects.status.True: true
 messages.command.effects.status.disabled: disabled
@@ -241,7 +257,10 @@ messages.command.help.party: <gray>/{root} party</gray> <dark_gray>- party menu<
 messages.command.help.partyChat: <gray>/{root} party chat on|off</gray> <dark_gray>- toggle party chat</dark_gray>
 messages.command.help.partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- party chat message</dark_gray>
 messages.command.help.root: <gray>/{root}</gray> <dark_gray>- open user hub</dark_gray>
+messages.command.help.user: <gray>/{root} user</gray> <dark_gray>- open user hub</dark_gray>
+messages.command.help.settings: <gray>/{root} settings</gray> <dark_gray>- open settings</dark_gray>
 messages.command.items.holdMainHand: <red>Hold an item in your main hand.</red>
+messages.command.itemGiven: <green>Gave item</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>to</green> <white>{player}</white>
 messages.command.kits.list.entry: Entry
 messages.command.kits.list.header: Header
 messages.command.missingPermission: <red>Missing permission:</red> <white>{permission}</white>
@@ -271,6 +290,7 @@ messages.command.mobs.snapshot.pos: Pos
 messages.command.mobs.snapshot.variant: Variant
 messages.command.mobs.snapshot.world: World
 messages.command.mobs.spawned: Spawned
+messages.command.mobs.spawnFailed: <red>Failed to spawn:</red> <white>{message}</white>
 messages.command.party.inviteHint: Messages command party inviteHint
 messages.command.party.inviteReceived: Messages command party inviteReceived
 messages.command.reload.allErrors: <red>Reload completed with {errors} errors. Check logs.</red>
@@ -282,6 +302,7 @@ messages.command.shops.give: Give
 messages.command.shops.help.give: Give
 messages.command.shops.help.info: Info
 messages.command.shops.help.list: List
+messages.command.shops.help.open: Open
 messages.command.shops.help.reload: Reload
 messages.command.shops.help.token: Token
 messages.command.shops.info.header: Header
@@ -297,6 +318,26 @@ messages.command.shops.unknown: Unknown
 messages.command.systemUnavailable: Messages command systemUnavailable
 messages.command.unknownUpgrade: Messages command unknownUpgrade
 messages.command.upgradeGiven: Messages command upgradeGiven
+messages.command.mobs.help.trialSpawnerList: <gray>/dr mobs trialspawner list</gray>
+messages.command.mobs.help.trialSpawnerGive: <gray>/dr mobs trialspawner give &lt;id&gt;</gray>
+messages.command.mobs.help.trialSpawnerBind: <gray>/dr mobs trialspawner bind &lt;id&gt;</gray>
+messages.command.mobs.help.vaultList: <gray>/dr mobs vault list</gray>
+messages.command.mobs.help.vaultGive: <gray>/dr mobs vault give &lt;id&gt;</gray>
+messages.command.mobs.help.vaultBind: <gray>/dr mobs vault bind &lt;id&gt;</gray>
+messages.command.mobs.trialSpawner.listHeader: <gold>Trial spawners</gold> <gray>({count})</gray>
+messages.command.mobs.trialSpawner.listEntry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.trialSpawner.listNone: <gray>No trial spawners configured.</gray>
+messages.command.mobs.trialSpawner.unknown: <red>Unknown trial spawner:</red> <white>{id}</white>
+messages.command.mobs.trialSpawner.given: <green>Given trial spawner item:</green> <white>{id}</white>
+messages.command.mobs.trialSpawner.bindTarget: <red>Look at a trial spawner block to bind it.</red>
+messages.command.mobs.trialSpawner.bound: <green>Bound trial spawner block to:</green> <white>{id}</white>
+messages.command.mobs.vault.listHeader: <gold>Vaults</gold> <gray>({count})</gray>
+messages.command.mobs.vault.listEntry: <gray>-</gray> <white>{id}</white>
+messages.command.mobs.vault.listNone: <gray>No vaults configured.</gray>
+messages.command.mobs.vault.unknown: <red>Unknown vault:</red> <white>{id}</white>
+messages.command.mobs.vault.given: <green>Given vault item:</green> <white>{id}</white>
+messages.command.mobs.vault.bindTarget: <red>Look at a vault block to bind it.</red>
+messages.command.mobs.vault.bound: <green>Bound vault block to:</green> <white>{id}</white>
 messages.command.upgrades.debug.entry: <gray>-</gray> <white>{record}</white> <dark_gray>({status})</dark_gray>
 messages.command.upgrades.debug.none: <gray>No upgrade records found.</gray>
 messages.command.upgrades.debug.recordsHeader: <gold>[Upgrades]</gold> <white>Records:</white> <white>{count}</white>

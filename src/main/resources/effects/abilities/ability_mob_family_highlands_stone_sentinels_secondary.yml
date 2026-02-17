@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_highlands_stone_sentinels_secondary:
+    name: Highlands Stone_Sentinels Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polyline
+          particle: DRIPPING_DRIPSTONE_WATER
+          points:
+            -
+              x: 5.31
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.66
+              y: 0.0
+              z: 4.6
+            -
+              x: -2.66
+              y: 0.0
+              z: -4.6
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 3.87
+          durationTicks: 90
+          radius: 4.68
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 90
+          amplifier: 0
+          radius: 4.46

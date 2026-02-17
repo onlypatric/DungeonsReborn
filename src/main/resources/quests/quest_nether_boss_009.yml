@@ -1,0 +1,25 @@
+quests:
+  quest_nether_boss_009:
+    name: Nether Ascendance X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_nether_boss_infernal_warden
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 650
+    rewards:
+      xp: 140
+      tokens: 15
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_upgrade_core_04
+        -
+          id: item_nether_material_brimstone_01
+          amount: 3

@@ -1,0 +1,22 @@
+quests:
+  quest_swamp_gather_007:
+    name: Swamp Foraging VIII
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_swamp_material_venom_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 900
+    rewards:
+      xp: 130
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_swamp_consumable_001

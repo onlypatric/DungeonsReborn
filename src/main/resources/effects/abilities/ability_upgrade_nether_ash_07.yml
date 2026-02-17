@@ -1,0 +1,62 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_ash_07:
+    name: Ability Upgrade Nether Ash 07
+    costs:
+      -
+        type: mana
+        amount: 10.4
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_mesh
+          particle: CHERRY_LEAVES
+          points:
+            -
+              x: 3.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.62
+              y: 0.0
+              z: 2.81
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.81
+          triangles:
+            -
+              -
+                x: 3.25
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.62
+                y: 0.0
+                z: 2.81
+              -
+                x: -1.63
+                y: 0.0
+                z: -2.81
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.4
+          maxDistance: 20
+          hitRadius: 0.35
+          trail:
+            particle: LAVA
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 10.81
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

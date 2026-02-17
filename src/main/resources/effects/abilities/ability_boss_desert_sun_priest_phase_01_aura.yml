@@ -1,0 +1,62 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sun_priest_phase_01_aura:
+    name: Ability Boss Desert Sun Priest Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: ASH
+          count: 6
+          up: -1.0
+        -
+          type: particles_point
+          particle: DRIPPING_LAVA
+          count: 5
+          up: -1.0
+        -
+          type: particles_points
+          particle: ASH
+          points:
+            -
+              x: 2.73
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.36
+              y: 0.0
+              z: 2.36
+            -
+              x: -1.37
+              y: 0.0
+              z: -2.36
+          up: -1.0
+        -
+          type: particles_points
+          particle: DRIPPING_LAVA
+          points:
+            -
+              x: 2.32
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.16
+              y: 0.0
+              z: 2.01
+            -
+              x: -1.16
+              y: 0.0
+              z: -2.01
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.75
+          durationTicks: 40
+          radius: 2.6
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 2.6

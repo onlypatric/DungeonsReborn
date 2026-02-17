@@ -1,0 +1,38 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_boss_16:
+    name: Ability Upgrade Lowlands Boss 16
+    costs:
+      -
+        type: mana
+        amount: 38.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: SOUL
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: WITCH
+          count: 2
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 22
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 37.5
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

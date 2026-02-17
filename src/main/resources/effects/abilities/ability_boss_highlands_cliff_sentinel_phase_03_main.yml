@@ -1,0 +1,61 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_cliff_sentinel_phase_03_main:
+    name: Ability Boss Highlands Cliff Sentinel Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_box
+          particle: BUBBLE
+          width: 18.5808
+          height: 2.2
+          depth: 18.5808
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: DUST_COLOR_TRANSITION
+          width: 12.994800000000001
+          height: 2.2
+          depth: 12.994800000000001
+          points: 3
+          up: -1.0
+          data:
+            color: "#28213d"
+            toColor: "#15b4f6"
+            size: 1.6
+        -
+          type: particles_cone
+          particle: BUBBLE
+          radius: 8.444
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: DUST_COLOR_TRANSITION
+          radius: 7.647260000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+          data:
+            color: "#4d7c4e"
+            toColor: "#3a0f07"
+            size: 1.2
+        -
+          type: damage
+          amount: 6.9
+          radius: 5.6
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 5.6

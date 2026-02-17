@@ -1,3 +1,11 @@
 messages.locale.missingKey: <yellow>Chiave locale mancante:</yellow> <white>{key}</white>
 messages.locale.reload.errors: <red>Ricarica lingue con {errors} errori. Controlla i log.</red>
 messages.locale.reload.ok: <green>Lingue caricate:</green> <white>{count}</white>
+
+# --- missing keys copied from en (TODO translate) ---
+messages.locale.validate.entry: <dark_gray>-</dark_gray> <white>{key}</white>  # TODO: translate
+messages.locale.validate.header: <gold><bold>Locale Coverage</bold></gold> <gray>{total} keys</gray>  # TODO: translate
+messages.locale.validate.localeHeader: <yellow>{locale}</yellow> <gray>missing</gray> <white>{count}</white>  # TODO: translate
+messages.locale.validate.more: <gray>... e</gray> <white>{count}</white> <gray>more</gray>  # TODO: auto-translated
+messages.locale.validate.ok: <green>All locales have full coverage.</green>  # TODO: translate
+messages.locale.validate.unavailable: <red>Locale validation unavailable.</red>  # TODO: translate

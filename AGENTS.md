@@ -233,8 +233,11 @@ Crafting:
 - `docs/checklists/V3/SPELL_ENGINE_VFX_PHASE0.md`
 - `docs/checklists/V3/VFX_CORE_EXPANSION_PLAN.md`
 - `docs/checklists/V4/SPELL_ENGINE_EXPANSION_PLAN.md`
+- `docs/checklists/V4/PLUGIN_BUILDER_COMPLETENESS_PLAN.md`
 - `docs/checklists/V4/MOB_SYSTEM_COMPLETENESS_PLAN.md`
 - `docs/checklists/V4/ITEM_SYSTEM_COMPLETENESS_PLAN.md`
+- `docs/checklists/V5/TEMPLATE_V2_300H_GAMEPLAY_CHECKLIST.md`
+- `docs/checklists/V5/TRIAL_SPAWNER_VAULT_SYSTEM_CHECKLIST.md`
 
 --------------------------------------------------------------------------------
 ## Conventions / Policies

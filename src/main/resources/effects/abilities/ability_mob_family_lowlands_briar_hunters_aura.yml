@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_briar_hunters_aura:
+    name: Lowlands Briar_Hunters
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: HAPPY_VILLAGER
+          width: 8.690000000000001
+          height: 2.2
+          depth: 8.690000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: ENCHANTED_HIT
+          width: 6.0775
+          height: 2.2
+          depth: 6.0775
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: HAPPY_VILLAGER
+          radius: 4.375
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: ENCHANTED_HIT
+          radius: 4.002375
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          particle: CLOUD
+          type: preset_swirl
+          radius: 2.2
+          points: 3
+          up: -2.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.2

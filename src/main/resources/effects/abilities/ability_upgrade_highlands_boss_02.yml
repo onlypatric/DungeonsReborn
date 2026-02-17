@@ -1,0 +1,41 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_boss_02:
+    name: Ability Upgrade Highlands Boss 02
+    costs:
+      -
+        type: mana
+        amount: 37.0
+    cooldown:
+      ticks: 8
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: NAUTILUS
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: CLOUD
+          count: 2
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 6.4
+            ignoreCaster: true
+          mode: each
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 17.23
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 40
+                amplifier: 1

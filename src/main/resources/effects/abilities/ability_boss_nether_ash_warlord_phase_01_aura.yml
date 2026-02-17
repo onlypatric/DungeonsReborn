@@ -1,0 +1,111 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_ash_warlord_phase_01_aura:
+    name: Ability Boss Nether Ash Warlord Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: SPLASH
+          radius: 4.59795
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: LAVA
+          radius: 4.089435
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: SPLASH
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.92444
+            right: 3.84888
+            up: 0.4
+          p2:
+            forward: 3.84888
+            right: -2.8866599999999996
+            up: 0.8
+          p3:
+            forward: 5.773319999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: LAVA
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.34589
+            right: 2.69178
+            up: 0.4
+          p2:
+            forward: 2.69178
+            right: -2.0188349999999997
+            up: 0.8
+          p3:
+            forward: 4.037669999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SPLASH
+          points:
+            -
+              x: 3.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.64
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.64
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: LAVA
+          points:
+            -
+              x: 2.59
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.29
+              y: 0.0
+              z: 2.24
+            -
+              x: -1.29
+              y: 0.0
+              z: -2.24
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 2.9
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 2.9
+        -
+          particle: LAVA
+          type: preset_shockwave
+          radius: 3.7
+          points: 18

@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_ash_01:
+    name: Ability Upgrade Nether Ash 01
+    costs:
+      -
+        type: mana
+        amount: 10.4
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: CRIT
+          width: 9.060000000000002
+          height: 2.2
+          depth: 9.060000000000002
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 14
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 10.22
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

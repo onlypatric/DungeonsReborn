@@ -1,0 +1,23 @@
+quests:
+  quest_mushroom_kill_014:
+    name: Mushroom Culling III
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_mushroom_sporelings_04
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 960
+    rewards:
+      xp: 120
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_mushroom_material_spore_01
+          amount: 2

@@ -1,0 +1,117 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_cliff_sentinel_phase_04_main:
+    name: Ability Boss Highlands Cliff Sentinel Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_mesh
+          particle: CRIMSON_SPORE
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          triangles:
+            -
+              -
+                x: 6.09
+                y: 0.0
+                z: 0.0
+              -
+                x: -3.04
+                y: 0.0
+                z: 5.27
+              -
+                x: -3.05
+                y: 0.0
+                z: -5.27
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: ENCHANT
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          triangles:
+            -
+              -
+                x: 5.18
+                y: 0.0
+                z: 0.0
+              -
+                x: -2.59
+                y: 0.0
+                z: 4.48
+              -
+                x: -2.59
+                y: 0.0
+                z: -4.48
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: BUBBLE_COLUMN_UP
+          points:
+            -
+              x: 7.61
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.81
+              y: 0.0
+              z: 6.59
+            -
+              x: -3.81
+              y: 0.0
+              z: -6.59
+          up: -1.0
+        -
+          type: particles_physics
+          particle: CRIMSON_SPORE
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: ENCHANT
+          count: 2
+          up: -1.0
+        -
+          type: damage
+          amount: 7.2
+          radius: 5.8
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 5.8
+        -
+          particle: ENCHANT
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

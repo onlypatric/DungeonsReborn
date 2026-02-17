@@ -254,6 +254,7 @@ public final class TextButton extends Button {
             promptToUse,
             cancelWord,
             timeout,
+            true,
             (p, text) -> handleText(window, p, text),
             p -> handleCancel(window, p),
             p -> handleTimeout(window, p)));

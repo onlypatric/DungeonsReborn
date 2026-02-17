@@ -1,0 +1,51 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_23:
+    name: Ability Upgrade Snow Whiteout 23
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: ENCHANTED_HIT
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.054
+            right: 4.108
+            up: 0.4
+          p2:
+            forward: 4.108
+            right: -3.081
+            up: 0.8
+          p3:
+            forward: 6.162
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.9
+          maxDistance: 30
+          hitRadius: 0.35
+          trail:
+            particle: SNOWFLAKE
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 31.74
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

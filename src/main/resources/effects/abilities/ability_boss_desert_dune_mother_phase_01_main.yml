@@ -1,0 +1,94 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_dune_mother_phase_01_main:
+    name: Ability Boss Desert Dune Mother Phase 01 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_arc
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 5.308800000000001
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: PALE_OAK_LEAVES
+          radius: 3.7128000000000005
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_points
+          particle: SNEEZE
+          points:
+            -
+              x: 3.53
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.76
+              y: 0.0
+              z: 3.06
+            -
+              x: -1.76
+              y: 0.0
+              z: -3.06
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: TRIAL_SPAWNER_DETECTION
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.7472000000000003
+            right: 3.4944000000000006
+            up: 0.4
+          p2:
+            forward: 3.4944000000000006
+            right: -2.6208
+            up: 0.8
+          p3:
+            forward: 5.2416
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: PALE_OAK_LEAVES
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.5650880000000003
+            right: 3.1301760000000005
+            up: 0.4
+          p2:
+            forward: 3.1301760000000005
+            right: -2.3476320000000004
+            up: 0.8
+          p3:
+            forward: 4.695264000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: damage
+          amount: 3.1
+          radius: 3.2
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 3.2

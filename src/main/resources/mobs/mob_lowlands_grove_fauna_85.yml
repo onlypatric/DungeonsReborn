@@ -1,0 +1,26 @@
+schemaVersion: 1
+mobs:
+  mob_lowlands_grove_fauna_85:
+    type: SHEEP
+    name: <green>Lowlands Sheep Wanderer</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 51.3
+      ATTACK_DAMAGE: 0.0
+      scaleVariance: 0.95
+    passives:
+      -
+        ability: ability_mob_family_lowlands_grove_fauna_aura
+        periodTicks: 80
+      -
+        ability: ability_mob_family_lowlands_grove_fauna_panic
+        periodTicks: 140
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_lowlands_grove_fauna_passive
+    xpGating:
+      minLevel: 2123

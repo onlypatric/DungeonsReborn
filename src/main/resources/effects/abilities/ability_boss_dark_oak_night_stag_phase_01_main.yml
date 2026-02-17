@@ -1,0 +1,134 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_night_stag_phase_01_main:
+    name: Ability Boss Dark Oak Night Stag Phase 01 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_mesh
+          particle: END_ROD
+          points:
+            -
+              x: 4.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.2
+              y: 0.0
+              z: 3.82
+            -
+              x: -2.21
+              y: 0.0
+              z: -3.82
+          triangles:
+            -
+              -
+                x: 4.41
+                y: 0.0
+                z: 0.0
+              -
+                x: -2.2
+                y: 0.0
+                z: 3.82
+              -
+                x: -2.21
+                y: 0.0
+                z: -3.82
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: GUST_EMITTER_LARGE
+          points:
+            -
+              x: 3.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.87
+              y: 0.0
+              z: 3.25
+            -
+              x: -1.87
+              y: 0.0
+              z: -3.25
+          triangles:
+            -
+              -
+                x: 3.75
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.87
+                y: 0.0
+                z: 3.25
+              -
+                x: -1.87
+                y: 0.0
+                z: -3.25
+          up: -1.0
+        -
+          type: particles_physics
+          particle: END_ROD
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: GUST_EMITTER_LARGE
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: END_ROD
+          points:
+            -
+              x: 4.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.2
+              y: 0.0
+              z: 3.82
+            -
+              x: -2.21
+              y: 0.0
+              z: -3.82
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: GUST_EMITTER_LARGE
+          points:
+            -
+              x: 3.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.87
+              y: 0.0
+              z: 3.25
+            -
+              x: -1.87
+              y: 0.0
+              z: -3.25
+          up: -1.0
+        -
+          type: damage
+          amount: 4.7
+          radius: 4.2
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 4.2
+        -
+          particle: LARGE_SMOKE
+          type: preset_shockwave
+          radius: 5.0
+          points: 18

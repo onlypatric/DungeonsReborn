@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_dark_oak_processing_004
+name: Dark_Oak Processing 4
+costs:
+  -
+    type: tokens
+    amount: 2
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: DARK_OAK_LOG
+        amount: 2
+      -
+        material: BONE
+        amount: 2
+outputs:
+  -
+    item: item_dark_oak_material_dread_04

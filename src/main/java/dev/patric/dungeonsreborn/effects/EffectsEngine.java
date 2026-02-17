@@ -295,6 +295,9 @@ public final class EffectsEngine {
   private final long startedNanos = System.nanoTime();
   private BukkitTask ticker;
   private volatile boolean debugEnabled;
+  private final java.util.Map<String, Long> vfxCountsThisTick = new java.util.HashMap<>();
+  private final java.util.Map<String, Long> vfxParticlesThisTick = new java.util.HashMap<>();
+  private long vfxEventsThisTick;
   private volatile long lastTickNanos;
   private long lastParticleWarnTick;
   private Long deterministicSeed;
@@ -632,6 +635,12 @@ public final class EffectsEngine {
   }
 
   public void logVfxEvent(CastContext ctx, String action, Particle particle, int count) {
+    String abilityId = normalizeId(ctx.abilityId());
+    vfxEventsThisTick++;
+    vfxCountsThisTick.merge(abilityId, 1L, Long::sum);
+    if (count > 0) {
+      vfxParticlesThisTick.merge(abilityId, (long) count, Long::sum);
+    }
     if (!debugEnabled) {
       return;
     }
@@ -1722,10 +1731,16 @@ public final class EffectsEngine {
     long droppedBudget = stats.lastFlushParticlesDroppedByBudget();
     long droppedQueue = stats.lastDroppedRequestsByQueueCap();
     if (droppedBudget <= 0 && droppedQueue <= 0) {
+      vfxCountsThisTick.clear();
+      vfxParticlesThisTick.clear();
+      vfxEventsThisTick = 0L;
       return;
     }
     long nowTick = tickNow();
     if (nowTick - lastParticleWarnTick < 20L * 10L) {
+      vfxCountsThisTick.clear();
+      vfxParticlesThisTick.clear();
+      vfxEventsThisTick = 0L;
       return;
     }
     lastParticleWarnTick = nowTick;
@@ -1735,6 +1750,25 @@ public final class EffectsEngine {
     if (droppedQueue > 0) {
       warn("[Effects] Particle queue cap dropped " + droppedQueue + " requests in last flush.");
     }
+    if (!vfxParticlesThisTick.isEmpty()) {
+      warn("[Effects] Particle sources (top): " + topVfxSources(vfxParticlesThisTick, 5)
+          + " totalEvents=" + vfxEventsThisTick);
+    }
+    vfxCountsThisTick.clear();
+    vfxParticlesThisTick.clear();
+    vfxEventsThisTick = 0L;
+  }
+
+  private static String topVfxSources(java.util.Map<String, Long> counts, int limit) {
+    if (counts.isEmpty() || limit <= 0) {
+      return "none";
+    }
+    return counts.entrySet().stream()
+        .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
+        .limit(limit)
+        .map(e -> e.getKey() + "=" + e.getValue())
+        .reduce((a, b) -> a + ", " + b)
+        .orElse("none");
   }
 
   private void tickManaRegen() {

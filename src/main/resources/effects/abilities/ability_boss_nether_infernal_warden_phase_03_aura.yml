@@ -1,0 +1,44 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_infernal_warden_phase_03_aura:
+    name: Ability Boss Nether Infernal Warden Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: ENTITY_EFFECT
+          radius: 5.142900000000001
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: GUST_EMITTER_SMALL
+          radius: 3.596775
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: ENTITY_EFFECT
+          radius: 4.2315000000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: GUST_EMITTER_SMALL
+          radius: 3.7904475000000004
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 3.1
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 3.1

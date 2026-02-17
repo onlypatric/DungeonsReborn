@@ -1,0 +1,130 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_verdant_colossus_phase_04_secondary:
+    name: Ability Boss Lowlands Verdant Colossus Phase 04 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_polygon
+          particle: GUST_EMITTER_LARGE
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_polygon
+          particle: PORTAL
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: GUST_EMITTER_LARGE
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: PORTAL
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: GUST_EMITTER_LARGE
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: PORTAL
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 140
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 1.17
+          durationTicks: 108
+          radius: 5.4
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_shockwave
+          radius: 6.2
+          points: 18

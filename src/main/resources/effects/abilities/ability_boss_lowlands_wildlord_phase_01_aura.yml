@@ -1,0 +1,78 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_wildlord_phase_01_aura:
+    name: Ability Boss Lowlands Wildlord Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: TRAIL
+          radius: 5.89785
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+          data:
+            color: "#21a8d2"
+            durationTicks: 24
+        -
+          type: particles_arc
+          particle: CAMPFIRE_COSY_SMOKE
+          radius: 5.26932
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: TRAIL
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.47968
+            right: 4.95936
+            up: 0.4
+          p2:
+            forward: 4.95936
+            right: -3.7195199999999993
+            up: 0.8
+          p3:
+            forward: 7.4390399999999985
+            right: 0.0
+            up: 1.0
+          up: -1.0
+          data:
+            color: "#4603e3"
+            durationTicks: 24
+        -
+          type: particles_bezier
+          particle: CAMPFIRE_COSY_SMOKE
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.210187
+            right: 4.420374
+            up: 0.4
+          p2:
+            forward: 4.420374
+            right: -3.3152804999999996
+            up: 0.8
+          p3:
+            forward: 6.630560999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.5
+          durationTicks: 40
+          radius: 4.1
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 4.1

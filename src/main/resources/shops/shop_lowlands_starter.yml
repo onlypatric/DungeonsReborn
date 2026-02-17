@@ -1,0 +1,183 @@
+shops:
+  shop_lowlands_starter:
+    title: Lowlands Starter Goods
+    trades:
+      -
+        buy:
+          -
+            type: token
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_022
+      -
+        buy:
+          -
+            type: token
+            amount: 19
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_025
+      -
+        buy:
+          -
+            type: token
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_084
+      -
+        buy:
+          -
+            type: token
+            amount: 21
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_054
+      -
+        buy:
+          -
+            type: token
+            amount: 16
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_consumable_030
+      -
+        buy:
+          -
+            type: token
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_material_verdant_06
+      -
+        buy:
+          -
+            type: token
+            amount: 29
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_material_verdant_02
+      -
+        buy:
+          -
+            type: token
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_material_ancient_01
+      -
+        buy:
+          -
+            type: token
+            amount: 25
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_component_01
+      -
+        buy:
+          -
+            type: token
+            amount: 26
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_component_02
+      -
+        buy:
+          -
+            type: token
+            amount: 22
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_component_03
+      -
+        buy:
+          -
+            type: token
+            amount: 64
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_upgrade_core_03
+      -
+        buy:
+          -
+            type: token
+            amount: 49
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_upgrade_core_09
+      -
+        buy:
+          -
+            type: token
+            amount: 37
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_gear_weapon
+      -
+        buy:
+          -
+            type: token
+            amount: 41
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_gear_armor
+      -
+        buy:
+          -
+            type: token
+            amount: 42
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_lowlands_gear_trinket
+      -
+        buy:
+          -
+            type: token
+            amount: 30
+        sell:
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+      -
+        buy:
+          -
+            type: item_id
+            itemId: item_currency_lowlands_voucher
+        sell:
+          -
+            type: token
+            amount: 21
+    gui:
+      head: ICON_SHOPS

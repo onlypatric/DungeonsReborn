@@ -1,0 +1,23 @@
+quests:
+  quest_lowlands_kill_115:
+    name: Lowlands Hunt VIII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_lowlands_warden_raiders_25
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2277
+    rewards:
+      xp: 160
+      tokens: 10
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_lowlands_material_ancient_07
+          amount: 4

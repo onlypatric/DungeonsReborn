@@ -1,20 +1,22 @@
 package dev.patric.dungeonsreborn.gui.components.input;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.patric.dungeonsreborn.gui.GuiComponent;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
 import dev.patric.dungeonsreborn.locale.Locales;
+import net.kyori.adventure.text.Component;
 
 /**
  * A single-slot input that cycles through a list of options (left = next, right = previous).
@@ -75,7 +77,7 @@ public final class CycleSelector<T> implements GuiComponent {
 
   @Override
   public ItemStack render(Player player) {
-    return button.render(player);
+    return withHint(player, button.render(player));
   }
 
   @Override
@@ -86,6 +88,26 @@ public final class CycleSelector<T> implements GuiComponent {
   @Override
   public void mounted(Window window, int slot) {
     button.mounted(window, slot);
+  }
+
+  private ItemStack withHint(Player player, ItemStack item) {
+    if (item == null) {
+      return null;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return item;
+    }
+    List<Component> lore = meta.hasLore() ? List.copyOf(meta.lore()) : List.of();
+    Component hint = Locales.component(player, "gui.cycle.hint");
+    if (hint != null) {
+      List<Component> nextLore = new java.util.ArrayList<>(lore.size() + 1);
+      nextLore.addAll(lore);
+      nextLore.add(hint);
+      meta.lore(nextLore);
+      item.setItemMeta(meta);
+    }
+    return item;
   }
 
   private void next(Player player) {

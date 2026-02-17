@@ -1,0 +1,31 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_farmhand_04:
+    name: Ability Upgrade Plains Farmhand 04
+    costs:
+      -
+        type: mana
+        amount: 10.0
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: ITEM
+          radius: 5.135
+          points: 3
+          up: -1.0
+          data:
+            type: STONE
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.12
+            times: 4
+            periodTicks: 10

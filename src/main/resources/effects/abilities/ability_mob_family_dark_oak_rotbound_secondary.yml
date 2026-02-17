@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_dark_oak_rotbound_secondary:
+    name: Dark_Oak Rotbound Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_points
+          particle: FIREFLY
+          points:
+            -
+              x: 4.44
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.22
+              y: 0.0
+              z: 3.84
+            -
+              x: -2.22
+              y: 0.0
+              z: -3.84
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 3.02
+          durationTicks: 70
+          radius: 3.91
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 70
+          amplifier: 0
+          radius: 3.73

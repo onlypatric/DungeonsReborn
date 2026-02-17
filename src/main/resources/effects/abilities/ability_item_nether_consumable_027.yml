@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_nether_consumable_027:
+    name: Ability Item Nether Consumable 027
+    cooldown:
+      ticks: 118
+    action:
+      type: sequence
+      actions:
+        -
+          particle: CURRENT_DOWN
+          type: particles_points
+          points:
+            -
+              x: 0.09
+              y: 0.0
+              z: 0.13
+            -
+              x: -0.05
+              y: 0.0
+              z: 0.23
+            -
+              x: 0.05
+              y: 0.0
+              z: -0.07
+          up: -1.0
+        -
+          particle: DAMAGE_INDICATOR
+          type: particles_points
+          points:
+            -
+              x: -0.2
+              y: 0.0
+              z: -0.13
+            -
+              x: 0.11
+              y: 0.0
+              z: -0.02
+          up: -1.0
+        -
+          particle: DOLPHIN
+          type: particles_points
+          points:
+            -
+              x: -0.14
+              y: 0.0
+              z: 0.03
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.08
+            -
+              x: -0.09
+              y: 0.0
+              z: 0.19
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.6
+            times: 4
+            periodTicks: 10
+            policy: any

@@ -1,0 +1,28 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_mirage_13:
+    name: Ability Upgrade Desert Mirage 13
+    costs:
+      -
+        type: mana
+        amount: 15.6
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: FLAME
+          count: 5
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 4.4
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 4.03

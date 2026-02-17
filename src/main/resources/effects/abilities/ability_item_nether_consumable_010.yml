@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_nether_consumable_010:
+    name: Ability Item Nether Consumable 010
+    cooldown:
+      ticks: 94
+    action:
+      type: sequence
+      actions:
+        -
+          particle: SMALL_GUST
+          type: particles_points
+          points:
+            -
+              x: 0.45
+              y: 0.0
+              z: -0.11
+            -
+              x: -0.04
+              y: 0.0
+              z: -0.03
+            -
+              x: 0.03
+              y: 0.0
+              z: 0.07
+          up: -1.0
+        -
+          particle: SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.06
+              y: 0.0
+              z: 0.03
+            -
+              x: 0.19
+              y: 0.0
+              z: 0.38
+          up: -1.0
+        -
+          particle: SNEEZE
+          type: particles_points
+          points:
+            -
+              x: 0.31
+              y: 0.0
+              z: -0.39
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.11
+            -
+              x: -0.08
+              y: 0.0
+              z: 0.09
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 8.8
+            policy: any

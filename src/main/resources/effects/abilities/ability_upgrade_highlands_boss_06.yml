@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_boss_06:
+    name: Ability Upgrade Highlands Boss 06
+    costs:
+      -
+        type: mana
+        amount: 35.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: CRIT
+          radius: 3.452400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: GUST
+          radius: 3.0844800000000006
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 20
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 32.5
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 40
+                amplifier: 1

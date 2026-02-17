@@ -4,6 +4,10 @@ import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,12 +149,56 @@ public final class QuestYamlRegistry {
       if (!dir.exists()) {
         dir.mkdirs();
       }
+      copyBundledQuests(dir);
       return;
     }
     plugin.saveResource("quests.yml", false);
     File dir = questsDir();
     if (!dir.exists()) {
       dir.mkdirs();
+    }
+    copyBundledQuests(dir);
+  }
+
+  private void copyBundledQuests(File dir) {
+    List<String> entries = readResourceIndex("quests/index.txt");
+    for (String entry : entries) {
+      String trimmed = entry.trim();
+      if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+        continue;
+      }
+      if (!trimmed.endsWith(".yml") && !trimmed.endsWith(".yaml")) {
+        continue;
+      }
+      String resourcePath = "quests/" + trimmed;
+      File target = new File(dir, trimmed);
+      if (target.exists()) {
+        continue;
+      }
+      if (plugin.getResource(resourcePath) == null) {
+        logger.warning("[Quests] Missing bundled quest: " + resourcePath + " (skipping copy)");
+        continue;
+      }
+      plugin.saveResource(resourcePath, false);
+    }
+  }
+
+  private List<String> readResourceIndex(String path) {
+    try (InputStream stream = plugin.getResource(path)) {
+      if (stream == null) {
+        return List.of();
+      }
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+        List<String> lines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+          lines.add(line);
+        }
+        return lines;
+      }
+    } catch (Exception ex) {
+      logger.warning("[Quests] Unable to read " + path + ": " + ex.getMessage());
+      return List.of();
     }
   }
 
@@ -1320,14 +1368,17 @@ public final class QuestYamlRegistry {
       map = regionMap;
       path = path + ".region";
     }
-    if (world == null || world.isBlank()) {
-      errors.add(path + ": world is required");
-    }
     double x = YamlValues.doubleValue(map.get("x"), 0.0);
     double y = YamlValues.doubleValue(map.get("y"), 0.0);
     double z = YamlValues.doubleValue(map.get("z"), 0.0);
     double radius = Math.max(0.1, YamlValues.doubleValue(map.get("radius"), 1.0));
     List<String> worlds = parseStringList(map.get("worlds"));
+    if ((world == null || world.isBlank()) && !worlds.isEmpty()) {
+      world = worlds.get(0);
+    }
+    if (world == null || world.isBlank()) {
+      errors.add(path + ": world is required");
+    }
     if (world != null && !world.isBlank()) {
       worlds = new java.util.ArrayList<>(worlds);
       worlds.add(0, world);

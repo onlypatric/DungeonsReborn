@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_ancient_ent_phase_02_aura:
+    name: Ability Boss Lowlands Ancient Ent Phase 02 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: LARGE_SMOKE
+          width: 12.7008
+          height: 2.2
+          depth: 12.7008
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: SNOWFLAKE
+          width: 11.32047
+          height: 2.2
+          depth: 11.32047
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: LARGE_SMOKE
+          radius: 7.4591
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: SNOWFLAKE
+          radius: 6.72263
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: damage_over_time
+          amount: 1.5
+          durationTicks: 40
+          radius: 4.2
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 46
+          amplifier: 0
+          radius: 4.2

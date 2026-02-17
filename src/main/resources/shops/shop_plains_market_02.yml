@@ -1,0 +1,426 @@
+shops:
+  shop_plains_market_02:
+    title: Plains Market 2
+    trades:
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_component_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 11
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 11
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 6
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_04
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_05
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_06
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_07
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_01
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_02
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 12
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_upgrade_core_03
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 2
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_trinket
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_armor
+      -
+        buy:
+          -
+            type: currency
+            currency: tokens
+            amount: 3
+        sell:
+          -
+            type: item_id
+            itemId: item_plains_gear_weapon
+    gui:
+      head: ICON_SHOPS

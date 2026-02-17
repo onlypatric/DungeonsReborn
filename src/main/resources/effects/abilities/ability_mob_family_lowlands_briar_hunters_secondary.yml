@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_briar_hunters_secondary:
+    name: Lowlands Briar_Hunters Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: HAPPY_VILLAGER
+          radius: 7.0687500000000005
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 2.79
+          durationTicks: 100
+          radius: 4.79
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 100
+          amplifier: 0
+          radius: 4.57

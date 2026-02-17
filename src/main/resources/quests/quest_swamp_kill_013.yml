@@ -1,0 +1,22 @@
+quests:
+  quest_swamp_kill_013:
+    name: Swamp Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_swamp_mire_fauna_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 965
+    rewards:
+      xp: 120
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_swamp_material_mire_02

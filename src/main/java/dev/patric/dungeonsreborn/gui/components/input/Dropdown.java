@@ -17,17 +17,18 @@ import dev.patric.dungeonsreborn.gui.GuiComponent;
 import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.Window;
 import dev.patric.dungeonsreborn.gui.components.Button;
-import dev.patric.dungeonsreborn.gui.flow.OptionPickerWindow;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
 /**
- * A single-slot dropdown that opens an {@link OptionPickerWindow} as a subwindow.
+ * A single-slot dropdown that cycles options on click.
  */
 public final class Dropdown<T> implements GuiComponent {
+  @SuppressWarnings("unused")
   private final Component title;
   private final List<T> options;
   private final BiFunction<Player, T, ItemStack> displayItem;
+  @SuppressWarnings("unused")
   private final Function<T, Component> optionLabel;
   private final Map<UUID, T> selectedByPlayer = new HashMap<>();
   private BiConsumer<Player, T> onSelect = (p, v) -> {
@@ -37,7 +38,8 @@ public final class Dropdown<T> implements GuiComponent {
   public Dropdown(Component title, List<T> options, Function<T, Component> optionLabel) {
     this(title, options,
         (player, value) -> GuiItems.named(Material.CHEST, title, List.of(
-            Locales.component(player, "gui.dropdown.selected").append(Objects.requireNonNull(optionLabel, "optionLabel").apply(value)))),
+            Locales.component(player, "gui.dropdown.selected").append(Objects.requireNonNull(optionLabel, "optionLabel").apply(value)),
+            Locales.component(player, "gui.dropdown.hint"))),
         optionLabel);
   }
 
@@ -51,7 +53,16 @@ public final class Dropdown<T> implements GuiComponent {
     this.optionLabel = Objects.requireNonNull(optionLabel, "optionLabel");
 
     this.button = new Button(p -> this.displayItem.apply(p, selected(p)))
-        .left(Locales.component(null, "gui.dropdown.open"), ctx -> openPicker(ctx.window(), ctx.player()));
+        .left(Locales.component(null, "gui.dropdown.next"), ctx -> {
+          selectNext(ctx.player());
+          onSelect.accept(ctx.player(), selected(ctx.player()));
+          ctx.window().redraw(ctx.player());
+        })
+        .right(Locales.component(null, "gui.dropdown.prev"), ctx -> {
+          selectPrev(ctx.player());
+          onSelect.accept(ctx.player(), selected(ctx.player()));
+          ctx.window().redraw(ctx.player());
+        });
   }
 
   /**
@@ -95,15 +106,17 @@ public final class Dropdown<T> implements GuiComponent {
     button.mounted(window, slot);
   }
 
-  private void openPicker(Window parent, Player player) {
-    OptionPickerWindow<T> picker = new OptionPickerWindow<>(
-        title,
-        options,
-        option -> GuiItems.named(Material.PAPER, optionLabel.apply(option)),
-        (p, picked) -> {
-          selectedByPlayer.put(p.getUniqueId(), picked);
-          onSelect.accept(p, picked);
-        });
-    parent.openSubWindow(player, picker);
+  private void selectNext(Player player) {
+    Objects.requireNonNull(player, "player");
+    int idx = Math.max(0, options.indexOf(selected(player)));
+    int next = (idx + 1) % options.size();
+    selectedByPlayer.put(player.getUniqueId(), options.get(next));
+  }
+
+  private void selectPrev(Player player) {
+    Objects.requireNonNull(player, "player");
+    int idx = Math.max(0, options.indexOf(selected(player)));
+    int prev = (idx - 1 + options.size()) % options.size();
+    selectedByPlayer.put(player.getUniqueId(), options.get(prev));
   }
 }

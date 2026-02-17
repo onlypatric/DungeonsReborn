@@ -1,0 +1,128 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_cliff_sentinel_phase_02_aura:
+    name: Ability Boss Highlands Cliff Sentinel Phase 02 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: EFFECT
+          radius: 5.8968
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: ASH
+          radius: 5.255932499999999
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_points
+          particle: CURRENT_DOWN
+          points:
+            -
+              x: 4.3
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.15
+              y: 0.0
+              z: 3.72
+            -
+              x: -2.15
+              y: 0.0
+              z: -3.72
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: EFFECT
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.47338
+            right: 4.94676
+            up: 0.4
+          p2:
+            forward: 4.94676
+            right: -3.7100699999999995
+            up: 0.8
+          p3:
+            forward: 7.420139999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: ASH
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 2.199834
+            right: 4.399668
+            up: 0.4
+          p2:
+            forward: 4.399668
+            right: -3.2997509999999997
+            up: 0.8
+          p3:
+            forward: 6.599501999999999
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: EFFECT
+          points:
+            -
+              x: 4.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.05
+              y: 0.0
+              z: 3.55
+            -
+              x: -2.05
+              y: 0.0
+              z: -3.55
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: ASH
+          points:
+            -
+              x: 3.48
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.74
+              y: 0.0
+              z: 3.01
+            -
+              x: -1.74
+              y: 0.0
+              z: -3.01
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.35
+          durationTicks: 40
+          radius: 3.9
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 46
+          amplifier: 0
+          radius: 3.9
+        -
+          particle: CLOUD
+          type: preset_shockwave
+          radius: 4.7
+          points: 18

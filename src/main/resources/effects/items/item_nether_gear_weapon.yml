@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <red><bold>Galehook</bold></red> <gray>of Nether</gray>
+    lore:
+      - <gold>Edge</gold> <dark_gray>❯</dark_gray> <gray>Strikes with +DMG 2.2–3.1.</gray>
+  meta:
+    skull:
+      head: REQ_FIRE_AND_ICE
+attributes:
+  ATTACK_DAMAGE: 2.2
+gui:
+  head: ICON_ITEMS

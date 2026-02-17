@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <dark_green><bold>Rotbloom Residue</bold></dark_green> <gray>I</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Swamp wilds.</gray>
+gui:
+  head: ICON_ITEMS

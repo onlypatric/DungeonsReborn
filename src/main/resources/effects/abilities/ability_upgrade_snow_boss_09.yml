@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_09:
+    name: Ability Upgrade Snow Boss 09
+    costs:
+      -
+        type: mana
+        amount: 41.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: ENCHANT
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.55
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.55
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: EXPLOSION
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 42.5
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 60
+                amplifier: 1

@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_wild_07:
+    name: Ability Upgrade Lowlands Wild 07
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: VAULT_CONNECTION
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.584
+            right: 3.168
+            up: 0.4
+          p2:
+            forward: 3.168
+            right: -2.376
+            up: 0.8
+          p3:
+            forward: 4.752
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

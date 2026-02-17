@@ -1,0 +1,17 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_swamp_bog_stalkers_main:
+    name: Swamp Bog_Stalkers Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: SWEEP_ATTACK
+          count: 4
+          up: -1.0
+        -
+          type: damage
+          amount: 5.78
+          radius: 3.51
+          damageCause: DIRECT

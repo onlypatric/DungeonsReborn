@@ -1,10 +1,30 @@
-labels.upgrades.lore.conflicts: <dark_gray>Questo oggetto potrebbe entrare in conflitto con {binding}</dark_gray>
-labels.upgrades.requirements.manaMin: Richiede {mana} mana massima per applicare questo potenziamento.
-labels.upgrades.requirements.manaMissing: Sistema mana non disponibile.
-labels.upgrades.requirements.totalXpConsume: Richiede {xp} XP personalizzati da consumare per questo potenziamento.
-labels.upgrades.requirements.totalXpMin: Richiede {xp} XP personalizzati per applicare questo potenziamento.
-labels.upgrades.requirements.xpLevelConsume: Richiede livello {level} per consumare XP per questo potenziamento.
-labels.upgrades.requirements.xpLevelMin: Richiede livello {level} per applicare questo potenziamento.
-labels.upgrades.requirements.xpProgressConsume: Richiede {percent} progressione XP personalizzata da consumare per questo
-  potenziamento.
-labels.upgrades.requirements.xpProgressMin: Richiede {percent} progressione XP personalizzata per applicare questo potenziamento.
+labels.upgrades.lore.conflicts: "<dark_gray>Questo oggetto potrebbe entrare in conflitto con {binding}</dark_gray>"
+labels.upgrades.requirements.manaMin: "Richiede {mana} mana massima per applicare questo potenziamento."
+labels.upgrades.requirements.manaMissing: "Sistema mana non disponibile."
+labels.upgrades.requirements.totalXpConsume: "Richiede {xp} XP personalizzati da consumare per questo potenziamento."
+labels.upgrades.requirements.totalXpMin: "Richiede {xp} XP personalizzati per applicare questo potenziamento."
+labels.upgrades.requirements.xpLevelConsume: "Richiede livello {level} per consumare XP per questo potenziamento."
+labels.upgrades.requirements.xpLevelMin: "Richiede livello {level} per applicare questo potenziamento."
+labels.upgrades.requirements.xpProgressConsume: "Richiede {percent} progressione XP personalizzata da consumare per questo potenziamento."
+labels.upgrades.requirements.xpProgressMin: "Richiede {percent} progressione XP personalizzata per applicare questo potenziamento."
+labels.upgrades.lore.bookName: "<gold><bold>Potenziamento</bold></gold>"
+labels.upgrades.lore.activator.passive: "<white>Passiva</white>"
+labels.upgrades.lore.activator.left: "<white>Click sinistro</white>"
+labels.upgrades.lore.activator.right: "<white>Click destro</white>"
+labels.upgrades.lore.activator.shiftLeft: "<white>Shift + click sinistro</white>"
+labels.upgrades.lore.activator.shiftRight: "<white>Shift + click destro</white>"
+labels.upgrades.lore.activation: "<gray>Attivazione:</gray> <white>{binding}</white>"
+labels.upgrades.lore.hintApply: "<dark_gray>Usa su un oggetto compatibile.</dark_gray>"
+labels.upgrades.lore.appliedHeader: "<gray>Migliorie applicate</gray>"
+labels.upgrades.lore.appliedTotals: "<gray>Totali applicati</gray>"
+labels.upgrades.lore.attribute: "<dark_gray>◆</dark_gray> <aqua><bold>Attributo</bold></aqua> <white>{value}</white>"
+labels.upgrades.lore.attributeValue: "{sign}{amount} {name}"
+labels.upgrades.lore.enchant: "<dark_gray>✦</dark_gray> <gold><bold>Incanto</bold></gold> <white>{value}</white>"
+labels.upgrades.lore.enchantValue: "{name} {level}"
+labels.system.crafting: "Creazione"
+labels.system.dungeons: "Dungeon"
+labels.system.kits: "Kit"
+labels.system.party: "Party"
+labels.system.quests: "Missioni"
+labels.system.shops: "Negozi"
+labels.system.upgrades: "Potenziamenti"

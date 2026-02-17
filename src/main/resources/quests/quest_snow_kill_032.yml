@@ -1,0 +1,23 @@
+quests:
+  quest_snow_kill_032:
+    name: Snow Culling IX
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_snow_frost_fauna_32
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3471
+    rewards:
+      xp: 180
+      tokens: 15
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_material_frost_04
+          amount: 3

@@ -1,0 +1,52 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_04_secondary:
+    name: Ability Boss Snow Frost Monarch Phase 04 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_sphere_fill
+          particle: SCULK_CHARGE
+          radius: 8.343300000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 7.45416
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: SCULK_CHARGE
+          radius: 8.769599999999999
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 7.816515
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 140
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.27
+          durationTicks: 108
+          radius: 5.8
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

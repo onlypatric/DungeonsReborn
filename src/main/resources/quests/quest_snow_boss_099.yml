@@ -1,0 +1,25 @@
+quests:
+  quest_snow_boss_099:
+    name: Snow Ascendance IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_snow_boss_whiteout_oracle
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 4982
+    rewards:
+      xp: 240
+      tokens: 26
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_upgrade_core_11
+        -
+          id: item_snow_material_frost_07
+          amount: 3

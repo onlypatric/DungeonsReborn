@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_verdant_47:
+    name: Ability Upgrade Lowlands Verdant 47
+    costs:
+      -
+        type: mana
+        amount: 15.2
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_points
+          particle: RAID_OMEN
+          points:
+            -
+              x: 2.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.12
+              y: 0.0
+              z: 1.95
+            -
+              x: -1.13
+              y: 0.0
+              z: -1.95
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.8
+          maxDistance: 28
+          hitRadius: 0.35
+          trail:
+            particle: CLOUD
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 23.25
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_lowlands_processing_002
+name: Lowlands Processing 2
+costs:
+  -
+    type: tokens
+    amount: 4
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: OAK_LOG
+        amount: 2
+      -
+        material: VINE
+        amount: 2
+outputs:
+  -
+    item: item_lowlands_material_ancient_02

@@ -1,0 +1,34 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_wayfarer_12:
+    name: Ability Upgrade Plains Wayfarer 12
+    costs:
+      -
+        type: mana
+        amount: 12.0
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: CRIT
+          radius: 2.9250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 10
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 4.87
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

@@ -1,0 +1,183 @@
+shops:
+  shop_desert_starter:
+    title: Desert Starter Goods
+    trades:
+      -
+        buy:
+          -
+            type: token
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_consumable_043
+      -
+        buy:
+          -
+            type: token
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_consumable_038
+      -
+        buy:
+          -
+            type: token
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_consumable_027
+      -
+        buy:
+          -
+            type: token
+            amount: 8
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_consumable_009
+      -
+        buy:
+          -
+            type: token
+            amount: 5
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_consumable_048
+      -
+        buy:
+          -
+            type: token
+            amount: 11
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_material_fire_01
+      -
+        buy:
+          -
+            type: token
+            amount: 11
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_material_sand_05
+      -
+        buy:
+          -
+            type: token
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_material_sand_03
+      -
+        buy:
+          -
+            type: token
+            amount: 9
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_component_01
+      -
+        buy:
+          -
+            type: token
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_component_02
+      -
+        buy:
+          -
+            type: token
+            amount: 7
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_component_03
+      -
+        buy:
+          -
+            type: token
+            amount: 24
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_upgrade_core_01
+      -
+        buy:
+          -
+            type: token
+            amount: 18
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_upgrade_core_10
+      -
+        buy:
+          -
+            type: token
+            amount: 9
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_gear_weapon
+      -
+        buy:
+          -
+            type: token
+            amount: 11
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_gear_trinket
+      -
+        buy:
+          -
+            type: token
+            amount: 12
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: item_id
+            itemId: item_desert_gear_armor
+      -
+        buy:
+          -
+            type: token
+            amount: 10
+        sell:
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+      -
+        buy:
+          -
+            type: item_id
+            itemId: item_currency_desert_voucher
+        sell:
+          -
+            type: token
+            amount: 7
+    gui:
+      head: ICON_SHOPS

@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_046:
+    name: Ability Item Lowlands Consumable 046
+    cooldown:
+      ticks: 204
+    action:
+      type: sequence
+      actions:
+        -
+          particle: PALE_OAK_LEAVES
+          type: particles_points
+          points:
+            -
+              x: -0.13
+              y: 0.0
+              z: 0.18
+            -
+              x: 0.38
+              y: 0.0
+              z: -0.02
+          up: -1.0
+        -
+          particle: POOF
+          type: particles_points
+          points:
+            -
+              x: -0.02
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.02
+              y: 0.0
+              z: 0.01
+            -
+              x: 0.13
+              y: 0.0
+              z: -0.1
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: strength
+            durationTicks: 143
+            amplifier: 1

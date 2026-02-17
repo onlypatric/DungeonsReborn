@@ -1,0 +1,32 @@
+name: <white><bold>Snow Whiteout</bold></white> <gray>XIII</gray>
+description: <gray>Blinding storms shroud your advance.</gray> <gray>Boosts Damage Mult by 1.39.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_whiteout_13
+  activator: SHIFT_RIGHT
+requirements:
+  level: 3471
+modifiers:
+  -
+    type: damage_mult
+    value: 1.394
+  -
+    type: damage_add
+    value: 1.343
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: frost_walker
+    level: 3
+  -
+    enchant: knockback
+    level: 3
+allowUnsafe: true

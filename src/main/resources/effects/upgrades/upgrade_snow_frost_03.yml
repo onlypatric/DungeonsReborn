@@ -1,0 +1,32 @@
+name: <white><bold>Snow Frost</bold></white> <gray>III</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.03.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_03
+  activator: LEFT_CLICK
+requirements:
+  level: 3507
+modifiers:
+  -
+    type: duration_mult
+    value: 1.029
+  -
+    type: radius_add
+    value: 1.667
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: power
+    level: 5
+  -
+    enchant: punch
+    level: 3
+allowUnsafe: true

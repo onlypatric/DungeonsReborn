@@ -1,0 +1,28 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_dread_09:
+    name: Ability Upgrade Dark Oak Dread 09
+    costs:
+      -
+        type: mana
+        amount: 18.8
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: FIREFLY
+          count: 6
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 5.6
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 7.53

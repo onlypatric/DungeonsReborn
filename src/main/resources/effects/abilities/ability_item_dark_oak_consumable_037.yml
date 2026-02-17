@@ -1,0 +1,53 @@
+schemaVersion: 1
+abilities:
+  ability_item_dark_oak_consumable_037:
+    name: Ability Item Dark Oak Consumable 037
+    cooldown:
+      ticks: 162
+    action:
+      type: sequence
+      actions:
+        -
+          particle: BLOCK_CRUMBLE
+          data:
+            material: STONE
+          type: particles_points
+          points:
+            -
+              x: -0.15
+              y: 0.0
+              z: 0.11
+            -
+              x: 0.38
+              y: 0.0
+              z: -0.1
+          up: -1.0
+        -
+          particle: BLOCK_MARKER
+          data:
+            material: STONE
+          type: particles_points
+          points:
+            -
+              x: -0.2
+              y: 0.0
+              z: -0.44
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.48
+            -
+              x: -0.18
+              y: 0.0
+              z: 0.19
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: strength
+            durationTicks: 92
+            amplifier: 0

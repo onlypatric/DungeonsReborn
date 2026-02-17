@@ -1,0 +1,44 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_sky_wyrm_phase_03_aura:
+    name: Ability Boss Highlands Sky Wyrm Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: DOLPHIN
+          radius: 6.048
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 5.3907
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: DOLPHIN
+          radius: 6.3420000000000005
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 5.6406
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.35
+          durationTicks: 40
+          radius: 4.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 4.0

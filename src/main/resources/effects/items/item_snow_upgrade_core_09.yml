@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua>Snow Core IX</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+  meta:
+    skull:
+      head: REQ_SINT_PIETERS_WOLUWE
+gui:
+  head: ICON_ITEMS

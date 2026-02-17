@@ -1,0 +1,22 @@
+quests:
+  quest_swamp_elite_009:
+    name: Swamp Vengeance X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_swamp_rot_guardians_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1095
+    rewards:
+      xp: 140
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_swamp_material_mire_01

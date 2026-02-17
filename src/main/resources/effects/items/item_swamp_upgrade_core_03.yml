@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: NETHER_STAR
+  display:
+    name: <aqua>Swamp Core III</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+gui:
+  head: ICON_ITEMS

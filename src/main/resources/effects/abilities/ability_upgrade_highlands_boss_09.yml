@@ -1,0 +1,68 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_boss_09:
+    name: Ability Upgrade Highlands Boss 09
+    costs:
+      -
+        type: mana
+        amount: 35.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: HAPPY_VILLAGER
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.9908000000000006
+            right: 3.981600000000001
+            up: 0.4
+          p2:
+            forward: 3.981600000000001
+            right: -2.9862000000000006
+            up: 0.8
+          p3:
+            forward: 5.972400000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: RAIN
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.3923000000000003
+            right: 2.7846000000000006
+            up: 0.4
+          p2:
+            forward: 2.7846000000000006
+            right: -2.0884500000000004
+            up: 0.8
+          p3:
+            forward: 4.176900000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 20
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 32.5
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 40
+                amplifier: 1

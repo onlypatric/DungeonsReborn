@@ -1,0 +1,30 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_farmhand_05:
+    name: Ability Upgrade Plains Farmhand 05
+    costs:
+      -
+        type: mana
+        amount: 10.0
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_helix
+          particle: LAVA
+          radius: 2.9250000000000003
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 1.5
+            times: 4
+            periodTicks: 10

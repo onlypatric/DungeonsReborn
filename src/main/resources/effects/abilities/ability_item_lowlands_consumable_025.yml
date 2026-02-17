@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_025:
+    name: Ability Item Lowlands Consumable 025
+    cooldown:
+      ticks: 142
+    action:
+      type: sequence
+      actions:
+        -
+          particle: DRIPPING_LAVA
+          type: particles_points
+          points:
+            -
+              x: -0.35
+              y: 0.0
+              z: 0.23
+            -
+              x: 0.41
+              y: 0.0
+              z: -0.19
+            -
+              x: 0.09
+              y: 0.0
+              z: -0.18
+          up: -1.0
+        -
+          particle: DRIPPING_OBSIDIAN_TEAR
+          type: particles_points
+          points:
+            -
+              x: 0.02
+              y: 0.0
+              z: -0.46
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.0
+          up: -1.0
+        -
+          particle: DRIPPING_WATER
+          type: particles_points
+          points:
+            -
+              x: 0.15
+              y: 0.0
+              z: 0.08
+            -
+              x: -0.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.0
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          type: totem
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 18.4
+            policy: any

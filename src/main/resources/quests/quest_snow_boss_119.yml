@@ -1,0 +1,25 @@
+quests:
+  quest_snow_boss_119:
+    name: "Snow Slayer's Oath XII"
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_snow_boss_whiteout_oracle
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 4946
+    rewards:
+      xp: 240
+      tokens: 30
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_upgrade_core_15
+        -
+          id: item_snow_material_glacier_06
+          amount: 4

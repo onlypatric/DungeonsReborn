@@ -1,0 +1,25 @@
+quests:
+  quest_highlands_boss_019:
+    name: Highlands Doomcall VIII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_highlands_boss_sky_wyrm
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2100
+    rewards:
+      xp: 200
+      tokens: 17
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_upgrade_core_02
+        -
+          id: item_highlands_material_gale_02
+          amount: 2

@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_dune_19:
+    name: Ability Upgrade Desert Dune 19
+    costs:
+      -
+        type: mana
+        amount: 11.2
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_spline
+          particle: SWEEP_ATTACK
+          points:
+            -
+              x: 2.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.12
+              y: 0.0
+              z: 1.95
+            -
+              x: -1.13
+              y: 0.0
+              z: -1.95
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.81
+            times: 4
+            periodTicks: 10

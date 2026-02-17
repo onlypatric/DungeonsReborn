@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_hearth_09:
+    name: Ability Upgrade Plains Hearth 09
+    costs:
+      -
+        type: mana
+        amount: 10.0
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_mesh
+          particle: PORTAL
+          points:
+            -
+              x: 2.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.37
+              y: 0.0
+              z: 2.38
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.38
+          triangles:
+            -
+              -
+                x: 2.75
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.37
+                y: 0.0
+                z: 2.38
+              -
+                x: -1.38
+                y: 0.0
+                z: -2.38
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.12
+            times: 4
+            periodTicks: 10

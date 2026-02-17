@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_night_stag_phase_04_main:
+    name: Ability Boss Dark Oak Night Stag Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_cylinder
+          particle: ELDER_GUARDIAN
+          radius: 7.9632000000000005
+          height: 3.0
+          points: 1
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: CRIT
+          radius: 5.5692
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: CRIT
+          radius: 6.5520000000000005
+          points: 1
+          up: -1.0
+        -
+          type: particles_disk
+          particle: CRIT
+          radius: 5.86908
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 5.6
+          radius: 4.8
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 4.8

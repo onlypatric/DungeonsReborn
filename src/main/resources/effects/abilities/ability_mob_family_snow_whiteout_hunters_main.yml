@@ -1,0 +1,19 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_snow_whiteout_hunters_main:
+    name: Snow Whiteout_Hunters Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: COMPOSTER
+          radius: 8.476875000000001
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 9.57
+          radius: 4.46
+          damageCause: DIRECT

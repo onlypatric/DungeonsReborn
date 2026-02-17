@@ -55,6 +55,7 @@ public final class MobSpec {
   private final MobAdvancementRewardSpec advancementRewards;
   private final int minXpLevel;
   private final boolean allowBlockDamage;
+  private final Boolean invulnerable;
   private final Boolean collidable;
   private final double scaleVariance;
   private final MobCompositeSpec composite;
@@ -102,6 +103,7 @@ public final class MobSpec {
     this.advancementRewards = builder.advancementRewards;
     this.minXpLevel = builder.minXpLevel;
     this.allowBlockDamage = builder.allowBlockDamage;
+    this.invulnerable = builder.invulnerable;
     this.collidable = builder.collidable;
     this.scaleVariance = builder.scaleVariance;
     this.composite = builder.composite;
@@ -263,6 +265,10 @@ public final class MobSpec {
     return allowBlockDamage;
   }
 
+  public Boolean invulnerable() {
+    return invulnerable;
+  }
+
   public Boolean collidable() {
     return collidable;
   }
@@ -334,6 +340,7 @@ public final class MobSpec {
     private MobAdvancementRewardSpec advancementRewards;
     private int minXpLevel;
     private boolean allowBlockDamage = true;
+    private Boolean invulnerable;
     private Boolean collidable;
     private double scaleVariance;
     private MobCompositeSpec composite;
@@ -539,6 +546,11 @@ public final class MobSpec {
 
     public Builder allowBlockDamage(boolean allowBlockDamage) {
       this.allowBlockDamage = allowBlockDamage;
+      return this;
+    }
+
+    public Builder invulnerable(Boolean invulnerable) {
+      this.invulnerable = invulnerable;
       return this;
     }
 

@@ -1,0 +1,47 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_wildlord_phase_04_secondary:
+    name: Ability Boss Lowlands Wildlord Phase 04 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_ring
+          particle: PORTAL
+          radius: 8.164800000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: SWEEP_ATTACK
+          radius: 7.277445000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: PORTAL
+          radius: 8.561700000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: SWEEP_ATTACK
+          radius: 7.614810000000001
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 140
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 1.07
+          durationTicks: 108
+          radius: 5.4

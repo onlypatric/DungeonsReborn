@@ -1,0 +1,68 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_ancient_ent_phase_01_secondary:
+    name: Ability Boss Lowlands Ancient Ent Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_ring
+          particle: ITEM
+          radius: 8.958600000000002
+          points: 3
+          up: -1.0
+          data:
+            type: STONE
+        -
+          type: particles_ring
+          particle: ENCHANTED_HIT
+          radius: 6.265350000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: FIREFLY
+          points:
+            -
+              x: 5.95
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.98
+              y: 0.0
+              z: 5.16
+            -
+              x: -2.98
+              y: 0.0
+              z: -5.16
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: ITEM
+          radius: 7.371000000000001
+          points: 3
+          up: -1.0
+          data:
+            type: STONE
+        -
+          type: particles_sphere
+          particle: ENCHANTED_HIT
+          radius: 6.602715000000002
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 0.88
+          durationTicks: 72
+          radius: 5.4

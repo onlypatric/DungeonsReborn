@@ -1,0 +1,26 @@
+name: <red><bold>Nether Inferno</bold></red> <gray>XIV</gray>
+description: <gray>Hellfire fuels relentless pressure.</gray> <gray>Boosts Damage Add by 0.85.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_inferno_14
+  activator: RIGHT_CLICK
+requirements:
+  level: 361
+modifiers:
+  -
+    type: damage_add
+    value: 0.848
+  -
+    type: damage_mult
+    value: 1.178
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: sharpness
+    level: 3
+allowUnsafe: true

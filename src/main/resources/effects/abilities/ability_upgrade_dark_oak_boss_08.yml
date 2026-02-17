@@ -1,0 +1,33 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_boss_08:
+    name: Ability Upgrade Dark Oak Boss 08
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: INFESTED
+          width: 6.006000000000001
+          height: 2.2
+          depth: 6.006000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: SCRAPE
+          width: 5.379990000000002
+          height: 2.2
+          depth: 5.379990000000002
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

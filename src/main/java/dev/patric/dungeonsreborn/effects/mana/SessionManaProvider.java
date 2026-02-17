@@ -34,9 +34,11 @@ public final class SessionManaProvider implements ManaProvider {
   public void init(Player player) {
     Objects.requireNonNull(player, "player");
     UUID id = player.getUniqueId();
-    stateByPlayer.computeIfAbsent(id, key -> new ConcurrentHashMap<>());
+    ConcurrentHashMap<String, ResourceState> resources =
+        stateByPlayer.computeIfAbsent(id, key -> new ConcurrentHashMap<>());
     for (String resourceId : ruleSet.resourceIds()) {
-      state(player, resourceId);
+      String normalized = normalizeId(resourceId);
+      resources.computeIfAbsent(normalized, key -> new ResourceState(rules(player, normalized).baseMax()));
     }
   }
 
@@ -242,9 +244,9 @@ public final class SessionManaProvider implements ManaProvider {
   }
 
   private ResourceState state(Player player, String resourceId) {
-    init(player);
     String id = normalizeId(resourceId);
-    ConcurrentHashMap<String, ResourceState> resources = stateByPlayer.get(player.getUniqueId());
+    ConcurrentHashMap<String, ResourceState> resources =
+        stateByPlayer.computeIfAbsent(player.getUniqueId(), key -> new ConcurrentHashMap<>());
     ResourceState state = resources.get(id);
     if (state == null) {
       ResourceRules rules = rules(player, id);

@@ -1,0 +1,12 @@
+schemaVersion: 1
+id: token_unpallet
+name: Token Unpallet
+variants:
+  -
+    inputs:
+      -
+        item: item_currency_token_pallet
+outputs:
+  -
+    item: item_currency_compressed_token
+    amount: 64

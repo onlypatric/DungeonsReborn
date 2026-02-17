@@ -1,0 +1,27 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Deepcurrent Draught X</bold></aqua>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Awakens ancient rites within.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Heal 2.0 x4 over 2s</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>5s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Water</gray>
+  meta:
+    skull:
+      head: REQ_BUBBLE_FLOWER
+    components:
+      use_cooldown:
+        seconds: 5.2
+bindings:
+  -
+    ability: ability_item_water_consumable_009
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

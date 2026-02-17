@@ -1,0 +1,35 @@
+name: <dark_green><bold>Swamp Rot</bold></dark_green> <gray>I</gray>
+description: <gray>Decay weakens those who draw near.</gray> <gray>Boosts Duration Add by 0.27.</gray> <gray>Grants Generic Max Health +1.42.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_swamp_rot_01
+  activator: LEFT_CLICK
+requirements:
+  level: 980
+modifiers:
+  -
+    type: duration_add
+    value: 0.267
+  -
+    type: cooldown_mult
+    value: 0.86
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 1.42
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: loyalty
+    level: 2
+  -
+    enchant: projectile_protection
+    level: 2
+allowUnsafe: true

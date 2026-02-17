@@ -1,0 +1,25 @@
+quests:
+  quest_snow_boss_019:
+    name: Snow Doomcall VIII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_snow_boss_whiteout_oracle
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 5000
+    rewards:
+      xp: 240
+      tokens: 25
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_upgrade_core_07
+        -
+          id: item_snow_material_frost_02
+          amount: 3

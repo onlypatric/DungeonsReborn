@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_plains_earthbound_pests_secondary:
+    name: Plains Earthbound_Pests Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: DRIPPING_HONEY
+          radius: 3.4250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.86
+          durationTicks: 40
+          radius: 2.2
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.1

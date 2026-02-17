@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_106:
+    name: Ability Item Snow Consumable 106
+    cooldown:
+      ticks: 242
+    action:
+      type: sequence
+      actions:
+        -
+          particle: DRIPPING_DRIPSTONE_LAVA
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.02
+            -
+              x: -0.21
+              y: 0.0
+              z: -0.01
+          up: -1.0
+        -
+          particle: DRIPPING_DRIPSTONE_WATER
+          type: particles_points
+          points:
+            -
+              x: -0.4
+              y: 0.0
+              z: 0.13
+            -
+              x: 0.19
+              y: 0.0
+              z: -0.26
+            -
+              x: -0.22
+              y: 0.0
+              z: -0.02
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: resistance
+            durationTicks: 162
+            amplifier: 0

@@ -1,0 +1,27 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <gray><bold>Galeheart Draught III</bold></gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Bound by runes of the old world.</gray>
+      - <gold>Effect</gold> <dark_gray>❯</dark_gray> <white>Heal 16.5 HP</white>
+      - <blue>Cooldown</blue> <dark_gray>❯</dark_gray> <gray>6s</gray>
+      - <gray>No mana cost</gray>
+      - <dark_gray>Bound to</dark_gray> <gray>Highlands</gray>
+  meta:
+    skull:
+      head: REQ_CARVED_STONE
+    components:
+      use_cooldown:
+        seconds: 6.5
+bindings:
+  -
+    ability: ability_item_highlands_consumable_014
+    click: RIGHT_CLICK
+    type: interact
+consumable:
+  mode: STACK
+  amount: 1
+gui:
+  head: ICON_ITEMS

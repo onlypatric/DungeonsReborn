@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: recipe_dark_oak_upgrade_019
+name: Dark_Oak Upgrade Core 19
+costs:
+  -
+    type: tokens
+    amount: 4
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+  -
+    type: item
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    item:
+      item: item_currency_dark_oak_voucher
+variants:
+  -
+    inputs:
+      -
+        item: item_dark_oak_material_dread_01
+      -
+        item: item_dark_oak_material_dread_02
+      -
+        item: item_dark_oak_material_shadow_05
+outputs:
+  -
+    item: item_dark_oak_upgrade_core_05

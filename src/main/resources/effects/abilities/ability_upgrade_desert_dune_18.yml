@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_dune_18:
+    name: Ability Upgrade Desert Dune 18
+    costs:
+      -
+        type: mana
+        amount: 11.2
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: SNOWFLAKE
+          radius: 5.135
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 4.0
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 3.53

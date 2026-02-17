@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <red><bold>Brimstone Shard</bold></red> <gray>IV</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Nether wilds.</gray>
+gui:
+  head: ICON_ITEMS

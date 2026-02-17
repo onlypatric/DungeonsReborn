@@ -1,0 +1,23 @@
+quests:
+  quest_dark_oak_kill_044:
+    name: Dark Oak Culling IX
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_dark_oak_gloom_stalkers_14
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 726
+    rewards:
+      xp: 100
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_material_bark_02
+          amount: 2

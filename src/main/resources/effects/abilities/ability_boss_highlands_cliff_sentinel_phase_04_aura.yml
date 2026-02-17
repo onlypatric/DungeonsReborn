@@ -1,0 +1,33 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_cliff_sentinel_phase_04_aura:
+    name: Ability Boss Highlands Cliff Sentinel Phase 04 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: ELDER_GUARDIAN
+          count: 5
+          up: -1.0
+        -
+          type: particles_point
+          particle: ENCHANT
+          count: 4
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.35
+          durationTicks: 40
+          radius: 4.1
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 62
+          amplifier: 0
+          radius: 4.1
+        -
+          particle: ENCHANT
+          type: preset_shockwave
+          radius: 4.8999999999999995
+          points: 18

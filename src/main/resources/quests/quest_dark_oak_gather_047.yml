@@ -1,0 +1,22 @@
+quests:
+  quest_dark_oak_gather_047:
+    name: Dark Oak Reclaiming XII
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 5
+        itemId: item_dark_oak_material_shadow_04
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 651
+    rewards:
+      xp: 110
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_consumable_026

@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_nether_blaze_swarm_16:
+    type: MAGMA_CUBE
+    name: <yellow>Nether Magma Cube Stalker</yellow>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 64.1
+      ATTACK_DAMAGE: 2.76
+      scaleVariance: 1.15
+    attacks:
+      main:
+        ability: ability_mob_family_nether_blaze_swarm_main
+        trigger: MELEE
+        cooldownTicks: 42
+        targetMode: NEAREST_PLAYER
+        range: 4.5
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_nether_blaze_swarm_secondary
+        trigger: MELEE
+        cooldownTicks: 72
+        targetMode: NEAREST_PLAYER
+        range: 7.1
+        chance: 0.45
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_nether_blaze_swarm_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_nether_blaze_swarm_aggressive
+    xpGating:
+      minLevel: 370

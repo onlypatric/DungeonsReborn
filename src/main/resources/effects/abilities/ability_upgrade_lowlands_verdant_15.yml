@@ -1,0 +1,38 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_verdant_15:
+    name: Ability Upgrade Lowlands Verdant 15
+    costs:
+      -
+        type: mana
+        amount: 15.2
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 3.7250000000000005
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: projectile
+          speedPerTick: 1.8
+          maxDistance: 28
+          hitRadius: 0.35
+          trail:
+            particle: HAPPY_VILLAGER
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 23.25
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

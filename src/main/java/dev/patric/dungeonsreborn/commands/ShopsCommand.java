@@ -7,8 +7,10 @@ import java.util.concurrent.CompletableFuture;
 
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.shops.ShopItems;
+import dev.patric.dungeonsreborn.shops.ShopSessionManager;
 import dev.patric.dungeonsreborn.shops.ShopSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
+import dev.patric.dungeonsreborn.menus.ShopPreviewMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -24,9 +26,14 @@ public final class ShopsCommand {
   private ShopsCommand() {
   }
 
-  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(ShopYamlRegistry shops) {
+  public static LiteralArgumentBuilder<CommandSourceStack> createCommand(ShopYamlRegistry shops,
+      ShopSessionManager shopSessions) {
     return Commands.literal("shop")
         .executes(ctx -> help(ctx))
+        .then(Commands.literal("open")
+            .then(Commands.argument("id", StringArgumentType.word())
+                .suggests((ctx, builder) -> suggestShopIds(shops, builder))
+                .executes(ctx -> open(ctx, shops, shopSessions, StringArgumentType.getString(ctx, "id")))))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, shops)))
         .then(Commands.literal("list").executes(ctx -> list(ctx, shops)))
         .then(Commands.literal("info")
@@ -56,6 +63,7 @@ public final class ShopsCommand {
 
   private static int help(CommandContext<CommandSourceStack> ctx) {
     var sender = ctx.getSource().getSender();
+    CommandMessages.send(sender, "messages.command.shops.help.open");
     CommandMessages.send(sender, "messages.command.shops.help.reload");
     CommandMessages.send(sender, "messages.command.shops.help.list");
     CommandMessages.send(sender, "messages.command.shops.help.info");
@@ -140,6 +148,34 @@ public final class ShopsCommand {
               "max", spec.stock().max(),
               "seconds", spec.stock().restockSeconds()));
     }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int open(CommandContext<CommandSourceStack> ctx, ShopYamlRegistry shops,
+      ShopSessionManager shopSessions, String id) {
+    var sender = ctx.getSource().getSender();
+    if (shops == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shopRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!(sender instanceof Player player)) {
+      CommandMessages.send(sender, "messages.command.playerOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (shopSessions == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.shopSessions")));
+      return Command.SINGLE_SUCCESS;
+    }
+    ShopSpec spec = shops.shop(id);
+    if (spec == null) {
+      CommandMessages.send(sender, "messages.command.shops.unknown",
+          Locales.placeholders("id", id));
+      CommandMessages.sendClosestMatch(sender, id, shops.shops().keySet());
+      return Command.SINGLE_SUCCESS;
+    }
+    ShopPreviewMenu.open(player, shops, shopSessions, spec);
     return Command.SINGLE_SUCCESS;
   }
 

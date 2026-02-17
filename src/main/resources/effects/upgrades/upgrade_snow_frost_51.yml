@@ -1,0 +1,29 @@
+name: <white><bold>Snow Frost</bold></white> <gray>LI</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.03.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_51
+  activator: SHIFT_LEFT
+requirements:
+  level: 3435
+modifiers:
+  -
+    type: duration_mult
+    value: 1.028
+  -
+    type: radius_add
+    value: 1.392
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: swift_sneak
+    level: 3
+  -
+    enchant: aqua_affinity
+    level: 3
+allowUnsafe: true

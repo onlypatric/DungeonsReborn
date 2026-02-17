@@ -1,0 +1,2042 @@
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_01_main.name: Ability Boss Plains Stagwarden Phase 01 Main
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_01_secondary.name: Ability Boss Plains Stagwarden Phase 01 Secondary
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_01_aura.name: Ability Boss Plains Stagwarden Phase 01 Aura
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_02_main.name: Ability Boss Plains Stagwarden Phase 02 Main
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_02_secondary.name: Ability Boss Plains Stagwarden Phase 02 Secondary
+world_phase1.abilities.ability_boss_plains_stagwarden_phase_02_aura.name: Ability Boss Plains Stagwarden Phase 02 Aura
+world_phase1.abilities.ability_boss_desert_sand_king_phase_01_main.name: Ability Boss Desert Sand King Phase 01 Main
+world_phase1.abilities.ability_boss_desert_sand_king_phase_01_secondary.name: Ability Boss Desert Sand King Phase 01 Secondary
+world_phase1.abilities.ability_boss_desert_sand_king_phase_01_aura.name: Ability Boss Desert Sand King Phase 01 Aura
+world_phase1.abilities.ability_boss_desert_sand_king_phase_02_main.name: Ability Boss Desert Sand King Phase 02 Main
+world_phase1.abilities.ability_boss_desert_sand_king_phase_02_secondary.name: Ability Boss Desert Sand King Phase 02 Secondary
+world_phase1.abilities.ability_boss_desert_sand_king_phase_02_aura.name: Ability Boss Desert Sand King Phase 02 Aura
+world_phase1.abilities.ability_boss_desert_sand_king_phase_03_main.name: Ability Boss Desert Sand King Phase 03 Main
+world_phase1.abilities.ability_boss_desert_sand_king_phase_03_secondary.name: Ability Boss Desert Sand King Phase 03 Secondary
+world_phase1.abilities.ability_boss_desert_sand_king_phase_03_aura.name: Ability Boss Desert Sand King Phase 03 Aura
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_01_main.name: Ability Boss Desert Sun Priest Phase 01 Main
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_01_secondary.name: Ability Boss Desert Sun Priest Phase 01 Secondary
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_01_aura.name: Ability Boss Desert Sun Priest Phase 01 Aura
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_02_main.name: Ability Boss Desert Sun Priest Phase 02 Main
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_02_secondary.name: Ability Boss Desert Sun Priest Phase 02 Secondary
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_02_aura.name: Ability Boss Desert Sun Priest Phase 02 Aura
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_03_main.name: Ability Boss Desert Sun Priest Phase 03 Main
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_03_secondary.name: Ability Boss Desert Sun Priest Phase 03 Secondary
+world_phase1.abilities.ability_boss_desert_sun_priest_phase_03_aura.name: Ability Boss Desert Sun Priest Phase 03 Aura
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_01_main.name: Ability Boss Desert Relic Colossus Phase 01 Main
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_01_secondary.name: Ability Boss Desert Relic Colossus Phase 01 Secondary
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_01_aura.name: Ability Boss Desert Relic Colossus Phase 01 Aura
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_02_main.name: Ability Boss Desert Relic Colossus Phase 02 Main
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_02_secondary.name: Ability Boss Desert Relic Colossus Phase 02 Secondary
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_02_aura.name: Ability Boss Desert Relic Colossus Phase 02 Aura
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_03_main.name: Ability Boss Desert Relic Colossus Phase 03 Main
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_03_secondary.name: Ability Boss Desert Relic Colossus Phase 03 Secondary
+world_phase1.abilities.ability_boss_desert_relic_colossus_phase_03_aura.name: Ability Boss Desert Relic Colossus Phase 03 Aura
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_01_main.name: Ability Boss Desert Dune Mother Phase 01 Main
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_01_secondary.name: Ability Boss Desert Dune Mother Phase 01 Secondary
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_01_aura.name: Ability Boss Desert Dune Mother Phase 01 Aura
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_02_main.name: Ability Boss Desert Dune Mother Phase 02 Main
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_02_secondary.name: Ability Boss Desert Dune Mother Phase 02 Secondary
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_02_aura.name: Ability Boss Desert Dune Mother Phase 02 Aura
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_03_main.name: Ability Boss Desert Dune Mother Phase 03 Main
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_03_secondary.name: Ability Boss Desert Dune Mother Phase 03 Secondary
+world_phase1.abilities.ability_boss_desert_dune_mother_phase_03_aura.name: Ability Boss Desert Dune Mother Phase 03 Aura
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_01_main.name: Ability Boss Nether Ash Warlord Phase 01 Main
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_01_secondary.name: Ability Boss Nether Ash Warlord Phase 01 Secondary
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_01_aura.name: Ability Boss Nether Ash Warlord Phase 01 Aura
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_02_main.name: Ability Boss Nether Ash Warlord Phase 02 Main
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_02_secondary.name: Ability Boss Nether Ash Warlord Phase 02 Secondary
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_02_aura.name: Ability Boss Nether Ash Warlord Phase 02 Aura
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_03_main.name: Ability Boss Nether Ash Warlord Phase 03 Main
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_03_secondary.name: Ability Boss Nether Ash Warlord Phase 03 Secondary
+world_phase1.abilities.ability_boss_nether_ash_warlord_phase_03_aura.name: Ability Boss Nether Ash Warlord Phase 03 Aura
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_01_main.name: Ability Boss Nether Brimstone Titan Phase 01 Main
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_01_secondary.name: Ability Boss Nether Brimstone Titan Phase 01 Secondary
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_01_aura.name: Ability Boss Nether Brimstone Titan Phase 01 Aura
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_02_main.name: Ability Boss Nether Brimstone Titan Phase 02 Main
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_02_secondary.name: Ability Boss Nether Brimstone Titan Phase 02 Secondary
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_02_aura.name: Ability Boss Nether Brimstone Titan Phase 02 Aura
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_03_main.name: Ability Boss Nether Brimstone Titan Phase 03 Main
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_03_secondary.name: Ability Boss Nether Brimstone Titan Phase 03 Secondary
+world_phase1.abilities.ability_boss_nether_brimstone_titan_phase_03_aura.name: Ability Boss Nether Brimstone Titan Phase 03 Aura
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_01_main.name: Ability Boss Nether Infernal Warden Phase 01 Main
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_01_secondary.name: Ability Boss Nether Infernal Warden Phase 01 Secondary
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_01_aura.name: Ability Boss Nether Infernal Warden Phase 01 Aura
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_02_main.name: Ability Boss Nether Infernal Warden Phase 02 Main
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_02_secondary.name: Ability Boss Nether Infernal Warden Phase 02 Secondary
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_02_aura.name: Ability Boss Nether Infernal Warden Phase 02 Aura
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_03_main.name: Ability Boss Nether Infernal Warden Phase 03 Main
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_03_secondary.name: Ability Boss Nether Infernal Warden Phase 03 Secondary
+world_phase1.abilities.ability_boss_nether_infernal_warden_phase_03_aura.name: Ability Boss Nether Infernal Warden Phase 03 Aura
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_01_main.name: Ability Boss Dark Oak Gloom Baron Phase 01 Main
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_01_secondary.name: Ability Boss Dark Oak Gloom Baron Phase 01 Secondary
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_01_aura.name: Ability Boss Dark Oak Gloom Baron Phase 01 Aura
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_02_main.name: Ability Boss Dark Oak Gloom Baron Phase 02 Main
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_02_secondary.name: Ability Boss Dark Oak Gloom Baron Phase 02 Secondary
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_02_aura.name: Ability Boss Dark Oak Gloom Baron Phase 02 Aura
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_03_main.name: Ability Boss Dark Oak Gloom Baron Phase 03 Main
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_03_secondary.name: Ability Boss Dark Oak Gloom Baron Phase 03 Secondary
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_03_aura.name: Ability Boss Dark Oak Gloom Baron Phase 03 Aura
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_04_main.name: Ability Boss Dark Oak Gloom Baron Phase 04 Main
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_04_secondary.name: Ability Boss Dark Oak Gloom Baron Phase 04 Secondary
+world_phase1.abilities.ability_boss_dark_oak_gloom_baron_phase_04_aura.name: Ability Boss Dark Oak Gloom Baron Phase 04 Aura
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_01_main.name: Ability Boss Dark Oak Night Stag Phase 01 Main
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_01_secondary.name: Ability Boss Dark Oak Night Stag Phase 01 Secondary
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_01_aura.name: Ability Boss Dark Oak Night Stag Phase 01 Aura
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_02_main.name: Ability Boss Dark Oak Night Stag Phase 02 Main
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_02_secondary.name: Ability Boss Dark Oak Night Stag Phase 02 Secondary
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_02_aura.name: Ability Boss Dark Oak Night Stag Phase 02 Aura
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_03_main.name: Ability Boss Dark Oak Night Stag Phase 03 Main
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_03_secondary.name: Ability Boss Dark Oak Night Stag Phase 03 Secondary
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_03_aura.name: Ability Boss Dark Oak Night Stag Phase 03 Aura
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_04_main.name: Ability Boss Dark Oak Night Stag Phase 04 Main
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_04_secondary.name: Ability Boss Dark Oak Night Stag Phase 04 Secondary
+world_phase1.abilities.ability_boss_dark_oak_night_stag_phase_04_aura.name: Ability Boss Dark Oak Night Stag Phase 04 Aura
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_01_main.name: Ability Boss Highlands Sky Wyrm Phase 01 Main
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_01_secondary.name: Ability Boss Highlands Sky Wyrm Phase 01 Secondary
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_01_aura.name: Ability Boss Highlands Sky Wyrm Phase 01 Aura
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_02_main.name: Ability Boss Highlands Sky Wyrm Phase 02 Main
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_02_secondary.name: Ability Boss Highlands Sky Wyrm Phase 02 Secondary
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_02_aura.name: Ability Boss Highlands Sky Wyrm Phase 02 Aura
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_03_main.name: Ability Boss Highlands Sky Wyrm Phase 03 Main
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_03_secondary.name: Ability Boss Highlands Sky Wyrm Phase 03 Secondary
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_03_aura.name: Ability Boss Highlands Sky Wyrm Phase 03 Aura
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_04_main.name: Ability Boss Highlands Sky Wyrm Phase 04 Main
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_04_secondary.name: Ability Boss Highlands Sky Wyrm Phase 04 Secondary
+world_phase1.abilities.ability_boss_highlands_sky_wyrm_phase_04_aura.name: Ability Boss Highlands Sky Wyrm Phase 04 Aura
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_01_main.name: Ability Boss Highlands Cliff Sentinel Phase 01 Main
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_01_secondary.name: Ability Boss Highlands Cliff Sentinel Phase 01 Secondary
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_01_aura.name: Ability Boss Highlands Cliff Sentinel Phase 01 Aura
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_02_main.name: Ability Boss Highlands Cliff Sentinel Phase 02 Main
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_02_secondary.name: Ability Boss Highlands Cliff Sentinel Phase 02 Secondary
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_02_aura.name: Ability Boss Highlands Cliff Sentinel Phase 02 Aura
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_03_main.name: Ability Boss Highlands Cliff Sentinel Phase 03 Main
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_03_secondary.name: Ability Boss Highlands Cliff Sentinel Phase 03 Secondary
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_03_aura.name: Ability Boss Highlands Cliff Sentinel Phase 03 Aura
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_04_main.name: Ability Boss Highlands Cliff Sentinel Phase 04 Main
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_04_secondary.name: Ability Boss Highlands Cliff Sentinel Phase 04 Secondary
+world_phase1.abilities.ability_boss_highlands_cliff_sentinel_phase_04_aura.name: Ability Boss Highlands Cliff Sentinel Phase 04 Aura
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_01_main.name: Ability Boss Lowlands Ancient Ent Phase 01 Main
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_01_secondary.name: Ability Boss Lowlands Ancient Ent Phase 01 Secondary
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_01_aura.name: Ability Boss Lowlands Ancient Ent Phase 01 Aura
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_02_main.name: Ability Boss Lowlands Ancient Ent Phase 02 Main
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_02_secondary.name: Ability Boss Lowlands Ancient Ent Phase 02 Secondary
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_02_aura.name: Ability Boss Lowlands Ancient Ent Phase 02 Aura
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_03_main.name: Ability Boss Lowlands Ancient Ent Phase 03 Main
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_03_secondary.name: Ability Boss Lowlands Ancient Ent Phase 03 Secondary
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_03_aura.name: Ability Boss Lowlands Ancient Ent Phase 03 Aura
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_04_main.name: Ability Boss Lowlands Ancient Ent Phase 04 Main
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_04_secondary.name: Ability Boss Lowlands Ancient Ent Phase 04 Secondary
+world_phase1.abilities.ability_boss_lowlands_ancient_ent_phase_04_aura.name: Ability Boss Lowlands Ancient Ent Phase 04 Aura
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_01_main.name: Ability Boss Lowlands Verdant Colossus Phase 01 Main
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_01_secondary.name: Ability Boss Lowlands Verdant Colossus Phase 01 Secondary
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_01_aura.name: Ability Boss Lowlands Verdant Colossus Phase 01 Aura
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_02_main.name: Ability Boss Lowlands Verdant Colossus Phase 02 Main
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_02_secondary.name: Ability Boss Lowlands Verdant Colossus Phase 02 Secondary
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_02_aura.name: Ability Boss Lowlands Verdant Colossus Phase 02 Aura
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_03_main.name: Ability Boss Lowlands Verdant Colossus Phase 03 Main
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_03_secondary.name: Ability Boss Lowlands Verdant Colossus Phase 03 Secondary
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_03_aura.name: Ability Boss Lowlands Verdant Colossus Phase 03 Aura
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_04_main.name: Ability Boss Lowlands Verdant Colossus Phase 04 Main
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_04_secondary.name: Ability Boss Lowlands Verdant Colossus Phase 04 Secondary
+world_phase1.abilities.ability_boss_lowlands_verdant_colossus_phase_04_aura.name: Ability Boss Lowlands Verdant Colossus Phase 04 Aura
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_01_main.name: Ability Boss Lowlands Wildlord Phase 01 Main
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_01_secondary.name: Ability Boss Lowlands Wildlord Phase 01 Secondary
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_01_aura.name: Ability Boss Lowlands Wildlord Phase 01 Aura
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_02_main.name: Ability Boss Lowlands Wildlord Phase 02 Main
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_02_secondary.name: Ability Boss Lowlands Wildlord Phase 02 Secondary
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_02_aura.name: Ability Boss Lowlands Wildlord Phase 02 Aura
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_03_main.name: Ability Boss Lowlands Wildlord Phase 03 Main
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_03_secondary.name: Ability Boss Lowlands Wildlord Phase 03 Secondary
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_03_aura.name: Ability Boss Lowlands Wildlord Phase 03 Aura
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_04_main.name: Ability Boss Lowlands Wildlord Phase 04 Main
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_04_secondary.name: Ability Boss Lowlands Wildlord Phase 04 Secondary
+world_phase1.abilities.ability_boss_lowlands_wildlord_phase_04_aura.name: Ability Boss Lowlands Wildlord Phase 04 Aura
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_01_main.name: Ability Boss Snow Frost Monarch Phase 01 Main
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_01_secondary.name: Ability Boss Snow Frost Monarch Phase 01 Secondary
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_01_aura.name: Ability Boss Snow Frost Monarch Phase 01 Aura
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_02_main.name: Ability Boss Snow Frost Monarch Phase 02 Main
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_02_secondary.name: Ability Boss Snow Frost Monarch Phase 02 Secondary
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_02_aura.name: Ability Boss Snow Frost Monarch Phase 02 Aura
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_03_main.name: Ability Boss Snow Frost Monarch Phase 03 Main
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_03_secondary.name: Ability Boss Snow Frost Monarch Phase 03 Secondary
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_03_aura.name: Ability Boss Snow Frost Monarch Phase 03 Aura
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_04_main.name: Ability Boss Snow Frost Monarch Phase 04 Main
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_04_secondary.name: Ability Boss Snow Frost Monarch Phase 04 Secondary
+world_phase1.abilities.ability_boss_snow_frost_monarch_phase_04_aura.name: Ability Boss Snow Frost Monarch Phase 04 Aura
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_01_main.name: Ability Boss Snow Icebound Tyrant Phase 01 Main
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_01_secondary.name: Ability Boss Snow Icebound Tyrant Phase 01 Secondary
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_01_aura.name: Ability Boss Snow Icebound Tyrant Phase 01 Aura
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_02_main.name: Ability Boss Snow Icebound Tyrant Phase 02 Main
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_02_secondary.name: Ability Boss Snow Icebound Tyrant Phase 02 Secondary
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_02_aura.name: Ability Boss Snow Icebound Tyrant Phase 02 Aura
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_03_main.name: Ability Boss Snow Icebound Tyrant Phase 03 Main
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_03_secondary.name: Ability Boss Snow Icebound Tyrant Phase 03 Secondary
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_03_aura.name: Ability Boss Snow Icebound Tyrant Phase 03 Aura
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_04_main.name: Ability Boss Snow Icebound Tyrant Phase 04 Main
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_04_secondary.name: Ability Boss Snow Icebound Tyrant Phase 04 Secondary
+world_phase1.abilities.ability_boss_snow_icebound_tyrant_phase_04_aura.name: Ability Boss Snow Icebound Tyrant Phase 04 Aura
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_01_main.name: Ability Boss Snow Whiteout Oracle Phase 01 Main
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_01_secondary.name: Ability Boss Snow Whiteout Oracle Phase 01 Secondary
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_01_aura.name: Ability Boss Snow Whiteout Oracle Phase 01 Aura
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_02_main.name: Ability Boss Snow Whiteout Oracle Phase 02 Main
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_02_secondary.name: Ability Boss Snow Whiteout Oracle Phase 02 Secondary
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_02_aura.name: Ability Boss Snow Whiteout Oracle Phase 02 Aura
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_03_main.name: Ability Boss Snow Whiteout Oracle Phase 03 Main
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_03_secondary.name: Ability Boss Snow Whiteout Oracle Phase 03 Secondary
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_03_aura.name: Ability Boss Snow Whiteout Oracle Phase 03 Aura
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_04_main.name: Ability Boss Snow Whiteout Oracle Phase 04 Main
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_04_secondary.name: Ability Boss Snow Whiteout Oracle Phase 04 Secondary
+world_phase1.abilities.ability_boss_snow_whiteout_oracle_phase_04_aura.name: Ability Boss Snow Whiteout Oracle Phase 04 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_01_main.name: Ability Boss Snow Abyssal Warden Phase 01 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_01_secondary.name: Ability Boss Snow Abyssal Warden Phase 01 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_01_aura.name: Ability Boss Snow Abyssal Warden Phase 01 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_02_main.name: Ability Boss Snow Abyssal Warden Phase 02 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_02_secondary.name: Ability Boss Snow Abyssal Warden Phase 02 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_02_aura.name: Ability Boss Snow Abyssal Warden Phase 02 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_03_main.name: Ability Boss Snow Abyssal Warden Phase 03 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_03_secondary.name: Ability Boss Snow Abyssal Warden Phase 03 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_03_aura.name: Ability Boss Snow Abyssal Warden Phase 03 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_04_main.name: Ability Boss Snow Abyssal Warden Phase 04 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_04_secondary.name: Ability Boss Snow Abyssal Warden Phase 04 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_04_aura.name: Ability Boss Snow Abyssal Warden Phase 04 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_05_main.name: Ability Boss Snow Abyssal Warden Phase 05 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_05_secondary.name: Ability Boss Snow Abyssal Warden Phase 05 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_05_aura.name: Ability Boss Snow Abyssal Warden Phase 05 Aura
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_06_main.name: Ability Boss Snow Abyssal Warden Phase 06 Main
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_06_secondary.name: Ability Boss Snow Abyssal Warden Phase 06 Secondary
+world_phase1.abilities.ability_boss_snow_abyssal_warden_phase_06_aura.name: Ability Boss Snow Abyssal Warden Phase 06 Aura
+world_phase1.abilities.ability_mob_family_plains_meadow_fauna_aura.name: Plains Meadow_Fauna
+world_phase1.abilities.ability_mob_family_plains_forest_critters_aura.name: Plains Forest_Critters
+world_phase1.abilities.ability_mob_family_plains_earthbound_pests_aura.name: Plains Earthbound_Pests
+world_phase1.abilities.ability_mob_family_plains_village_raiders_aura.name: Plains Village_Raiders
+world_phase1.abilities.ability_mob_family_desert_dune_beasts_aura.name: Desert Dune_Beasts
+world_phase1.abilities.ability_mob_family_desert_sand_hunters_aura.name: Desert Sand_Hunters
+world_phase1.abilities.ability_mob_family_desert_scavengers_aura.name: Desert Scavengers
+world_phase1.abilities.ability_mob_family_desert_relic_guardians_aura.name: Desert Relic_Guardians
+world_phase1.abilities.ability_mob_family_desert_sun_cultists_aura.name: Desert Sun_Cultists
+world_phase1.abilities.ability_mob_family_water_reef_drifters_aura.name: Water Reef_Drifters
+world_phase1.abilities.ability_mob_family_water_brine_hunters_aura.name: Water Brine_Hunters
+world_phase1.abilities.ability_mob_family_water_depth_guardians_aura.name: Water Depth_Guardians
+world_phase1.abilities.ability_mob_family_swamp_mire_fauna_aura.name: Swamp Mire_Fauna
+world_phase1.abilities.ability_mob_family_swamp_bog_stalkers_aura.name: Swamp Bog_Stalkers
+world_phase1.abilities.ability_mob_family_swamp_rot_guardians_aura.name: Swamp Rot_Guardians
+world_phase1.abilities.ability_mob_family_mushroom_sporelings_aura.name: Mushroom Sporelings
+world_phase1.abilities.ability_mob_family_mushroom_mossbiters_aura.name: Mushroom Mossbiters
+world_phase1.abilities.ability_mob_family_mushroom_myco_wardens_aura.name: Mushroom Myco_Wardens
+world_phase1.abilities.ability_mob_family_nether_netherlings_aura.name: Nether Netherlings
+world_phase1.abilities.ability_mob_family_nether_ash_legion_aura.name: Nether Ash_Legion
+world_phase1.abilities.ability_mob_family_nether_blaze_swarm_aura.name: Nether Blaze_Swarm
+world_phase1.abilities.ability_mob_family_nether_brimstone_guardians_aura.name: Nether Brimstone_Guardians
+world_phase1.abilities.ability_mob_family_dark_oak_shadow_fauna_aura.name: Dark_Oak Shadow_Fauna
+world_phase1.abilities.ability_mob_family_dark_oak_gloom_stalkers_aura.name: Dark_Oak Gloom_Stalkers
+world_phase1.abilities.ability_mob_family_dark_oak_rotbound_aura.name: Dark_Oak Rotbound
+world_phase1.abilities.ability_mob_family_highlands_wind_critters_aura.name: Highlands Wind_Critters
+world_phase1.abilities.ability_mob_family_highlands_cliff_raiders_aura.name: Highlands Cliff_Raiders
+world_phase1.abilities.ability_mob_family_highlands_stone_sentinels_aura.name: Highlands Stone_Sentinels
+world_phase1.abilities.ability_mob_family_lowlands_grove_fauna_aura.name: Lowlands Grove_Fauna
+world_phase1.abilities.ability_mob_family_lowlands_warden_raiders_aura.name: Lowlands Warden_Raiders
+world_phase1.abilities.ability_mob_family_lowlands_briar_hunters_aura.name: Lowlands Briar_Hunters
+world_phase1.abilities.ability_mob_family_lowlands_ancient_sentinels_aura.name: Lowlands Ancient_Sentinels
+world_phase1.abilities.ability_mob_family_snow_frost_fauna_aura.name: Snow Frost_Fauna
+world_phase1.abilities.ability_mob_family_snow_glacier_raiders_aura.name: Snow Glacier_Raiders
+world_phase1.abilities.ability_mob_family_snow_whiteout_hunters_aura.name: Snow Whiteout_Hunters
+world_phase1.abilities.ability_mob_family_snow_icebound_guardians_aura.name: Snow Icebound_Guardians
+world_phase1.abilities.ability_upgrade_plains_wayfarer_01.name: Ability Upgrade Plains Wayfarer 01
+world_phase1.abilities.ability_upgrade_plains_wayfarer_02.name: Ability Upgrade Plains Wayfarer 02
+world_phase1.abilities.ability_upgrade_plains_wayfarer_03.name: Ability Upgrade Plains Wayfarer 03
+world_phase1.abilities.ability_upgrade_plains_wayfarer_04.name: Ability Upgrade Plains Wayfarer 04
+world_phase1.abilities.ability_upgrade_plains_wayfarer_05.name: Ability Upgrade Plains Wayfarer 05
+world_phase1.abilities.ability_upgrade_plains_wayfarer_06.name: Ability Upgrade Plains Wayfarer 06
+world_phase1.abilities.ability_upgrade_plains_wayfarer_07.name: Ability Upgrade Plains Wayfarer 07
+world_phase1.abilities.ability_upgrade_plains_wayfarer_08.name: Ability Upgrade Plains Wayfarer 08
+world_phase1.abilities.ability_upgrade_plains_wayfarer_09.name: Ability Upgrade Plains Wayfarer 09
+world_phase1.abilities.ability_upgrade_plains_wayfarer_10.name: Ability Upgrade Plains Wayfarer 10
+world_phase1.abilities.ability_upgrade_plains_wayfarer_11.name: Ability Upgrade Plains Wayfarer 11
+world_phase1.abilities.ability_upgrade_plains_wayfarer_12.name: Ability Upgrade Plains Wayfarer 12
+world_phase1.abilities.ability_upgrade_plains_wayfarer_13.name: Ability Upgrade Plains Wayfarer 13
+world_phase1.abilities.ability_upgrade_plains_wayfarer_14.name: Ability Upgrade Plains Wayfarer 14
+world_phase1.abilities.ability_upgrade_plains_hearth_01.name: Ability Upgrade Plains Hearth 01
+world_phase1.abilities.ability_upgrade_plains_hearth_02.name: Ability Upgrade Plains Hearth 02
+world_phase1.abilities.ability_upgrade_plains_hearth_03.name: Ability Upgrade Plains Hearth 03
+world_phase1.abilities.ability_upgrade_plains_hearth_04.name: Ability Upgrade Plains Hearth 04
+world_phase1.abilities.ability_upgrade_plains_hearth_05.name: Ability Upgrade Plains Hearth 05
+world_phase1.abilities.ability_upgrade_plains_hearth_06.name: Ability Upgrade Plains Hearth 06
+world_phase1.abilities.ability_upgrade_plains_hearth_07.name: Ability Upgrade Plains Hearth 07
+world_phase1.abilities.ability_upgrade_plains_hearth_08.name: Ability Upgrade Plains Hearth 08
+world_phase1.abilities.ability_upgrade_plains_hearth_09.name: Ability Upgrade Plains Hearth 09
+world_phase1.abilities.ability_upgrade_plains_hearth_10.name: Ability Upgrade Plains Hearth 10
+world_phase1.abilities.ability_upgrade_plains_hearth_11.name: Ability Upgrade Plains Hearth 11
+world_phase1.abilities.ability_upgrade_plains_hearth_12.name: Ability Upgrade Plains Hearth 12
+world_phase1.abilities.ability_upgrade_plains_quarry_01.name: Ability Upgrade Plains Quarry 01
+world_phase1.abilities.ability_upgrade_plains_quarry_02.name: Ability Upgrade Plains Quarry 02
+world_phase1.abilities.ability_upgrade_plains_quarry_03.name: Ability Upgrade Plains Quarry 03
+world_phase1.abilities.ability_upgrade_plains_quarry_04.name: Ability Upgrade Plains Quarry 04
+world_phase1.abilities.ability_upgrade_plains_quarry_05.name: Ability Upgrade Plains Quarry 05
+world_phase1.abilities.ability_upgrade_plains_quarry_06.name: Ability Upgrade Plains Quarry 06
+world_phase1.abilities.ability_upgrade_plains_quarry_07.name: Ability Upgrade Plains Quarry 07
+world_phase1.abilities.ability_upgrade_plains_quarry_08.name: Ability Upgrade Plains Quarry 08
+world_phase1.abilities.ability_upgrade_plains_quarry_09.name: Ability Upgrade Plains Quarry 09
+world_phase1.abilities.ability_upgrade_plains_quarry_10.name: Ability Upgrade Plains Quarry 10
+world_phase1.abilities.ability_upgrade_plains_quarry_11.name: Ability Upgrade Plains Quarry 11
+world_phase1.abilities.ability_upgrade_plains_quarry_12.name: Ability Upgrade Plains Quarry 12
+world_phase1.abilities.ability_upgrade_plains_farmhand_01.name: Ability Upgrade Plains Farmhand 01
+world_phase1.abilities.ability_upgrade_plains_farmhand_02.name: Ability Upgrade Plains Farmhand 02
+world_phase1.abilities.ability_upgrade_plains_farmhand_03.name: Ability Upgrade Plains Farmhand 03
+world_phase1.abilities.ability_upgrade_plains_farmhand_04.name: Ability Upgrade Plains Farmhand 04
+world_phase1.abilities.ability_upgrade_plains_farmhand_05.name: Ability Upgrade Plains Farmhand 05
+world_phase1.abilities.ability_upgrade_plains_farmhand_06.name: Ability Upgrade Plains Farmhand 06
+world_phase1.abilities.ability_upgrade_plains_farmhand_07.name: Ability Upgrade Plains Farmhand 07
+world_phase1.abilities.ability_upgrade_plains_farmhand_08.name: Ability Upgrade Plains Farmhand 08
+world_phase1.abilities.ability_upgrade_plains_farmhand_09.name: Ability Upgrade Plains Farmhand 09
+world_phase1.abilities.ability_upgrade_plains_farmhand_10.name: Ability Upgrade Plains Farmhand 10
+world_phase1.abilities.ability_upgrade_plains_farmhand_11.name: Ability Upgrade Plains Farmhand 11
+world_phase1.abilities.ability_upgrade_plains_farmhand_12.name: Ability Upgrade Plains Farmhand 12
+world_phase1.abilities.ability_upgrade_desert_ember_01.name: Ability Upgrade Desert Ember 01
+world_phase1.abilities.ability_upgrade_desert_ember_02.name: Ability Upgrade Desert Ember 02
+world_phase1.abilities.ability_upgrade_desert_ember_03.name: Ability Upgrade Desert Ember 03
+world_phase1.abilities.ability_upgrade_desert_ember_04.name: Ability Upgrade Desert Ember 04
+world_phase1.abilities.ability_upgrade_desert_ember_05.name: Ability Upgrade Desert Ember 05
+world_phase1.abilities.ability_upgrade_desert_ember_06.name: Ability Upgrade Desert Ember 06
+world_phase1.abilities.ability_upgrade_desert_ember_07.name: Ability Upgrade Desert Ember 07
+world_phase1.abilities.ability_upgrade_desert_ember_08.name: Ability Upgrade Desert Ember 08
+world_phase1.abilities.ability_upgrade_desert_ember_09.name: Ability Upgrade Desert Ember 09
+world_phase1.abilities.ability_upgrade_desert_ember_10.name: Ability Upgrade Desert Ember 10
+world_phase1.abilities.ability_upgrade_desert_ember_11.name: Ability Upgrade Desert Ember 11
+world_phase1.abilities.ability_upgrade_desert_ember_12.name: Ability Upgrade Desert Ember 12
+world_phase1.abilities.ability_upgrade_desert_ember_13.name: Ability Upgrade Desert Ember 13
+world_phase1.abilities.ability_upgrade_desert_ember_14.name: Ability Upgrade Desert Ember 14
+world_phase1.abilities.ability_upgrade_desert_ember_15.name: Ability Upgrade Desert Ember 15
+world_phase1.abilities.ability_upgrade_desert_ember_16.name: Ability Upgrade Desert Ember 16
+world_phase1.abilities.ability_upgrade_desert_ember_17.name: Ability Upgrade Desert Ember 17
+world_phase1.abilities.ability_upgrade_desert_ember_18.name: Ability Upgrade Desert Ember 18
+world_phase1.abilities.ability_upgrade_desert_ember_19.name: Ability Upgrade Desert Ember 19
+world_phase1.abilities.ability_upgrade_desert_ember_20.name: Ability Upgrade Desert Ember 20
+world_phase1.abilities.ability_upgrade_desert_ember_21.name: Ability Upgrade Desert Ember 21
+world_phase1.abilities.ability_upgrade_desert_ember_22.name: Ability Upgrade Desert Ember 22
+world_phase1.abilities.ability_upgrade_desert_ember_23.name: Ability Upgrade Desert Ember 23
+world_phase1.abilities.ability_upgrade_desert_ember_24.name: Ability Upgrade Desert Ember 24
+world_phase1.abilities.ability_upgrade_desert_ember_25.name: Ability Upgrade Desert Ember 25
+world_phase1.abilities.ability_upgrade_desert_ember_26.name: Ability Upgrade Desert Ember 26
+world_phase1.abilities.ability_upgrade_desert_ember_27.name: Ability Upgrade Desert Ember 27
+world_phase1.abilities.ability_upgrade_desert_ember_28.name: Ability Upgrade Desert Ember 28
+world_phase1.abilities.ability_upgrade_desert_ember_29.name: Ability Upgrade Desert Ember 29
+world_phase1.abilities.ability_upgrade_desert_ember_30.name: Ability Upgrade Desert Ember 30
+world_phase1.abilities.ability_upgrade_desert_mirage_01.name: Ability Upgrade Desert Mirage 01
+world_phase1.abilities.ability_upgrade_desert_mirage_02.name: Ability Upgrade Desert Mirage 02
+world_phase1.abilities.ability_upgrade_desert_mirage_03.name: Ability Upgrade Desert Mirage 03
+world_phase1.abilities.ability_upgrade_desert_mirage_04.name: Ability Upgrade Desert Mirage 04
+world_phase1.abilities.ability_upgrade_desert_mirage_05.name: Ability Upgrade Desert Mirage 05
+world_phase1.abilities.ability_upgrade_desert_mirage_06.name: Ability Upgrade Desert Mirage 06
+world_phase1.abilities.ability_upgrade_desert_mirage_07.name: Ability Upgrade Desert Mirage 07
+world_phase1.abilities.ability_upgrade_desert_mirage_08.name: Ability Upgrade Desert Mirage 08
+world_phase1.abilities.ability_upgrade_desert_mirage_09.name: Ability Upgrade Desert Mirage 09
+world_phase1.abilities.ability_upgrade_desert_mirage_10.name: Ability Upgrade Desert Mirage 10
+world_phase1.abilities.ability_upgrade_desert_mirage_11.name: Ability Upgrade Desert Mirage 11
+world_phase1.abilities.ability_upgrade_desert_mirage_12.name: Ability Upgrade Desert Mirage 12
+world_phase1.abilities.ability_upgrade_desert_mirage_13.name: Ability Upgrade Desert Mirage 13
+world_phase1.abilities.ability_upgrade_desert_mirage_14.name: Ability Upgrade Desert Mirage 14
+world_phase1.abilities.ability_upgrade_desert_mirage_15.name: Ability Upgrade Desert Mirage 15
+world_phase1.abilities.ability_upgrade_desert_mirage_16.name: Ability Upgrade Desert Mirage 16
+world_phase1.abilities.ability_upgrade_desert_mirage_17.name: Ability Upgrade Desert Mirage 17
+world_phase1.abilities.ability_upgrade_desert_mirage_18.name: Ability Upgrade Desert Mirage 18
+world_phase1.abilities.ability_upgrade_desert_mirage_19.name: Ability Upgrade Desert Mirage 19
+world_phase1.abilities.ability_upgrade_desert_mirage_20.name: Ability Upgrade Desert Mirage 20
+world_phase1.abilities.ability_upgrade_desert_mirage_21.name: Ability Upgrade Desert Mirage 21
+world_phase1.abilities.ability_upgrade_desert_mirage_22.name: Ability Upgrade Desert Mirage 22
+world_phase1.abilities.ability_upgrade_desert_mirage_23.name: Ability Upgrade Desert Mirage 23
+world_phase1.abilities.ability_upgrade_desert_mirage_24.name: Ability Upgrade Desert Mirage 24
+world_phase1.abilities.ability_upgrade_desert_mirage_25.name: Ability Upgrade Desert Mirage 25
+world_phase1.abilities.ability_upgrade_desert_dune_01.name: Ability Upgrade Desert Dune 01
+world_phase1.abilities.ability_upgrade_desert_dune_02.name: Ability Upgrade Desert Dune 02
+world_phase1.abilities.ability_upgrade_desert_dune_03.name: Ability Upgrade Desert Dune 03
+world_phase1.abilities.ability_upgrade_desert_dune_04.name: Ability Upgrade Desert Dune 04
+world_phase1.abilities.ability_upgrade_desert_dune_05.name: Ability Upgrade Desert Dune 05
+world_phase1.abilities.ability_upgrade_desert_dune_06.name: Ability Upgrade Desert Dune 06
+world_phase1.abilities.ability_upgrade_desert_dune_07.name: Ability Upgrade Desert Dune 07
+world_phase1.abilities.ability_upgrade_desert_dune_08.name: Ability Upgrade Desert Dune 08
+world_phase1.abilities.ability_upgrade_desert_dune_09.name: Ability Upgrade Desert Dune 09
+world_phase1.abilities.ability_upgrade_desert_dune_10.name: Ability Upgrade Desert Dune 10
+world_phase1.abilities.ability_upgrade_desert_dune_11.name: Ability Upgrade Desert Dune 11
+world_phase1.abilities.ability_upgrade_desert_dune_12.name: Ability Upgrade Desert Dune 12
+world_phase1.abilities.ability_upgrade_desert_dune_13.name: Ability Upgrade Desert Dune 13
+world_phase1.abilities.ability_upgrade_desert_dune_14.name: Ability Upgrade Desert Dune 14
+world_phase1.abilities.ability_upgrade_desert_dune_15.name: Ability Upgrade Desert Dune 15
+world_phase1.abilities.ability_upgrade_desert_dune_16.name: Ability Upgrade Desert Dune 16
+world_phase1.abilities.ability_upgrade_desert_dune_17.name: Ability Upgrade Desert Dune 17
+world_phase1.abilities.ability_upgrade_desert_dune_18.name: Ability Upgrade Desert Dune 18
+world_phase1.abilities.ability_upgrade_desert_dune_19.name: Ability Upgrade Desert Dune 19
+world_phase1.abilities.ability_upgrade_desert_dune_20.name: Ability Upgrade Desert Dune 20
+world_phase1.abilities.ability_upgrade_desert_dune_21.name: Ability Upgrade Desert Dune 21
+world_phase1.abilities.ability_upgrade_desert_dune_22.name: Ability Upgrade Desert Dune 22
+world_phase1.abilities.ability_upgrade_desert_dune_23.name: Ability Upgrade Desert Dune 23
+world_phase1.abilities.ability_upgrade_desert_dune_24.name: Ability Upgrade Desert Dune 24
+world_phase1.abilities.ability_upgrade_desert_dune_25.name: Ability Upgrade Desert Dune 25
+world_phase1.abilities.ability_upgrade_desert_relic_01.name: Ability Upgrade Desert Relic 01
+world_phase1.abilities.ability_upgrade_desert_relic_02.name: Ability Upgrade Desert Relic 02
+world_phase1.abilities.ability_upgrade_desert_relic_03.name: Ability Upgrade Desert Relic 03
+world_phase1.abilities.ability_upgrade_desert_relic_04.name: Ability Upgrade Desert Relic 04
+world_phase1.abilities.ability_upgrade_desert_relic_05.name: Ability Upgrade Desert Relic 05
+world_phase1.abilities.ability_upgrade_desert_relic_06.name: Ability Upgrade Desert Relic 06
+world_phase1.abilities.ability_upgrade_desert_relic_07.name: Ability Upgrade Desert Relic 07
+world_phase1.abilities.ability_upgrade_desert_relic_08.name: Ability Upgrade Desert Relic 08
+world_phase1.abilities.ability_upgrade_desert_relic_09.name: Ability Upgrade Desert Relic 09
+world_phase1.abilities.ability_upgrade_desert_relic_10.name: Ability Upgrade Desert Relic 10
+world_phase1.abilities.ability_upgrade_desert_relic_11.name: Ability Upgrade Desert Relic 11
+world_phase1.abilities.ability_upgrade_desert_relic_12.name: Ability Upgrade Desert Relic 12
+world_phase1.abilities.ability_upgrade_desert_relic_13.name: Ability Upgrade Desert Relic 13
+world_phase1.abilities.ability_upgrade_desert_relic_14.name: Ability Upgrade Desert Relic 14
+world_phase1.abilities.ability_upgrade_desert_relic_15.name: Ability Upgrade Desert Relic 15
+world_phase1.abilities.ability_upgrade_desert_relic_16.name: Ability Upgrade Desert Relic 16
+world_phase1.abilities.ability_upgrade_desert_relic_17.name: Ability Upgrade Desert Relic 17
+world_phase1.abilities.ability_upgrade_desert_relic_18.name: Ability Upgrade Desert Relic 18
+world_phase1.abilities.ability_upgrade_desert_relic_19.name: Ability Upgrade Desert Relic 19
+world_phase1.abilities.ability_upgrade_desert_relic_20.name: Ability Upgrade Desert Relic 20
+world_phase1.abilities.ability_upgrade_water_tide_01.name: Ability Upgrade Water Tide 01
+world_phase1.abilities.ability_upgrade_water_tide_02.name: Ability Upgrade Water Tide 02
+world_phase1.abilities.ability_upgrade_water_tide_03.name: Ability Upgrade Water Tide 03
+world_phase1.abilities.ability_upgrade_water_tide_04.name: Ability Upgrade Water Tide 04
+world_phase1.abilities.ability_upgrade_water_reef_01.name: Ability Upgrade Water Reef 01
+world_phase1.abilities.ability_upgrade_water_reef_02.name: Ability Upgrade Water Reef 02
+world_phase1.abilities.ability_upgrade_water_reef_03.name: Ability Upgrade Water Reef 03
+world_phase1.abilities.ability_upgrade_water_brine_01.name: Ability Upgrade Water Brine 01
+world_phase1.abilities.ability_upgrade_water_brine_02.name: Ability Upgrade Water Brine 02
+world_phase1.abilities.ability_upgrade_water_brine_03.name: Ability Upgrade Water Brine 03
+world_phase1.abilities.ability_upgrade_swamp_rot_01.name: Ability Upgrade Swamp Rot 01
+world_phase1.abilities.ability_upgrade_swamp_rot_02.name: Ability Upgrade Swamp Rot 02
+world_phase1.abilities.ability_upgrade_swamp_bog_01.name: Ability Upgrade Swamp Bog 01
+world_phase1.abilities.ability_upgrade_swamp_bog_02.name: Ability Upgrade Swamp Bog 02
+world_phase1.abilities.ability_upgrade_swamp_venom_01.name: Ability Upgrade Swamp Venom 01
+world_phase1.abilities.ability_upgrade_mushroom_spore_01.name: Ability Upgrade Mushroom Spore 01
+world_phase1.abilities.ability_upgrade_mushroom_spore_02.name: Ability Upgrade Mushroom Spore 02
+world_phase1.abilities.ability_upgrade_mushroom_moss_01.name: Ability Upgrade Mushroom Moss 01
+world_phase1.abilities.ability_upgrade_mushroom_moss_02.name: Ability Upgrade Mushroom Moss 02
+world_phase1.abilities.ability_upgrade_mushroom_myco_01.name: Ability Upgrade Mushroom Myco 01
+world_phase1.abilities.ability_upgrade_nether_ash_01.name: Ability Upgrade Nether Ash 01
+world_phase1.abilities.ability_upgrade_nether_ash_02.name: Ability Upgrade Nether Ash 02
+world_phase1.abilities.ability_upgrade_nether_ash_03.name: Ability Upgrade Nether Ash 03
+world_phase1.abilities.ability_upgrade_nether_ash_04.name: Ability Upgrade Nether Ash 04
+world_phase1.abilities.ability_upgrade_nether_ash_05.name: Ability Upgrade Nether Ash 05
+world_phase1.abilities.ability_upgrade_nether_ash_06.name: Ability Upgrade Nether Ash 06
+world_phase1.abilities.ability_upgrade_nether_ash_07.name: Ability Upgrade Nether Ash 07
+world_phase1.abilities.ability_upgrade_nether_ash_08.name: Ability Upgrade Nether Ash 08
+world_phase1.abilities.ability_upgrade_nether_ash_09.name: Ability Upgrade Nether Ash 09
+world_phase1.abilities.ability_upgrade_nether_ash_10.name: Ability Upgrade Nether Ash 10
+world_phase1.abilities.ability_upgrade_nether_ash_11.name: Ability Upgrade Nether Ash 11
+world_phase1.abilities.ability_upgrade_nether_ash_12.name: Ability Upgrade Nether Ash 12
+world_phase1.abilities.ability_upgrade_nether_ash_13.name: Ability Upgrade Nether Ash 13
+world_phase1.abilities.ability_upgrade_nether_ash_14.name: Ability Upgrade Nether Ash 14
+world_phase1.abilities.ability_upgrade_nether_ash_15.name: Ability Upgrade Nether Ash 15
+world_phase1.abilities.ability_upgrade_nether_ash_16.name: Ability Upgrade Nether Ash 16
+world_phase1.abilities.ability_upgrade_nether_ash_17.name: Ability Upgrade Nether Ash 17
+world_phase1.abilities.ability_upgrade_nether_ash_18.name: Ability Upgrade Nether Ash 18
+world_phase1.abilities.ability_upgrade_nether_ash_19.name: Ability Upgrade Nether Ash 19
+world_phase1.abilities.ability_upgrade_nether_ash_20.name: Ability Upgrade Nether Ash 20
+world_phase1.abilities.ability_upgrade_nether_brimstone_01.name: Ability Upgrade Nether Brimstone 01
+world_phase1.abilities.ability_upgrade_nether_brimstone_02.name: Ability Upgrade Nether Brimstone 02
+world_phase1.abilities.ability_upgrade_nether_brimstone_03.name: Ability Upgrade Nether Brimstone 03
+world_phase1.abilities.ability_upgrade_nether_brimstone_04.name: Ability Upgrade Nether Brimstone 04
+world_phase1.abilities.ability_upgrade_nether_brimstone_05.name: Ability Upgrade Nether Brimstone 05
+world_phase1.abilities.ability_upgrade_nether_brimstone_06.name: Ability Upgrade Nether Brimstone 06
+world_phase1.abilities.ability_upgrade_nether_brimstone_07.name: Ability Upgrade Nether Brimstone 07
+world_phase1.abilities.ability_upgrade_nether_brimstone_08.name: Ability Upgrade Nether Brimstone 08
+world_phase1.abilities.ability_upgrade_nether_brimstone_09.name: Ability Upgrade Nether Brimstone 09
+world_phase1.abilities.ability_upgrade_nether_brimstone_10.name: Ability Upgrade Nether Brimstone 10
+world_phase1.abilities.ability_upgrade_nether_brimstone_11.name: Ability Upgrade Nether Brimstone 11
+world_phase1.abilities.ability_upgrade_nether_brimstone_12.name: Ability Upgrade Nether Brimstone 12
+world_phase1.abilities.ability_upgrade_nether_brimstone_13.name: Ability Upgrade Nether Brimstone 13
+world_phase1.abilities.ability_upgrade_nether_brimstone_14.name: Ability Upgrade Nether Brimstone 14
+world_phase1.abilities.ability_upgrade_nether_brimstone_15.name: Ability Upgrade Nether Brimstone 15
+world_phase1.abilities.ability_upgrade_nether_inferno_01.name: Ability Upgrade Nether Inferno 01
+world_phase1.abilities.ability_upgrade_nether_inferno_02.name: Ability Upgrade Nether Inferno 02
+world_phase1.abilities.ability_upgrade_nether_inferno_03.name: Ability Upgrade Nether Inferno 03
+world_phase1.abilities.ability_upgrade_nether_inferno_04.name: Ability Upgrade Nether Inferno 04
+world_phase1.abilities.ability_upgrade_nether_inferno_05.name: Ability Upgrade Nether Inferno 05
+world_phase1.abilities.ability_upgrade_nether_inferno_06.name: Ability Upgrade Nether Inferno 06
+world_phase1.abilities.ability_upgrade_nether_inferno_07.name: Ability Upgrade Nether Inferno 07
+world_phase1.abilities.ability_upgrade_nether_inferno_08.name: Ability Upgrade Nether Inferno 08
+world_phase1.abilities.ability_upgrade_nether_inferno_09.name: Ability Upgrade Nether Inferno 09
+world_phase1.abilities.ability_upgrade_nether_inferno_10.name: Ability Upgrade Nether Inferno 10
+world_phase1.abilities.ability_upgrade_nether_inferno_11.name: Ability Upgrade Nether Inferno 11
+world_phase1.abilities.ability_upgrade_nether_inferno_12.name: Ability Upgrade Nether Inferno 12
+world_phase1.abilities.ability_upgrade_nether_inferno_13.name: Ability Upgrade Nether Inferno 13
+world_phase1.abilities.ability_upgrade_nether_inferno_14.name: Ability Upgrade Nether Inferno 14
+world_phase1.abilities.ability_upgrade_nether_inferno_15.name: Ability Upgrade Nether Inferno 15
+world_phase1.abilities.ability_upgrade_nether_boss_01.name: Ability Upgrade Nether Boss 01
+world_phase1.abilities.ability_upgrade_nether_boss_02.name: Ability Upgrade Nether Boss 02
+world_phase1.abilities.ability_upgrade_nether_boss_03.name: Ability Upgrade Nether Boss 03
+world_phase1.abilities.ability_upgrade_nether_boss_04.name: Ability Upgrade Nether Boss 04
+world_phase1.abilities.ability_upgrade_nether_boss_05.name: Ability Upgrade Nether Boss 05
+world_phase1.abilities.ability_upgrade_nether_boss_06.name: Ability Upgrade Nether Boss 06
+world_phase1.abilities.ability_upgrade_nether_boss_07.name: Ability Upgrade Nether Boss 07
+world_phase1.abilities.ability_upgrade_nether_boss_08.name: Ability Upgrade Nether Boss 08
+world_phase1.abilities.ability_upgrade_nether_boss_09.name: Ability Upgrade Nether Boss 09
+world_phase1.abilities.ability_upgrade_dark_oak_dread_01.name: Ability Upgrade Dark Oak Dread 01
+world_phase1.abilities.ability_upgrade_dark_oak_dread_02.name: Ability Upgrade Dark Oak Dread 02
+world_phase1.abilities.ability_upgrade_dark_oak_dread_03.name: Ability Upgrade Dark Oak Dread 03
+world_phase1.abilities.ability_upgrade_dark_oak_dread_04.name: Ability Upgrade Dark Oak Dread 04
+world_phase1.abilities.ability_upgrade_dark_oak_dread_05.name: Ability Upgrade Dark Oak Dread 05
+world_phase1.abilities.ability_upgrade_dark_oak_dread_06.name: Ability Upgrade Dark Oak Dread 06
+world_phase1.abilities.ability_upgrade_dark_oak_dread_07.name: Ability Upgrade Dark Oak Dread 07
+world_phase1.abilities.ability_upgrade_dark_oak_dread_08.name: Ability Upgrade Dark Oak Dread 08
+world_phase1.abilities.ability_upgrade_dark_oak_dread_09.name: Ability Upgrade Dark Oak Dread 09
+world_phase1.abilities.ability_upgrade_dark_oak_dread_10.name: Ability Upgrade Dark Oak Dread 10
+world_phase1.abilities.ability_upgrade_dark_oak_dread_11.name: Ability Upgrade Dark Oak Dread 11
+world_phase1.abilities.ability_upgrade_dark_oak_dread_12.name: Ability Upgrade Dark Oak Dread 12
+world_phase1.abilities.ability_upgrade_dark_oak_dread_13.name: Ability Upgrade Dark Oak Dread 13
+world_phase1.abilities.ability_upgrade_dark_oak_dread_14.name: Ability Upgrade Dark Oak Dread 14
+world_phase1.abilities.ability_upgrade_dark_oak_dread_15.name: Ability Upgrade Dark Oak Dread 15
+world_phase1.abilities.ability_upgrade_dark_oak_dread_16.name: Ability Upgrade Dark Oak Dread 16
+world_phase1.abilities.ability_upgrade_dark_oak_dread_17.name: Ability Upgrade Dark Oak Dread 17
+world_phase1.abilities.ability_upgrade_dark_oak_dread_18.name: Ability Upgrade Dark Oak Dread 18
+world_phase1.abilities.ability_upgrade_dark_oak_dread_19.name: Ability Upgrade Dark Oak Dread 19
+world_phase1.abilities.ability_upgrade_dark_oak_dread_20.name: Ability Upgrade Dark Oak Dread 20
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_01.name: Ability Upgrade Dark Oak Nightbark 01
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_02.name: Ability Upgrade Dark Oak Nightbark 02
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_03.name: Ability Upgrade Dark Oak Nightbark 03
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_04.name: Ability Upgrade Dark Oak Nightbark 04
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_05.name: Ability Upgrade Dark Oak Nightbark 05
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_06.name: Ability Upgrade Dark Oak Nightbark 06
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_07.name: Ability Upgrade Dark Oak Nightbark 07
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_08.name: Ability Upgrade Dark Oak Nightbark 08
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_09.name: Ability Upgrade Dark Oak Nightbark 09
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_10.name: Ability Upgrade Dark Oak Nightbark 10
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_11.name: Ability Upgrade Dark Oak Nightbark 11
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_12.name: Ability Upgrade Dark Oak Nightbark 12
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_13.name: Ability Upgrade Dark Oak Nightbark 13
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_14.name: Ability Upgrade Dark Oak Nightbark 14
+world_phase1.abilities.ability_upgrade_dark_oak_nightbark_15.name: Ability Upgrade Dark Oak Nightbark 15
+world_phase1.abilities.ability_upgrade_dark_oak_predator_01.name: Ability Upgrade Dark Oak Predator 01
+world_phase1.abilities.ability_upgrade_dark_oak_predator_02.name: Ability Upgrade Dark Oak Predator 02
+world_phase1.abilities.ability_upgrade_dark_oak_predator_03.name: Ability Upgrade Dark Oak Predator 03
+world_phase1.abilities.ability_upgrade_dark_oak_predator_04.name: Ability Upgrade Dark Oak Predator 04
+world_phase1.abilities.ability_upgrade_dark_oak_predator_05.name: Ability Upgrade Dark Oak Predator 05
+world_phase1.abilities.ability_upgrade_dark_oak_predator_06.name: Ability Upgrade Dark Oak Predator 06
+world_phase1.abilities.ability_upgrade_dark_oak_predator_07.name: Ability Upgrade Dark Oak Predator 07
+world_phase1.abilities.ability_upgrade_dark_oak_predator_08.name: Ability Upgrade Dark Oak Predator 08
+world_phase1.abilities.ability_upgrade_dark_oak_predator_09.name: Ability Upgrade Dark Oak Predator 09
+world_phase1.abilities.ability_upgrade_dark_oak_predator_10.name: Ability Upgrade Dark Oak Predator 10
+world_phase1.abilities.ability_upgrade_dark_oak_predator_11.name: Ability Upgrade Dark Oak Predator 11
+world_phase1.abilities.ability_upgrade_dark_oak_predator_12.name: Ability Upgrade Dark Oak Predator 12
+world_phase1.abilities.ability_upgrade_dark_oak_predator_13.name: Ability Upgrade Dark Oak Predator 13
+world_phase1.abilities.ability_upgrade_dark_oak_predator_14.name: Ability Upgrade Dark Oak Predator 14
+world_phase1.abilities.ability_upgrade_dark_oak_predator_15.name: Ability Upgrade Dark Oak Predator 15
+world_phase1.abilities.ability_upgrade_dark_oak_boss_01.name: Ability Upgrade Dark Oak Boss 01
+world_phase1.abilities.ability_upgrade_dark_oak_boss_02.name: Ability Upgrade Dark Oak Boss 02
+world_phase1.abilities.ability_upgrade_dark_oak_boss_03.name: Ability Upgrade Dark Oak Boss 03
+world_phase1.abilities.ability_upgrade_dark_oak_boss_04.name: Ability Upgrade Dark Oak Boss 04
+world_phase1.abilities.ability_upgrade_dark_oak_boss_05.name: Ability Upgrade Dark Oak Boss 05
+world_phase1.abilities.ability_upgrade_dark_oak_boss_06.name: Ability Upgrade Dark Oak Boss 06
+world_phase1.abilities.ability_upgrade_dark_oak_boss_07.name: Ability Upgrade Dark Oak Boss 07
+world_phase1.abilities.ability_upgrade_dark_oak_boss_08.name: Ability Upgrade Dark Oak Boss 08
+world_phase1.abilities.ability_upgrade_highlands_gale_01.name: Ability Upgrade Highlands Gale 01
+world_phase1.abilities.ability_upgrade_highlands_gale_02.name: Ability Upgrade Highlands Gale 02
+world_phase1.abilities.ability_upgrade_highlands_gale_03.name: Ability Upgrade Highlands Gale 03
+world_phase1.abilities.ability_upgrade_highlands_gale_04.name: Ability Upgrade Highlands Gale 04
+world_phase1.abilities.ability_upgrade_highlands_gale_05.name: Ability Upgrade Highlands Gale 05
+world_phase1.abilities.ability_upgrade_highlands_gale_06.name: Ability Upgrade Highlands Gale 06
+world_phase1.abilities.ability_upgrade_highlands_gale_07.name: Ability Upgrade Highlands Gale 07
+world_phase1.abilities.ability_upgrade_highlands_gale_08.name: Ability Upgrade Highlands Gale 08
+world_phase1.abilities.ability_upgrade_highlands_gale_09.name: Ability Upgrade Highlands Gale 09
+world_phase1.abilities.ability_upgrade_highlands_gale_10.name: Ability Upgrade Highlands Gale 10
+world_phase1.abilities.ability_upgrade_highlands_stone_01.name: Ability Upgrade Highlands Stone 01
+world_phase1.abilities.ability_upgrade_highlands_stone_02.name: Ability Upgrade Highlands Stone 02
+world_phase1.abilities.ability_upgrade_highlands_stone_03.name: Ability Upgrade Highlands Stone 03
+world_phase1.abilities.ability_upgrade_highlands_stone_04.name: Ability Upgrade Highlands Stone 04
+world_phase1.abilities.ability_upgrade_highlands_stone_05.name: Ability Upgrade Highlands Stone 05
+world_phase1.abilities.ability_upgrade_highlands_stone_06.name: Ability Upgrade Highlands Stone 06
+world_phase1.abilities.ability_upgrade_highlands_stone_07.name: Ability Upgrade Highlands Stone 07
+world_phase1.abilities.ability_upgrade_highlands_stone_08.name: Ability Upgrade Highlands Stone 08
+world_phase1.abilities.ability_upgrade_highlands_sky_01.name: Ability Upgrade Highlands Sky 01
+world_phase1.abilities.ability_upgrade_highlands_sky_02.name: Ability Upgrade Highlands Sky 02
+world_phase1.abilities.ability_upgrade_highlands_sky_03.name: Ability Upgrade Highlands Sky 03
+world_phase1.abilities.ability_upgrade_highlands_sky_04.name: Ability Upgrade Highlands Sky 04
+world_phase1.abilities.ability_upgrade_highlands_sky_05.name: Ability Upgrade Highlands Sky 05
+world_phase1.abilities.ability_upgrade_highlands_sky_06.name: Ability Upgrade Highlands Sky 06
+world_phase1.abilities.ability_upgrade_highlands_sky_07.name: Ability Upgrade Highlands Sky 07
+world_phase1.abilities.ability_upgrade_highlands_boss_01.name: Ability Upgrade Highlands Boss 01
+world_phase1.abilities.ability_upgrade_highlands_boss_02.name: Ability Upgrade Highlands Boss 02
+world_phase1.abilities.ability_upgrade_highlands_boss_03.name: Ability Upgrade Highlands Boss 03
+world_phase1.abilities.ability_upgrade_highlands_boss_04.name: Ability Upgrade Highlands Boss 04
+world_phase1.abilities.ability_upgrade_highlands_boss_05.name: Ability Upgrade Highlands Boss 05
+world_phase1.abilities.ability_upgrade_highlands_boss_06.name: Ability Upgrade Highlands Boss 06
+world_phase1.abilities.ability_upgrade_highlands_boss_07.name: Ability Upgrade Highlands Boss 07
+world_phase1.abilities.ability_upgrade_highlands_boss_08.name: Ability Upgrade Highlands Boss 08
+world_phase1.abilities.ability_upgrade_highlands_boss_09.name: Ability Upgrade Highlands Boss 09
+world_phase1.abilities.ability_upgrade_highlands_boss_10.name: Ability Upgrade Highlands Boss 10
+world_phase1.abilities.ability_upgrade_lowlands_ancient_01.name: Ability Upgrade Lowlands Ancient 01
+world_phase1.abilities.ability_upgrade_lowlands_ancient_02.name: Ability Upgrade Lowlands Ancient 02
+world_phase1.abilities.ability_upgrade_lowlands_ancient_03.name: Ability Upgrade Lowlands Ancient 03
+world_phase1.abilities.ability_upgrade_lowlands_ancient_04.name: Ability Upgrade Lowlands Ancient 04
+world_phase1.abilities.ability_upgrade_lowlands_ancient_05.name: Ability Upgrade Lowlands Ancient 05
+world_phase1.abilities.ability_upgrade_lowlands_ancient_06.name: Ability Upgrade Lowlands Ancient 06
+world_phase1.abilities.ability_upgrade_lowlands_ancient_07.name: Ability Upgrade Lowlands Ancient 07
+world_phase1.abilities.ability_upgrade_lowlands_ancient_08.name: Ability Upgrade Lowlands Ancient 08
+world_phase1.abilities.ability_upgrade_lowlands_ancient_09.name: Ability Upgrade Lowlands Ancient 09
+world_phase1.abilities.ability_upgrade_lowlands_ancient_10.name: Ability Upgrade Lowlands Ancient 10
+world_phase1.abilities.ability_upgrade_lowlands_ancient_11.name: Ability Upgrade Lowlands Ancient 11
+world_phase1.abilities.ability_upgrade_lowlands_ancient_12.name: Ability Upgrade Lowlands Ancient 12
+world_phase1.abilities.ability_upgrade_lowlands_ancient_13.name: Ability Upgrade Lowlands Ancient 13
+world_phase1.abilities.ability_upgrade_lowlands_ancient_14.name: Ability Upgrade Lowlands Ancient 14
+world_phase1.abilities.ability_upgrade_lowlands_ancient_15.name: Ability Upgrade Lowlands Ancient 15
+world_phase1.abilities.ability_upgrade_lowlands_ancient_16.name: Ability Upgrade Lowlands Ancient 16
+world_phase1.abilities.ability_upgrade_lowlands_ancient_17.name: Ability Upgrade Lowlands Ancient 17
+world_phase1.abilities.ability_upgrade_lowlands_ancient_18.name: Ability Upgrade Lowlands Ancient 18
+world_phase1.abilities.ability_upgrade_lowlands_ancient_19.name: Ability Upgrade Lowlands Ancient 19
+world_phase1.abilities.ability_upgrade_lowlands_ancient_20.name: Ability Upgrade Lowlands Ancient 20
+world_phase1.abilities.ability_upgrade_lowlands_ancient_21.name: Ability Upgrade Lowlands Ancient 21
+world_phase1.abilities.ability_upgrade_lowlands_ancient_22.name: Ability Upgrade Lowlands Ancient 22
+world_phase1.abilities.ability_upgrade_lowlands_ancient_23.name: Ability Upgrade Lowlands Ancient 23
+world_phase1.abilities.ability_upgrade_lowlands_ancient_24.name: Ability Upgrade Lowlands Ancient 24
+world_phase1.abilities.ability_upgrade_lowlands_ancient_25.name: Ability Upgrade Lowlands Ancient 25
+world_phase1.abilities.ability_upgrade_lowlands_ancient_26.name: Ability Upgrade Lowlands Ancient 26
+world_phase1.abilities.ability_upgrade_lowlands_ancient_27.name: Ability Upgrade Lowlands Ancient 27
+world_phase1.abilities.ability_upgrade_lowlands_ancient_28.name: Ability Upgrade Lowlands Ancient 28
+world_phase1.abilities.ability_upgrade_lowlands_ancient_29.name: Ability Upgrade Lowlands Ancient 29
+world_phase1.abilities.ability_upgrade_lowlands_ancient_30.name: Ability Upgrade Lowlands Ancient 30
+world_phase1.abilities.ability_upgrade_lowlands_ancient_31.name: Ability Upgrade Lowlands Ancient 31
+world_phase1.abilities.ability_upgrade_lowlands_ancient_32.name: Ability Upgrade Lowlands Ancient 32
+world_phase1.abilities.ability_upgrade_lowlands_ancient_33.name: Ability Upgrade Lowlands Ancient 33
+world_phase1.abilities.ability_upgrade_lowlands_ancient_34.name: Ability Upgrade Lowlands Ancient 34
+world_phase1.abilities.ability_upgrade_lowlands_ancient_35.name: Ability Upgrade Lowlands Ancient 35
+world_phase1.abilities.ability_upgrade_lowlands_ancient_36.name: Ability Upgrade Lowlands Ancient 36
+world_phase1.abilities.ability_upgrade_lowlands_ancient_37.name: Ability Upgrade Lowlands Ancient 37
+world_phase1.abilities.ability_upgrade_lowlands_ancient_38.name: Ability Upgrade Lowlands Ancient 38
+world_phase1.abilities.ability_upgrade_lowlands_ancient_39.name: Ability Upgrade Lowlands Ancient 39
+world_phase1.abilities.ability_upgrade_lowlands_ancient_40.name: Ability Upgrade Lowlands Ancient 40
+world_phase1.abilities.ability_upgrade_lowlands_ancient_41.name: Ability Upgrade Lowlands Ancient 41
+world_phase1.abilities.ability_upgrade_lowlands_ancient_42.name: Ability Upgrade Lowlands Ancient 42
+world_phase1.abilities.ability_upgrade_lowlands_ancient_43.name: Ability Upgrade Lowlands Ancient 43
+world_phase1.abilities.ability_upgrade_lowlands_ancient_44.name: Ability Upgrade Lowlands Ancient 44
+world_phase1.abilities.ability_upgrade_lowlands_ancient_45.name: Ability Upgrade Lowlands Ancient 45
+world_phase1.abilities.ability_upgrade_lowlands_ancient_46.name: Ability Upgrade Lowlands Ancient 46
+world_phase1.abilities.ability_upgrade_lowlands_ancient_47.name: Ability Upgrade Lowlands Ancient 47
+world_phase1.abilities.ability_upgrade_lowlands_ancient_48.name: Ability Upgrade Lowlands Ancient 48
+world_phase1.abilities.ability_upgrade_lowlands_ancient_49.name: Ability Upgrade Lowlands Ancient 49
+world_phase1.abilities.ability_upgrade_lowlands_ancient_50.name: Ability Upgrade Lowlands Ancient 50
+world_phase1.abilities.ability_upgrade_lowlands_verdant_01.name: Ability Upgrade Lowlands Verdant 01
+world_phase1.abilities.ability_upgrade_lowlands_verdant_02.name: Ability Upgrade Lowlands Verdant 02
+world_phase1.abilities.ability_upgrade_lowlands_verdant_03.name: Ability Upgrade Lowlands Verdant 03
+world_phase1.abilities.ability_upgrade_lowlands_verdant_04.name: Ability Upgrade Lowlands Verdant 04
+world_phase1.abilities.ability_upgrade_lowlands_verdant_05.name: Ability Upgrade Lowlands Verdant 05
+world_phase1.abilities.ability_upgrade_lowlands_verdant_06.name: Ability Upgrade Lowlands Verdant 06
+world_phase1.abilities.ability_upgrade_lowlands_verdant_07.name: Ability Upgrade Lowlands Verdant 07
+world_phase1.abilities.ability_upgrade_lowlands_verdant_08.name: Ability Upgrade Lowlands Verdant 08
+world_phase1.abilities.ability_upgrade_lowlands_verdant_09.name: Ability Upgrade Lowlands Verdant 09
+world_phase1.abilities.ability_upgrade_lowlands_verdant_10.name: Ability Upgrade Lowlands Verdant 10
+world_phase1.abilities.ability_upgrade_lowlands_verdant_11.name: Ability Upgrade Lowlands Verdant 11
+world_phase1.abilities.ability_upgrade_lowlands_verdant_12.name: Ability Upgrade Lowlands Verdant 12
+world_phase1.abilities.ability_upgrade_lowlands_verdant_13.name: Ability Upgrade Lowlands Verdant 13
+world_phase1.abilities.ability_upgrade_lowlands_verdant_14.name: Ability Upgrade Lowlands Verdant 14
+world_phase1.abilities.ability_upgrade_lowlands_verdant_15.name: Ability Upgrade Lowlands Verdant 15
+world_phase1.abilities.ability_upgrade_lowlands_verdant_16.name: Ability Upgrade Lowlands Verdant 16
+world_phase1.abilities.ability_upgrade_lowlands_verdant_17.name: Ability Upgrade Lowlands Verdant 17
+world_phase1.abilities.ability_upgrade_lowlands_verdant_18.name: Ability Upgrade Lowlands Verdant 18
+world_phase1.abilities.ability_upgrade_lowlands_verdant_19.name: Ability Upgrade Lowlands Verdant 19
+world_phase1.abilities.ability_upgrade_lowlands_verdant_20.name: Ability Upgrade Lowlands Verdant 20
+world_phase1.abilities.ability_upgrade_lowlands_verdant_21.name: Ability Upgrade Lowlands Verdant 21
+world_phase1.abilities.ability_upgrade_lowlands_verdant_22.name: Ability Upgrade Lowlands Verdant 22
+world_phase1.abilities.ability_upgrade_lowlands_verdant_23.name: Ability Upgrade Lowlands Verdant 23
+world_phase1.abilities.ability_upgrade_lowlands_verdant_24.name: Ability Upgrade Lowlands Verdant 24
+world_phase1.abilities.ability_upgrade_lowlands_verdant_25.name: Ability Upgrade Lowlands Verdant 25
+world_phase1.abilities.ability_upgrade_lowlands_verdant_26.name: Ability Upgrade Lowlands Verdant 26
+world_phase1.abilities.ability_upgrade_lowlands_verdant_27.name: Ability Upgrade Lowlands Verdant 27
+world_phase1.abilities.ability_upgrade_lowlands_verdant_28.name: Ability Upgrade Lowlands Verdant 28
+world_phase1.abilities.ability_upgrade_lowlands_verdant_29.name: Ability Upgrade Lowlands Verdant 29
+world_phase1.abilities.ability_upgrade_lowlands_verdant_30.name: Ability Upgrade Lowlands Verdant 30
+world_phase1.abilities.ability_upgrade_lowlands_verdant_31.name: Ability Upgrade Lowlands Verdant 31
+world_phase1.abilities.ability_upgrade_lowlands_verdant_32.name: Ability Upgrade Lowlands Verdant 32
+world_phase1.abilities.ability_upgrade_lowlands_verdant_33.name: Ability Upgrade Lowlands Verdant 33
+world_phase1.abilities.ability_upgrade_lowlands_verdant_34.name: Ability Upgrade Lowlands Verdant 34
+world_phase1.abilities.ability_upgrade_lowlands_verdant_35.name: Ability Upgrade Lowlands Verdant 35
+world_phase1.abilities.ability_upgrade_lowlands_verdant_36.name: Ability Upgrade Lowlands Verdant 36
+world_phase1.abilities.ability_upgrade_lowlands_verdant_37.name: Ability Upgrade Lowlands Verdant 37
+world_phase1.abilities.ability_upgrade_lowlands_verdant_38.name: Ability Upgrade Lowlands Verdant 38
+world_phase1.abilities.ability_upgrade_lowlands_verdant_39.name: Ability Upgrade Lowlands Verdant 39
+world_phase1.abilities.ability_upgrade_lowlands_verdant_40.name: Ability Upgrade Lowlands Verdant 40
+world_phase1.abilities.ability_upgrade_lowlands_verdant_41.name: Ability Upgrade Lowlands Verdant 41
+world_phase1.abilities.ability_upgrade_lowlands_verdant_42.name: Ability Upgrade Lowlands Verdant 42
+world_phase1.abilities.ability_upgrade_lowlands_verdant_43.name: Ability Upgrade Lowlands Verdant 43
+world_phase1.abilities.ability_upgrade_lowlands_verdant_44.name: Ability Upgrade Lowlands Verdant 44
+world_phase1.abilities.ability_upgrade_lowlands_verdant_45.name: Ability Upgrade Lowlands Verdant 45
+world_phase1.abilities.ability_upgrade_lowlands_verdant_46.name: Ability Upgrade Lowlands Verdant 46
+world_phase1.abilities.ability_upgrade_lowlands_verdant_47.name: Ability Upgrade Lowlands Verdant 47
+world_phase1.abilities.ability_upgrade_lowlands_verdant_48.name: Ability Upgrade Lowlands Verdant 48
+world_phase1.abilities.ability_upgrade_lowlands_verdant_49.name: Ability Upgrade Lowlands Verdant 49
+world_phase1.abilities.ability_upgrade_lowlands_verdant_50.name: Ability Upgrade Lowlands Verdant 50
+world_phase1.abilities.ability_upgrade_lowlands_wild_01.name: Ability Upgrade Lowlands Wild 01
+world_phase1.abilities.ability_upgrade_lowlands_wild_02.name: Ability Upgrade Lowlands Wild 02
+world_phase1.abilities.ability_upgrade_lowlands_wild_03.name: Ability Upgrade Lowlands Wild 03
+world_phase1.abilities.ability_upgrade_lowlands_wild_04.name: Ability Upgrade Lowlands Wild 04
+world_phase1.abilities.ability_upgrade_lowlands_wild_05.name: Ability Upgrade Lowlands Wild 05
+world_phase1.abilities.ability_upgrade_lowlands_wild_06.name: Ability Upgrade Lowlands Wild 06
+world_phase1.abilities.ability_upgrade_lowlands_wild_07.name: Ability Upgrade Lowlands Wild 07
+world_phase1.abilities.ability_upgrade_lowlands_wild_08.name: Ability Upgrade Lowlands Wild 08
+world_phase1.abilities.ability_upgrade_lowlands_wild_09.name: Ability Upgrade Lowlands Wild 09
+world_phase1.abilities.ability_upgrade_lowlands_wild_10.name: Ability Upgrade Lowlands Wild 10
+world_phase1.abilities.ability_upgrade_lowlands_wild_11.name: Ability Upgrade Lowlands Wild 11
+world_phase1.abilities.ability_upgrade_lowlands_wild_12.name: Ability Upgrade Lowlands Wild 12
+world_phase1.abilities.ability_upgrade_lowlands_wild_13.name: Ability Upgrade Lowlands Wild 13
+world_phase1.abilities.ability_upgrade_lowlands_wild_14.name: Ability Upgrade Lowlands Wild 14
+world_phase1.abilities.ability_upgrade_lowlands_wild_15.name: Ability Upgrade Lowlands Wild 15
+world_phase1.abilities.ability_upgrade_lowlands_wild_16.name: Ability Upgrade Lowlands Wild 16
+world_phase1.abilities.ability_upgrade_lowlands_wild_17.name: Ability Upgrade Lowlands Wild 17
+world_phase1.abilities.ability_upgrade_lowlands_wild_18.name: Ability Upgrade Lowlands Wild 18
+world_phase1.abilities.ability_upgrade_lowlands_wild_19.name: Ability Upgrade Lowlands Wild 19
+world_phase1.abilities.ability_upgrade_lowlands_wild_20.name: Ability Upgrade Lowlands Wild 20
+world_phase1.abilities.ability_upgrade_lowlands_wild_21.name: Ability Upgrade Lowlands Wild 21
+world_phase1.abilities.ability_upgrade_lowlands_wild_22.name: Ability Upgrade Lowlands Wild 22
+world_phase1.abilities.ability_upgrade_lowlands_wild_23.name: Ability Upgrade Lowlands Wild 23
+world_phase1.abilities.ability_upgrade_lowlands_wild_24.name: Ability Upgrade Lowlands Wild 24
+world_phase1.abilities.ability_upgrade_lowlands_wild_25.name: Ability Upgrade Lowlands Wild 25
+world_phase1.abilities.ability_upgrade_lowlands_wild_26.name: Ability Upgrade Lowlands Wild 26
+world_phase1.abilities.ability_upgrade_lowlands_wild_27.name: Ability Upgrade Lowlands Wild 27
+world_phase1.abilities.ability_upgrade_lowlands_wild_28.name: Ability Upgrade Lowlands Wild 28
+world_phase1.abilities.ability_upgrade_lowlands_wild_29.name: Ability Upgrade Lowlands Wild 29
+world_phase1.abilities.ability_upgrade_lowlands_wild_30.name: Ability Upgrade Lowlands Wild 30
+world_phase1.abilities.ability_upgrade_lowlands_wild_31.name: Ability Upgrade Lowlands Wild 31
+world_phase1.abilities.ability_upgrade_lowlands_wild_32.name: Ability Upgrade Lowlands Wild 32
+world_phase1.abilities.ability_upgrade_lowlands_wild_33.name: Ability Upgrade Lowlands Wild 33
+world_phase1.abilities.ability_upgrade_lowlands_wild_34.name: Ability Upgrade Lowlands Wild 34
+world_phase1.abilities.ability_upgrade_lowlands_wild_35.name: Ability Upgrade Lowlands Wild 35
+world_phase1.abilities.ability_upgrade_lowlands_wild_36.name: Ability Upgrade Lowlands Wild 36
+world_phase1.abilities.ability_upgrade_lowlands_wild_37.name: Ability Upgrade Lowlands Wild 37
+world_phase1.abilities.ability_upgrade_lowlands_wild_38.name: Ability Upgrade Lowlands Wild 38
+world_phase1.abilities.ability_upgrade_lowlands_wild_39.name: Ability Upgrade Lowlands Wild 39
+world_phase1.abilities.ability_upgrade_lowlands_wild_40.name: Ability Upgrade Lowlands Wild 40
+world_phase1.abilities.ability_upgrade_lowlands_wild_41.name: Ability Upgrade Lowlands Wild 41
+world_phase1.abilities.ability_upgrade_lowlands_wild_42.name: Ability Upgrade Lowlands Wild 42
+world_phase1.abilities.ability_upgrade_lowlands_wild_43.name: Ability Upgrade Lowlands Wild 43
+world_phase1.abilities.ability_upgrade_lowlands_wild_44.name: Ability Upgrade Lowlands Wild 44
+world_phase1.abilities.ability_upgrade_lowlands_wild_45.name: Ability Upgrade Lowlands Wild 45
+world_phase1.abilities.ability_upgrade_lowlands_wild_46.name: Ability Upgrade Lowlands Wild 46
+world_phase1.abilities.ability_upgrade_lowlands_wild_47.name: Ability Upgrade Lowlands Wild 47
+world_phase1.abilities.ability_upgrade_lowlands_wild_48.name: Ability Upgrade Lowlands Wild 48
+world_phase1.abilities.ability_upgrade_lowlands_wild_49.name: Ability Upgrade Lowlands Wild 49
+world_phase1.abilities.ability_upgrade_lowlands_wild_50.name: Ability Upgrade Lowlands Wild 50
+world_phase1.abilities.ability_upgrade_lowlands_boss_01.name: Ability Upgrade Lowlands Boss 01
+world_phase1.abilities.ability_upgrade_lowlands_boss_02.name: Ability Upgrade Lowlands Boss 02
+world_phase1.abilities.ability_upgrade_lowlands_boss_03.name: Ability Upgrade Lowlands Boss 03
+world_phase1.abilities.ability_upgrade_lowlands_boss_04.name: Ability Upgrade Lowlands Boss 04
+world_phase1.abilities.ability_upgrade_lowlands_boss_05.name: Ability Upgrade Lowlands Boss 05
+world_phase1.abilities.ability_upgrade_lowlands_boss_06.name: Ability Upgrade Lowlands Boss 06
+world_phase1.abilities.ability_upgrade_lowlands_boss_07.name: Ability Upgrade Lowlands Boss 07
+world_phase1.abilities.ability_upgrade_lowlands_boss_08.name: Ability Upgrade Lowlands Boss 08
+world_phase1.abilities.ability_upgrade_lowlands_boss_09.name: Ability Upgrade Lowlands Boss 09
+world_phase1.abilities.ability_upgrade_lowlands_boss_10.name: Ability Upgrade Lowlands Boss 10
+world_phase1.abilities.ability_upgrade_lowlands_boss_11.name: Ability Upgrade Lowlands Boss 11
+world_phase1.abilities.ability_upgrade_lowlands_boss_12.name: Ability Upgrade Lowlands Boss 12
+world_phase1.abilities.ability_upgrade_lowlands_boss_13.name: Ability Upgrade Lowlands Boss 13
+world_phase1.abilities.ability_upgrade_lowlands_boss_14.name: Ability Upgrade Lowlands Boss 14
+world_phase1.abilities.ability_upgrade_lowlands_boss_15.name: Ability Upgrade Lowlands Boss 15
+world_phase1.abilities.ability_upgrade_lowlands_boss_16.name: Ability Upgrade Lowlands Boss 16
+world_phase1.abilities.ability_upgrade_lowlands_boss_17.name: Ability Upgrade Lowlands Boss 17
+world_phase1.abilities.ability_upgrade_lowlands_boss_18.name: Ability Upgrade Lowlands Boss 18
+world_phase1.abilities.ability_upgrade_snow_frost_01.name: Ability Upgrade Snow Frost 01
+world_phase1.abilities.ability_upgrade_snow_frost_02.name: Ability Upgrade Snow Frost 02
+world_phase1.abilities.ability_upgrade_snow_frost_03.name: Ability Upgrade Snow Frost 03
+world_phase1.abilities.ability_upgrade_snow_frost_04.name: Ability Upgrade Snow Frost 04
+world_phase1.abilities.ability_upgrade_snow_frost_05.name: Ability Upgrade Snow Frost 05
+world_phase1.abilities.ability_upgrade_snow_frost_06.name: Ability Upgrade Snow Frost 06
+world_phase1.abilities.ability_upgrade_snow_frost_07.name: Ability Upgrade Snow Frost 07
+world_phase1.abilities.ability_upgrade_snow_frost_08.name: Ability Upgrade Snow Frost 08
+world_phase1.abilities.ability_upgrade_snow_frost_09.name: Ability Upgrade Snow Frost 09
+world_phase1.abilities.ability_upgrade_snow_frost_10.name: Ability Upgrade Snow Frost 10
+world_phase1.abilities.ability_upgrade_snow_frost_11.name: Ability Upgrade Snow Frost 11
+world_phase1.abilities.ability_upgrade_snow_frost_12.name: Ability Upgrade Snow Frost 12
+world_phase1.abilities.ability_upgrade_snow_frost_13.name: Ability Upgrade Snow Frost 13
+world_phase1.abilities.ability_upgrade_snow_frost_14.name: Ability Upgrade Snow Frost 14
+world_phase1.abilities.ability_upgrade_snow_frost_15.name: Ability Upgrade Snow Frost 15
+world_phase1.abilities.ability_upgrade_snow_frost_16.name: Ability Upgrade Snow Frost 16
+world_phase1.abilities.ability_upgrade_snow_frost_17.name: Ability Upgrade Snow Frost 17
+world_phase1.abilities.ability_upgrade_snow_frost_18.name: Ability Upgrade Snow Frost 18
+world_phase1.abilities.ability_upgrade_snow_frost_19.name: Ability Upgrade Snow Frost 19
+world_phase1.abilities.ability_upgrade_snow_frost_20.name: Ability Upgrade Snow Frost 20
+world_phase1.abilities.ability_upgrade_snow_frost_21.name: Ability Upgrade Snow Frost 21
+world_phase1.abilities.ability_upgrade_snow_frost_22.name: Ability Upgrade Snow Frost 22
+world_phase1.abilities.ability_upgrade_snow_frost_23.name: Ability Upgrade Snow Frost 23
+world_phase1.abilities.ability_upgrade_snow_frost_24.name: Ability Upgrade Snow Frost 24
+world_phase1.abilities.ability_upgrade_snow_frost_25.name: Ability Upgrade Snow Frost 25
+world_phase1.abilities.ability_upgrade_snow_frost_26.name: Ability Upgrade Snow Frost 26
+world_phase1.abilities.ability_upgrade_snow_frost_27.name: Ability Upgrade Snow Frost 27
+world_phase1.abilities.ability_upgrade_snow_frost_28.name: Ability Upgrade Snow Frost 28
+world_phase1.abilities.ability_upgrade_snow_frost_29.name: Ability Upgrade Snow Frost 29
+world_phase1.abilities.ability_upgrade_snow_frost_30.name: Ability Upgrade Snow Frost 30
+world_phase1.abilities.ability_upgrade_snow_frost_31.name: Ability Upgrade Snow Frost 31
+world_phase1.abilities.ability_upgrade_snow_frost_32.name: Ability Upgrade Snow Frost 32
+world_phase1.abilities.ability_upgrade_snow_frost_33.name: Ability Upgrade Snow Frost 33
+world_phase1.abilities.ability_upgrade_snow_frost_34.name: Ability Upgrade Snow Frost 34
+world_phase1.abilities.ability_upgrade_snow_frost_35.name: Ability Upgrade Snow Frost 35
+world_phase1.abilities.ability_upgrade_snow_frost_36.name: Ability Upgrade Snow Frost 36
+world_phase1.abilities.ability_upgrade_snow_frost_37.name: Ability Upgrade Snow Frost 37
+world_phase1.abilities.ability_upgrade_snow_frost_38.name: Ability Upgrade Snow Frost 38
+world_phase1.abilities.ability_upgrade_snow_frost_39.name: Ability Upgrade Snow Frost 39
+world_phase1.abilities.ability_upgrade_snow_frost_40.name: Ability Upgrade Snow Frost 40
+world_phase1.abilities.ability_upgrade_snow_frost_41.name: Ability Upgrade Snow Frost 41
+world_phase1.abilities.ability_upgrade_snow_frost_42.name: Ability Upgrade Snow Frost 42
+world_phase1.abilities.ability_upgrade_snow_frost_43.name: Ability Upgrade Snow Frost 43
+world_phase1.abilities.ability_upgrade_snow_frost_44.name: Ability Upgrade Snow Frost 44
+world_phase1.abilities.ability_upgrade_snow_frost_45.name: Ability Upgrade Snow Frost 45
+world_phase1.abilities.ability_upgrade_snow_frost_46.name: Ability Upgrade Snow Frost 46
+world_phase1.abilities.ability_upgrade_snow_frost_47.name: Ability Upgrade Snow Frost 47
+world_phase1.abilities.ability_upgrade_snow_frost_48.name: Ability Upgrade Snow Frost 48
+world_phase1.abilities.ability_upgrade_snow_frost_49.name: Ability Upgrade Snow Frost 49
+world_phase1.abilities.ability_upgrade_snow_frost_50.name: Ability Upgrade Snow Frost 50
+world_phase1.abilities.ability_upgrade_snow_frost_51.name: Ability Upgrade Snow Frost 51
+world_phase1.abilities.ability_upgrade_snow_frost_52.name: Ability Upgrade Snow Frost 52
+world_phase1.abilities.ability_upgrade_snow_frost_53.name: Ability Upgrade Snow Frost 53
+world_phase1.abilities.ability_upgrade_snow_frost_54.name: Ability Upgrade Snow Frost 54
+world_phase1.abilities.ability_upgrade_snow_frost_55.name: Ability Upgrade Snow Frost 55
+world_phase1.abilities.ability_upgrade_snow_frost_56.name: Ability Upgrade Snow Frost 56
+world_phase1.abilities.ability_upgrade_snow_frost_57.name: Ability Upgrade Snow Frost 57
+world_phase1.abilities.ability_upgrade_snow_frost_58.name: Ability Upgrade Snow Frost 58
+world_phase1.abilities.ability_upgrade_snow_frost_59.name: Ability Upgrade Snow Frost 59
+world_phase1.abilities.ability_upgrade_snow_frost_60.name: Ability Upgrade Snow Frost 60
+world_phase1.abilities.ability_upgrade_snow_frost_61.name: Ability Upgrade Snow Frost 61
+world_phase1.abilities.ability_upgrade_snow_frost_62.name: Ability Upgrade Snow Frost 62
+world_phase1.abilities.ability_upgrade_snow_frost_63.name: Ability Upgrade Snow Frost 63
+world_phase1.abilities.ability_upgrade_snow_frost_64.name: Ability Upgrade Snow Frost 64
+world_phase1.abilities.ability_upgrade_snow_frost_65.name: Ability Upgrade Snow Frost 65
+world_phase1.abilities.ability_upgrade_snow_frost_66.name: Ability Upgrade Snow Frost 66
+world_phase1.abilities.ability_upgrade_snow_frost_67.name: Ability Upgrade Snow Frost 67
+world_phase1.abilities.ability_upgrade_snow_frost_68.name: Ability Upgrade Snow Frost 68
+world_phase1.abilities.ability_upgrade_snow_frost_69.name: Ability Upgrade Snow Frost 69
+world_phase1.abilities.ability_upgrade_snow_frost_70.name: Ability Upgrade Snow Frost 70
+world_phase1.abilities.ability_upgrade_snow_glacier_01.name: Ability Upgrade Snow Glacier 01
+world_phase1.abilities.ability_upgrade_snow_glacier_02.name: Ability Upgrade Snow Glacier 02
+world_phase1.abilities.ability_upgrade_snow_glacier_03.name: Ability Upgrade Snow Glacier 03
+world_phase1.abilities.ability_upgrade_snow_glacier_04.name: Ability Upgrade Snow Glacier 04
+world_phase1.abilities.ability_upgrade_snow_glacier_05.name: Ability Upgrade Snow Glacier 05
+world_phase1.abilities.ability_upgrade_snow_glacier_06.name: Ability Upgrade Snow Glacier 06
+world_phase1.abilities.ability_upgrade_snow_glacier_07.name: Ability Upgrade Snow Glacier 07
+world_phase1.abilities.ability_upgrade_snow_glacier_08.name: Ability Upgrade Snow Glacier 08
+world_phase1.abilities.ability_upgrade_snow_glacier_09.name: Ability Upgrade Snow Glacier 09
+world_phase1.abilities.ability_upgrade_snow_glacier_10.name: Ability Upgrade Snow Glacier 10
+world_phase1.abilities.ability_upgrade_snow_glacier_11.name: Ability Upgrade Snow Glacier 11
+world_phase1.abilities.ability_upgrade_snow_glacier_12.name: Ability Upgrade Snow Glacier 12
+world_phase1.abilities.ability_upgrade_snow_glacier_13.name: Ability Upgrade Snow Glacier 13
+world_phase1.abilities.ability_upgrade_snow_glacier_14.name: Ability Upgrade Snow Glacier 14
+world_phase1.abilities.ability_upgrade_snow_glacier_15.name: Ability Upgrade Snow Glacier 15
+world_phase1.abilities.ability_upgrade_snow_glacier_16.name: Ability Upgrade Snow Glacier 16
+world_phase1.abilities.ability_upgrade_snow_glacier_17.name: Ability Upgrade Snow Glacier 17
+world_phase1.abilities.ability_upgrade_snow_glacier_18.name: Ability Upgrade Snow Glacier 18
+world_phase1.abilities.ability_upgrade_snow_glacier_19.name: Ability Upgrade Snow Glacier 19
+world_phase1.abilities.ability_upgrade_snow_glacier_20.name: Ability Upgrade Snow Glacier 20
+world_phase1.abilities.ability_upgrade_snow_glacier_21.name: Ability Upgrade Snow Glacier 21
+world_phase1.abilities.ability_upgrade_snow_glacier_22.name: Ability Upgrade Snow Glacier 22
+world_phase1.abilities.ability_upgrade_snow_glacier_23.name: Ability Upgrade Snow Glacier 23
+world_phase1.abilities.ability_upgrade_snow_glacier_24.name: Ability Upgrade Snow Glacier 24
+world_phase1.abilities.ability_upgrade_snow_glacier_25.name: Ability Upgrade Snow Glacier 25
+world_phase1.abilities.ability_upgrade_snow_glacier_26.name: Ability Upgrade Snow Glacier 26
+world_phase1.abilities.ability_upgrade_snow_glacier_27.name: Ability Upgrade Snow Glacier 27
+world_phase1.abilities.ability_upgrade_snow_glacier_28.name: Ability Upgrade Snow Glacier 28
+world_phase1.abilities.ability_upgrade_snow_glacier_29.name: Ability Upgrade Snow Glacier 29
+world_phase1.abilities.ability_upgrade_snow_glacier_30.name: Ability Upgrade Snow Glacier 30
+world_phase1.abilities.ability_upgrade_snow_glacier_31.name: Ability Upgrade Snow Glacier 31
+world_phase1.abilities.ability_upgrade_snow_glacier_32.name: Ability Upgrade Snow Glacier 32
+world_phase1.abilities.ability_upgrade_snow_glacier_33.name: Ability Upgrade Snow Glacier 33
+world_phase1.abilities.ability_upgrade_snow_glacier_34.name: Ability Upgrade Snow Glacier 34
+world_phase1.abilities.ability_upgrade_snow_glacier_35.name: Ability Upgrade Snow Glacier 35
+world_phase1.abilities.ability_upgrade_snow_glacier_36.name: Ability Upgrade Snow Glacier 36
+world_phase1.abilities.ability_upgrade_snow_glacier_37.name: Ability Upgrade Snow Glacier 37
+world_phase1.abilities.ability_upgrade_snow_glacier_38.name: Ability Upgrade Snow Glacier 38
+world_phase1.abilities.ability_upgrade_snow_glacier_39.name: Ability Upgrade Snow Glacier 39
+world_phase1.abilities.ability_upgrade_snow_glacier_40.name: Ability Upgrade Snow Glacier 40
+world_phase1.abilities.ability_upgrade_snow_glacier_41.name: Ability Upgrade Snow Glacier 41
+world_phase1.abilities.ability_upgrade_snow_glacier_42.name: Ability Upgrade Snow Glacier 42
+world_phase1.abilities.ability_upgrade_snow_glacier_43.name: Ability Upgrade Snow Glacier 43
+world_phase1.abilities.ability_upgrade_snow_glacier_44.name: Ability Upgrade Snow Glacier 44
+world_phase1.abilities.ability_upgrade_snow_glacier_45.name: Ability Upgrade Snow Glacier 45
+world_phase1.abilities.ability_upgrade_snow_glacier_46.name: Ability Upgrade Snow Glacier 46
+world_phase1.abilities.ability_upgrade_snow_glacier_47.name: Ability Upgrade Snow Glacier 47
+world_phase1.abilities.ability_upgrade_snow_glacier_48.name: Ability Upgrade Snow Glacier 48
+world_phase1.abilities.ability_upgrade_snow_glacier_49.name: Ability Upgrade Snow Glacier 49
+world_phase1.abilities.ability_upgrade_snow_glacier_50.name: Ability Upgrade Snow Glacier 50
+world_phase1.abilities.ability_upgrade_snow_glacier_51.name: Ability Upgrade Snow Glacier 51
+world_phase1.abilities.ability_upgrade_snow_glacier_52.name: Ability Upgrade Snow Glacier 52
+world_phase1.abilities.ability_upgrade_snow_glacier_53.name: Ability Upgrade Snow Glacier 53
+world_phase1.abilities.ability_upgrade_snow_glacier_54.name: Ability Upgrade Snow Glacier 54
+world_phase1.abilities.ability_upgrade_snow_glacier_55.name: Ability Upgrade Snow Glacier 55
+world_phase1.abilities.ability_upgrade_snow_glacier_56.name: Ability Upgrade Snow Glacier 56
+world_phase1.abilities.ability_upgrade_snow_glacier_57.name: Ability Upgrade Snow Glacier 57
+world_phase1.abilities.ability_upgrade_snow_glacier_58.name: Ability Upgrade Snow Glacier 58
+world_phase1.abilities.ability_upgrade_snow_glacier_59.name: Ability Upgrade Snow Glacier 59
+world_phase1.abilities.ability_upgrade_snow_glacier_60.name: Ability Upgrade Snow Glacier 60
+world_phase1.abilities.ability_upgrade_snow_glacier_61.name: Ability Upgrade Snow Glacier 61
+world_phase1.abilities.ability_upgrade_snow_glacier_62.name: Ability Upgrade Snow Glacier 62
+world_phase1.abilities.ability_upgrade_snow_glacier_63.name: Ability Upgrade Snow Glacier 63
+world_phase1.abilities.ability_upgrade_snow_glacier_64.name: Ability Upgrade Snow Glacier 64
+world_phase1.abilities.ability_upgrade_snow_glacier_65.name: Ability Upgrade Snow Glacier 65
+world_phase1.abilities.ability_upgrade_snow_glacier_66.name: Ability Upgrade Snow Glacier 66
+world_phase1.abilities.ability_upgrade_snow_glacier_67.name: Ability Upgrade Snow Glacier 67
+world_phase1.abilities.ability_upgrade_snow_glacier_68.name: Ability Upgrade Snow Glacier 68
+world_phase1.abilities.ability_upgrade_snow_glacier_69.name: Ability Upgrade Snow Glacier 69
+world_phase1.abilities.ability_upgrade_snow_glacier_70.name: Ability Upgrade Snow Glacier 70
+world_phase1.abilities.ability_upgrade_snow_whiteout_01.name: Ability Upgrade Snow Whiteout 01
+world_phase1.abilities.ability_upgrade_snow_whiteout_02.name: Ability Upgrade Snow Whiteout 02
+world_phase1.abilities.ability_upgrade_snow_whiteout_03.name: Ability Upgrade Snow Whiteout 03
+world_phase1.abilities.ability_upgrade_snow_whiteout_04.name: Ability Upgrade Snow Whiteout 04
+world_phase1.abilities.ability_upgrade_snow_whiteout_05.name: Ability Upgrade Snow Whiteout 05
+world_phase1.abilities.ability_upgrade_snow_whiteout_06.name: Ability Upgrade Snow Whiteout 06
+world_phase1.abilities.ability_upgrade_snow_whiteout_07.name: Ability Upgrade Snow Whiteout 07
+world_phase1.abilities.ability_upgrade_snow_whiteout_08.name: Ability Upgrade Snow Whiteout 08
+world_phase1.abilities.ability_upgrade_snow_whiteout_09.name: Ability Upgrade Snow Whiteout 09
+world_phase1.abilities.ability_upgrade_snow_whiteout_10.name: Ability Upgrade Snow Whiteout 10
+world_phase1.abilities.ability_upgrade_snow_whiteout_11.name: Ability Upgrade Snow Whiteout 11
+world_phase1.abilities.ability_upgrade_snow_whiteout_12.name: Ability Upgrade Snow Whiteout 12
+world_phase1.abilities.ability_upgrade_snow_whiteout_13.name: Ability Upgrade Snow Whiteout 13
+world_phase1.abilities.ability_upgrade_snow_whiteout_14.name: Ability Upgrade Snow Whiteout 14
+world_phase1.abilities.ability_upgrade_snow_whiteout_15.name: Ability Upgrade Snow Whiteout 15
+world_phase1.abilities.ability_upgrade_snow_whiteout_16.name: Ability Upgrade Snow Whiteout 16
+world_phase1.abilities.ability_upgrade_snow_whiteout_17.name: Ability Upgrade Snow Whiteout 17
+world_phase1.abilities.ability_upgrade_snow_whiteout_18.name: Ability Upgrade Snow Whiteout 18
+world_phase1.abilities.ability_upgrade_snow_whiteout_19.name: Ability Upgrade Snow Whiteout 19
+world_phase1.abilities.ability_upgrade_snow_whiteout_20.name: Ability Upgrade Snow Whiteout 20
+world_phase1.abilities.ability_upgrade_snow_whiteout_21.name: Ability Upgrade Snow Whiteout 21
+world_phase1.abilities.ability_upgrade_snow_whiteout_22.name: Ability Upgrade Snow Whiteout 22
+world_phase1.abilities.ability_upgrade_snow_whiteout_23.name: Ability Upgrade Snow Whiteout 23
+world_phase1.abilities.ability_upgrade_snow_whiteout_24.name: Ability Upgrade Snow Whiteout 24
+world_phase1.abilities.ability_upgrade_snow_whiteout_25.name: Ability Upgrade Snow Whiteout 25
+world_phase1.abilities.ability_upgrade_snow_whiteout_26.name: Ability Upgrade Snow Whiteout 26
+world_phase1.abilities.ability_upgrade_snow_whiteout_27.name: Ability Upgrade Snow Whiteout 27
+world_phase1.abilities.ability_upgrade_snow_whiteout_28.name: Ability Upgrade Snow Whiteout 28
+world_phase1.abilities.ability_upgrade_snow_whiteout_29.name: Ability Upgrade Snow Whiteout 29
+world_phase1.abilities.ability_upgrade_snow_whiteout_30.name: Ability Upgrade Snow Whiteout 30
+world_phase1.abilities.ability_upgrade_snow_whiteout_31.name: Ability Upgrade Snow Whiteout 31
+world_phase1.abilities.ability_upgrade_snow_whiteout_32.name: Ability Upgrade Snow Whiteout 32
+world_phase1.abilities.ability_upgrade_snow_whiteout_33.name: Ability Upgrade Snow Whiteout 33
+world_phase1.abilities.ability_upgrade_snow_whiteout_34.name: Ability Upgrade Snow Whiteout 34
+world_phase1.abilities.ability_upgrade_snow_whiteout_35.name: Ability Upgrade Snow Whiteout 35
+world_phase1.abilities.ability_upgrade_snow_whiteout_36.name: Ability Upgrade Snow Whiteout 36
+world_phase1.abilities.ability_upgrade_snow_whiteout_37.name: Ability Upgrade Snow Whiteout 37
+world_phase1.abilities.ability_upgrade_snow_whiteout_38.name: Ability Upgrade Snow Whiteout 38
+world_phase1.abilities.ability_upgrade_snow_whiteout_39.name: Ability Upgrade Snow Whiteout 39
+world_phase1.abilities.ability_upgrade_snow_whiteout_40.name: Ability Upgrade Snow Whiteout 40
+world_phase1.abilities.ability_upgrade_snow_whiteout_41.name: Ability Upgrade Snow Whiteout 41
+world_phase1.abilities.ability_upgrade_snow_whiteout_42.name: Ability Upgrade Snow Whiteout 42
+world_phase1.abilities.ability_upgrade_snow_whiteout_43.name: Ability Upgrade Snow Whiteout 43
+world_phase1.abilities.ability_upgrade_snow_whiteout_44.name: Ability Upgrade Snow Whiteout 44
+world_phase1.abilities.ability_upgrade_snow_whiteout_45.name: Ability Upgrade Snow Whiteout 45
+world_phase1.abilities.ability_upgrade_snow_whiteout_46.name: Ability Upgrade Snow Whiteout 46
+world_phase1.abilities.ability_upgrade_snow_whiteout_47.name: Ability Upgrade Snow Whiteout 47
+world_phase1.abilities.ability_upgrade_snow_whiteout_48.name: Ability Upgrade Snow Whiteout 48
+world_phase1.abilities.ability_upgrade_snow_whiteout_49.name: Ability Upgrade Snow Whiteout 49
+world_phase1.abilities.ability_upgrade_snow_whiteout_50.name: Ability Upgrade Snow Whiteout 50
+world_phase1.abilities.ability_upgrade_snow_whiteout_51.name: Ability Upgrade Snow Whiteout 51
+world_phase1.abilities.ability_upgrade_snow_whiteout_52.name: Ability Upgrade Snow Whiteout 52
+world_phase1.abilities.ability_upgrade_snow_whiteout_53.name: Ability Upgrade Snow Whiteout 53
+world_phase1.abilities.ability_upgrade_snow_whiteout_54.name: Ability Upgrade Snow Whiteout 54
+world_phase1.abilities.ability_upgrade_snow_whiteout_55.name: Ability Upgrade Snow Whiteout 55
+world_phase1.abilities.ability_upgrade_snow_whiteout_56.name: Ability Upgrade Snow Whiteout 56
+world_phase1.abilities.ability_upgrade_snow_whiteout_57.name: Ability Upgrade Snow Whiteout 57
+world_phase1.abilities.ability_upgrade_snow_whiteout_58.name: Ability Upgrade Snow Whiteout 58
+world_phase1.abilities.ability_upgrade_snow_whiteout_59.name: Ability Upgrade Snow Whiteout 59
+world_phase1.abilities.ability_upgrade_snow_whiteout_60.name: Ability Upgrade Snow Whiteout 60
+world_phase1.abilities.ability_upgrade_snow_boss_01.name: Ability Upgrade Snow Boss 01
+world_phase1.abilities.ability_upgrade_snow_boss_02.name: Ability Upgrade Snow Boss 02
+world_phase1.abilities.ability_upgrade_snow_boss_03.name: Ability Upgrade Snow Boss 03
+world_phase1.abilities.ability_upgrade_snow_boss_04.name: Ability Upgrade Snow Boss 04
+world_phase1.abilities.ability_upgrade_snow_boss_05.name: Ability Upgrade Snow Boss 05
+world_phase1.abilities.ability_upgrade_snow_boss_06.name: Ability Upgrade Snow Boss 06
+world_phase1.abilities.ability_upgrade_snow_boss_07.name: Ability Upgrade Snow Boss 07
+world_phase1.abilities.ability_upgrade_snow_boss_08.name: Ability Upgrade Snow Boss 08
+world_phase1.abilities.ability_upgrade_snow_boss_09.name: Ability Upgrade Snow Boss 09
+world_phase1.abilities.ability_upgrade_snow_boss_10.name: Ability Upgrade Snow Boss 10
+world_phase1.abilities.ability_upgrade_snow_boss_11.name: Ability Upgrade Snow Boss 11
+world_phase1.abilities.ability_upgrade_snow_boss_12.name: Ability Upgrade Snow Boss 12
+world_phase1.abilities.ability_upgrade_snow_boss_13.name: Ability Upgrade Snow Boss 13
+world_phase1.abilities.ability_upgrade_snow_boss_14.name: Ability Upgrade Snow Boss 14
+world_phase1.abilities.ability_upgrade_snow_boss_15.name: Ability Upgrade Snow Boss 15
+world_phase1.abilities.ability_upgrade_snow_boss_16.name: Ability Upgrade Snow Boss 16
+world_phase1.abilities.ability_upgrade_snow_boss_17.name: Ability Upgrade Snow Boss 17
+world_phase1.abilities.ability_upgrade_snow_boss_18.name: Ability Upgrade Snow Boss 18
+world_phase1.abilities.ability_upgrade_snow_boss_19.name: Ability Upgrade Snow Boss 19
+world_phase1.abilities.ability_upgrade_snow_boss_20.name: Ability Upgrade Snow Boss 20
+world_phase1.abilities.ability_upgrade_snow_boss_21.name: Ability Upgrade Snow Boss 21
+world_phase1.abilities.ability_upgrade_snow_boss_22.name: Ability Upgrade Snow Boss 22
+world_phase1.abilities.ability_upgrade_snow_boss_23.name: Ability Upgrade Snow Boss 23
+world_phase1.abilities.ability_upgrade_snow_boss_24.name: Ability Upgrade Snow Boss 24
+world_phase1.abilities.ability_upgrade_snow_boss_25.name: Ability Upgrade Snow Boss 25
+world_phase1.abilities.ability_upgrade_snow_boss_26.name: Ability Upgrade Snow Boss 26
+world_phase1.abilities.ability_upgrade_snow_boss_27.name: Ability Upgrade Snow Boss 27
+world_phase1.abilities.ability_upgrade_snow_boss_28.name: Ability Upgrade Snow Boss 28
+world_phase1.abilities.ability_upgrade_snow_boss_29.name: Ability Upgrade Snow Boss 29
+world_phase1.abilities.ability_upgrade_snow_boss_30.name: Ability Upgrade Snow Boss 30
+world_phase1.abilities.ability_upgrade_snow_boss_31.name: Ability Upgrade Snow Boss 31
+world_phase1.abilities.ability_item_plains_consumable_001.name: Ability Item Plains Consumable 001
+world_phase1.abilities.ability_item_plains_consumable_002.name: Ability Item Plains Consumable 002
+world_phase1.abilities.ability_item_plains_consumable_003.name: Ability Item Plains Consumable 003
+world_phase1.abilities.ability_item_plains_consumable_004.name: Ability Item Plains Consumable 004
+world_phase1.abilities.ability_item_plains_consumable_005.name: Ability Item Plains Consumable 005
+world_phase1.abilities.ability_item_plains_consumable_006.name: Ability Item Plains Consumable 006
+world_phase1.abilities.ability_item_plains_consumable_007.name: Ability Item Plains Consumable 007
+world_phase1.abilities.ability_item_plains_consumable_008.name: Ability Item Plains Consumable 008
+world_phase1.abilities.ability_item_plains_consumable_009.name: Ability Item Plains Consumable 009
+world_phase1.abilities.ability_item_plains_consumable_010.name: Ability Item Plains Consumable 010
+world_phase1.abilities.ability_item_plains_consumable_011.name: Ability Item Plains Consumable 011
+world_phase1.abilities.ability_item_plains_consumable_012.name: Ability Item Plains Consumable 012
+world_phase1.abilities.ability_item_plains_consumable_013.name: Ability Item Plains Consumable 013
+world_phase1.abilities.ability_item_plains_consumable_014.name: Ability Item Plains Consumable 014
+world_phase1.abilities.ability_item_plains_consumable_015.name: Ability Item Plains Consumable 015
+world_phase1.abilities.ability_item_plains_consumable_016.name: Ability Item Plains Consumable 016
+world_phase1.abilities.ability_item_plains_consumable_017.name: Ability Item Plains Consumable 017
+world_phase1.abilities.ability_item_plains_consumable_018.name: Ability Item Plains Consumable 018
+world_phase1.abilities.ability_item_plains_consumable_019.name: Ability Item Plains Consumable 019
+world_phase1.abilities.ability_item_plains_consumable_020.name: Ability Item Plains Consumable 020
+world_phase1.abilities.ability_item_plains_consumable_021.name: Ability Item Plains Consumable 021
+world_phase1.abilities.ability_item_plains_consumable_022.name: Ability Item Plains Consumable 022
+world_phase1.abilities.ability_item_plains_consumable_023.name: Ability Item Plains Consumable 023
+world_phase1.abilities.ability_item_plains_consumable_024.name: Ability Item Plains Consumable 024
+world_phase1.abilities.ability_item_plains_consumable_025.name: Ability Item Plains Consumable 025
+world_phase1.abilities.ability_item_plains_consumable_026.name: Ability Item Plains Consumable 026
+world_phase1.abilities.ability_item_plains_consumable_027.name: Ability Item Plains Consumable 027
+world_phase1.abilities.ability_item_plains_consumable_028.name: Ability Item Plains Consumable 028
+world_phase1.abilities.ability_item_plains_consumable_029.name: Ability Item Plains Consumable 029
+world_phase1.abilities.ability_item_plains_consumable_030.name: Ability Item Plains Consumable 030
+world_phase1.abilities.ability_item_plains_consumable_031.name: Ability Item Plains Consumable 031
+world_phase1.abilities.ability_item_plains_consumable_032.name: Ability Item Plains Consumable 032
+world_phase1.abilities.ability_item_plains_consumable_033.name: Ability Item Plains Consumable 033
+world_phase1.abilities.ability_item_plains_consumable_034.name: Ability Item Plains Consumable 034
+world_phase1.abilities.ability_item_plains_consumable_035.name: Ability Item Plains Consumable 035
+world_phase1.abilities.ability_item_plains_consumable_036.name: Ability Item Plains Consumable 036
+world_phase1.abilities.ability_item_plains_consumable_037.name: Ability Item Plains Consumable 037
+world_phase1.abilities.ability_item_plains_consumable_038.name: Ability Item Plains Consumable 038
+world_phase1.abilities.ability_item_plains_consumable_039.name: Ability Item Plains Consumable 039
+world_phase1.abilities.ability_item_plains_consumable_040.name: Ability Item Plains Consumable 040
+world_phase1.abilities.ability_item_plains_consumable_041.name: Ability Item Plains Consumable 041
+world_phase1.abilities.ability_item_plains_consumable_042.name: Ability Item Plains Consumable 042
+world_phase1.abilities.ability_item_plains_consumable_043.name: Ability Item Plains Consumable 043
+world_phase1.abilities.ability_item_plains_consumable_044.name: Ability Item Plains Consumable 044
+world_phase1.abilities.ability_item_plains_consumable_045.name: Ability Item Plains Consumable 045
+world_phase1.abilities.ability_item_plains_consumable_046.name: Ability Item Plains Consumable 046
+world_phase1.abilities.ability_item_plains_consumable_047.name: Ability Item Plains Consumable 047
+world_phase1.abilities.ability_item_plains_consumable_048.name: Ability Item Plains Consumable 048
+world_phase1.abilities.ability_item_plains_consumable_049.name: Ability Item Plains Consumable 049
+world_phase1.abilities.ability_item_plains_consumable_050.name: Ability Item Plains Consumable 050
+world_phase1.abilities.ability_item_desert_consumable_001.name: Ability Item Desert Consumable 001
+world_phase1.abilities.ability_item_desert_consumable_002.name: Ability Item Desert Consumable 002
+world_phase1.abilities.ability_item_desert_consumable_003.name: Ability Item Desert Consumable 003
+world_phase1.abilities.ability_item_desert_consumable_004.name: Ability Item Desert Consumable 004
+world_phase1.abilities.ability_item_desert_consumable_005.name: Ability Item Desert Consumable 005
+world_phase1.abilities.ability_item_desert_consumable_006.name: Ability Item Desert Consumable 006
+world_phase1.abilities.ability_item_desert_consumable_007.name: Ability Item Desert Consumable 007
+world_phase1.abilities.ability_item_desert_consumable_008.name: Ability Item Desert Consumable 008
+world_phase1.abilities.ability_item_desert_consumable_009.name: Ability Item Desert Consumable 009
+world_phase1.abilities.ability_item_desert_consumable_010.name: Ability Item Desert Consumable 010
+world_phase1.abilities.ability_item_desert_consumable_011.name: Ability Item Desert Consumable 011
+world_phase1.abilities.ability_item_desert_consumable_012.name: Ability Item Desert Consumable 012
+world_phase1.abilities.ability_item_desert_consumable_013.name: Ability Item Desert Consumable 013
+world_phase1.abilities.ability_item_desert_consumable_014.name: Ability Item Desert Consumable 014
+world_phase1.abilities.ability_item_desert_consumable_015.name: Ability Item Desert Consumable 015
+world_phase1.abilities.ability_item_desert_consumable_016.name: Ability Item Desert Consumable 016
+world_phase1.abilities.ability_item_desert_consumable_017.name: Ability Item Desert Consumable 017
+world_phase1.abilities.ability_item_desert_consumable_018.name: Ability Item Desert Consumable 018
+world_phase1.abilities.ability_item_desert_consumable_019.name: Ability Item Desert Consumable 019
+world_phase1.abilities.ability_item_desert_consumable_020.name: Ability Item Desert Consumable 020
+world_phase1.abilities.ability_item_desert_consumable_021.name: Ability Item Desert Consumable 021
+world_phase1.abilities.ability_item_desert_consumable_022.name: Ability Item Desert Consumable 022
+world_phase1.abilities.ability_item_desert_consumable_023.name: Ability Item Desert Consumable 023
+world_phase1.abilities.ability_item_desert_consumable_024.name: Ability Item Desert Consumable 024
+world_phase1.abilities.ability_item_desert_consumable_025.name: Ability Item Desert Consumable 025
+world_phase1.abilities.ability_item_desert_consumable_026.name: Ability Item Desert Consumable 026
+world_phase1.abilities.ability_item_desert_consumable_027.name: Ability Item Desert Consumable 027
+world_phase1.abilities.ability_item_desert_consumable_028.name: Ability Item Desert Consumable 028
+world_phase1.abilities.ability_item_desert_consumable_029.name: Ability Item Desert Consumable 029
+world_phase1.abilities.ability_item_desert_consumable_030.name: Ability Item Desert Consumable 030
+world_phase1.abilities.ability_item_desert_consumable_031.name: Ability Item Desert Consumable 031
+world_phase1.abilities.ability_item_desert_consumable_032.name: Ability Item Desert Consumable 032
+world_phase1.abilities.ability_item_desert_consumable_033.name: Ability Item Desert Consumable 033
+world_phase1.abilities.ability_item_desert_consumable_034.name: Ability Item Desert Consumable 034
+world_phase1.abilities.ability_item_desert_consumable_035.name: Ability Item Desert Consumable 035
+world_phase1.abilities.ability_item_desert_consumable_036.name: Ability Item Desert Consumable 036
+world_phase1.abilities.ability_item_desert_consumable_037.name: Ability Item Desert Consumable 037
+world_phase1.abilities.ability_item_desert_consumable_038.name: Ability Item Desert Consumable 038
+world_phase1.abilities.ability_item_desert_consumable_039.name: Ability Item Desert Consumable 039
+world_phase1.abilities.ability_item_desert_consumable_040.name: Ability Item Desert Consumable 040
+world_phase1.abilities.ability_item_desert_consumable_041.name: Ability Item Desert Consumable 041
+world_phase1.abilities.ability_item_desert_consumable_042.name: Ability Item Desert Consumable 042
+world_phase1.abilities.ability_item_desert_consumable_043.name: Ability Item Desert Consumable 043
+world_phase1.abilities.ability_item_desert_consumable_044.name: Ability Item Desert Consumable 044
+world_phase1.abilities.ability_item_desert_consumable_045.name: Ability Item Desert Consumable 045
+world_phase1.abilities.ability_item_desert_consumable_046.name: Ability Item Desert Consumable 046
+world_phase1.abilities.ability_item_desert_consumable_047.name: Ability Item Desert Consumable 047
+world_phase1.abilities.ability_item_desert_consumable_048.name: Ability Item Desert Consumable 048
+world_phase1.abilities.ability_item_desert_consumable_049.name: Ability Item Desert Consumable 049
+world_phase1.abilities.ability_item_desert_consumable_050.name: Ability Item Desert Consumable 050
+world_phase1.abilities.ability_item_water_consumable_001.name: Ability Item Water Consumable 001
+world_phase1.abilities.ability_item_water_consumable_002.name: Ability Item Water Consumable 002
+world_phase1.abilities.ability_item_water_consumable_003.name: Ability Item Water Consumable 003
+world_phase1.abilities.ability_item_water_consumable_004.name: Ability Item Water Consumable 004
+world_phase1.abilities.ability_item_water_consumable_005.name: Ability Item Water Consumable 005
+world_phase1.abilities.ability_item_water_consumable_006.name: Ability Item Water Consumable 006
+world_phase1.abilities.ability_item_water_consumable_007.name: Ability Item Water Consumable 007
+world_phase1.abilities.ability_item_water_consumable_008.name: Ability Item Water Consumable 008
+world_phase1.abilities.ability_item_water_consumable_009.name: Ability Item Water Consumable 009
+world_phase1.abilities.ability_item_water_consumable_010.name: Ability Item Water Consumable 010
+world_phase1.abilities.ability_item_swamp_consumable_001.name: Ability Item Swamp Consumable 001
+world_phase1.abilities.ability_item_swamp_consumable_002.name: Ability Item Swamp Consumable 002
+world_phase1.abilities.ability_item_swamp_consumable_003.name: Ability Item Swamp Consumable 003
+world_phase1.abilities.ability_item_swamp_consumable_004.name: Ability Item Swamp Consumable 004
+world_phase1.abilities.ability_item_mushroom_consumable_001.name: Ability Item Mushroom Consumable 001
+world_phase1.abilities.ability_item_mushroom_consumable_002.name: Ability Item Mushroom Consumable 002
+world_phase1.abilities.ability_item_mushroom_consumable_003.name: Ability Item Mushroom Consumable 003
+world_phase1.abilities.ability_item_mushroom_consumable_004.name: Ability Item Mushroom Consumable 004
+world_phase1.abilities.ability_item_nether_consumable_001.name: Ability Item Nether Consumable 001
+world_phase1.abilities.ability_item_nether_consumable_002.name: Ability Item Nether Consumable 002
+world_phase1.abilities.ability_item_nether_consumable_003.name: Ability Item Nether Consumable 003
+world_phase1.abilities.ability_item_nether_consumable_004.name: Ability Item Nether Consumable 004
+world_phase1.abilities.ability_item_nether_consumable_005.name: Ability Item Nether Consumable 005
+world_phase1.abilities.ability_item_nether_consumable_006.name: Ability Item Nether Consumable 006
+world_phase1.abilities.ability_item_nether_consumable_007.name: Ability Item Nether Consumable 007
+world_phase1.abilities.ability_item_nether_consumable_008.name: Ability Item Nether Consumable 008
+world_phase1.abilities.ability_item_nether_consumable_009.name: Ability Item Nether Consumable 009
+world_phase1.abilities.ability_item_nether_consumable_010.name: Ability Item Nether Consumable 010
+world_phase1.abilities.ability_item_nether_consumable_011.name: Ability Item Nether Consumable 011
+world_phase1.abilities.ability_item_nether_consumable_012.name: Ability Item Nether Consumable 012
+world_phase1.abilities.ability_item_nether_consumable_013.name: Ability Item Nether Consumable 013
+world_phase1.abilities.ability_item_nether_consumable_014.name: Ability Item Nether Consumable 014
+world_phase1.abilities.ability_item_nether_consumable_015.name: Ability Item Nether Consumable 015
+world_phase1.abilities.ability_item_nether_consumable_016.name: Ability Item Nether Consumable 016
+world_phase1.abilities.ability_item_nether_consumable_017.name: Ability Item Nether Consumable 017
+world_phase1.abilities.ability_item_nether_consumable_018.name: Ability Item Nether Consumable 018
+world_phase1.abilities.ability_item_nether_consumable_019.name: Ability Item Nether Consumable 019
+world_phase1.abilities.ability_item_nether_consumable_020.name: Ability Item Nether Consumable 020
+world_phase1.abilities.ability_item_nether_consumable_021.name: Ability Item Nether Consumable 021
+world_phase1.abilities.ability_item_nether_consumable_022.name: Ability Item Nether Consumable 022
+world_phase1.abilities.ability_item_nether_consumable_023.name: Ability Item Nether Consumable 023
+world_phase1.abilities.ability_item_nether_consumable_024.name: Ability Item Nether Consumable 024
+world_phase1.abilities.ability_item_nether_consumable_025.name: Ability Item Nether Consumable 025
+world_phase1.abilities.ability_item_nether_consumable_026.name: Ability Item Nether Consumable 026
+world_phase1.abilities.ability_item_nether_consumable_027.name: Ability Item Nether Consumable 027
+world_phase1.abilities.ability_item_nether_consumable_028.name: Ability Item Nether Consumable 028
+world_phase1.abilities.ability_item_nether_consumable_029.name: Ability Item Nether Consumable 029
+world_phase1.abilities.ability_item_nether_consumable_030.name: Ability Item Nether Consumable 030
+world_phase1.abilities.ability_item_dark_oak_consumable_001.name: Ability Item Dark Oak Consumable 001
+world_phase1.abilities.ability_item_dark_oak_consumable_002.name: Ability Item Dark Oak Consumable 002
+world_phase1.abilities.ability_item_dark_oak_consumable_003.name: Ability Item Dark Oak Consumable 003
+world_phase1.abilities.ability_item_dark_oak_consumable_004.name: Ability Item Dark Oak Consumable 004
+world_phase1.abilities.ability_item_dark_oak_consumable_005.name: Ability Item Dark Oak Consumable 005
+world_phase1.abilities.ability_item_dark_oak_consumable_006.name: Ability Item Dark Oak Consumable 006
+world_phase1.abilities.ability_item_dark_oak_consumable_007.name: Ability Item Dark Oak Consumable 007
+world_phase1.abilities.ability_item_dark_oak_consumable_008.name: Ability Item Dark Oak Consumable 008
+world_phase1.abilities.ability_item_dark_oak_consumable_009.name: Ability Item Dark Oak Consumable 009
+world_phase1.abilities.ability_item_dark_oak_consumable_010.name: Ability Item Dark Oak Consumable 010
+world_phase1.abilities.ability_item_dark_oak_consumable_011.name: Ability Item Dark Oak Consumable 011
+world_phase1.abilities.ability_item_dark_oak_consumable_012.name: Ability Item Dark Oak Consumable 012
+world_phase1.abilities.ability_item_dark_oak_consumable_013.name: Ability Item Dark Oak Consumable 013
+world_phase1.abilities.ability_item_dark_oak_consumable_014.name: Ability Item Dark Oak Consumable 014
+world_phase1.abilities.ability_item_dark_oak_consumable_015.name: Ability Item Dark Oak Consumable 015
+world_phase1.abilities.ability_item_dark_oak_consumable_016.name: Ability Item Dark Oak Consumable 016
+world_phase1.abilities.ability_item_dark_oak_consumable_017.name: Ability Item Dark Oak Consumable 017
+world_phase1.abilities.ability_item_dark_oak_consumable_018.name: Ability Item Dark Oak Consumable 018
+world_phase1.abilities.ability_item_dark_oak_consumable_019.name: Ability Item Dark Oak Consumable 019
+world_phase1.abilities.ability_item_dark_oak_consumable_020.name: Ability Item Dark Oak Consumable 020
+world_phase1.abilities.ability_item_dark_oak_consumable_021.name: Ability Item Dark Oak Consumable 021
+world_phase1.abilities.ability_item_dark_oak_consumable_022.name: Ability Item Dark Oak Consumable 022
+world_phase1.abilities.ability_item_dark_oak_consumable_023.name: Ability Item Dark Oak Consumable 023
+world_phase1.abilities.ability_item_dark_oak_consumable_024.name: Ability Item Dark Oak Consumable 024
+world_phase1.abilities.ability_item_dark_oak_consumable_025.name: Ability Item Dark Oak Consumable 025
+world_phase1.abilities.ability_item_dark_oak_consumable_026.name: Ability Item Dark Oak Consumable 026
+world_phase1.abilities.ability_item_dark_oak_consumable_027.name: Ability Item Dark Oak Consumable 027
+world_phase1.abilities.ability_item_dark_oak_consumable_028.name: Ability Item Dark Oak Consumable 028
+world_phase1.abilities.ability_item_dark_oak_consumable_029.name: Ability Item Dark Oak Consumable 029
+world_phase1.abilities.ability_item_dark_oak_consumable_030.name: Ability Item Dark Oak Consumable 030
+world_phase1.abilities.ability_item_dark_oak_consumable_031.name: Ability Item Dark Oak Consumable 031
+world_phase1.abilities.ability_item_dark_oak_consumable_032.name: Ability Item Dark Oak Consumable 032
+world_phase1.abilities.ability_item_dark_oak_consumable_033.name: Ability Item Dark Oak Consumable 033
+world_phase1.abilities.ability_item_dark_oak_consumable_034.name: Ability Item Dark Oak Consumable 034
+world_phase1.abilities.ability_item_dark_oak_consumable_035.name: Ability Item Dark Oak Consumable 035
+world_phase1.abilities.ability_item_dark_oak_consumable_036.name: Ability Item Dark Oak Consumable 036
+world_phase1.abilities.ability_item_dark_oak_consumable_037.name: Ability Item Dark Oak Consumable 037
+world_phase1.abilities.ability_item_dark_oak_consumable_038.name: Ability Item Dark Oak Consumable 038
+world_phase1.abilities.ability_item_dark_oak_consumable_039.name: Ability Item Dark Oak Consumable 039
+world_phase1.abilities.ability_item_dark_oak_consumable_040.name: Ability Item Dark Oak Consumable 040
+world_phase1.abilities.ability_item_dark_oak_consumable_041.name: Ability Item Dark Oak Consumable 041
+world_phase1.abilities.ability_item_dark_oak_consumable_042.name: Ability Item Dark Oak Consumable 042
+world_phase1.abilities.ability_item_dark_oak_consumable_043.name: Ability Item Dark Oak Consumable 043
+world_phase1.abilities.ability_item_dark_oak_consumable_044.name: Ability Item Dark Oak Consumable 044
+world_phase1.abilities.ability_item_dark_oak_consumable_045.name: Ability Item Dark Oak Consumable 045
+world_phase1.abilities.ability_item_dark_oak_consumable_046.name: Ability Item Dark Oak Consumable 046
+world_phase1.abilities.ability_item_dark_oak_consumable_047.name: Ability Item Dark Oak Consumable 047
+world_phase1.abilities.ability_item_dark_oak_consumable_048.name: Ability Item Dark Oak Consumable 048
+world_phase1.abilities.ability_item_dark_oak_consumable_049.name: Ability Item Dark Oak Consumable 049
+world_phase1.abilities.ability_item_dark_oak_consumable_050.name: Ability Item Dark Oak Consumable 050
+world_phase1.abilities.ability_item_highlands_consumable_001.name: Ability Item Highlands Consumable 001
+world_phase1.abilities.ability_item_highlands_consumable_002.name: Ability Item Highlands Consumable 002
+world_phase1.abilities.ability_item_highlands_consumable_003.name: Ability Item Highlands Consumable 003
+world_phase1.abilities.ability_item_highlands_consumable_004.name: Ability Item Highlands Consumable 004
+world_phase1.abilities.ability_item_highlands_consumable_005.name: Ability Item Highlands Consumable 005
+world_phase1.abilities.ability_item_highlands_consumable_006.name: Ability Item Highlands Consumable 006
+world_phase1.abilities.ability_item_highlands_consumable_007.name: Ability Item Highlands Consumable 007
+world_phase1.abilities.ability_item_highlands_consumable_008.name: Ability Item Highlands Consumable 008
+world_phase1.abilities.ability_item_highlands_consumable_009.name: Ability Item Highlands Consumable 009
+world_phase1.abilities.ability_item_highlands_consumable_010.name: Ability Item Highlands Consumable 010
+world_phase1.abilities.ability_item_highlands_consumable_011.name: Ability Item Highlands Consumable 011
+world_phase1.abilities.ability_item_highlands_consumable_012.name: Ability Item Highlands Consumable 012
+world_phase1.abilities.ability_item_highlands_consumable_013.name: Ability Item Highlands Consumable 013
+world_phase1.abilities.ability_item_highlands_consumable_014.name: Ability Item Highlands Consumable 014
+world_phase1.abilities.ability_item_highlands_consumable_015.name: Ability Item Highlands Consumable 015
+world_phase1.abilities.ability_item_lowlands_consumable_001.name: Ability Item Lowlands Consumable 001
+world_phase1.abilities.ability_item_lowlands_consumable_002.name: Ability Item Lowlands Consumable 002
+world_phase1.abilities.ability_item_lowlands_consumable_003.name: Ability Item Lowlands Consumable 003
+world_phase1.abilities.ability_item_lowlands_consumable_004.name: Ability Item Lowlands Consumable 004
+world_phase1.abilities.ability_item_lowlands_consumable_005.name: Ability Item Lowlands Consumable 005
+world_phase1.abilities.ability_item_lowlands_consumable_006.name: Ability Item Lowlands Consumable 006
+world_phase1.abilities.ability_item_lowlands_consumable_007.name: Ability Item Lowlands Consumable 007
+world_phase1.abilities.ability_item_lowlands_consumable_008.name: Ability Item Lowlands Consumable 008
+world_phase1.abilities.ability_item_lowlands_consumable_009.name: Ability Item Lowlands Consumable 009
+world_phase1.abilities.ability_item_lowlands_consumable_010.name: Ability Item Lowlands Consumable 010
+world_phase1.abilities.ability_item_lowlands_consumable_011.name: Ability Item Lowlands Consumable 011
+world_phase1.abilities.ability_item_lowlands_consumable_012.name: Ability Item Lowlands Consumable 012
+world_phase1.abilities.ability_item_lowlands_consumable_013.name: Ability Item Lowlands Consumable 013
+world_phase1.abilities.ability_item_lowlands_consumable_014.name: Ability Item Lowlands Consumable 014
+world_phase1.abilities.ability_item_lowlands_consumable_015.name: Ability Item Lowlands Consumable 015
+world_phase1.abilities.ability_item_lowlands_consumable_016.name: Ability Item Lowlands Consumable 016
+world_phase1.abilities.ability_item_lowlands_consumable_017.name: Ability Item Lowlands Consumable 017
+world_phase1.abilities.ability_item_lowlands_consumable_018.name: Ability Item Lowlands Consumable 018
+world_phase1.abilities.ability_item_lowlands_consumable_019.name: Ability Item Lowlands Consumable 019
+world_phase1.abilities.ability_item_lowlands_consumable_020.name: Ability Item Lowlands Consumable 020
+world_phase1.abilities.ability_item_lowlands_consumable_021.name: Ability Item Lowlands Consumable 021
+world_phase1.abilities.ability_item_lowlands_consumable_022.name: Ability Item Lowlands Consumable 022
+world_phase1.abilities.ability_item_lowlands_consumable_023.name: Ability Item Lowlands Consumable 023
+world_phase1.abilities.ability_item_lowlands_consumable_024.name: Ability Item Lowlands Consumable 024
+world_phase1.abilities.ability_item_lowlands_consumable_025.name: Ability Item Lowlands Consumable 025
+world_phase1.abilities.ability_item_lowlands_consumable_026.name: Ability Item Lowlands Consumable 026
+world_phase1.abilities.ability_item_lowlands_consumable_027.name: Ability Item Lowlands Consumable 027
+world_phase1.abilities.ability_item_lowlands_consumable_028.name: Ability Item Lowlands Consumable 028
+world_phase1.abilities.ability_item_lowlands_consumable_029.name: Ability Item Lowlands Consumable 029
+world_phase1.abilities.ability_item_lowlands_consumable_030.name: Ability Item Lowlands Consumable 030
+world_phase1.abilities.ability_item_lowlands_consumable_031.name: Ability Item Lowlands Consumable 031
+world_phase1.abilities.ability_item_lowlands_consumable_032.name: Ability Item Lowlands Consumable 032
+world_phase1.abilities.ability_item_lowlands_consumable_033.name: Ability Item Lowlands Consumable 033
+world_phase1.abilities.ability_item_lowlands_consumable_034.name: Ability Item Lowlands Consumable 034
+world_phase1.abilities.ability_item_lowlands_consumable_035.name: Ability Item Lowlands Consumable 035
+world_phase1.abilities.ability_item_lowlands_consumable_036.name: Ability Item Lowlands Consumable 036
+world_phase1.abilities.ability_item_lowlands_consumable_037.name: Ability Item Lowlands Consumable 037
+world_phase1.abilities.ability_item_lowlands_consumable_038.name: Ability Item Lowlands Consumable 038
+world_phase1.abilities.ability_item_lowlands_consumable_039.name: Ability Item Lowlands Consumable 039
+world_phase1.abilities.ability_item_lowlands_consumable_040.name: Ability Item Lowlands Consumable 040
+world_phase1.abilities.ability_item_lowlands_consumable_041.name: Ability Item Lowlands Consumable 041
+world_phase1.abilities.ability_item_lowlands_consumable_042.name: Ability Item Lowlands Consumable 042
+world_phase1.abilities.ability_item_lowlands_consumable_043.name: Ability Item Lowlands Consumable 043
+world_phase1.abilities.ability_item_lowlands_consumable_044.name: Ability Item Lowlands Consumable 044
+world_phase1.abilities.ability_item_lowlands_consumable_045.name: Ability Item Lowlands Consumable 045
+world_phase1.abilities.ability_item_lowlands_consumable_046.name: Ability Item Lowlands Consumable 046
+world_phase1.abilities.ability_item_lowlands_consumable_047.name: Ability Item Lowlands Consumable 047
+world_phase1.abilities.ability_item_lowlands_consumable_048.name: Ability Item Lowlands Consumable 048
+world_phase1.abilities.ability_item_lowlands_consumable_049.name: Ability Item Lowlands Consumable 049
+world_phase1.abilities.ability_item_lowlands_consumable_050.name: Ability Item Lowlands Consumable 050
+world_phase1.abilities.ability_item_lowlands_consumable_051.name: Ability Item Lowlands Consumable 051
+world_phase1.abilities.ability_item_lowlands_consumable_052.name: Ability Item Lowlands Consumable 052
+world_phase1.abilities.ability_item_lowlands_consumable_053.name: Ability Item Lowlands Consumable 053
+world_phase1.abilities.ability_item_lowlands_consumable_054.name: Ability Item Lowlands Consumable 054
+world_phase1.abilities.ability_item_lowlands_consumable_055.name: Ability Item Lowlands Consumable 055
+world_phase1.abilities.ability_item_lowlands_consumable_056.name: Ability Item Lowlands Consumable 056
+world_phase1.abilities.ability_item_lowlands_consumable_057.name: Ability Item Lowlands Consumable 057
+world_phase1.abilities.ability_item_lowlands_consumable_058.name: Ability Item Lowlands Consumable 058
+world_phase1.abilities.ability_item_lowlands_consumable_059.name: Ability Item Lowlands Consumable 059
+world_phase1.abilities.ability_item_lowlands_consumable_060.name: Ability Item Lowlands Consumable 060
+world_phase1.abilities.ability_item_lowlands_consumable_061.name: Ability Item Lowlands Consumable 061
+world_phase1.abilities.ability_item_lowlands_consumable_062.name: Ability Item Lowlands Consumable 062
+world_phase1.abilities.ability_item_lowlands_consumable_063.name: Ability Item Lowlands Consumable 063
+world_phase1.abilities.ability_item_lowlands_consumable_064.name: Ability Item Lowlands Consumable 064
+world_phase1.abilities.ability_item_lowlands_consumable_065.name: Ability Item Lowlands Consumable 065
+world_phase1.abilities.ability_item_lowlands_consumable_066.name: Ability Item Lowlands Consumable 066
+world_phase1.abilities.ability_item_lowlands_consumable_067.name: Ability Item Lowlands Consumable 067
+world_phase1.abilities.ability_item_lowlands_consumable_068.name: Ability Item Lowlands Consumable 068
+world_phase1.abilities.ability_item_lowlands_consumable_069.name: Ability Item Lowlands Consumable 069
+world_phase1.abilities.ability_item_lowlands_consumable_070.name: Ability Item Lowlands Consumable 070
+world_phase1.abilities.ability_item_lowlands_consumable_071.name: Ability Item Lowlands Consumable 071
+world_phase1.abilities.ability_item_lowlands_consumable_072.name: Ability Item Lowlands Consumable 072
+world_phase1.abilities.ability_item_lowlands_consumable_073.name: Ability Item Lowlands Consumable 073
+world_phase1.abilities.ability_item_lowlands_consumable_074.name: Ability Item Lowlands Consumable 074
+world_phase1.abilities.ability_item_lowlands_consumable_075.name: Ability Item Lowlands Consumable 075
+world_phase1.abilities.ability_item_lowlands_consumable_076.name: Ability Item Lowlands Consumable 076
+world_phase1.abilities.ability_item_lowlands_consumable_077.name: Ability Item Lowlands Consumable 077
+world_phase1.abilities.ability_item_lowlands_consumable_078.name: Ability Item Lowlands Consumable 078
+world_phase1.abilities.ability_item_lowlands_consumable_079.name: Ability Item Lowlands Consumable 079
+world_phase1.abilities.ability_item_lowlands_consumable_080.name: Ability Item Lowlands Consumable 080
+world_phase1.abilities.ability_item_lowlands_consumable_081.name: Ability Item Lowlands Consumable 081
+world_phase1.abilities.ability_item_lowlands_consumable_082.name: Ability Item Lowlands Consumable 082
+world_phase1.abilities.ability_item_lowlands_consumable_083.name: Ability Item Lowlands Consumable 083
+world_phase1.abilities.ability_item_lowlands_consumable_084.name: Ability Item Lowlands Consumable 084
+world_phase1.abilities.ability_item_lowlands_consumable_085.name: Ability Item Lowlands Consumable 085
+world_phase1.abilities.ability_item_lowlands_consumable_086.name: Ability Item Lowlands Consumable 086
+world_phase1.abilities.ability_item_lowlands_consumable_087.name: Ability Item Lowlands Consumable 087
+world_phase1.abilities.ability_item_lowlands_consumable_088.name: Ability Item Lowlands Consumable 088
+world_phase1.abilities.ability_item_lowlands_consumable_089.name: Ability Item Lowlands Consumable 089
+world_phase1.abilities.ability_item_lowlands_consumable_090.name: Ability Item Lowlands Consumable 090
+world_phase1.abilities.ability_item_lowlands_consumable_091.name: Ability Item Lowlands Consumable 091
+world_phase1.abilities.ability_item_lowlands_consumable_092.name: Ability Item Lowlands Consumable 092
+world_phase1.abilities.ability_item_lowlands_consumable_093.name: Ability Item Lowlands Consumable 093
+world_phase1.abilities.ability_item_lowlands_consumable_094.name: Ability Item Lowlands Consumable 094
+world_phase1.abilities.ability_item_lowlands_consumable_095.name: Ability Item Lowlands Consumable 095
+world_phase1.abilities.ability_item_lowlands_consumable_096.name: Ability Item Lowlands Consumable 096
+world_phase1.abilities.ability_item_lowlands_consumable_097.name: Ability Item Lowlands Consumable 097
+world_phase1.abilities.ability_item_lowlands_consumable_098.name: Ability Item Lowlands Consumable 098
+world_phase1.abilities.ability_item_lowlands_consumable_099.name: Ability Item Lowlands Consumable 099
+world_phase1.abilities.ability_item_lowlands_consumable_100.name: Ability Item Lowlands Consumable 100
+world_phase1.abilities.ability_item_snow_consumable_001.name: Ability Item Snow Consumable 001
+world_phase1.abilities.ability_item_snow_consumable_002.name: Ability Item Snow Consumable 002
+world_phase1.abilities.ability_item_snow_consumable_003.name: Ability Item Snow Consumable 003
+world_phase1.abilities.ability_item_snow_consumable_004.name: Ability Item Snow Consumable 004
+world_phase1.abilities.ability_item_snow_consumable_005.name: Ability Item Snow Consumable 005
+world_phase1.abilities.ability_item_snow_consumable_006.name: Ability Item Snow Consumable 006
+world_phase1.abilities.ability_item_snow_consumable_007.name: Ability Item Snow Consumable 007
+world_phase1.abilities.ability_item_snow_consumable_008.name: Ability Item Snow Consumable 008
+world_phase1.abilities.ability_item_snow_consumable_009.name: Ability Item Snow Consumable 009
+world_phase1.abilities.ability_item_snow_consumable_010.name: Ability Item Snow Consumable 010
+world_phase1.abilities.ability_item_snow_consumable_011.name: Ability Item Snow Consumable 011
+world_phase1.abilities.ability_item_snow_consumable_012.name: Ability Item Snow Consumable 012
+world_phase1.abilities.ability_item_snow_consumable_013.name: Ability Item Snow Consumable 013
+world_phase1.abilities.ability_item_snow_consumable_014.name: Ability Item Snow Consumable 014
+world_phase1.abilities.ability_item_snow_consumable_015.name: Ability Item Snow Consumable 015
+world_phase1.abilities.ability_item_snow_consumable_016.name: Ability Item Snow Consumable 016
+world_phase1.abilities.ability_item_snow_consumable_017.name: Ability Item Snow Consumable 017
+world_phase1.abilities.ability_item_snow_consumable_018.name: Ability Item Snow Consumable 018
+world_phase1.abilities.ability_item_snow_consumable_019.name: Ability Item Snow Consumable 019
+world_phase1.abilities.ability_item_snow_consumable_020.name: Ability Item Snow Consumable 020
+world_phase1.abilities.ability_item_snow_consumable_021.name: Ability Item Snow Consumable 021
+world_phase1.abilities.ability_item_snow_consumable_022.name: Ability Item Snow Consumable 022
+world_phase1.abilities.ability_item_snow_consumable_023.name: Ability Item Snow Consumable 023
+world_phase1.abilities.ability_item_snow_consumable_024.name: Ability Item Snow Consumable 024
+world_phase1.abilities.ability_item_snow_consumable_025.name: Ability Item Snow Consumable 025
+world_phase1.abilities.ability_item_snow_consumable_026.name: Ability Item Snow Consumable 026
+world_phase1.abilities.ability_item_snow_consumable_027.name: Ability Item Snow Consumable 027
+world_phase1.abilities.ability_item_snow_consumable_028.name: Ability Item Snow Consumable 028
+world_phase1.abilities.ability_item_snow_consumable_029.name: Ability Item Snow Consumable 029
+world_phase1.abilities.ability_item_snow_consumable_030.name: Ability Item Snow Consumable 030
+world_phase1.abilities.ability_item_snow_consumable_031.name: Ability Item Snow Consumable 031
+world_phase1.abilities.ability_item_snow_consumable_032.name: Ability Item Snow Consumable 032
+world_phase1.abilities.ability_item_snow_consumable_033.name: Ability Item Snow Consumable 033
+world_phase1.abilities.ability_item_snow_consumable_034.name: Ability Item Snow Consumable 034
+world_phase1.abilities.ability_item_snow_consumable_035.name: Ability Item Snow Consumable 035
+world_phase1.abilities.ability_item_snow_consumable_036.name: Ability Item Snow Consumable 036
+world_phase1.abilities.ability_item_snow_consumable_037.name: Ability Item Snow Consumable 037
+world_phase1.abilities.ability_item_snow_consumable_038.name: Ability Item Snow Consumable 038
+world_phase1.abilities.ability_item_snow_consumable_039.name: Ability Item Snow Consumable 039
+world_phase1.abilities.ability_item_snow_consumable_040.name: Ability Item Snow Consumable 040
+world_phase1.abilities.ability_item_snow_consumable_041.name: Ability Item Snow Consumable 041
+world_phase1.abilities.ability_item_snow_consumable_042.name: Ability Item Snow Consumable 042
+world_phase1.abilities.ability_item_snow_consumable_043.name: Ability Item Snow Consumable 043
+world_phase1.abilities.ability_item_snow_consumable_044.name: Ability Item Snow Consumable 044
+world_phase1.abilities.ability_item_snow_consumable_045.name: Ability Item Snow Consumable 045
+world_phase1.abilities.ability_item_snow_consumable_046.name: Ability Item Snow Consumable 046
+world_phase1.abilities.ability_item_snow_consumable_047.name: Ability Item Snow Consumable 047
+world_phase1.abilities.ability_item_snow_consumable_048.name: Ability Item Snow Consumable 048
+world_phase1.abilities.ability_item_snow_consumable_049.name: Ability Item Snow Consumable 049
+world_phase1.abilities.ability_item_snow_consumable_050.name: Ability Item Snow Consumable 050
+world_phase1.abilities.ability_item_snow_consumable_051.name: Ability Item Snow Consumable 051
+world_phase1.abilities.ability_item_snow_consumable_052.name: Ability Item Snow Consumable 052
+world_phase1.abilities.ability_item_snow_consumable_053.name: Ability Item Snow Consumable 053
+world_phase1.abilities.ability_item_snow_consumable_054.name: Ability Item Snow Consumable 054
+world_phase1.abilities.ability_item_snow_consumable_055.name: Ability Item Snow Consumable 055
+world_phase1.abilities.ability_item_snow_consumable_056.name: Ability Item Snow Consumable 056
+world_phase1.abilities.ability_item_snow_consumable_057.name: Ability Item Snow Consumable 057
+world_phase1.abilities.ability_item_snow_consumable_058.name: Ability Item Snow Consumable 058
+world_phase1.abilities.ability_item_snow_consumable_059.name: Ability Item Snow Consumable 059
+world_phase1.abilities.ability_item_snow_consumable_060.name: Ability Item Snow Consumable 060
+world_phase1.abilities.ability_item_snow_consumable_061.name: Ability Item Snow Consumable 061
+world_phase1.abilities.ability_item_snow_consumable_062.name: Ability Item Snow Consumable 062
+world_phase1.abilities.ability_item_snow_consumable_063.name: Ability Item Snow Consumable 063
+world_phase1.abilities.ability_item_snow_consumable_064.name: Ability Item Snow Consumable 064
+world_phase1.abilities.ability_item_snow_consumable_065.name: Ability Item Snow Consumable 065
+world_phase1.abilities.ability_item_snow_consumable_066.name: Ability Item Snow Consumable 066
+world_phase1.abilities.ability_item_snow_consumable_067.name: Ability Item Snow Consumable 067
+world_phase1.abilities.ability_item_snow_consumable_068.name: Ability Item Snow Consumable 068
+world_phase1.abilities.ability_item_snow_consumable_069.name: Ability Item Snow Consumable 069
+world_phase1.abilities.ability_item_snow_consumable_070.name: Ability Item Snow Consumable 070
+world_phase1.abilities.ability_item_snow_consumable_071.name: Ability Item Snow Consumable 071
+world_phase1.abilities.ability_item_snow_consumable_072.name: Ability Item Snow Consumable 072
+world_phase1.abilities.ability_item_snow_consumable_073.name: Ability Item Snow Consumable 073
+world_phase1.abilities.ability_item_snow_consumable_074.name: Ability Item Snow Consumable 074
+world_phase1.abilities.ability_item_snow_consumable_075.name: Ability Item Snow Consumable 075
+world_phase1.abilities.ability_item_snow_consumable_076.name: Ability Item Snow Consumable 076
+world_phase1.abilities.ability_item_snow_consumable_077.name: Ability Item Snow Consumable 077
+world_phase1.abilities.ability_item_snow_consumable_078.name: Ability Item Snow Consumable 078
+world_phase1.abilities.ability_item_snow_consumable_079.name: Ability Item Snow Consumable 079
+world_phase1.abilities.ability_item_snow_consumable_080.name: Ability Item Snow Consumable 080
+world_phase1.abilities.ability_item_snow_consumable_081.name: Ability Item Snow Consumable 081
+world_phase1.abilities.ability_item_snow_consumable_082.name: Ability Item Snow Consumable 082
+world_phase1.abilities.ability_item_snow_consumable_083.name: Ability Item Snow Consumable 083
+world_phase1.abilities.ability_item_snow_consumable_084.name: Ability Item Snow Consumable 084
+world_phase1.abilities.ability_item_snow_consumable_085.name: Ability Item Snow Consumable 085
+world_phase1.abilities.ability_item_snow_consumable_086.name: Ability Item Snow Consumable 086
+world_phase1.abilities.ability_item_snow_consumable_087.name: Ability Item Snow Consumable 087
+world_phase1.abilities.ability_item_snow_consumable_088.name: Ability Item Snow Consumable 088
+world_phase1.abilities.ability_item_snow_consumable_089.name: Ability Item Snow Consumable 089
+world_phase1.abilities.ability_item_snow_consumable_090.name: Ability Item Snow Consumable 090
+world_phase1.abilities.ability_item_snow_consumable_091.name: Ability Item Snow Consumable 091
+world_phase1.abilities.ability_item_snow_consumable_092.name: Ability Item Snow Consumable 092
+world_phase1.abilities.ability_item_snow_consumable_093.name: Ability Item Snow Consumable 093
+world_phase1.abilities.ability_item_snow_consumable_094.name: Ability Item Snow Consumable 094
+world_phase1.abilities.ability_item_snow_consumable_095.name: Ability Item Snow Consumable 095
+world_phase1.abilities.ability_item_snow_consumable_096.name: Ability Item Snow Consumable 096
+world_phase1.abilities.ability_item_snow_consumable_097.name: Ability Item Snow Consumable 097
+world_phase1.abilities.ability_item_snow_consumable_098.name: Ability Item Snow Consumable 098
+world_phase1.abilities.ability_item_snow_consumable_099.name: Ability Item Snow Consumable 099
+world_phase1.abilities.ability_item_snow_consumable_100.name: Ability Item Snow Consumable 100
+world_phase1.abilities.ability_item_snow_consumable_101.name: Ability Item Snow Consumable 101
+world_phase1.abilities.ability_item_snow_consumable_102.name: Ability Item Snow Consumable 102
+world_phase1.abilities.ability_item_snow_consumable_103.name: Ability Item Snow Consumable 103
+world_phase1.abilities.ability_item_snow_consumable_104.name: Ability Item Snow Consumable 104
+world_phase1.abilities.ability_item_snow_consumable_105.name: Ability Item Snow Consumable 105
+world_phase1.abilities.ability_item_snow_consumable_106.name: Ability Item Snow Consumable 106
+world_phase1.abilities.ability_item_snow_consumable_107.name: Ability Item Snow Consumable 107
+world_phase1.abilities.ability_item_snow_consumable_108.name: Ability Item Snow Consumable 108
+world_phase1.abilities.ability_item_snow_consumable_109.name: Ability Item Snow Consumable 109
+world_phase1.abilities.ability_item_snow_consumable_110.name: Ability Item Snow Consumable 110
+world_phase1.abilities.ability_item_snow_consumable_111.name: Ability Item Snow Consumable 111
+world_phase1.abilities.ability_item_snow_consumable_112.name: Ability Item Snow Consumable 112
+world_phase1.abilities.ability_item_snow_consumable_113.name: Ability Item Snow Consumable 113
+world_phase1.abilities.ability_item_snow_consumable_114.name: Ability Item Snow Consumable 114
+world_phase1.abilities.ability_item_snow_consumable_115.name: Ability Item Snow Consumable 115
+world_phase1.abilities.ability_item_snow_consumable_116.name: Ability Item Snow Consumable 116
+world_phase1.abilities.ability_item_snow_consumable_117.name: Ability Item Snow Consumable 117
+world_phase1.abilities.ability_item_snow_consumable_118.name: Ability Item Snow Consumable 118
+world_phase1.abilities.ability_item_snow_consumable_119.name: Ability Item Snow Consumable 119
+world_phase1.abilities.ability_item_snow_consumable_120.name: Ability Item Snow Consumable 120
+world_phase1.abilities.ability_item_snow_consumable_121.name: Ability Item Snow Consumable 121
+world_phase1.abilities.ability_item_snow_consumable_122.name: Ability Item Snow Consumable 122
+world_phase1.abilities.ability_item_snow_consumable_123.name: Ability Item Snow Consumable 123
+world_phase1.abilities.ability_item_snow_consumable_124.name: Ability Item Snow Consumable 124
+world_phase1.abilities.ability_item_snow_consumable_125.name: Ability Item Snow Consumable 125
+world_phase1.abilities.ability_item_snow_consumable_126.name: Ability Item Snow Consumable 126
+world_phase1.abilities.ability_item_snow_consumable_127.name: Ability Item Snow Consumable 127
+world_phase1.abilities.ability_item_snow_consumable_128.name: Ability Item Snow Consumable 128
+world_phase1.abilities.ability_item_snow_consumable_129.name: Ability Item Snow Consumable 129
+world_phase1.abilities.ability_item_snow_consumable_130.name: Ability Item Snow Consumable 130
+world_phase1.abilities.ability_item_snow_consumable_131.name: Ability Item Snow Consumable 131
+world_phase1.abilities.ability_item_snow_consumable_132.name: Ability Item Snow Consumable 132
+world_phase1.abilities.ability_item_snow_consumable_133.name: Ability Item Snow Consumable 133
+world_phase1.abilities.ability_item_snow_consumable_134.name: Ability Item Snow Consumable 134
+world_phase1.abilities.ability_item_snow_consumable_135.name: Ability Item Snow Consumable 135
+world_phase1.abilities.ability_item_snow_consumable_136.name: Ability Item Snow Consumable 136
+world_phase1.abilities.ability_item_snow_consumable_137.name: Ability Item Snow Consumable 137
+world_phase1.abilities.ability_item_snow_consumable_138.name: Ability Item Snow Consumable 138
+world_phase1.abilities.ability_item_snow_consumable_139.name: Ability Item Snow Consumable 139
+world_phase1.abilities.ability_item_snow_consumable_140.name: Ability Item Snow Consumable 140
+world_phase1.abilities.ability_item_snow_consumable_141.name: Ability Item Snow Consumable 141
+world_phase1.abilities.ability_item_snow_consumable_142.name: Ability Item Snow Consumable 142
+world_phase1.abilities.ability_item_snow_consumable_143.name: Ability Item Snow Consumable 143
+world_phase1.abilities.ability_item_snow_consumable_144.name: Ability Item Snow Consumable 144
+world_phase1.abilities.ability_item_snow_consumable_145.name: Ability Item Snow Consumable 145
+world_phase1.abilities.ability_item_snow_consumable_146.name: Ability Item Snow Consumable 146
+world_phase1.abilities.ability_item_snow_consumable_147.name: Ability Item Snow Consumable 147
+world_phase1.abilities.ability_item_snow_consumable_148.name: Ability Item Snow Consumable 148
+world_phase1.abilities.ability_item_snow_consumable_149.name: Ability Item Snow Consumable 149
+world_phase1.abilities.ability_item_snow_consumable_150.name: Ability Item Snow Consumable 150
+world_phase1.abilities.ability_item_snow_consumable_151.name: Ability Item Snow Consumable 151
+world_phase1.abilities.ability_item_snow_consumable_152.name: Ability Item Snow Consumable 152
+world_phase1.abilities.ability_item_snow_consumable_153.name: Ability Item Snow Consumable 153
+world_phase1.abilities.ability_item_snow_consumable_154.name: Ability Item Snow Consumable 154
+world_phase1.abilities.ability_item_snow_consumable_155.name: Ability Item Snow Consumable 155
+world_phase1.abilities.ability_item_snow_consumable_156.name: Ability Item Snow Consumable 156
+world_phase1.abilities.ability_item_snow_consumable_157.name: Ability Item Snow Consumable 157
+world_phase1.abilities.ability_item_snow_consumable_158.name: Ability Item Snow Consumable 158
+world_phase1.abilities.ability_item_snow_consumable_159.name: Ability Item Snow Consumable 159
+world_phase1.abilities.ability_item_snow_consumable_160.name: Ability Item Snow Consumable 160
+world_phase1.abilities.ability_item_snow_consumable_161.name: Ability Item Snow Consumable 161
+world_phase1.abilities.ability_item_snow_consumable_162.name: Ability Item Snow Consumable 162
+world_phase1.abilities.ability_item_snow_consumable_163.name: Ability Item Snow Consumable 163
+world_phase1.abilities.ability_item_snow_consumable_164.name: Ability Item Snow Consumable 164
+world_phase1.abilities.ability_item_snow_consumable_165.name: Ability Item Snow Consumable 165
+world_phase1.abilities.ability_item_snow_consumable_166.name: Ability Item Snow Consumable 166
+world_phase1.abilities.ability_item_snow_consumable_167.name: Ability Item Snow Consumable 167
+world_phase1.abilities.ability_item_snow_consumable_168.name: Ability Item Snow Consumable 168
+world_phase1.abilities.ability_item_snow_consumable_169.name: Ability Item Snow Consumable 169
+world_phase1.abilities.ability_item_snow_consumable_170.name: Ability Item Snow Consumable 170
+world_phase1.abilities.ability_item_snow_consumable_171.name: Ability Item Snow Consumable 171
+world_phase1.abilities.ability_item_snow_consumable_172.name: Ability Item Snow Consumable 172
+world_phase1.abilities.ability_item_snow_consumable_173.name: Ability Item Snow Consumable 173
+world_phase1.abilities.ability_item_snow_consumable_174.name: Ability Item Snow Consumable 174
+world_phase1.abilities.ability_item_snow_consumable_175.name: Ability Item Snow Consumable 175
+world_phase1.abilities.ability_item_snow_consumable_176.name: Ability Item Snow Consumable 176
+world_phase1.abilities.ability_item_snow_consumable_177.name: Ability Item Snow Consumable 177
+world_phase1.abilities.ability_item_snow_consumable_178.name: Ability Item Snow Consumable 178
+world_phase1.abilities.ability_item_snow_consumable_179.name: Ability Item Snow Consumable 179
+world_phase1.abilities.ability_item_snow_consumable_180.name: Ability Item Snow Consumable 180
+world_phase1.abilities.ability_item_snow_consumable_181.name: Ability Item Snow Consumable 181
+world_phase1.abilities.ability_item_snow_consumable_182.name: Ability Item Snow Consumable 182
+world_phase1.abilities.ability_item_snow_consumable_183.name: Ability Item Snow Consumable 183
+world_phase1.abilities.ability_item_snow_consumable_184.name: Ability Item Snow Consumable 184
+world_phase1.abilities.ability_item_snow_consumable_185.name: Ability Item Snow Consumable 185
+world_phase1.abilities.ability_item_snow_consumable_186.name: Ability Item Snow Consumable 186
+world_phase1.abilities.ability_item_snow_consumable_187.name: Ability Item Snow Consumable 187
+world_phase1.abilities.ability_item_snow_consumable_188.name: Ability Item Snow Consumable 188
+world_phase1.abilities.ability_item_snow_consumable_189.name: Ability Item Snow Consumable 189
+world_phase1.abilities.ability_item_snow_consumable_190.name: Ability Item Snow Consumable 190
+world_phase1.abilities.ability_item_snow_consumable_191.name: Ability Item Snow Consumable 191
+world_phase1.abilities.ability_item_snow_consumable_192.name: Ability Item Snow Consumable 192
+world_phase1.abilities.ability_item_snow_consumable_193.name: Ability Item Snow Consumable 193
+world_phase1.abilities.ability_item_snow_consumable_194.name: Ability Item Snow Consumable 194
+world_phase1.abilities.ability_item_snow_consumable_195.name: Ability Item Snow Consumable 195
+world_phase1.abilities.ability_item_snow_consumable_196.name: Ability Item Snow Consumable 196
+world_phase1.abilities.ability_item_snow_consumable_197.name: Ability Item Snow Consumable 197
+world_phase1.abilities.ability_item_snow_consumable_198.name: Ability Item Snow Consumable 198
+world_phase1.abilities.ability_item_snow_consumable_199.name: Ability Item Snow Consumable 199
+world_phase1.abilities.ability_item_snow_consumable_200.name: Ability Item Snow Consumable 200
+world_phase1.quests.quest_plains_kill_001.name: Plains Hunt 1
+world_phase1.quests.quest_plains_kill_002.name: Plains Hunt 2
+world_phase1.quests.quest_plains_kill_003.name: Plains Hunt 3
+world_phase1.quests.quest_plains_kill_004.name: Plains Hunt 4
+world_phase1.quests.quest_plains_kill_005.name: Plains Hunt 5
+world_phase1.quests.quest_plains_gather_006.name: Plains Gather 6
+world_phase1.quests.quest_plains_gather_007.name: Plains Gather 7
+world_phase1.quests.quest_plains_explore_008.name: Plains Explore 8
+world_phase1.quests.quest_plains_boss_009.name: Plains Boss Hunt 9
+world_phase1.quests.quest_plains_kill_010.name: Plains Hunt 10
+world_phase1.quests.quest_plains_kill_011.name: Plains Hunt 11
+world_phase1.quests.quest_plains_kill_012.name: Plains Hunt 12
+world_phase1.quests.quest_plains_kill_013.name: Plains Hunt 13
+world_phase1.quests.quest_plains_kill_014.name: Plains Hunt 14
+world_phase1.quests.quest_plains_kill_015.name: Plains Hunt 15
+world_phase1.quests.quest_plains_gather_016.name: Plains Gather 16
+world_phase1.quests.quest_plains_gather_017.name: Plains Gather 17
+world_phase1.quests.quest_plains_explore_018.name: Plains Explore 18
+world_phase1.quests.quest_plains_boss_019.name: Plains Boss Hunt 19
+world_phase1.quests.quest_plains_kill_020.name: Plains Hunt 20
+world_phase1.quests.quest_plains_kill_021.name: Plains Hunt 21
+world_phase1.quests.quest_plains_kill_022.name: Plains Hunt 22
+world_phase1.quests.quest_plains_kill_023.name: Plains Hunt 23
+world_phase1.quests.quest_plains_kill_024.name: Plains Hunt 24
+world_phase1.quests.quest_plains_kill_025.name: Plains Hunt 25
+world_phase1.quests.quest_plains_gather_026.name: Plains Gather 26
+world_phase1.quests.quest_plains_gather_027.name: Plains Gather 27
+world_phase1.quests.quest_plains_explore_028.name: Plains Explore 28
+world_phase1.quests.quest_plains_boss_029.name: Plains Boss Hunt 29
+world_phase1.quests.quest_plains_kill_030.name: Plains Hunt 30
+world_phase1.quests.quest_desert_kill_001.name: Desert Hunt 1
+world_phase1.quests.quest_desert_kill_002.name: Desert Hunt 2
+world_phase1.quests.quest_desert_kill_003.name: Desert Hunt 3
+world_phase1.quests.quest_desert_kill_004.name: Desert Hunt 4
+world_phase1.quests.quest_desert_kill_005.name: Desert Hunt 5
+world_phase1.quests.quest_desert_gather_006.name: Desert Gather 6
+world_phase1.quests.quest_desert_gather_007.name: Desert Gather 7
+world_phase1.quests.quest_desert_explore_008.name: Desert Explore 8
+world_phase1.quests.quest_desert_boss_009.name: Desert Boss Hunt 9
+world_phase1.quests.quest_desert_kill_010.name: Desert Hunt 10
+world_phase1.quests.quest_desert_kill_011.name: Desert Hunt 11
+world_phase1.quests.quest_desert_kill_012.name: Desert Hunt 12
+world_phase1.quests.quest_desert_kill_013.name: Desert Hunt 13
+world_phase1.quests.quest_desert_kill_014.name: Desert Hunt 14
+world_phase1.quests.quest_desert_kill_015.name: Desert Hunt 15
+world_phase1.quests.quest_desert_gather_016.name: Desert Gather 16
+world_phase1.quests.quest_desert_gather_017.name: Desert Gather 17
+world_phase1.quests.quest_desert_explore_018.name: Desert Explore 18
+world_phase1.quests.quest_desert_boss_019.name: Desert Boss Hunt 19
+world_phase1.quests.quest_desert_kill_020.name: Desert Hunt 20
+world_phase1.quests.quest_desert_kill_021.name: Desert Hunt 21
+world_phase1.quests.quest_desert_kill_022.name: Desert Hunt 22
+world_phase1.quests.quest_desert_kill_023.name: Desert Hunt 23
+world_phase1.quests.quest_desert_kill_024.name: Desert Hunt 24
+world_phase1.quests.quest_desert_kill_025.name: Desert Hunt 25
+world_phase1.quests.quest_desert_gather_026.name: Desert Gather 26
+world_phase1.quests.quest_desert_gather_027.name: Desert Gather 27
+world_phase1.quests.quest_desert_explore_028.name: Desert Explore 28
+world_phase1.quests.quest_desert_boss_029.name: Desert Boss Hunt 29
+world_phase1.quests.quest_desert_kill_030.name: Desert Hunt 30
+world_phase1.quests.quest_desert_kill_031.name: Desert Hunt 31
+world_phase1.quests.quest_desert_kill_032.name: Desert Hunt 32
+world_phase1.quests.quest_desert_kill_033.name: Desert Hunt 33
+world_phase1.quests.quest_desert_kill_034.name: Desert Hunt 34
+world_phase1.quests.quest_desert_kill_035.name: Desert Hunt 35
+world_phase1.quests.quest_desert_gather_036.name: Desert Gather 36
+world_phase1.quests.quest_desert_gather_037.name: Desert Gather 37
+world_phase1.quests.quest_desert_explore_038.name: Desert Explore 38
+world_phase1.quests.quest_desert_boss_039.name: Desert Boss Hunt 39
+world_phase1.quests.quest_desert_kill_040.name: Desert Hunt 40
+world_phase1.quests.quest_desert_kill_041.name: Desert Hunt 41
+world_phase1.quests.quest_desert_kill_042.name: Desert Hunt 42
+world_phase1.quests.quest_desert_kill_043.name: Desert Hunt 43
+world_phase1.quests.quest_desert_kill_044.name: Desert Hunt 44
+world_phase1.quests.quest_desert_kill_045.name: Desert Hunt 45
+world_phase1.quests.quest_desert_gather_046.name: Desert Gather 46
+world_phase1.quests.quest_desert_gather_047.name: Desert Gather 47
+world_phase1.quests.quest_desert_explore_048.name: Desert Explore 48
+world_phase1.quests.quest_desert_boss_049.name: Desert Boss Hunt 49
+world_phase1.quests.quest_desert_kill_050.name: Desert Hunt 50
+world_phase1.quests.quest_desert_kill_051.name: Desert Hunt 51
+world_phase1.quests.quest_desert_kill_052.name: Desert Hunt 52
+world_phase1.quests.quest_desert_kill_053.name: Desert Hunt 53
+world_phase1.quests.quest_desert_kill_054.name: Desert Hunt 54
+world_phase1.quests.quest_desert_kill_055.name: Desert Hunt 55
+world_phase1.quests.quest_desert_gather_056.name: Desert Gather 56
+world_phase1.quests.quest_desert_gather_057.name: Desert Gather 57
+world_phase1.quests.quest_desert_explore_058.name: Desert Explore 58
+world_phase1.quests.quest_desert_boss_059.name: Desert Boss Hunt 59
+world_phase1.quests.quest_desert_kill_060.name: Desert Hunt 60
+world_phase1.quests.quest_desert_kill_061.name: Desert Hunt 61
+world_phase1.quests.quest_desert_kill_062.name: Desert Hunt 62
+world_phase1.quests.quest_desert_kill_063.name: Desert Hunt 63
+world_phase1.quests.quest_desert_kill_064.name: Desert Hunt 64
+world_phase1.quests.quest_desert_kill_065.name: Desert Hunt 65
+world_phase1.quests.quest_desert_gather_066.name: Desert Gather 66
+world_phase1.quests.quest_desert_gather_067.name: Desert Gather 67
+world_phase1.quests.quest_desert_explore_068.name: Desert Explore 68
+world_phase1.quests.quest_desert_boss_069.name: Desert Boss Hunt 69
+world_phase1.quests.quest_desert_kill_070.name: Desert Hunt 70
+world_phase1.quests.quest_desert_kill_071.name: Desert Hunt 71
+world_phase1.quests.quest_desert_kill_072.name: Desert Hunt 72
+world_phase1.quests.quest_desert_kill_073.name: Desert Hunt 73
+world_phase1.quests.quest_desert_kill_074.name: Desert Hunt 74
+world_phase1.quests.quest_desert_kill_075.name: Desert Hunt 75
+world_phase1.quests.quest_desert_gather_076.name: Desert Gather 76
+world_phase1.quests.quest_desert_gather_077.name: Desert Gather 77
+world_phase1.quests.quest_desert_explore_078.name: Desert Explore 78
+world_phase1.quests.quest_desert_boss_079.name: Desert Boss Hunt 79
+world_phase1.quests.quest_desert_kill_080.name: Desert Hunt 80
+world_phase1.quests.quest_water_kill_001.name: Water Hunt 1
+world_phase1.quests.quest_water_kill_002.name: Water Hunt 2
+world_phase1.quests.quest_water_kill_003.name: Water Hunt 3
+world_phase1.quests.quest_water_kill_004.name: Water Hunt 4
+world_phase1.quests.quest_water_kill_005.name: Water Hunt 5
+world_phase1.quests.quest_water_gather_006.name: Water Gather 6
+world_phase1.quests.quest_water_gather_007.name: Water Gather 7
+world_phase1.quests.quest_water_explore_008.name: Water Explore 8
+world_phase1.quests.quest_water_elite_009.name: Water Elite Hunt 9
+world_phase1.quests.quest_water_kill_010.name: Water Hunt 10
+world_phase1.quests.quest_water_kill_011.name: Water Hunt 11
+world_phase1.quests.quest_water_kill_012.name: Water Hunt 12
+world_phase1.quests.quest_water_kill_013.name: Water Hunt 13
+world_phase1.quests.quest_water_kill_014.name: Water Hunt 14
+world_phase1.quests.quest_water_kill_015.name: Water Hunt 15
+world_phase1.quests.quest_water_gather_016.name: Water Gather 16
+world_phase1.quests.quest_water_gather_017.name: Water Gather 17
+world_phase1.quests.quest_water_explore_018.name: Water Explore 18
+world_phase1.quests.quest_water_elite_019.name: Water Elite Hunt 19
+world_phase1.quests.quest_water_kill_020.name: Water Hunt 20
+world_phase1.quests.quest_swamp_kill_001.name: Swamp Hunt 1
+world_phase1.quests.quest_swamp_kill_002.name: Swamp Hunt 2
+world_phase1.quests.quest_swamp_kill_003.name: Swamp Hunt 3
+world_phase1.quests.quest_swamp_kill_004.name: Swamp Hunt 4
+world_phase1.quests.quest_swamp_kill_005.name: Swamp Hunt 5
+world_phase1.quests.quest_swamp_gather_006.name: Swamp Gather 6
+world_phase1.quests.quest_swamp_gather_007.name: Swamp Gather 7
+world_phase1.quests.quest_swamp_explore_008.name: Swamp Explore 8
+world_phase1.quests.quest_swamp_elite_009.name: Swamp Elite Hunt 9
+world_phase1.quests.quest_swamp_kill_010.name: Swamp Hunt 10
+world_phase1.quests.quest_swamp_kill_011.name: Swamp Hunt 11
+world_phase1.quests.quest_swamp_kill_012.name: Swamp Hunt 12
+world_phase1.quests.quest_swamp_kill_013.name: Swamp Hunt 13
+world_phase1.quests.quest_swamp_kill_014.name: Swamp Hunt 14
+world_phase1.quests.quest_swamp_kill_015.name: Swamp Hunt 15
+world_phase1.quests.quest_mushroom_kill_001.name: Mushroom Hunt 1
+world_phase1.quests.quest_mushroom_kill_002.name: Mushroom Hunt 2
+world_phase1.quests.quest_mushroom_kill_003.name: Mushroom Hunt 3
+world_phase1.quests.quest_mushroom_kill_004.name: Mushroom Hunt 4
+world_phase1.quests.quest_mushroom_kill_005.name: Mushroom Hunt 5
+world_phase1.quests.quest_mushroom_gather_006.name: Mushroom Gather 6
+world_phase1.quests.quest_mushroom_gather_007.name: Mushroom Gather 7
+world_phase1.quests.quest_mushroom_explore_008.name: Mushroom Explore 8
+world_phase1.quests.quest_mushroom_elite_009.name: Mushroom Elite Hunt 9
+world_phase1.quests.quest_mushroom_kill_010.name: Mushroom Hunt 10
+world_phase1.quests.quest_mushroom_kill_011.name: Mushroom Hunt 11
+world_phase1.quests.quest_mushroom_kill_012.name: Mushroom Hunt 12
+world_phase1.quests.quest_mushroom_kill_013.name: Mushroom Hunt 13
+world_phase1.quests.quest_mushroom_kill_014.name: Mushroom Hunt 14
+world_phase1.quests.quest_mushroom_kill_015.name: Mushroom Hunt 15
+world_phase1.quests.quest_nether_kill_001.name: Nether Hunt 1
+world_phase1.quests.quest_nether_kill_002.name: Nether Hunt 2
+world_phase1.quests.quest_nether_kill_003.name: Nether Hunt 3
+world_phase1.quests.quest_nether_kill_004.name: Nether Hunt 4
+world_phase1.quests.quest_nether_kill_005.name: Nether Hunt 5
+world_phase1.quests.quest_nether_gather_006.name: Nether Gather 6
+world_phase1.quests.quest_nether_gather_007.name: Nether Gather 7
+world_phase1.quests.quest_nether_explore_008.name: Nether Explore 8
+world_phase1.quests.quest_nether_boss_009.name: Nether Boss Hunt 9
+world_phase1.quests.quest_nether_kill_010.name: Nether Hunt 10
+world_phase1.quests.quest_nether_kill_011.name: Nether Hunt 11
+world_phase1.quests.quest_nether_kill_012.name: Nether Hunt 12
+world_phase1.quests.quest_nether_kill_013.name: Nether Hunt 13
+world_phase1.quests.quest_nether_kill_014.name: Nether Hunt 14
+world_phase1.quests.quest_nether_kill_015.name: Nether Hunt 15
+world_phase1.quests.quest_nether_gather_016.name: Nether Gather 16
+world_phase1.quests.quest_nether_gather_017.name: Nether Gather 17
+world_phase1.quests.quest_nether_explore_018.name: Nether Explore 18
+world_phase1.quests.quest_nether_boss_019.name: Nether Boss Hunt 19
+world_phase1.quests.quest_nether_kill_020.name: Nether Hunt 20
+world_phase1.quests.quest_nether_kill_021.name: Nether Hunt 21
+world_phase1.quests.quest_nether_kill_022.name: Nether Hunt 22
+world_phase1.quests.quest_nether_kill_023.name: Nether Hunt 23
+world_phase1.quests.quest_nether_kill_024.name: Nether Hunt 24
+world_phase1.quests.quest_nether_kill_025.name: Nether Hunt 25
+world_phase1.quests.quest_nether_gather_026.name: Nether Gather 26
+world_phase1.quests.quest_nether_gather_027.name: Nether Gather 27
+world_phase1.quests.quest_nether_explore_028.name: Nether Explore 28
+world_phase1.quests.quest_nether_boss_029.name: Nether Boss Hunt 29
+world_phase1.quests.quest_nether_kill_030.name: Nether Hunt 30
+world_phase1.quests.quest_nether_kill_031.name: Nether Hunt 31
+world_phase1.quests.quest_nether_kill_032.name: Nether Hunt 32
+world_phase1.quests.quest_nether_kill_033.name: Nether Hunt 33
+world_phase1.quests.quest_nether_kill_034.name: Nether Hunt 34
+world_phase1.quests.quest_nether_kill_035.name: Nether Hunt 35
+world_phase1.quests.quest_nether_gather_036.name: Nether Gather 36
+world_phase1.quests.quest_nether_gather_037.name: Nether Gather 37
+world_phase1.quests.quest_nether_explore_038.name: Nether Explore 38
+world_phase1.quests.quest_nether_boss_039.name: Nether Boss Hunt 39
+world_phase1.quests.quest_nether_kill_040.name: Nether Hunt 40
+world_phase1.quests.quest_dark_oak_kill_001.name: Dark_Oak Hunt 1
+world_phase1.quests.quest_dark_oak_kill_002.name: Dark_Oak Hunt 2
+world_phase1.quests.quest_dark_oak_kill_003.name: Dark_Oak Hunt 3
+world_phase1.quests.quest_dark_oak_kill_004.name: Dark_Oak Hunt 4
+world_phase1.quests.quest_dark_oak_kill_005.name: Dark_Oak Hunt 5
+world_phase1.quests.quest_dark_oak_gather_006.name: Dark_Oak Gather 6
+world_phase1.quests.quest_dark_oak_gather_007.name: Dark_Oak Gather 7
+world_phase1.quests.quest_dark_oak_explore_008.name: Dark_Oak Explore 8
+world_phase1.quests.quest_dark_oak_boss_009.name: Dark_Oak Boss Hunt 9
+world_phase1.quests.quest_dark_oak_kill_010.name: Dark_Oak Hunt 10
+world_phase1.quests.quest_dark_oak_kill_011.name: Dark_Oak Hunt 11
+world_phase1.quests.quest_dark_oak_kill_012.name: Dark_Oak Hunt 12
+world_phase1.quests.quest_dark_oak_kill_013.name: Dark_Oak Hunt 13
+world_phase1.quests.quest_dark_oak_kill_014.name: Dark_Oak Hunt 14
+world_phase1.quests.quest_dark_oak_kill_015.name: Dark_Oak Hunt 15
+world_phase1.quests.quest_dark_oak_gather_016.name: Dark_Oak Gather 16
+world_phase1.quests.quest_dark_oak_gather_017.name: Dark_Oak Gather 17
+world_phase1.quests.quest_dark_oak_explore_018.name: Dark_Oak Explore 18
+world_phase1.quests.quest_dark_oak_boss_019.name: Dark_Oak Boss Hunt 19
+world_phase1.quests.quest_dark_oak_kill_020.name: Dark_Oak Hunt 20
+world_phase1.quests.quest_dark_oak_kill_021.name: Dark_Oak Hunt 21
+world_phase1.quests.quest_dark_oak_kill_022.name: Dark_Oak Hunt 22
+world_phase1.quests.quest_dark_oak_kill_023.name: Dark_Oak Hunt 23
+world_phase1.quests.quest_dark_oak_kill_024.name: Dark_Oak Hunt 24
+world_phase1.quests.quest_dark_oak_kill_025.name: Dark_Oak Hunt 25
+world_phase1.quests.quest_dark_oak_gather_026.name: Dark_Oak Gather 26
+world_phase1.quests.quest_dark_oak_gather_027.name: Dark_Oak Gather 27
+world_phase1.quests.quest_dark_oak_explore_028.name: Dark_Oak Explore 28
+world_phase1.quests.quest_dark_oak_boss_029.name: Dark_Oak Boss Hunt 29
+world_phase1.quests.quest_dark_oak_kill_030.name: Dark_Oak Hunt 30
+world_phase1.quests.quest_dark_oak_kill_031.name: Dark_Oak Hunt 31
+world_phase1.quests.quest_dark_oak_kill_032.name: Dark_Oak Hunt 32
+world_phase1.quests.quest_dark_oak_kill_033.name: Dark_Oak Hunt 33
+world_phase1.quests.quest_dark_oak_kill_034.name: Dark_Oak Hunt 34
+world_phase1.quests.quest_dark_oak_kill_035.name: Dark_Oak Hunt 35
+world_phase1.quests.quest_dark_oak_gather_036.name: Dark_Oak Gather 36
+world_phase1.quests.quest_dark_oak_gather_037.name: Dark_Oak Gather 37
+world_phase1.quests.quest_dark_oak_explore_038.name: Dark_Oak Explore 38
+world_phase1.quests.quest_dark_oak_boss_039.name: Dark_Oak Boss Hunt 39
+world_phase1.quests.quest_dark_oak_kill_040.name: Dark_Oak Hunt 40
+world_phase1.quests.quest_dark_oak_kill_041.name: Dark_Oak Hunt 41
+world_phase1.quests.quest_dark_oak_kill_042.name: Dark_Oak Hunt 42
+world_phase1.quests.quest_dark_oak_kill_043.name: Dark_Oak Hunt 43
+world_phase1.quests.quest_dark_oak_kill_044.name: Dark_Oak Hunt 44
+world_phase1.quests.quest_dark_oak_kill_045.name: Dark_Oak Hunt 45
+world_phase1.quests.quest_dark_oak_gather_046.name: Dark_Oak Gather 46
+world_phase1.quests.quest_dark_oak_gather_047.name: Dark_Oak Gather 47
+world_phase1.quests.quest_dark_oak_explore_048.name: Dark_Oak Explore 48
+world_phase1.quests.quest_dark_oak_boss_049.name: Dark_Oak Boss Hunt 49
+world_phase1.quests.quest_dark_oak_kill_050.name: Dark_Oak Hunt 50
+world_phase1.quests.quest_highlands_kill_001.name: Highlands Hunt 1
+world_phase1.quests.quest_highlands_kill_002.name: Highlands Hunt 2
+world_phase1.quests.quest_highlands_kill_003.name: Highlands Hunt 3
+world_phase1.quests.quest_highlands_kill_004.name: Highlands Hunt 4
+world_phase1.quests.quest_highlands_kill_005.name: Highlands Hunt 5
+world_phase1.quests.quest_highlands_gather_006.name: Highlands Gather 6
+world_phase1.quests.quest_highlands_gather_007.name: Highlands Gather 7
+world_phase1.quests.quest_highlands_explore_008.name: Highlands Explore 8
+world_phase1.quests.quest_highlands_boss_009.name: Highlands Boss Hunt 9
+world_phase1.quests.quest_highlands_kill_010.name: Highlands Hunt 10
+world_phase1.quests.quest_highlands_kill_011.name: Highlands Hunt 11
+world_phase1.quests.quest_highlands_kill_012.name: Highlands Hunt 12
+world_phase1.quests.quest_highlands_kill_013.name: Highlands Hunt 13
+world_phase1.quests.quest_highlands_kill_014.name: Highlands Hunt 14
+world_phase1.quests.quest_highlands_kill_015.name: Highlands Hunt 15
+world_phase1.quests.quest_highlands_gather_016.name: Highlands Gather 16
+world_phase1.quests.quest_highlands_gather_017.name: Highlands Gather 17
+world_phase1.quests.quest_highlands_explore_018.name: Highlands Explore 18
+world_phase1.quests.quest_highlands_boss_019.name: Highlands Boss Hunt 19
+world_phase1.quests.quest_highlands_kill_020.name: Highlands Hunt 20
+world_phase1.quests.quest_highlands_kill_021.name: Highlands Hunt 21
+world_phase1.quests.quest_highlands_kill_022.name: Highlands Hunt 22
+world_phase1.quests.quest_highlands_kill_023.name: Highlands Hunt 23
+world_phase1.quests.quest_highlands_kill_024.name: Highlands Hunt 24
+world_phase1.quests.quest_highlands_kill_025.name: Highlands Hunt 25
+world_phase1.quests.quest_highlands_gather_026.name: Highlands Gather 26
+world_phase1.quests.quest_highlands_gather_027.name: Highlands Gather 27
+world_phase1.quests.quest_highlands_explore_028.name: Highlands Explore 28
+world_phase1.quests.quest_highlands_boss_029.name: Highlands Boss Hunt 29
+world_phase1.quests.quest_highlands_kill_030.name: Highlands Hunt 30
+world_phase1.quests.quest_highlands_kill_031.name: Highlands Hunt 31
+world_phase1.quests.quest_highlands_kill_032.name: Highlands Hunt 32
+world_phase1.quests.quest_highlands_kill_033.name: Highlands Hunt 33
+world_phase1.quests.quest_highlands_kill_034.name: Highlands Hunt 34
+world_phase1.quests.quest_highlands_kill_035.name: Highlands Hunt 35
+world_phase1.quests.quest_lowlands_kill_001.name: Lowlands Hunt 1
+world_phase1.quests.quest_lowlands_kill_002.name: Lowlands Hunt 2
+world_phase1.quests.quest_lowlands_kill_003.name: Lowlands Hunt 3
+world_phase1.quests.quest_lowlands_kill_004.name: Lowlands Hunt 4
+world_phase1.quests.quest_lowlands_kill_005.name: Lowlands Hunt 5
+world_phase1.quests.quest_lowlands_gather_006.name: Lowlands Gather 6
+world_phase1.quests.quest_lowlands_gather_007.name: Lowlands Gather 7
+world_phase1.quests.quest_lowlands_explore_008.name: Lowlands Explore 8
+world_phase1.quests.quest_lowlands_boss_009.name: Lowlands Boss Hunt 9
+world_phase1.quests.quest_lowlands_kill_010.name: Lowlands Hunt 10
+world_phase1.quests.quest_lowlands_kill_011.name: Lowlands Hunt 11
+world_phase1.quests.quest_lowlands_kill_012.name: Lowlands Hunt 12
+world_phase1.quests.quest_lowlands_kill_013.name: Lowlands Hunt 13
+world_phase1.quests.quest_lowlands_kill_014.name: Lowlands Hunt 14
+world_phase1.quests.quest_lowlands_kill_015.name: Lowlands Hunt 15
+world_phase1.quests.quest_lowlands_gather_016.name: Lowlands Gather 16
+world_phase1.quests.quest_lowlands_gather_017.name: Lowlands Gather 17
+world_phase1.quests.quest_lowlands_explore_018.name: Lowlands Explore 18
+world_phase1.quests.quest_lowlands_boss_019.name: Lowlands Boss Hunt 19
+world_phase1.quests.quest_lowlands_kill_020.name: Lowlands Hunt 20
+world_phase1.quests.quest_lowlands_kill_021.name: Lowlands Hunt 21
+world_phase1.quests.quest_lowlands_kill_022.name: Lowlands Hunt 22
+world_phase1.quests.quest_lowlands_kill_023.name: Lowlands Hunt 23
+world_phase1.quests.quest_lowlands_kill_024.name: Lowlands Hunt 24
+world_phase1.quests.quest_lowlands_kill_025.name: Lowlands Hunt 25
+world_phase1.quests.quest_lowlands_gather_026.name: Lowlands Gather 26
+world_phase1.quests.quest_lowlands_gather_027.name: Lowlands Gather 27
+world_phase1.quests.quest_lowlands_explore_028.name: Lowlands Explore 28
+world_phase1.quests.quest_lowlands_boss_029.name: Lowlands Boss Hunt 29
+world_phase1.quests.quest_lowlands_kill_030.name: Lowlands Hunt 30
+world_phase1.quests.quest_lowlands_kill_031.name: Lowlands Hunt 31
+world_phase1.quests.quest_lowlands_kill_032.name: Lowlands Hunt 32
+world_phase1.quests.quest_lowlands_kill_033.name: Lowlands Hunt 33
+world_phase1.quests.quest_lowlands_kill_034.name: Lowlands Hunt 34
+world_phase1.quests.quest_lowlands_kill_035.name: Lowlands Hunt 35
+world_phase1.quests.quest_lowlands_gather_036.name: Lowlands Gather 36
+world_phase1.quests.quest_lowlands_gather_037.name: Lowlands Gather 37
+world_phase1.quests.quest_lowlands_explore_038.name: Lowlands Explore 38
+world_phase1.quests.quest_lowlands_boss_039.name: Lowlands Boss Hunt 39
+world_phase1.quests.quest_lowlands_kill_040.name: Lowlands Hunt 40
+world_phase1.quests.quest_lowlands_kill_041.name: Lowlands Hunt 41
+world_phase1.quests.quest_lowlands_kill_042.name: Lowlands Hunt 42
+world_phase1.quests.quest_lowlands_kill_043.name: Lowlands Hunt 43
+world_phase1.quests.quest_lowlands_kill_044.name: Lowlands Hunt 44
+world_phase1.quests.quest_lowlands_kill_045.name: Lowlands Hunt 45
+world_phase1.quests.quest_lowlands_gather_046.name: Lowlands Gather 46
+world_phase1.quests.quest_lowlands_gather_047.name: Lowlands Gather 47
+world_phase1.quests.quest_lowlands_explore_048.name: Lowlands Explore 48
+world_phase1.quests.quest_lowlands_boss_049.name: Lowlands Boss Hunt 49
+world_phase1.quests.quest_lowlands_kill_050.name: Lowlands Hunt 50
+world_phase1.quests.quest_lowlands_kill_051.name: Lowlands Hunt 51
+world_phase1.quests.quest_lowlands_kill_052.name: Lowlands Hunt 52
+world_phase1.quests.quest_lowlands_kill_053.name: Lowlands Hunt 53
+world_phase1.quests.quest_lowlands_kill_054.name: Lowlands Hunt 54
+world_phase1.quests.quest_lowlands_kill_055.name: Lowlands Hunt 55
+world_phase1.quests.quest_lowlands_gather_056.name: Lowlands Gather 56
+world_phase1.quests.quest_lowlands_gather_057.name: Lowlands Gather 57
+world_phase1.quests.quest_lowlands_explore_058.name: Lowlands Explore 58
+world_phase1.quests.quest_lowlands_boss_059.name: Lowlands Boss Hunt 59
+world_phase1.quests.quest_lowlands_kill_060.name: Lowlands Hunt 60
+world_phase1.quests.quest_lowlands_kill_061.name: Lowlands Hunt 61
+world_phase1.quests.quest_lowlands_kill_062.name: Lowlands Hunt 62
+world_phase1.quests.quest_lowlands_kill_063.name: Lowlands Hunt 63
+world_phase1.quests.quest_lowlands_kill_064.name: Lowlands Hunt 64
+world_phase1.quests.quest_lowlands_kill_065.name: Lowlands Hunt 65
+world_phase1.quests.quest_lowlands_gather_066.name: Lowlands Gather 66
+world_phase1.quests.quest_lowlands_gather_067.name: Lowlands Gather 67
+world_phase1.quests.quest_lowlands_explore_068.name: Lowlands Explore 68
+world_phase1.quests.quest_lowlands_boss_069.name: Lowlands Boss Hunt 69
+world_phase1.quests.quest_lowlands_kill_070.name: Lowlands Hunt 70
+world_phase1.quests.quest_lowlands_kill_071.name: Lowlands Hunt 71
+world_phase1.quests.quest_lowlands_kill_072.name: Lowlands Hunt 72
+world_phase1.quests.quest_lowlands_kill_073.name: Lowlands Hunt 73
+world_phase1.quests.quest_lowlands_kill_074.name: Lowlands Hunt 74
+world_phase1.quests.quest_lowlands_kill_075.name: Lowlands Hunt 75
+world_phase1.quests.quest_lowlands_gather_076.name: Lowlands Gather 76
+world_phase1.quests.quest_lowlands_gather_077.name: Lowlands Gather 77
+world_phase1.quests.quest_lowlands_explore_078.name: Lowlands Explore 78
+world_phase1.quests.quest_lowlands_boss_079.name: Lowlands Boss Hunt 79
+world_phase1.quests.quest_lowlands_kill_080.name: Lowlands Hunt 80
+world_phase1.quests.quest_lowlands_kill_081.name: Lowlands Hunt 81
+world_phase1.quests.quest_lowlands_kill_082.name: Lowlands Hunt 82
+world_phase1.quests.quest_lowlands_kill_083.name: Lowlands Hunt 83
+world_phase1.quests.quest_lowlands_kill_084.name: Lowlands Hunt 84
+world_phase1.quests.quest_lowlands_kill_085.name: Lowlands Hunt 85
+world_phase1.quests.quest_lowlands_gather_086.name: Lowlands Gather 86
+world_phase1.quests.quest_lowlands_gather_087.name: Lowlands Gather 87
+world_phase1.quests.quest_lowlands_explore_088.name: Lowlands Explore 88
+world_phase1.quests.quest_lowlands_boss_089.name: Lowlands Boss Hunt 89
+world_phase1.quests.quest_lowlands_kill_090.name: Lowlands Hunt 90
+world_phase1.quests.quest_lowlands_kill_091.name: Lowlands Hunt 91
+world_phase1.quests.quest_lowlands_kill_092.name: Lowlands Hunt 92
+world_phase1.quests.quest_lowlands_kill_093.name: Lowlands Hunt 93
+world_phase1.quests.quest_lowlands_kill_094.name: Lowlands Hunt 94
+world_phase1.quests.quest_lowlands_kill_095.name: Lowlands Hunt 95
+world_phase1.quests.quest_lowlands_gather_096.name: Lowlands Gather 96
+world_phase1.quests.quest_lowlands_gather_097.name: Lowlands Gather 97
+world_phase1.quests.quest_lowlands_explore_098.name: Lowlands Explore 98
+world_phase1.quests.quest_lowlands_boss_099.name: Lowlands Boss Hunt 99
+world_phase1.quests.quest_lowlands_kill_100.name: Lowlands Hunt 100
+world_phase1.quests.quest_lowlands_kill_101.name: Lowlands Hunt 101
+world_phase1.quests.quest_lowlands_kill_102.name: Lowlands Hunt 102
+world_phase1.quests.quest_lowlands_kill_103.name: Lowlands Hunt 103
+world_phase1.quests.quest_lowlands_kill_104.name: Lowlands Hunt 104
+world_phase1.quests.quest_lowlands_kill_105.name: Lowlands Hunt 105
+world_phase1.quests.quest_lowlands_gather_106.name: Lowlands Gather 106
+world_phase1.quests.quest_lowlands_gather_107.name: Lowlands Gather 107
+world_phase1.quests.quest_lowlands_explore_108.name: Lowlands Explore 108
+world_phase1.quests.quest_lowlands_boss_109.name: Lowlands Boss Hunt 109
+world_phase1.quests.quest_lowlands_kill_110.name: Lowlands Hunt 110
+world_phase1.quests.quest_lowlands_kill_111.name: Lowlands Hunt 111
+world_phase1.quests.quest_lowlands_kill_112.name: Lowlands Hunt 112
+world_phase1.quests.quest_lowlands_kill_113.name: Lowlands Hunt 113
+world_phase1.quests.quest_lowlands_kill_114.name: Lowlands Hunt 114
+world_phase1.quests.quest_lowlands_kill_115.name: Lowlands Hunt 115
+world_phase1.quests.quest_lowlands_gather_116.name: Lowlands Gather 116
+world_phase1.quests.quest_lowlands_gather_117.name: Lowlands Gather 117
+world_phase1.quests.quest_lowlands_explore_118.name: Lowlands Explore 118
+world_phase1.quests.quest_lowlands_boss_119.name: Lowlands Boss Hunt 119
+world_phase1.quests.quest_lowlands_kill_120.name: Lowlands Hunt 120
+world_phase1.quests.quest_snow_kill_001.name: Snow Hunt 1
+world_phase1.quests.quest_snow_kill_002.name: Snow Hunt 2
+world_phase1.quests.quest_snow_kill_003.name: Snow Hunt 3
+world_phase1.quests.quest_snow_kill_004.name: Snow Hunt 4
+world_phase1.quests.quest_snow_kill_005.name: Snow Hunt 5
+world_phase1.quests.quest_snow_gather_006.name: Snow Gather 6
+world_phase1.quests.quest_snow_gather_007.name: Snow Gather 7
+world_phase1.quests.quest_snow_explore_008.name: Snow Explore 8
+world_phase1.quests.quest_snow_boss_009.name: Snow Boss Hunt 9
+world_phase1.quests.quest_snow_kill_010.name: Snow Hunt 10
+world_phase1.quests.quest_snow_kill_011.name: Snow Hunt 11
+world_phase1.quests.quest_snow_kill_012.name: Snow Hunt 12
+world_phase1.quests.quest_snow_kill_013.name: Snow Hunt 13
+world_phase1.quests.quest_snow_kill_014.name: Snow Hunt 14
+world_phase1.quests.quest_snow_kill_015.name: Snow Hunt 15
+world_phase1.quests.quest_snow_gather_016.name: Snow Gather 16
+world_phase1.quests.quest_snow_gather_017.name: Snow Gather 17
+world_phase1.quests.quest_snow_explore_018.name: Snow Explore 18
+world_phase1.quests.quest_snow_boss_019.name: Snow Boss Hunt 19
+world_phase1.quests.quest_snow_kill_020.name: Snow Hunt 20
+world_phase1.quests.quest_snow_kill_021.name: Snow Hunt 21
+world_phase1.quests.quest_snow_kill_022.name: Snow Hunt 22
+world_phase1.quests.quest_snow_kill_023.name: Snow Hunt 23
+world_phase1.quests.quest_snow_kill_024.name: Snow Hunt 24
+world_phase1.quests.quest_snow_kill_025.name: Snow Hunt 25
+world_phase1.quests.quest_snow_gather_026.name: Snow Gather 26
+world_phase1.quests.quest_snow_gather_027.name: Snow Gather 27
+world_phase1.quests.quest_snow_explore_028.name: Snow Explore 28
+world_phase1.quests.quest_snow_boss_029.name: Snow Boss Hunt 29
+world_phase1.quests.quest_snow_kill_030.name: Snow Hunt 30
+world_phase1.quests.quest_snow_kill_031.name: Snow Hunt 31
+world_phase1.quests.quest_snow_kill_032.name: Snow Hunt 32
+world_phase1.quests.quest_snow_kill_033.name: Snow Hunt 33
+world_phase1.quests.quest_snow_kill_034.name: Snow Hunt 34
+world_phase1.quests.quest_snow_kill_035.name: Snow Hunt 35
+world_phase1.quests.quest_snow_gather_036.name: Snow Gather 36
+world_phase1.quests.quest_snow_gather_037.name: Snow Gather 37
+world_phase1.quests.quest_snow_explore_038.name: Snow Explore 38
+world_phase1.quests.quest_snow_boss_039.name: Snow Boss Hunt 39
+world_phase1.quests.quest_snow_kill_040.name: Snow Hunt 40
+world_phase1.quests.quest_snow_kill_041.name: Snow Hunt 41
+world_phase1.quests.quest_snow_kill_042.name: Snow Hunt 42
+world_phase1.quests.quest_snow_kill_043.name: Snow Hunt 43
+world_phase1.quests.quest_snow_kill_044.name: Snow Hunt 44
+world_phase1.quests.quest_snow_kill_045.name: Snow Hunt 45
+world_phase1.quests.quest_snow_gather_046.name: Snow Gather 46
+world_phase1.quests.quest_snow_gather_047.name: Snow Gather 47
+world_phase1.quests.quest_snow_explore_048.name: Snow Explore 48
+world_phase1.quests.quest_snow_boss_049.name: Snow Boss Hunt 49
+world_phase1.quests.quest_snow_kill_050.name: Snow Hunt 50
+world_phase1.quests.quest_snow_kill_051.name: Snow Hunt 51
+world_phase1.quests.quest_snow_kill_052.name: Snow Hunt 52
+world_phase1.quests.quest_snow_kill_053.name: Snow Hunt 53
+world_phase1.quests.quest_snow_kill_054.name: Snow Hunt 54
+world_phase1.quests.quest_snow_kill_055.name: Snow Hunt 55
+world_phase1.quests.quest_snow_gather_056.name: Snow Gather 56
+world_phase1.quests.quest_snow_gather_057.name: Snow Gather 57
+world_phase1.quests.quest_snow_explore_058.name: Snow Explore 58
+world_phase1.quests.quest_snow_boss_059.name: Snow Boss Hunt 59
+world_phase1.quests.quest_snow_kill_060.name: Snow Hunt 60
+world_phase1.quests.quest_snow_kill_061.name: Snow Hunt 61
+world_phase1.quests.quest_snow_kill_062.name: Snow Hunt 62
+world_phase1.quests.quest_snow_kill_063.name: Snow Hunt 63
+world_phase1.quests.quest_snow_kill_064.name: Snow Hunt 64
+world_phase1.quests.quest_snow_kill_065.name: Snow Hunt 65
+world_phase1.quests.quest_snow_gather_066.name: Snow Gather 66
+world_phase1.quests.quest_snow_gather_067.name: Snow Gather 67
+world_phase1.quests.quest_snow_explore_068.name: Snow Explore 68
+world_phase1.quests.quest_snow_boss_069.name: Snow Boss Hunt 69
+world_phase1.quests.quest_snow_kill_070.name: Snow Hunt 70
+world_phase1.quests.quest_snow_kill_071.name: Snow Hunt 71
+world_phase1.quests.quest_snow_kill_072.name: Snow Hunt 72
+world_phase1.quests.quest_snow_kill_073.name: Snow Hunt 73
+world_phase1.quests.quest_snow_kill_074.name: Snow Hunt 74
+world_phase1.quests.quest_snow_kill_075.name: Snow Hunt 75
+world_phase1.quests.quest_snow_gather_076.name: Snow Gather 76
+world_phase1.quests.quest_snow_gather_077.name: Snow Gather 77
+world_phase1.quests.quest_snow_explore_078.name: Snow Explore 78
+world_phase1.quests.quest_snow_boss_079.name: Snow Boss Hunt 79
+world_phase1.quests.quest_snow_kill_080.name: Snow Hunt 80
+world_phase1.quests.quest_snow_kill_081.name: Snow Hunt 81
+world_phase1.quests.quest_snow_kill_082.name: Snow Hunt 82
+world_phase1.quests.quest_snow_kill_083.name: Snow Hunt 83
+world_phase1.quests.quest_snow_kill_084.name: Snow Hunt 84
+world_phase1.quests.quest_snow_kill_085.name: Snow Hunt 85
+world_phase1.quests.quest_snow_gather_086.name: Snow Gather 86
+world_phase1.quests.quest_snow_gather_087.name: Snow Gather 87
+world_phase1.quests.quest_snow_explore_088.name: Snow Explore 88
+world_phase1.quests.quest_snow_boss_089.name: Snow Boss Hunt 89
+world_phase1.quests.quest_snow_kill_090.name: Snow Hunt 90
+world_phase1.quests.quest_snow_kill_091.name: Snow Hunt 91
+world_phase1.quests.quest_snow_kill_092.name: Snow Hunt 92
+world_phase1.quests.quest_snow_kill_093.name: Snow Hunt 93
+world_phase1.quests.quest_snow_kill_094.name: Snow Hunt 94
+world_phase1.quests.quest_snow_kill_095.name: Snow Hunt 95
+world_phase1.quests.quest_snow_gather_096.name: Snow Gather 96
+world_phase1.quests.quest_snow_gather_097.name: Snow Gather 97
+world_phase1.quests.quest_snow_explore_098.name: Snow Explore 98
+world_phase1.quests.quest_snow_boss_099.name: Snow Boss Hunt 99
+world_phase1.quests.quest_snow_kill_100.name: Snow Hunt 100
+world_phase1.quests.quest_snow_kill_101.name: Snow Hunt 101
+world_phase1.quests.quest_snow_kill_102.name: Snow Hunt 102
+world_phase1.quests.quest_snow_kill_103.name: Snow Hunt 103
+world_phase1.quests.quest_snow_kill_104.name: Snow Hunt 104
+world_phase1.quests.quest_snow_kill_105.name: Snow Hunt 105
+world_phase1.quests.quest_snow_gather_106.name: Snow Gather 106
+world_phase1.quests.quest_snow_gather_107.name: Snow Gather 107
+world_phase1.quests.quest_snow_explore_108.name: Snow Explore 108
+world_phase1.quests.quest_snow_boss_109.name: Snow Boss Hunt 109
+world_phase1.quests.quest_snow_kill_110.name: Snow Hunt 110
+world_phase1.quests.quest_snow_kill_111.name: Snow Hunt 111
+world_phase1.quests.quest_snow_kill_112.name: Snow Hunt 112
+world_phase1.quests.quest_snow_kill_113.name: Snow Hunt 113
+world_phase1.quests.quest_snow_kill_114.name: Snow Hunt 114
+world_phase1.quests.quest_snow_kill_115.name: Snow Hunt 115
+world_phase1.quests.quest_snow_gather_116.name: Snow Gather 116
+world_phase1.quests.quest_snow_gather_117.name: Snow Gather 117
+world_phase1.quests.quest_snow_explore_118.name: Snow Explore 118
+world_phase1.quests.quest_snow_boss_119.name: Snow Boss Hunt 119
+world_phase1.quests.quest_snow_kill_120.name: Snow Hunt 120
+world_phase1.quests.quest_snow_kill_121.name: Snow Hunt 121
+world_phase1.quests.quest_snow_kill_122.name: Snow Hunt 122
+world_phase1.quests.quest_snow_kill_123.name: Snow Hunt 123
+world_phase1.quests.quest_snow_kill_124.name: Snow Hunt 124
+world_phase1.quests.quest_snow_kill_125.name: Snow Hunt 125
+world_phase1.quests.quest_snow_gather_126.name: Snow Gather 126
+world_phase1.quests.quest_snow_gather_127.name: Snow Gather 127
+world_phase1.quests.quest_snow_explore_128.name: Snow Explore 128
+world_phase1.quests.quest_snow_boss_129.name: Snow Boss Hunt 129
+world_phase1.quests.quest_snow_kill_130.name: Snow Hunt 130
+world_phase1.quests.quest_snow_kill_131.name: Snow Hunt 131
+world_phase1.quests.quest_snow_kill_132.name: Snow Hunt 132
+world_phase1.quests.quest_snow_kill_133.name: Snow Hunt 133
+world_phase1.quests.quest_snow_kill_134.name: Snow Hunt 134
+world_phase1.quests.quest_snow_kill_135.name: Snow Hunt 135
+world_phase1.quests.quest_snow_gather_136.name: Snow Gather 136
+world_phase1.quests.quest_snow_gather_137.name: Snow Gather 137
+world_phase1.quests.quest_snow_explore_138.name: Snow Explore 138
+world_phase1.quests.quest_snow_boss_139.name: Snow Boss Hunt 139
+world_phase1.quests.quest_snow_kill_140.name: Snow Hunt 140
+world_phase1.quests.quest_snow_kill_141.name: Snow Hunt 141
+world_phase1.quests.quest_snow_kill_142.name: Snow Hunt 142
+world_phase1.quests.quest_snow_kill_143.name: Snow Hunt 143
+world_phase1.quests.quest_snow_kill_144.name: Snow Hunt 144
+world_phase1.quests.quest_snow_kill_145.name: Snow Hunt 145
+world_phase1.quests.quest_snow_gather_146.name: Snow Gather 146
+world_phase1.quests.quest_snow_gather_147.name: Snow Gather 147
+world_phase1.quests.quest_snow_explore_148.name: Snow Explore 148
+world_phase1.quests.quest_snow_boss_149.name: Snow Boss Hunt 149
+world_phase1.quests.quest_snow_kill_150.name: Snow Hunt 150
+world_phase1.shops.shop_plains_starter.title: Plains Starter Goods
+world_phase1.shops.shop_desert_starter.title: Desert Starter Goods
+world_phase1.shops.shop_water_starter.title: Water Starter Goods
+world_phase1.shops.shop_swamp_starter.title: Swamp Starter Goods
+world_phase1.shops.shop_mushroom_starter.title: Mushroom Starter Goods
+world_phase1.shops.shop_nether_starter.title: Nether Starter Goods
+world_phase1.shops.shop_dark_oak_starter.title: Dark_Oak Starter Goods
+world_phase1.shops.shop_highlands_starter.title: Highlands Starter Goods
+world_phase1.shops.shop_lowlands_starter.title: Lowlands Starter Goods
+world_phase1.shops.shop_snow_starter.title: Snow Starter Goods

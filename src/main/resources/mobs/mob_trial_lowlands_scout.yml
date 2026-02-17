@@ -1,0 +1,14 @@
+schemaVersion: 1
+mobs:
+  mob_trial_lowlands_scout:
+    type: ZOMBIE
+    name: <green>Lowlands Scout</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 165.76
+      ATTACK_DAMAGE: 16.89
+      MOVEMENT_SPEED: 0.28
+      ARMOR: 2.08
+      ATTACK_SPEED: 1.054

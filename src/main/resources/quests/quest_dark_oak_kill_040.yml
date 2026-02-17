@@ -1,0 +1,23 @@
+quests:
+  quest_dark_oak_kill_040:
+    name: Dark Oak Hunt V
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_dark_oak_gloom_stalkers_10
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 714
+    rewards:
+      xp: 100
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_material_dread_04
+          amount: 2

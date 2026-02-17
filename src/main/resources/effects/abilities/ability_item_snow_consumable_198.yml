@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_198:
+    name: Ability Item Snow Consumable 198
+    cooldown:
+      ticks: 188
+    action:
+      type: sequence
+      actions:
+        -
+          particle: DRIPPING_HONEY
+          type: particles_points
+          points:
+            -
+              x: -0.14
+              y: 0.0
+              z: 0.44
+            -
+              x: -0.07
+              y: 0.0
+              z: -0.49
+            -
+              x: 0.48
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          particle: DRIPPING_LAVA
+          type: particles_points
+          points:
+            -
+              x: -0.27
+              y: 0.0
+              z: 0.22
+            -
+              x: -0.04
+              y: 0.0
+              z: -0.24
+          up: -1.0
+        -
+          particle: DRIPPING_OBSIDIAN_TEAR
+          type: particles_points
+          points:
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.11
+            -
+              x: -0.21
+              y: 0.0
+              z: 0.06
+            -
+              x: -0.29
+              y: 0.0
+              z: 0.04
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 5.6
+            times: 4
+            periodTicks: 10
+            policy: any

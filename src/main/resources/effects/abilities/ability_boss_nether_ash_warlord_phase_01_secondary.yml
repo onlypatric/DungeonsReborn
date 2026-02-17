@@ -1,0 +1,59 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_ash_warlord_phase_01_secondary:
+    name: Ability Boss Nether Ash Warlord Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_sphere_shell
+          particle: FALLING_WATER
+          radius: 5.4663
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 4.88376
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: FALLING_WATER
+          radius: 5.7456
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_spline
+          particle: LANDING_OBSIDIAN_TEAR
+          points:
+            -
+              x: 3.39
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.7
+              y: 0.0
+              z: 2.94
+            -
+              x: -1.7
+              y: 0.0
+              z: -2.94
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 3.8
+        -
+          type: damage_over_time
+          amount: 0.78
+          durationTicks: 72
+          radius: 3.8

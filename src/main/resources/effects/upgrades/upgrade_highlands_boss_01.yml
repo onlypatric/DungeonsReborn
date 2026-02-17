@@ -1,0 +1,56 @@
+name: <gray><bold>Highlands Boss</bold></gray> <gray>I</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.15.</gray> <gray>Grants Generic Max Health +15.43.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_boss_01
+  activator: RIGHT_CLICK
+requirements:
+  level: 2100
+modifiers:
+  -
+    type: damage_mult
+    value: 1.147
+  -
+    type: cooldown_mult
+    value: 0.969
+  -
+    type: radius_add
+    value: 4.088
+  -
+    type: duration_mult
+    value: 1.107
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 15.429
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.144
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.138
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.071
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: breach
+    level: 2
+  -
+    enchant: depth_strider
+    level: 2
+allowUnsafe: true

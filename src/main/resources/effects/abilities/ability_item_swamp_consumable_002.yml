@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_swamp_consumable_002:
+    name: Ability Item Swamp Consumable 002
+    cooldown:
+      ticks: 118
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FALLING_WATER
+          type: particles_points
+          points:
+            -
+              x: -0.11
+              y: 0.0
+              z: -0.35
+            -
+              x: -0.19
+              y: 0.0
+              z: 0.17
+          up: -1.0
+        -
+          particle: FIREFLY
+          type: particles_points
+          points:
+            -
+              x: 0.29
+              y: 0.0
+              z: 0.34
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.17
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.07
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 13.6
+            policy: any

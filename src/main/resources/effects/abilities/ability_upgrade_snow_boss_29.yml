@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_29:
+    name: Ability Upgrade Snow Boss 29
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: ELECTRIC_SPARK
+          length: 5.203000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: GLOW
+          length: 4.889995000000001
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

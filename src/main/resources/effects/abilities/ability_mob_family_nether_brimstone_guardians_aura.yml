@@ -1,0 +1,73 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_nether_brimstone_guardians_aura:
+    name: Nether Brimstone_Guardians
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: TRIAL_OMEN
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: TRIAL_OMEN
+          points:
+            -
+              x: 2.19
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.09
+              y: 0.0
+              z: 1.89
+            -
+              x: -1.09
+              y: 0.0
+              z: -1.89
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          points:
+            -
+              x: 1.86
+              y: 0.0
+              z: 0.0
+            -
+              x: -0.93
+              y: 0.0
+              z: 1.61
+            -
+              x: -0.93
+              y: 0.0
+              z: -1.61
+          up: -1.0
+        -
+          particle: LAVA
+          type: preset_swirl
+          radius: 1.75
+          points: 3
+          up: -2.0
+        -
+          particle: LAVA
+          type: preset_shockwave
+          radius: 2.95
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 1.75
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 1.75

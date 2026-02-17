@@ -1,0 +1,23 @@
+quests:
+  quest_lowlands_kill_042:
+    name: Wrath of Lowlands VII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_lowlands_grove_fauna_42
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2233
+    rewards:
+      xp: 160
+      tokens: 11
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_lowlands_material_verdant_02
+          amount: 3

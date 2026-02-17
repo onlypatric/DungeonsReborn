@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_relic_09:
+    name: Ability Upgrade Desert Relic 09
+    costs:
+      -
+        type: mana
+        amount: 13.6
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: CRIT
+          points:
+            -
+              x: 3.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.5
+              y: 0.0
+              z: 2.6
+            -
+              x: -1.5
+              y: 0.0
+              z: -2.6
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 12
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 7.73

@@ -1,0 +1,32 @@
+name: <gray><bold>Highlands Gale</bold></gray> <gray>IX</gray>
+description: <gray>Tempests lift your speed and aim.</gray> <gray>Boosts Duration Add by 0.34.</gray> <gray>Grants Generic Movement Speed +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_gale_09
+  activator: RIGHT_CLICK
+requirements:
+  level: 1492
+modifiers:
+  -
+    type: duration_add
+    value: 0.341
+attributes:
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.054
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: lure
+    level: 2
+  -
+    enchant: punch
+    level: 2
+allowUnsafe: true

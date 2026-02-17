@@ -48,6 +48,9 @@
 schemaVersion: 1
 options:
   despawnOnReload: true
+stylePresets:
+  t0: {}
+  t1: {}
 
 mobs: {}
 spawnerBlocks: {}

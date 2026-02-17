@@ -1,0 +1,23 @@
+quests:
+  quest_dark_oak_kill_011:
+    name: Dark Oak Culling XII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_dark_oak_shadow_fauna_11
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 718
+    rewards:
+      xp: 100
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_material_bark_04
+          amount: 3

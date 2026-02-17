@@ -1,0 +1,23 @@
+quests:
+  quest_desert_kill_011:
+    name: Desert Culling XII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_desert_dune_beasts_11
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 151
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_sand_01
+          amount: 2

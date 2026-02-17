@@ -1,0 +1,81 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_wildlord_phase_04_aura:
+    name: Ability Boss Lowlands Wildlord Phase 04 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: CLOUD
+          radius: 7.299600000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 5.105100000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: CLOUD
+          radius: 6.006000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 5.379990000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: CLOUD
+          points:
+            -
+              x: 4.62
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.31
+              y: 0.0
+              z: 4.0
+            -
+              x: -2.31
+              y: 0.0
+              z: -4.0
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: FALLING_SPORE_BLOSSOM
+          points:
+            -
+              x: 3.93
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.96
+              y: 0.0
+              z: 3.4
+            -
+              x: -1.96
+              y: 0.0
+              z: -3.4
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.5
+          durationTicks: 40
+          radius: 4.4
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 62
+          amplifier: 0
+          radius: 4.4
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_shockwave
+          radius: 5.2
+          points: 18

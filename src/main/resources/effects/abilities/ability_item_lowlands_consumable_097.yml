@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_097:
+    name: Ability Item Lowlands Consumable 097
+    cooldown:
+      ticks: 226
+    action:
+      type: sequence
+      actions:
+        -
+          particle: SNEEZE
+          type: particles_points
+          points:
+            -
+              x: -0.21
+              y: 0.0
+              z: -0.29
+            -
+              x: 0.22
+              y: 0.0
+              z: -0.26
+          up: -1.0
+        -
+          particle: SNOWFLAKE
+          type: particles_points
+          points:
+            -
+              x: 0.0
+              y: 0.0
+              z: -0.01
+            -
+              x: -0.03
+              y: 0.0
+              z: -0.37
+            -
+              x: -0.19
+              y: 0.0
+              z: -0.21
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: resistance
+            durationTicks: 143
+            amplifier: 0

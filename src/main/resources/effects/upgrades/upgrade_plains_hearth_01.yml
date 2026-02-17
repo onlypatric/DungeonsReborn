@@ -1,0 +1,32 @@
+name: <green><bold>Plains Hearth</bold></green> <gray>I</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Duration Add by 0.34.</gray> <gray>Grants Generic Max Health +2.42.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_hearth_01
+  activator: LEFT_CLICK
+requirements:
+  level: 19
+modifiers:
+  -
+    type: duration_add
+    value: 0.345
+  -
+    type: loot_mult
+    value: 0.979
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 2.416
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: loyalty
+    level: 1
+allowUnsafe: true

@@ -1,0 +1,20 @@
+quests:
+  quest_plains_explore_028:
+    name: Plains Recon V
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - plains
+    gui:
+      head: ICON_QUESTS
+    rewards:
+      xp: 55
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0

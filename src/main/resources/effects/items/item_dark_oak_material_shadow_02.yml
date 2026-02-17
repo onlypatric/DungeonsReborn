@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <dark_purple><bold>Shadeglass Fragment</bold></dark_purple> <gray>II</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Dark Oak wilds.</gray>
+gui:
+  head: ICON_ITEMS

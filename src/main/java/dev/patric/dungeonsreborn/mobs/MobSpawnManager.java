@@ -21,11 +21,13 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.GameRule;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
@@ -43,6 +45,8 @@ public final class MobSpawnManager implements Listener {
   private static final long TICK_PERIOD = 20L;
   private static final long TETHER_TICK_PERIOD = 5L;
   private static final long HOLOGRAM_UPDATE_TICKS = 20L;
+  private static final NamespacedKey HOLOGRAM_SPAWNER_ID =
+      new NamespacedKey("dungeonsreborn", "mob_spawner_hologram_id");
   private static final String DEFAULT_HOLOGRAM_FORMAT =
       "<gold>{mob}</gold> <gray>({alive}/{cap})</gray>\n<yellow>Next: {next}</yellow>";
   private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
@@ -122,8 +126,6 @@ public final class MobSpawnManager implements Listener {
   public void reload(List<MobSpawnSpec> newSpawns, Set<String> enabledWorlds, boolean despawnOnReload) {
     if (despawnOnReload) {
       despawnAll();
-    } else {
-      clearAllHolograms();
     }
     Map<UUID, String> previousEntities = despawnOnReload ? Map.of() : new HashMap<>(entityToSpawn);
     Map<String, SpawnState> previousStates = despawnOnReload ? Map.of() : new HashMap<>(states);
@@ -145,6 +147,9 @@ public final class MobSpawnManager implements Listener {
         state.nextSpawnTick = previous.nextSpawnTick;
       }
       states.put(spec.id(), state);
+    }
+    if (!despawnOnReload) {
+      bindExistingHolograms();
     }
     if (!previousEntities.isEmpty()) {
       restoreActiveEntities(previousEntities);
@@ -1120,13 +1125,11 @@ public final class MobSpawnManager implements Listener {
     }
     if (display == null) {
       display = world.spawn(base, TextDisplay.class, spawned -> {
-        spawned.setPersistent(false);
-        spawned.setBillboard(Display.Billboard.CENTER);
-        spawned.setSeeThrough(true);
-        spawned.setDefaultBackground(false);
+        configureHologram(spawned, spec);
       });
       state.hologramId = display.getUniqueId();
     } else {
+      configureHologram(display, spec);
       display.teleport(base);
     }
     String format = spec.hologramFormat();
@@ -1172,9 +1175,73 @@ public final class MobSpawnManager implements Listener {
     state.nextHologramTick = 0L;
   }
 
-  private void clearAllHolograms() {
-    for (SpawnState state : states.values()) {
-      removeHologram(state);
+  private void configureHologram(TextDisplay display, MobSpawnSpec spec) {
+    display.setPersistent(true);
+    display.setBillboard(Display.Billboard.CENTER);
+    display.setSeeThrough(true);
+    display.setDefaultBackground(false);
+    display.getPersistentDataContainer().set(HOLOGRAM_SPAWNER_ID, PersistentDataType.STRING, spec.id());
+  }
+
+  private void bindExistingHolograms() {
+    Map<String, List<TextDisplay>> bySpawner = new HashMap<>();
+    for (World world : Bukkit.getWorlds()) {
+      for (TextDisplay display : world.getEntitiesByClass(TextDisplay.class)) {
+        String spawnerId = display.getPersistentDataContainer().get(HOLOGRAM_SPAWNER_ID, PersistentDataType.STRING);
+        if (spawnerId == null || spawnerId.isBlank()) {
+          continue;
+        }
+        spawnerId = spawnerId.trim();
+        MobSpawnSpec spec = spawns.get(spawnerId);
+        if (spec == null || !world.getName().equals(spec.worldName())) {
+          display.remove();
+          continue;
+        }
+        bySpawner.computeIfAbsent(spawnerId, k -> new ArrayList<>()).add(display);
+      }
+    }
+    for (Map.Entry<String, List<TextDisplay>> entry : bySpawner.entrySet()) {
+      MobSpawnSpec spec = spawns.get(entry.getKey());
+      SpawnState state = states.get(entry.getKey());
+      if (spec == null || state == null) {
+        for (TextDisplay display : entry.getValue()) {
+          display.remove();
+        }
+        continue;
+      }
+      World world = Bukkit.getWorld(spec.worldName());
+      if (world == null) {
+        for (TextDisplay display : entry.getValue()) {
+          display.remove();
+        }
+        continue;
+      }
+      Location base = spec.location().clone();
+      base.setWorld(world);
+      base.add(0.0, spec.hologramOffsetY(), 0.0);
+      TextDisplay keep = null;
+      double best = Double.MAX_VALUE;
+      for (TextDisplay display : entry.getValue()) {
+        if (!display.isValid()) {
+          continue;
+        }
+        double distance = display.getLocation().distanceSquared(base);
+        if (distance < best) {
+          best = distance;
+          keep = display;
+        }
+      }
+      for (TextDisplay display : entry.getValue()) {
+        if (display == keep) {
+          continue;
+        }
+        display.remove();
+      }
+      if (keep != null) {
+        configureHologram(keep, spec);
+        state.hologramId = keep.getUniqueId();
+        state.nextHologramTick = 0L;
+      }
     }
   }
 }

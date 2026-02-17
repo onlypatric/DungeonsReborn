@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_snow_whiteout_hunters_03:
+    type: WOLF
+    name: <yellow>Snow Wolf Reaver</yellow>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 149.6
+      ATTACK_DAMAGE: 7.35
+      scaleVariance: 1.1
+    attacks:
+      main:
+        ability: ability_mob_family_snow_whiteout_hunters_main
+        trigger: MELEE
+        cooldownTicks: 30
+        targetMode: NEAREST_PLAYER
+        range: 6.25
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_snow_whiteout_hunters_secondary
+        trigger: MELEE
+        cooldownTicks: 68
+        targetMode: NEAREST_PLAYER
+        range: 9.85
+        chance: 0.45
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_snow_whiteout_hunters_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_snow_whiteout_hunters_aggressive
+    xpGating:
+      minLevel: 3435

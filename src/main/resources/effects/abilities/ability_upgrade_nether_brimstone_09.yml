@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_brimstone_09:
+    name: Ability Upgrade Nether Brimstone 09
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_mesh
+          particle: PORTAL
+          points:
+            -
+              x: 3.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.62
+              y: 0.0
+              z: 2.81
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.81
+          triangles:
+            -
+              -
+                x: 3.25
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.62
+                y: 0.0
+                z: 2.81
+              -
+                x: -1.63
+                y: 0.0
+                z: -2.81
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

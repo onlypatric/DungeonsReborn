@@ -1,0 +1,23 @@
+quests:
+  quest_highlands_kill_013:
+    name: Highlands Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_highlands_wind_critters_13
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1492
+    rewards:
+      xp: 140
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_material_sky_01
+          amount: 2

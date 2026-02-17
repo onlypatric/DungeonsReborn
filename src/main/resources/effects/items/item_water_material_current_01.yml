@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua><bold>Tidal Essence</bold></aqua> <gray>I</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Water wilds.</gray>
+  meta:
+    skull:
+      head: REQ_BERRY_CHERRY_LIMEADE_BUZZBALL
+gui:
+  head: ICON_ITEMS

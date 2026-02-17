@@ -1,0 +1,26 @@
+name: <gold><bold>Desert Relic</bold></gold> <gray>XIII</gray>
+description: <gray>Ancient relics awaken forbidden might.</gray> <gray>Boosts Cooldown Mult by 0.94.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_desert_relic_13
+  activator: LEFT_CLICK
+requirements:
+  level: 151
+modifiers:
+  -
+    type: cooldown_mult
+    value: 0.943
+  -
+    type: loot_add
+    value: 0.034
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: wind_burst
+    level: 1
+allowUnsafe: true

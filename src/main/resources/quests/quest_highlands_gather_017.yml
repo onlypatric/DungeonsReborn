@@ -1,0 +1,22 @@
+quests:
+  quest_highlands_gather_017:
+    name: Highlands Reclaiming VI
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 5
+        itemId: item_highlands_material_gale_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1401
+    rewards:
+      xp: 150
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_highlands_consumable_002

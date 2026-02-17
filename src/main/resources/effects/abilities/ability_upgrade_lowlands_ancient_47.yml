@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_ancient_47:
+    name: Ability Upgrade Lowlands Ancient 47
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: OMINOUS_SPAWNING
+          length: 6.16
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

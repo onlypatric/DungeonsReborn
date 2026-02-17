@@ -1,0 +1,22 @@
+quests:
+  quest_mushroom_elite_009:
+    name: Mushroom Vengeance X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_mushroom_myco_wardens_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 1095
+    rewards:
+      xp: 140
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_mushroom_material_spore_04

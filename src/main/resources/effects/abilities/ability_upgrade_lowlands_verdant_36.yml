@@ -1,0 +1,28 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_verdant_36:
+    name: Ability Upgrade Lowlands Verdant 36
+    costs:
+      -
+        type: mana
+        amount: 15.2
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: CRIT
+          width: 9.060000000000002
+          height: 2.2
+          depth: 9.060000000000002
+          points: 3
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 22
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 25.19

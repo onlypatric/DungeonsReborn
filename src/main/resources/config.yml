@@ -21,6 +21,8 @@ locales:
   default: it
   # Allow per-player locale overrides from locales.playerOverrides.
   allowPlayerOverrides: false
+  # Log warnings for missing locale keys.
+  warnMissing: true
   # Enabled locales that will be loaded.
   enabled:
     - en
@@ -30,6 +32,8 @@ locales:
 
 # Debug toggles for noisy subsystems.
 debug:
+  gui:
+    indexCounts: true
   dungeons:
     waveLogs: false
   mobs:
@@ -398,6 +402,7 @@ resources:
 worlds:
   allowlist:
     - minecraft:overworld
+    - minecraft:world
 
 # Dungeon UI settings.
 dungeons:

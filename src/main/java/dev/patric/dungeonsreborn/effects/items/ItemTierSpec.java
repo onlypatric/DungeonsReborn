@@ -3,6 +3,8 @@ package dev.patric.dungeonsreborn.effects.items;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 public record ItemTierSpec(String id, double scale, ItemStatCaps caps) {
   public ItemStatBlock apply(ItemStatBlock base) {
     if (base == null) {
@@ -16,7 +18,13 @@ public record ItemTierSpec(String id, double scale, ItemStatCaps caps) {
     if (raw == null) {
       return null;
     }
-    if (!(raw instanceof Map<?, ?> map)) {
+    Map<?, ?> map = null;
+    if (raw instanceof ConfigurationSection section) {
+      map = section.getValues(false);
+    } else if (raw instanceof Map<?, ?> rawMap) {
+      map = rawMap;
+    }
+    if (map == null) {
       errors.add(path + ": expected map");
       return null;
     }

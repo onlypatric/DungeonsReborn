@@ -73,6 +73,8 @@ import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.components.JukeboxPlayableComponent;
 import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.DeathProtection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +146,7 @@ public final class ItemTemplateCompiler {
     if (metaSection != null) {
       validateSectionKeys(metaSection, META_KEYS, path + ".meta", errors);
     }
-    applyMeta(meta, metaSection, path, errors, material, amount);
+    applyMeta(item, meta, metaSection, path, errors, material, amount);
 
     if (display != null) {
       Integer cmd = intFrom(display, "custom_model_data", "customModelData");
@@ -158,7 +160,14 @@ public final class ItemTemplateCompiler {
       }
     }
 
-    item.setItemMeta(meta);
+    applyMetaWithComponents(item, meta);
+    if (metaSection != null) {
+      ConfigurationSection components = metaSection.getConfigurationSection("components");
+      if (components != null) {
+        applyComponents(item, meta, components, path + ".meta.components", errors);
+        applyMetaWithComponents(item, meta);
+      }
+    }
     DurabilityRange range = parseDurabilityRange(metaSection, path, errors, material);
     return new CompiledTemplate(item, range);
   }
@@ -174,7 +183,15 @@ public final class ItemTemplateCompiler {
     }
     int rolled = range.roll(random);
     damageable.setDamage(Math.max(0, rolled));
+    applyMetaWithComponents(item, meta);
+  }
+
+  private static void applyMetaWithComponents(ItemStack item, ItemMeta meta) {
+    DeathProtection deathProtection = item.getData(DataComponentTypes.DEATH_PROTECTION);
     item.setItemMeta(meta);
+    if (deathProtection != null) {
+      item.setData(DataComponentTypes.DEATH_PROTECTION, deathProtection);
+    }
   }
 
   private static void applyDisplay(ItemMeta meta, ConfigurationSection display, ConfigurationSection root,
@@ -211,7 +228,7 @@ public final class ItemTemplateCompiler {
     }
   }
 
-  private static void applyMeta(ItemMeta meta, ConfigurationSection metaSection, String path, List<String> errors,
+  private static void applyMeta(ItemStack item, ItemMeta meta, ConfigurationSection metaSection, String path, List<String> errors,
       Material material, int amount) {
     if (metaSection == null) {
       return;
@@ -345,7 +362,7 @@ public final class ItemTemplateCompiler {
 
     ConfigurationSection components = metaSection.getConfigurationSection("components");
     if (components != null) {
-      applyComponents(meta, components, path + ".meta.components", errors);
+      applyComponents(item, meta, components, path + ".meta.components", errors);
     }
   }
 
@@ -1386,7 +1403,7 @@ public final class ItemTemplateCompiler {
     return out;
   }
 
-  private static void applyComponents(ItemMeta meta, ConfigurationSection section, String path, List<String> errors) {
+  private static void applyComponents(ItemStack item, ItemMeta meta, ConfigurationSection section, String path, List<String> errors) {
     ConfigurationSection cmdSection = section.getConfigurationSection("custom_model_data");
     if (cmdSection == null) {
       cmdSection = section.getConfigurationSection("customModelData");
@@ -1514,6 +1531,19 @@ public final class ItemTemplateCompiler {
         errors.add(path + ".jukebox.showInTooltip: not supported in this Paper version");
       }
       meta.setJukeboxPlayable(jukebox);
+    }
+    Object deathProtectionRaw = section.get("death_protection");
+    if (deathProtectionRaw == null) {
+      deathProtectionRaw = section.get("deathProtection");
+    }
+    if (deathProtectionRaw != null) {
+      boolean enabled = true;
+      if (deathProtectionRaw instanceof Boolean bool) {
+        enabled = bool;
+      }
+      if (enabled) {
+        item.setData(DataComponentTypes.DEATH_PROTECTION, DeathProtection.deathProtection(List.of()));
+      }
     }
   }
 

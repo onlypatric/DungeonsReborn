@@ -1,0 +1,62 @@
+name: <white><bold>Snow Boss</bold></white> <gray>VII</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.16.</gray> <gray>Grants Generic Max Health +26.48.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_boss_07
+  activator: LEFT_CLICK
+requirements:
+  level: 4946
+modifiers:
+  -
+    type: damage_mult
+    value: 1.156
+  -
+    type: cooldown_mult
+    value: 0.908
+  -
+    type: radius_add
+    value: 6.327
+  -
+    type: duration_mult
+    value: 1.202
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 26.477
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.134
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.368
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.103
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: protection
+    level: 5
+  -
+    enchant: respiration
+    level: 3
+  -
+    enchant: silk_touch
+    level: 3
+  -
+    enchant: vanishing_curse
+    level: 1
+allowUnsafe: true

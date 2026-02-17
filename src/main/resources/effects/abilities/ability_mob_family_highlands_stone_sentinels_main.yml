@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_highlands_stone_sentinels_main:
+    name: Highlands Stone_Sentinels Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: CLOUD
+          points:
+            -
+              x: 5.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.5
+              y: 0.0
+              z: 4.33
+            -
+              x: -2.5
+              y: 0.0
+              z: -4.33
+          up: -1.0
+        -
+          type: damage
+          amount: 10.69
+          radius: 3.6
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 90
+          amplifier: 0
+          radius: 3.4

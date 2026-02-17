@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>XXXV</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 0.94.</gray> <gray>Grants Generic Max Health +1.96.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_35
+  activator: LEFT_CLICK
+requirements:
+  level: 2233
+modifiers:
+  -
+    type: duration_add
+    value: 0.935
+  -
+    type: damage_add
+    value: 0.392
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 1.955
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: projectile_protection
+    level: 3
+  -
+    enchant: silk_touch
+    level: 3
+allowUnsafe: true

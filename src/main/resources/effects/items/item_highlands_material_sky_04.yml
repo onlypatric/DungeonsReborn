@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <gray><bold>Skyshard</bold></gray> <gray>IV</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Highlands wilds.</gray>
+  meta:
+    skull:
+      head: REQ_CAKE_SLICE_STRAWBERRY_2
+gui:
+  head: ICON_ITEMS

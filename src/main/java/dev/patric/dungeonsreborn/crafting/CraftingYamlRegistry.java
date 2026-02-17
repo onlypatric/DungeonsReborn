@@ -1216,6 +1216,9 @@ public final class CraftingYamlRegistry {
   }
 
   private CraftingItemPredicate parsePredicateEntry(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return null;
+    }
     Map<String, Object> map = castMap(raw, path, errors);
     if (map == null) {
       return null;

@@ -1,0 +1,34 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_wild_42:
+    name: Ability Upgrade Lowlands Wild 42
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: SWEEP_ATTACK
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.17
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.17
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

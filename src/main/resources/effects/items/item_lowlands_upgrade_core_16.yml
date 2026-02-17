@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua>Lowlands Core XVI</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+  meta:
+    skull:
+      head: REQ_ANCIENT_GOLDEN_DRAGON_BLUE_BABY_2
+gui:
+  head: ICON_ITEMS

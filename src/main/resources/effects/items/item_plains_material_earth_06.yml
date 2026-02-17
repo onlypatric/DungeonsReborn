@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <green><bold>Stoneheart Shard</bold></green> <gray>VI</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Plains wilds.</gray>
+gui:
+  head: ICON_ITEMS

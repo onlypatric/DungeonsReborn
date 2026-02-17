@@ -1,0 +1,29 @@
+name: <white><bold>Snow Frost</bold></white> <gray>LIX</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.00.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_59
+  activator: LEFT_CLICK
+requirements:
+  level: 3507
+modifiers:
+  -
+    type: duration_mult
+    value: 1.0
+  -
+    type: radius_add
+    value: 1.759
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: channeling
+    level: 3
+  -
+    enchant: flame
+    level: 3
+allowUnsafe: true

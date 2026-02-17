@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_001:
+    name: Ability Item Snow Consumable 001
+    cooldown:
+      ticks: 242
+    action:
+      type: sequence
+      actions:
+        -
+          particle: TINTED_LEAVES
+          type: particles_points
+          points:
+            -
+              x: -0.19
+              y: 0.0
+              z: 0.27
+            -
+              x: -0.02
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          particle: TOTEM_OF_UNDYING
+          type: particles_points
+          points:
+            -
+              x: 0.31
+              y: 0.0
+              z: 0.35
+            -
+              x: 0.22
+              y: 0.0
+              z: 0.03
+            -
+              x: -0.06
+              y: 0.0
+              z: 0.11
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: resistance
+            durationTicks: 162
+            amplifier: 0

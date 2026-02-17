@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_farmhand_02:
+    name: Ability Upgrade Plains Farmhand 02
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 4.76
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

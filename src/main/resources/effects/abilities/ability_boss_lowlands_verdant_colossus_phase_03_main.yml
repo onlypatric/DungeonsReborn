@@ -1,0 +1,98 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_verdant_colossus_phase_03_main:
+    name: Ability Boss Lowlands Verdant Colossus Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_physics_points
+          particle: ITEM_SLIME
+          points:
+            -
+              x: 6.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.2
+              y: 0.0
+              z: 5.55
+            -
+              x: -3.2
+              y: 0.0
+              z: -5.55
+          up: -1.0
+        -
+          type: particles_helix
+          particle: SHRIEK
+          radius: 7.83972
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: ITEM_SLIME
+          length: 11.423200000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: SHRIEK
+          length: 10.420817500000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: ITEM_SLIME
+          points:
+            -
+              x: 6.41
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.2
+              y: 0.0
+              z: 5.55
+            -
+              x: -3.2
+              y: 0.0
+              z: -5.55
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SHRIEK
+          points:
+            -
+              x: 5.44
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.72
+              y: 0.0
+              z: 4.71
+            -
+              x: -2.72
+              y: 0.0
+              z: -4.71
+          up: -1.0
+        -
+          type: damage
+          amount: 7.7
+          radius: 6.1
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 6.1
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_shockwave
+          radius: 6.8999999999999995
+          points: 18

@@ -1,0 +1,47 @@
+schemaVersion: 1
+abilities:
+  ability_boss_dark_oak_gloom_baron_phase_01_main:
+    name: Ability Boss Dark Oak Gloom Baron Phase 01 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_helix
+          particle: ELDER_GUARDIAN
+          radius: 6.9678
+          height: 3.2
+          points: 1
+          up: -1.0
+        -
+          type: particles_physics
+          particle: CRIT
+          count: 2
+          up: -1.0
+        -
+          type: particles_line
+          particle: CRIT
+          length: 7.933000000000001
+          points: 1
+          up: -1.0
+        -
+          type: particles_line
+          particle: CRIT
+          length: 7.335445000000001
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 4.7
+          radius: 4.2
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 4.2

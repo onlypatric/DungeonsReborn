@@ -1,0 +1,58 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_infernal_warden_phase_03_secondary:
+    name: Ability Boss Nether Infernal Warden Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_box
+          particle: EXPLOSION
+          width: 5.7456
+          height: 2.2
+          depth: 5.7456
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          width: 10.242329999999999
+          height: 2.2
+          depth: 10.242329999999999
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: EXPLOSION
+          radius: 3.81245
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: CAMPFIRE_SIGNAL_SMOKE
+          radius: 6.158569999999999
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 1
+          radius: 3.8
+        -
+          type: damage_over_time
+          amount: 1.14
+          durationTicks: 96
+          radius: 3.8
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.6
+          points: 18

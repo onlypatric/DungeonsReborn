@@ -1,0 +1,95 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_plains_village_raiders_aura:
+    name: Plains Village_Raiders
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: CURRENT_DOWN
+          radius: 4.9375
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_arc
+          particle: HAPPY_VILLAGER
+          radius: 3.453125
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: particles_points
+          particle: CRIT
+          points:
+            -
+              x: 3.28
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.64
+              y: 0.0
+              z: 2.84
+            -
+              x: -1.64
+              y: 0.0
+              z: -2.84
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: CURRENT_DOWN
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.625
+            right: 3.25
+            up: 0.4
+          p2:
+            forward: 3.25
+            right: -2.4375
+            up: 0.8
+          p3:
+            forward: 4.875
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: HAPPY_VILLAGER
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.4556250000000002
+            right: 2.9112500000000003
+            up: 0.4
+          p2:
+            forward: 2.9112500000000003
+            right: -2.1834375
+            up: 0.8
+          p3:
+            forward: 4.366875
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          particle: HAPPY_VILLAGER
+          type: preset_swirl
+          radius: 2.5
+          points: 3
+          up: -2.0
+        -
+          particle: HAPPY_VILLAGER
+          type: preset_shockwave
+          radius: 3.7
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.5

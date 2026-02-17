@@ -1,0 +1,59 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_icebound_tyrant_phase_03_aura:
+    name: Ability Boss Snow Icebound Tyrant Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: CRIT
+          radius: 6.279
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: TOTEM_OF_UNDYING
+          radius: 5.624535000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: ANGRY_VILLAGER
+          points:
+            -
+              x: 5.07
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.54
+              y: 0.0
+              z: 4.39
+            -
+              x: -2.54
+              y: 0.0
+              z: -4.39
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: CRIT
+          radius: 6.617100000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: TOTEM_OF_UNDYING
+          radius: 5.91192
+          points: 3
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.65
+          durationTicks: 40
+          radius: 4.6
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 4.6

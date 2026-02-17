@@ -1,0 +1,32 @@
+name: <dark_green><bold>Swamp Venom</bold></dark_green> <gray>I</gray>
+description: <gray>Toxic malice seeps into wounds.</gray> <gray>Boosts Damage Add by 1.58.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_swamp_venom_01
+  activator: PASSIVE
+requirements:
+  level: 980
+modifiers:
+  -
+    type: damage_add
+    value: 1.584
+  -
+    type: loot_add
+    value: 0.046
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: silk_touch
+    level: 2
+  -
+    enchant: swift_sneak
+    level: 2
+allowUnsafe: true

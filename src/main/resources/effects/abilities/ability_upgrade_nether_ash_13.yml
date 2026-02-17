@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_ash_13:
+    name: Ability Upgrade Nether Ash 13
+    costs:
+      -
+        type: mana
+        amount: 12.4
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: SMOKE
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.17
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.17
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.88
+            times: 4
+            periodTicks: 10

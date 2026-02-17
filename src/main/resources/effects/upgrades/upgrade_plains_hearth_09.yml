@@ -1,0 +1,32 @@
+name: <green><bold>Plains Hearth</bold></green> <gray>IX</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Duration Add by 0.35.</gray> <gray>Grants Generic Max Health +1.12.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_hearth_09
+  activator: SHIFT_RIGHT
+requirements:
+  level: 16
+modifiers:
+  -
+    type: duration_add
+    value: 0.355
+  -
+    type: loot_mult
+    value: 0.976
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 1.125
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: punch
+    level: 1
+allowUnsafe: true

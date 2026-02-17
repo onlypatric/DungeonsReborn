@@ -1,0 +1,25 @@
+quests:
+  quest_plains_boss_029:
+    name: "Plains Slayer's Oath VI"
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_plains_boss_stagwarden
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 119
+    rewards:
+      xp: 100
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_plains_upgrade_core_07
+        -
+          id: item_plains_material_wood_04
+          amount: 2

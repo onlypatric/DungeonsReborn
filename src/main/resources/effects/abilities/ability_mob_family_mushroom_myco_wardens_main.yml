@@ -1,0 +1,24 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_mushroom_myco_wardens_main:
+    name: Mushroom Myco_Wardens Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: SWEEP_ATTACK
+          radius: 5.822500000000001
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 9.46
+          radius: 3.06
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 0
+          radius: 2.89

@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_inferno_09:
+    name: Ability Upgrade Nether Inferno 09
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: CRIT
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.8120000000000005
+            right: 3.624000000000001
+            up: 0.4
+          p2:
+            forward: 3.624000000000001
+            right: -2.7180000000000004
+            up: 0.8
+          p3:
+            forward: 5.436000000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

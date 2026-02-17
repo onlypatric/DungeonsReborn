@@ -1,0 +1,6400 @@
+upgrades:
+  upgrade_plains_wayfarer_01:
+    name: Plains.Wayfarer.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.01
+      activator: PASSIVE
+  upgrade_plains_wayfarer_02:
+    name: Plains.Wayfarer.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.02
+      activator: PASSIVE
+  upgrade_plains_wayfarer_03:
+    name: Plains.Wayfarer.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.03
+      activator: PASSIVE
+  upgrade_plains_wayfarer_04:
+    name: Plains.Wayfarer.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.04
+      activator: PASSIVE
+  upgrade_plains_wayfarer_05:
+    name: Plains.Wayfarer.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.05
+      activator: PASSIVE
+  upgrade_plains_wayfarer_06:
+    name: Plains.Wayfarer.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.06
+      activator: PASSIVE
+  upgrade_plains_wayfarer_07:
+    name: Plains.Wayfarer.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.07
+      activator: PASSIVE
+  upgrade_plains_wayfarer_08:
+    name: Plains.Wayfarer.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.08
+      activator: PASSIVE
+  upgrade_plains_wayfarer_09:
+    name: Plains.Wayfarer.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.09
+      activator: PASSIVE
+  upgrade_plains_wayfarer_10:
+    name: Plains.Wayfarer.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.10
+      activator: PASSIVE
+  upgrade_plains_wayfarer_11:
+    name: Plains.Wayfarer.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.11
+      activator: PASSIVE
+  upgrade_plains_wayfarer_12:
+    name: Plains.Wayfarer.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.12
+      activator: PASSIVE
+  upgrade_plains_wayfarer_13:
+    name: Plains.Wayfarer.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.13
+      activator: PASSIVE
+  upgrade_plains_wayfarer_14:
+    name: Plains.Wayfarer.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.wayfarer.14
+      activator: PASSIVE
+  upgrade_plains_hearth_01:
+    name: Plains.Hearth.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.01
+      activator: PASSIVE
+  upgrade_plains_hearth_02:
+    name: Plains.Hearth.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.02
+      activator: PASSIVE
+  upgrade_plains_hearth_03:
+    name: Plains.Hearth.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.03
+      activator: PASSIVE
+  upgrade_plains_hearth_04:
+    name: Plains.Hearth.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.04
+      activator: PASSIVE
+  upgrade_plains_hearth_05:
+    name: Plains.Hearth.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.05
+      activator: PASSIVE
+  upgrade_plains_hearth_06:
+    name: Plains.Hearth.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.06
+      activator: PASSIVE
+  upgrade_plains_hearth_07:
+    name: Plains.Hearth.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.07
+      activator: PASSIVE
+  upgrade_plains_hearth_08:
+    name: Plains.Hearth.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.08
+      activator: PASSIVE
+  upgrade_plains_hearth_09:
+    name: Plains.Hearth.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.09
+      activator: PASSIVE
+  upgrade_plains_hearth_10:
+    name: Plains.Hearth.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.10
+      activator: PASSIVE
+  upgrade_plains_hearth_11:
+    name: Plains.Hearth.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.11
+      activator: PASSIVE
+  upgrade_plains_hearth_12:
+    name: Plains.Hearth.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.hearth.12
+      activator: PASSIVE
+  upgrade_plains_quarry_01:
+    name: Plains.Quarry.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.01
+      activator: PASSIVE
+  upgrade_plains_quarry_02:
+    name: Plains.Quarry.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.02
+      activator: PASSIVE
+  upgrade_plains_quarry_03:
+    name: Plains.Quarry.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.03
+      activator: PASSIVE
+  upgrade_plains_quarry_04:
+    name: Plains.Quarry.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.04
+      activator: PASSIVE
+  upgrade_plains_quarry_05:
+    name: Plains.Quarry.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.05
+      activator: PASSIVE
+  upgrade_plains_quarry_06:
+    name: Plains.Quarry.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.06
+      activator: PASSIVE
+  upgrade_plains_quarry_07:
+    name: Plains.Quarry.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.07
+      activator: PASSIVE
+  upgrade_plains_quarry_08:
+    name: Plains.Quarry.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.08
+      activator: PASSIVE
+  upgrade_plains_quarry_09:
+    name: Plains.Quarry.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.09
+      activator: PASSIVE
+  upgrade_plains_quarry_10:
+    name: Plains.Quarry.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.10
+      activator: PASSIVE
+  upgrade_plains_quarry_11:
+    name: Plains.Quarry.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.11
+      activator: PASSIVE
+  upgrade_plains_quarry_12:
+    name: Plains.Quarry.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.quarry.12
+      activator: PASSIVE
+  upgrade_plains_farmhand_01:
+    name: Plains.Farmhand.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.01
+      activator: PASSIVE
+  upgrade_plains_farmhand_02:
+    name: Plains.Farmhand.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.02
+      activator: PASSIVE
+  upgrade_plains_farmhand_03:
+    name: Plains.Farmhand.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.03
+      activator: PASSIVE
+  upgrade_plains_farmhand_04:
+    name: Plains.Farmhand.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.04
+      activator: PASSIVE
+  upgrade_plains_farmhand_05:
+    name: Plains.Farmhand.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.05
+      activator: PASSIVE
+  upgrade_plains_farmhand_06:
+    name: Plains.Farmhand.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.06
+      activator: PASSIVE
+  upgrade_plains_farmhand_07:
+    name: Plains.Farmhand.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.07
+      activator: PASSIVE
+  upgrade_plains_farmhand_08:
+    name: Plains.Farmhand.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.08
+      activator: PASSIVE
+  upgrade_plains_farmhand_09:
+    name: Plains.Farmhand.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.09
+      activator: PASSIVE
+  upgrade_plains_farmhand_10:
+    name: Plains.Farmhand.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.10
+      activator: PASSIVE
+  upgrade_plains_farmhand_11:
+    name: Plains.Farmhand.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.11
+      activator: PASSIVE
+  upgrade_plains_farmhand_12:
+    name: Plains.Farmhand.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.plains.farmhand.12
+      activator: PASSIVE
+  upgrade_desert_ember_01:
+    name: Desert.Ember.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.01
+      activator: PASSIVE
+  upgrade_desert_ember_02:
+    name: Desert.Ember.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.02
+      activator: PASSIVE
+  upgrade_desert_ember_03:
+    name: Desert.Ember.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.03
+      activator: PASSIVE
+  upgrade_desert_ember_04:
+    name: Desert.Ember.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.04
+      activator: PASSIVE
+  upgrade_desert_ember_05:
+    name: Desert.Ember.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.05
+      activator: PASSIVE
+  upgrade_desert_ember_06:
+    name: Desert.Ember.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.06
+      activator: PASSIVE
+  upgrade_desert_ember_07:
+    name: Desert.Ember.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.07
+      activator: PASSIVE
+  upgrade_desert_ember_08:
+    name: Desert.Ember.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.08
+      activator: PASSIVE
+  upgrade_desert_ember_09:
+    name: Desert.Ember.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.09
+      activator: PASSIVE
+  upgrade_desert_ember_10:
+    name: Desert.Ember.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.10
+      activator: PASSIVE
+  upgrade_desert_ember_11:
+    name: Desert.Ember.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.11
+      activator: PASSIVE
+  upgrade_desert_ember_12:
+    name: Desert.Ember.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.12
+      activator: PASSIVE
+  upgrade_desert_ember_13:
+    name: Desert.Ember.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.13
+      activator: PASSIVE
+  upgrade_desert_ember_14:
+    name: Desert.Ember.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.14
+      activator: PASSIVE
+  upgrade_desert_ember_15:
+    name: Desert.Ember.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.15
+      activator: PASSIVE
+  upgrade_desert_ember_16:
+    name: Desert.Ember.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.16
+      activator: PASSIVE
+  upgrade_desert_ember_17:
+    name: Desert.Ember.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.17
+      activator: PASSIVE
+  upgrade_desert_ember_18:
+    name: Desert.Ember.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.18
+      activator: PASSIVE
+  upgrade_desert_ember_19:
+    name: Desert.Ember.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.19
+      activator: PASSIVE
+  upgrade_desert_ember_20:
+    name: Desert.Ember.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.20
+      activator: PASSIVE
+  upgrade_desert_ember_21:
+    name: Desert.Ember.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.21
+      activator: PASSIVE
+  upgrade_desert_ember_22:
+    name: Desert.Ember.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.22
+      activator: PASSIVE
+  upgrade_desert_ember_23:
+    name: Desert.Ember.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.23
+      activator: PASSIVE
+  upgrade_desert_ember_24:
+    name: Desert.Ember.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.24
+      activator: PASSIVE
+  upgrade_desert_ember_25:
+    name: Desert.Ember.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.25
+      activator: PASSIVE
+  upgrade_desert_ember_26:
+    name: Desert.Ember.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.26
+      activator: PASSIVE
+  upgrade_desert_ember_27:
+    name: Desert.Ember.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.27
+      activator: PASSIVE
+  upgrade_desert_ember_28:
+    name: Desert.Ember.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.28
+      activator: PASSIVE
+  upgrade_desert_ember_29:
+    name: Desert.Ember.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.29
+      activator: PASSIVE
+  upgrade_desert_ember_30:
+    name: Desert.Ember.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.ember.30
+      activator: PASSIVE
+  upgrade_desert_mirage_01:
+    name: Desert.Mirage.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.01
+      activator: PASSIVE
+  upgrade_desert_mirage_02:
+    name: Desert.Mirage.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.02
+      activator: PASSIVE
+  upgrade_desert_mirage_03:
+    name: Desert.Mirage.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.03
+      activator: PASSIVE
+  upgrade_desert_mirage_04:
+    name: Desert.Mirage.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.04
+      activator: PASSIVE
+  upgrade_desert_mirage_05:
+    name: Desert.Mirage.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.05
+      activator: PASSIVE
+  upgrade_desert_mirage_06:
+    name: Desert.Mirage.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.06
+      activator: PASSIVE
+  upgrade_desert_mirage_07:
+    name: Desert.Mirage.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.07
+      activator: PASSIVE
+  upgrade_desert_mirage_08:
+    name: Desert.Mirage.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.08
+      activator: PASSIVE
+  upgrade_desert_mirage_09:
+    name: Desert.Mirage.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.09
+      activator: PASSIVE
+  upgrade_desert_mirage_10:
+    name: Desert.Mirage.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.10
+      activator: PASSIVE
+  upgrade_desert_mirage_11:
+    name: Desert.Mirage.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.11
+      activator: PASSIVE
+  upgrade_desert_mirage_12:
+    name: Desert.Mirage.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.12
+      activator: PASSIVE
+  upgrade_desert_mirage_13:
+    name: Desert.Mirage.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.13
+      activator: PASSIVE
+  upgrade_desert_mirage_14:
+    name: Desert.Mirage.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.14
+      activator: PASSIVE
+  upgrade_desert_mirage_15:
+    name: Desert.Mirage.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.15
+      activator: PASSIVE
+  upgrade_desert_mirage_16:
+    name: Desert.Mirage.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.16
+      activator: PASSIVE
+  upgrade_desert_mirage_17:
+    name: Desert.Mirage.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.17
+      activator: PASSIVE
+  upgrade_desert_mirage_18:
+    name: Desert.Mirage.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.18
+      activator: PASSIVE
+  upgrade_desert_mirage_19:
+    name: Desert.Mirage.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.19
+      activator: PASSIVE
+  upgrade_desert_mirage_20:
+    name: Desert.Mirage.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.20
+      activator: PASSIVE
+  upgrade_desert_mirage_21:
+    name: Desert.Mirage.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.21
+      activator: PASSIVE
+  upgrade_desert_mirage_22:
+    name: Desert.Mirage.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.22
+      activator: PASSIVE
+  upgrade_desert_mirage_23:
+    name: Desert.Mirage.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.23
+      activator: PASSIVE
+  upgrade_desert_mirage_24:
+    name: Desert.Mirage.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.24
+      activator: PASSIVE
+  upgrade_desert_mirage_25:
+    name: Desert.Mirage.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.mirage.25
+      activator: PASSIVE
+  upgrade_desert_dune_01:
+    name: Desert.Dune.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.01
+      activator: PASSIVE
+  upgrade_desert_dune_02:
+    name: Desert.Dune.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.02
+      activator: PASSIVE
+  upgrade_desert_dune_03:
+    name: Desert.Dune.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.03
+      activator: PASSIVE
+  upgrade_desert_dune_04:
+    name: Desert.Dune.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.04
+      activator: PASSIVE
+  upgrade_desert_dune_05:
+    name: Desert.Dune.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.05
+      activator: PASSIVE
+  upgrade_desert_dune_06:
+    name: Desert.Dune.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.06
+      activator: PASSIVE
+  upgrade_desert_dune_07:
+    name: Desert.Dune.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.07
+      activator: PASSIVE
+  upgrade_desert_dune_08:
+    name: Desert.Dune.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.08
+      activator: PASSIVE
+  upgrade_desert_dune_09:
+    name: Desert.Dune.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.09
+      activator: PASSIVE
+  upgrade_desert_dune_10:
+    name: Desert.Dune.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.10
+      activator: PASSIVE
+  upgrade_desert_dune_11:
+    name: Desert.Dune.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.11
+      activator: PASSIVE
+  upgrade_desert_dune_12:
+    name: Desert.Dune.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.12
+      activator: PASSIVE
+  upgrade_desert_dune_13:
+    name: Desert.Dune.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.13
+      activator: PASSIVE
+  upgrade_desert_dune_14:
+    name: Desert.Dune.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.14
+      activator: PASSIVE
+  upgrade_desert_dune_15:
+    name: Desert.Dune.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.15
+      activator: PASSIVE
+  upgrade_desert_dune_16:
+    name: Desert.Dune.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.16
+      activator: PASSIVE
+  upgrade_desert_dune_17:
+    name: Desert.Dune.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.17
+      activator: PASSIVE
+  upgrade_desert_dune_18:
+    name: Desert.Dune.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.18
+      activator: PASSIVE
+  upgrade_desert_dune_19:
+    name: Desert.Dune.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.19
+      activator: PASSIVE
+  upgrade_desert_dune_20:
+    name: Desert.Dune.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.20
+      activator: PASSIVE
+  upgrade_desert_dune_21:
+    name: Desert.Dune.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.21
+      activator: PASSIVE
+  upgrade_desert_dune_22:
+    name: Desert.Dune.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.22
+      activator: PASSIVE
+  upgrade_desert_dune_23:
+    name: Desert.Dune.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.23
+      activator: PASSIVE
+  upgrade_desert_dune_24:
+    name: Desert.Dune.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.24
+      activator: PASSIVE
+  upgrade_desert_dune_25:
+    name: Desert.Dune.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.dune.25
+      activator: PASSIVE
+  upgrade_desert_relic_01:
+    name: Desert.Relic.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.01
+      activator: PASSIVE
+  upgrade_desert_relic_02:
+    name: Desert.Relic.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.02
+      activator: PASSIVE
+  upgrade_desert_relic_03:
+    name: Desert.Relic.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.03
+      activator: PASSIVE
+  upgrade_desert_relic_04:
+    name: Desert.Relic.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.04
+      activator: PASSIVE
+  upgrade_desert_relic_05:
+    name: Desert.Relic.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.05
+      activator: PASSIVE
+  upgrade_desert_relic_06:
+    name: Desert.Relic.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.06
+      activator: PASSIVE
+  upgrade_desert_relic_07:
+    name: Desert.Relic.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.07
+      activator: PASSIVE
+  upgrade_desert_relic_08:
+    name: Desert.Relic.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.08
+      activator: PASSIVE
+  upgrade_desert_relic_09:
+    name: Desert.Relic.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.09
+      activator: PASSIVE
+  upgrade_desert_relic_10:
+    name: Desert.Relic.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.10
+      activator: PASSIVE
+  upgrade_desert_relic_11:
+    name: Desert.Relic.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.11
+      activator: PASSIVE
+  upgrade_desert_relic_12:
+    name: Desert.Relic.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.12
+      activator: PASSIVE
+  upgrade_desert_relic_13:
+    name: Desert.Relic.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.13
+      activator: PASSIVE
+  upgrade_desert_relic_14:
+    name: Desert.Relic.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.14
+      activator: PASSIVE
+  upgrade_desert_relic_15:
+    name: Desert.Relic.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.15
+      activator: PASSIVE
+  upgrade_desert_relic_16:
+    name: Desert.Relic.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.16
+      activator: PASSIVE
+  upgrade_desert_relic_17:
+    name: Desert.Relic.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.17
+      activator: PASSIVE
+  upgrade_desert_relic_18:
+    name: Desert.Relic.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.18
+      activator: PASSIVE
+  upgrade_desert_relic_19:
+    name: Desert.Relic.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.19
+      activator: PASSIVE
+  upgrade_desert_relic_20:
+    name: Desert.Relic.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.desert.relic.20
+      activator: PASSIVE
+  upgrade_water_tide_01:
+    name: Water.Tide.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.tide.01
+      activator: PASSIVE
+  upgrade_water_tide_02:
+    name: Water.Tide.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.tide.02
+      activator: PASSIVE
+  upgrade_water_tide_03:
+    name: Water.Tide.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.tide.03
+      activator: PASSIVE
+  upgrade_water_tide_04:
+    name: Water.Tide.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.tide.04
+      activator: PASSIVE
+  upgrade_water_reef_01:
+    name: Water.Reef.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.reef.01
+      activator: PASSIVE
+  upgrade_water_reef_02:
+    name: Water.Reef.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.reef.02
+      activator: PASSIVE
+  upgrade_water_reef_03:
+    name: Water.Reef.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.reef.03
+      activator: PASSIVE
+  upgrade_water_brine_01:
+    name: Water.Brine.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.brine.01
+      activator: PASSIVE
+  upgrade_water_brine_02:
+    name: Water.Brine.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.brine.02
+      activator: PASSIVE
+  upgrade_water_brine_03:
+    name: Water.Brine.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.water.brine.03
+      activator: PASSIVE
+  upgrade_swamp_rot_01:
+    name: Swamp.Rot.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.swamp.rot.01
+      activator: PASSIVE
+  upgrade_swamp_rot_02:
+    name: Swamp.Rot.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.swamp.rot.02
+      activator: PASSIVE
+  upgrade_swamp_bog_01:
+    name: Swamp.Bog.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.swamp.bog.01
+      activator: PASSIVE
+  upgrade_swamp_bog_02:
+    name: Swamp.Bog.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.swamp.bog.02
+      activator: PASSIVE
+  upgrade_swamp_venom_01:
+    name: Swamp.Venom.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.swamp.venom.01
+      activator: PASSIVE
+  upgrade_mushroom_spore_01:
+    name: Mushroom.Spore.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.mushroom.spore.01
+      activator: PASSIVE
+  upgrade_mushroom_spore_02:
+    name: Mushroom.Spore.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.mushroom.spore.02
+      activator: PASSIVE
+  upgrade_mushroom_moss_01:
+    name: Mushroom.Moss.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.mushroom.moss.01
+      activator: PASSIVE
+  upgrade_mushroom_moss_02:
+    name: Mushroom.Moss.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.mushroom.moss.02
+      activator: PASSIVE
+  upgrade_mushroom_myco_01:
+    name: Mushroom.Myco.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.mushroom.myco.01
+      activator: PASSIVE
+  upgrade_nether_ash_01:
+    name: Nether.Ash.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.01
+      activator: PASSIVE
+  upgrade_nether_ash_02:
+    name: Nether.Ash.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.02
+      activator: PASSIVE
+  upgrade_nether_ash_03:
+    name: Nether.Ash.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.03
+      activator: PASSIVE
+  upgrade_nether_ash_04:
+    name: Nether.Ash.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.04
+      activator: PASSIVE
+  upgrade_nether_ash_05:
+    name: Nether.Ash.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.05
+      activator: PASSIVE
+  upgrade_nether_ash_06:
+    name: Nether.Ash.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.06
+      activator: PASSIVE
+  upgrade_nether_ash_07:
+    name: Nether.Ash.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.07
+      activator: PASSIVE
+  upgrade_nether_ash_08:
+    name: Nether.Ash.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.08
+      activator: PASSIVE
+  upgrade_nether_ash_09:
+    name: Nether.Ash.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.09
+      activator: PASSIVE
+  upgrade_nether_ash_10:
+    name: Nether.Ash.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.10
+      activator: PASSIVE
+  upgrade_nether_ash_11:
+    name: Nether.Ash.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.11
+      activator: PASSIVE
+  upgrade_nether_ash_12:
+    name: Nether.Ash.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.12
+      activator: PASSIVE
+  upgrade_nether_ash_13:
+    name: Nether.Ash.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.13
+      activator: PASSIVE
+  upgrade_nether_ash_14:
+    name: Nether.Ash.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.14
+      activator: PASSIVE
+  upgrade_nether_ash_15:
+    name: Nether.Ash.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.15
+      activator: PASSIVE
+  upgrade_nether_ash_16:
+    name: Nether.Ash.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.16
+      activator: PASSIVE
+  upgrade_nether_ash_17:
+    name: Nether.Ash.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.17
+      activator: PASSIVE
+  upgrade_nether_ash_18:
+    name: Nether.Ash.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.18
+      activator: PASSIVE
+  upgrade_nether_ash_19:
+    name: Nether.Ash.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.19
+      activator: PASSIVE
+  upgrade_nether_ash_20:
+    name: Nether.Ash.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.ash.20
+      activator: PASSIVE
+  upgrade_nether_brimstone_01:
+    name: Nether.Brimstone.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.01
+      activator: PASSIVE
+  upgrade_nether_brimstone_02:
+    name: Nether.Brimstone.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.02
+      activator: PASSIVE
+  upgrade_nether_brimstone_03:
+    name: Nether.Brimstone.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.03
+      activator: PASSIVE
+  upgrade_nether_brimstone_04:
+    name: Nether.Brimstone.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.04
+      activator: PASSIVE
+  upgrade_nether_brimstone_05:
+    name: Nether.Brimstone.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.05
+      activator: PASSIVE
+  upgrade_nether_brimstone_06:
+    name: Nether.Brimstone.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.06
+      activator: PASSIVE
+  upgrade_nether_brimstone_07:
+    name: Nether.Brimstone.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.07
+      activator: PASSIVE
+  upgrade_nether_brimstone_08:
+    name: Nether.Brimstone.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.08
+      activator: PASSIVE
+  upgrade_nether_brimstone_09:
+    name: Nether.Brimstone.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.09
+      activator: PASSIVE
+  upgrade_nether_brimstone_10:
+    name: Nether.Brimstone.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.10
+      activator: PASSIVE
+  upgrade_nether_brimstone_11:
+    name: Nether.Brimstone.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.11
+      activator: PASSIVE
+  upgrade_nether_brimstone_12:
+    name: Nether.Brimstone.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.12
+      activator: PASSIVE
+  upgrade_nether_brimstone_13:
+    name: Nether.Brimstone.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.13
+      activator: PASSIVE
+  upgrade_nether_brimstone_14:
+    name: Nether.Brimstone.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.14
+      activator: PASSIVE
+  upgrade_nether_brimstone_15:
+    name: Nether.Brimstone.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.brimstone.15
+      activator: PASSIVE
+  upgrade_nether_inferno_01:
+    name: Nether.Inferno.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.01
+      activator: PASSIVE
+  upgrade_nether_inferno_02:
+    name: Nether.Inferno.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.02
+      activator: PASSIVE
+  upgrade_nether_inferno_03:
+    name: Nether.Inferno.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.03
+      activator: PASSIVE
+  upgrade_nether_inferno_04:
+    name: Nether.Inferno.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.04
+      activator: PASSIVE
+  upgrade_nether_inferno_05:
+    name: Nether.Inferno.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.05
+      activator: PASSIVE
+  upgrade_nether_inferno_06:
+    name: Nether.Inferno.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.06
+      activator: PASSIVE
+  upgrade_nether_inferno_07:
+    name: Nether.Inferno.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.07
+      activator: PASSIVE
+  upgrade_nether_inferno_08:
+    name: Nether.Inferno.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.08
+      activator: PASSIVE
+  upgrade_nether_inferno_09:
+    name: Nether.Inferno.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.09
+      activator: PASSIVE
+  upgrade_nether_inferno_10:
+    name: Nether.Inferno.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.10
+      activator: PASSIVE
+  upgrade_nether_inferno_11:
+    name: Nether.Inferno.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.11
+      activator: PASSIVE
+  upgrade_nether_inferno_12:
+    name: Nether.Inferno.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.12
+      activator: PASSIVE
+  upgrade_nether_inferno_13:
+    name: Nether.Inferno.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.13
+      activator: PASSIVE
+  upgrade_nether_inferno_14:
+    name: Nether.Inferno.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.14
+      activator: PASSIVE
+  upgrade_nether_inferno_15:
+    name: Nether.Inferno.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.inferno.15
+      activator: PASSIVE
+  upgrade_dark_oak_dread_01:
+    name: Dark Oak.Dread.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.01
+      activator: PASSIVE
+  upgrade_dark_oak_dread_02:
+    name: Dark Oak.Dread.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.02
+      activator: PASSIVE
+  upgrade_dark_oak_dread_03:
+    name: Dark Oak.Dread.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.03
+      activator: PASSIVE
+  upgrade_dark_oak_dread_04:
+    name: Dark Oak.Dread.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.04
+      activator: PASSIVE
+  upgrade_dark_oak_dread_05:
+    name: Dark Oak.Dread.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.05
+      activator: PASSIVE
+  upgrade_dark_oak_dread_06:
+    name: Dark Oak.Dread.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.06
+      activator: PASSIVE
+  upgrade_dark_oak_dread_07:
+    name: Dark Oak.Dread.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.07
+      activator: PASSIVE
+  upgrade_dark_oak_dread_08:
+    name: Dark Oak.Dread.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.08
+      activator: PASSIVE
+  upgrade_dark_oak_dread_09:
+    name: Dark Oak.Dread.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.09
+      activator: PASSIVE
+  upgrade_dark_oak_dread_10:
+    name: Dark Oak.Dread.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.10
+      activator: PASSIVE
+  upgrade_dark_oak_dread_11:
+    name: Dark Oak.Dread.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.11
+      activator: PASSIVE
+  upgrade_dark_oak_dread_12:
+    name: Dark Oak.Dread.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.12
+      activator: PASSIVE
+  upgrade_dark_oak_dread_13:
+    name: Dark Oak.Dread.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.13
+      activator: PASSIVE
+  upgrade_dark_oak_dread_14:
+    name: Dark Oak.Dread.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.14
+      activator: PASSIVE
+  upgrade_dark_oak_dread_15:
+    name: Dark Oak.Dread.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.15
+      activator: PASSIVE
+  upgrade_dark_oak_dread_16:
+    name: Dark Oak.Dread.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.16
+      activator: PASSIVE
+  upgrade_dark_oak_dread_17:
+    name: Dark Oak.Dread.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.17
+      activator: PASSIVE
+  upgrade_dark_oak_dread_18:
+    name: Dark Oak.Dread.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.18
+      activator: PASSIVE
+  upgrade_dark_oak_dread_19:
+    name: Dark Oak.Dread.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.19
+      activator: PASSIVE
+  upgrade_dark_oak_dread_20:
+    name: Dark Oak.Dread.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.dread.20
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_01:
+    name: Dark Oak.Nightbark.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.01
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_02:
+    name: Dark Oak.Nightbark.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.02
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_03:
+    name: Dark Oak.Nightbark.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.03
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_04:
+    name: Dark Oak.Nightbark.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.04
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_05:
+    name: Dark Oak.Nightbark.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.05
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_06:
+    name: Dark Oak.Nightbark.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.06
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_07:
+    name: Dark Oak.Nightbark.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.07
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_08:
+    name: Dark Oak.Nightbark.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.08
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_09:
+    name: Dark Oak.Nightbark.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.09
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_10:
+    name: Dark Oak.Nightbark.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.10
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_11:
+    name: Dark Oak.Nightbark.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.11
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_12:
+    name: Dark Oak.Nightbark.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.12
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_13:
+    name: Dark Oak.Nightbark.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.13
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_14:
+    name: Dark Oak.Nightbark.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.14
+      activator: PASSIVE
+  upgrade_dark_oak_nightbark_15:
+    name: Dark Oak.Nightbark.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.nightbark.15
+      activator: PASSIVE
+  upgrade_dark_oak_predator_01:
+    name: Dark Oak.Predator.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.01
+      activator: PASSIVE
+  upgrade_dark_oak_predator_02:
+    name: Dark Oak.Predator.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.02
+      activator: PASSIVE
+  upgrade_dark_oak_predator_03:
+    name: Dark Oak.Predator.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.03
+      activator: PASSIVE
+  upgrade_dark_oak_predator_04:
+    name: Dark Oak.Predator.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.04
+      activator: PASSIVE
+  upgrade_dark_oak_predator_05:
+    name: Dark Oak.Predator.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.05
+      activator: PASSIVE
+  upgrade_dark_oak_predator_06:
+    name: Dark Oak.Predator.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.06
+      activator: PASSIVE
+  upgrade_dark_oak_predator_07:
+    name: Dark Oak.Predator.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.07
+      activator: PASSIVE
+  upgrade_dark_oak_predator_08:
+    name: Dark Oak.Predator.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.08
+      activator: PASSIVE
+  upgrade_dark_oak_predator_09:
+    name: Dark Oak.Predator.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.09
+      activator: PASSIVE
+  upgrade_dark_oak_predator_10:
+    name: Dark Oak.Predator.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.10
+      activator: PASSIVE
+  upgrade_dark_oak_predator_11:
+    name: Dark Oak.Predator.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.11
+      activator: PASSIVE
+  upgrade_dark_oak_predator_12:
+    name: Dark Oak.Predator.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.12
+      activator: PASSIVE
+  upgrade_dark_oak_predator_13:
+    name: Dark Oak.Predator.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.13
+      activator: PASSIVE
+  upgrade_dark_oak_predator_14:
+    name: Dark Oak.Predator.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.14
+      activator: PASSIVE
+  upgrade_dark_oak_predator_15:
+    name: Dark Oak.Predator.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.predator.15
+      activator: PASSIVE
+  upgrade_highlands_gale_01:
+    name: Highlands.Gale.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.01
+      activator: PASSIVE
+  upgrade_highlands_gale_02:
+    name: Highlands.Gale.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.02
+      activator: PASSIVE
+  upgrade_highlands_gale_03:
+    name: Highlands.Gale.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.03
+      activator: PASSIVE
+  upgrade_highlands_gale_04:
+    name: Highlands.Gale.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.04
+      activator: PASSIVE
+  upgrade_highlands_gale_05:
+    name: Highlands.Gale.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.05
+      activator: PASSIVE
+  upgrade_highlands_gale_06:
+    name: Highlands.Gale.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.06
+      activator: PASSIVE
+  upgrade_highlands_gale_07:
+    name: Highlands.Gale.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.07
+      activator: PASSIVE
+  upgrade_highlands_gale_08:
+    name: Highlands.Gale.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.08
+      activator: PASSIVE
+  upgrade_highlands_gale_09:
+    name: Highlands.Gale.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.09
+      activator: PASSIVE
+  upgrade_highlands_gale_10:
+    name: Highlands.Gale.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.gale.10
+      activator: PASSIVE
+  upgrade_highlands_stone_01:
+    name: Highlands.Stone.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.01
+      activator: PASSIVE
+  upgrade_highlands_stone_02:
+    name: Highlands.Stone.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.02
+      activator: PASSIVE
+  upgrade_highlands_stone_03:
+    name: Highlands.Stone.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.03
+      activator: PASSIVE
+  upgrade_highlands_stone_04:
+    name: Highlands.Stone.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.04
+      activator: PASSIVE
+  upgrade_highlands_stone_05:
+    name: Highlands.Stone.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.05
+      activator: PASSIVE
+  upgrade_highlands_stone_06:
+    name: Highlands.Stone.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.06
+      activator: PASSIVE
+  upgrade_highlands_stone_07:
+    name: Highlands.Stone.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.07
+      activator: PASSIVE
+  upgrade_highlands_stone_08:
+    name: Highlands.Stone.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.stone.08
+      activator: PASSIVE
+  upgrade_highlands_sky_01:
+    name: Highlands.Sky.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.01
+      activator: PASSIVE
+  upgrade_highlands_sky_02:
+    name: Highlands.Sky.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.02
+      activator: PASSIVE
+  upgrade_highlands_sky_03:
+    name: Highlands.Sky.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.03
+      activator: PASSIVE
+  upgrade_highlands_sky_04:
+    name: Highlands.Sky.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.04
+      activator: PASSIVE
+  upgrade_highlands_sky_05:
+    name: Highlands.Sky.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.05
+      activator: PASSIVE
+  upgrade_highlands_sky_06:
+    name: Highlands.Sky.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.06
+      activator: PASSIVE
+  upgrade_highlands_sky_07:
+    name: Highlands.Sky.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.sky.07
+      activator: PASSIVE
+  upgrade_lowlands_ancient_01:
+    name: Lowlands.Ancient.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.01
+      activator: PASSIVE
+  upgrade_lowlands_ancient_02:
+    name: Lowlands.Ancient.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.02
+      activator: PASSIVE
+  upgrade_lowlands_ancient_03:
+    name: Lowlands.Ancient.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.03
+      activator: PASSIVE
+  upgrade_lowlands_ancient_04:
+    name: Lowlands.Ancient.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.04
+      activator: PASSIVE
+  upgrade_lowlands_ancient_05:
+    name: Lowlands.Ancient.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.05
+      activator: PASSIVE
+  upgrade_lowlands_ancient_06:
+    name: Lowlands.Ancient.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.06
+      activator: PASSIVE
+  upgrade_lowlands_ancient_07:
+    name: Lowlands.Ancient.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.07
+      activator: PASSIVE
+  upgrade_lowlands_ancient_08:
+    name: Lowlands.Ancient.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.08
+      activator: PASSIVE
+  upgrade_lowlands_ancient_09:
+    name: Lowlands.Ancient.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.09
+      activator: PASSIVE
+  upgrade_lowlands_ancient_10:
+    name: Lowlands.Ancient.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.10
+      activator: PASSIVE
+  upgrade_lowlands_ancient_11:
+    name: Lowlands.Ancient.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.11
+      activator: PASSIVE
+  upgrade_lowlands_ancient_12:
+    name: Lowlands.Ancient.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.12
+      activator: PASSIVE
+  upgrade_lowlands_ancient_13:
+    name: Lowlands.Ancient.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.13
+      activator: PASSIVE
+  upgrade_lowlands_ancient_14:
+    name: Lowlands.Ancient.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.14
+      activator: PASSIVE
+  upgrade_lowlands_ancient_15:
+    name: Lowlands.Ancient.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.15
+      activator: PASSIVE
+  upgrade_lowlands_ancient_16:
+    name: Lowlands.Ancient.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.16
+      activator: PASSIVE
+  upgrade_lowlands_ancient_17:
+    name: Lowlands.Ancient.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.17
+      activator: PASSIVE
+  upgrade_lowlands_ancient_18:
+    name: Lowlands.Ancient.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.18
+      activator: PASSIVE
+  upgrade_lowlands_ancient_19:
+    name: Lowlands.Ancient.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.19
+      activator: PASSIVE
+  upgrade_lowlands_ancient_20:
+    name: Lowlands.Ancient.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.20
+      activator: PASSIVE
+  upgrade_lowlands_ancient_21:
+    name: Lowlands.Ancient.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.21
+      activator: PASSIVE
+  upgrade_lowlands_ancient_22:
+    name: Lowlands.Ancient.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.22
+      activator: PASSIVE
+  upgrade_lowlands_ancient_23:
+    name: Lowlands.Ancient.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.23
+      activator: PASSIVE
+  upgrade_lowlands_ancient_24:
+    name: Lowlands.Ancient.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.24
+      activator: PASSIVE
+  upgrade_lowlands_ancient_25:
+    name: Lowlands.Ancient.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.25
+      activator: PASSIVE
+  upgrade_lowlands_ancient_26:
+    name: Lowlands.Ancient.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.26
+      activator: PASSIVE
+  upgrade_lowlands_ancient_27:
+    name: Lowlands.Ancient.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.27
+      activator: PASSIVE
+  upgrade_lowlands_ancient_28:
+    name: Lowlands.Ancient.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.28
+      activator: PASSIVE
+  upgrade_lowlands_ancient_29:
+    name: Lowlands.Ancient.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.29
+      activator: PASSIVE
+  upgrade_lowlands_ancient_30:
+    name: Lowlands.Ancient.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.30
+      activator: PASSIVE
+  upgrade_lowlands_ancient_31:
+    name: Lowlands.Ancient.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.31
+      activator: PASSIVE
+  upgrade_lowlands_ancient_32:
+    name: Lowlands.Ancient.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.32
+      activator: PASSIVE
+  upgrade_lowlands_ancient_33:
+    name: Lowlands.Ancient.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.33
+      activator: PASSIVE
+  upgrade_lowlands_ancient_34:
+    name: Lowlands.Ancient.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.34
+      activator: PASSIVE
+  upgrade_lowlands_ancient_35:
+    name: Lowlands.Ancient.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.35
+      activator: PASSIVE
+  upgrade_lowlands_ancient_36:
+    name: Lowlands.Ancient.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.36
+      activator: PASSIVE
+  upgrade_lowlands_ancient_37:
+    name: Lowlands.Ancient.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.37
+      activator: PASSIVE
+  upgrade_lowlands_ancient_38:
+    name: Lowlands.Ancient.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.38
+      activator: PASSIVE
+  upgrade_lowlands_ancient_39:
+    name: Lowlands.Ancient.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.39
+      activator: PASSIVE
+  upgrade_lowlands_ancient_40:
+    name: Lowlands.Ancient.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.40
+      activator: PASSIVE
+  upgrade_lowlands_ancient_41:
+    name: Lowlands.Ancient.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.41
+      activator: PASSIVE
+  upgrade_lowlands_ancient_42:
+    name: Lowlands.Ancient.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.42
+      activator: PASSIVE
+  upgrade_lowlands_ancient_43:
+    name: Lowlands.Ancient.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.43
+      activator: PASSIVE
+  upgrade_lowlands_ancient_44:
+    name: Lowlands.Ancient.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.44
+      activator: PASSIVE
+  upgrade_lowlands_ancient_45:
+    name: Lowlands.Ancient.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.45
+      activator: PASSIVE
+  upgrade_lowlands_ancient_46:
+    name: Lowlands.Ancient.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.46
+      activator: PASSIVE
+  upgrade_lowlands_ancient_47:
+    name: Lowlands.Ancient.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.47
+      activator: PASSIVE
+  upgrade_lowlands_ancient_48:
+    name: Lowlands.Ancient.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.48
+      activator: PASSIVE
+  upgrade_lowlands_ancient_49:
+    name: Lowlands.Ancient.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.49
+      activator: PASSIVE
+  upgrade_lowlands_ancient_50:
+    name: Lowlands.Ancient.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.ancient.50
+      activator: PASSIVE
+  upgrade_lowlands_verdant_01:
+    name: Lowlands.Verdant.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.01
+      activator: PASSIVE
+  upgrade_lowlands_verdant_02:
+    name: Lowlands.Verdant.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.02
+      activator: PASSIVE
+  upgrade_lowlands_verdant_03:
+    name: Lowlands.Verdant.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.03
+      activator: PASSIVE
+  upgrade_lowlands_verdant_04:
+    name: Lowlands.Verdant.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.04
+      activator: PASSIVE
+  upgrade_lowlands_verdant_05:
+    name: Lowlands.Verdant.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.05
+      activator: PASSIVE
+  upgrade_lowlands_verdant_06:
+    name: Lowlands.Verdant.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.06
+      activator: PASSIVE
+  upgrade_lowlands_verdant_07:
+    name: Lowlands.Verdant.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.07
+      activator: PASSIVE
+  upgrade_lowlands_verdant_08:
+    name: Lowlands.Verdant.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.08
+      activator: PASSIVE
+  upgrade_lowlands_verdant_09:
+    name: Lowlands.Verdant.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.09
+      activator: PASSIVE
+  upgrade_lowlands_verdant_10:
+    name: Lowlands.Verdant.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.10
+      activator: PASSIVE
+  upgrade_lowlands_verdant_11:
+    name: Lowlands.Verdant.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.11
+      activator: PASSIVE
+  upgrade_lowlands_verdant_12:
+    name: Lowlands.Verdant.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.12
+      activator: PASSIVE
+  upgrade_lowlands_verdant_13:
+    name: Lowlands.Verdant.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.13
+      activator: PASSIVE
+  upgrade_lowlands_verdant_14:
+    name: Lowlands.Verdant.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.14
+      activator: PASSIVE
+  upgrade_lowlands_verdant_15:
+    name: Lowlands.Verdant.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.15
+      activator: PASSIVE
+  upgrade_lowlands_verdant_16:
+    name: Lowlands.Verdant.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.16
+      activator: PASSIVE
+  upgrade_lowlands_verdant_17:
+    name: Lowlands.Verdant.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.17
+      activator: PASSIVE
+  upgrade_lowlands_verdant_18:
+    name: Lowlands.Verdant.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.18
+      activator: PASSIVE
+  upgrade_lowlands_verdant_19:
+    name: Lowlands.Verdant.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.19
+      activator: PASSIVE
+  upgrade_lowlands_verdant_20:
+    name: Lowlands.Verdant.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.20
+      activator: PASSIVE
+  upgrade_lowlands_verdant_21:
+    name: Lowlands.Verdant.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.21
+      activator: PASSIVE
+  upgrade_lowlands_verdant_22:
+    name: Lowlands.Verdant.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.22
+      activator: PASSIVE
+  upgrade_lowlands_verdant_23:
+    name: Lowlands.Verdant.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.23
+      activator: PASSIVE
+  upgrade_lowlands_verdant_24:
+    name: Lowlands.Verdant.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.24
+      activator: PASSIVE
+  upgrade_lowlands_verdant_25:
+    name: Lowlands.Verdant.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.25
+      activator: PASSIVE
+  upgrade_lowlands_verdant_26:
+    name: Lowlands.Verdant.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.26
+      activator: PASSIVE
+  upgrade_lowlands_verdant_27:
+    name: Lowlands.Verdant.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.27
+      activator: PASSIVE
+  upgrade_lowlands_verdant_28:
+    name: Lowlands.Verdant.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.28
+      activator: PASSIVE
+  upgrade_lowlands_verdant_29:
+    name: Lowlands.Verdant.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.29
+      activator: PASSIVE
+  upgrade_lowlands_verdant_30:
+    name: Lowlands.Verdant.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.30
+      activator: PASSIVE
+  upgrade_lowlands_verdant_31:
+    name: Lowlands.Verdant.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.31
+      activator: PASSIVE
+  upgrade_lowlands_verdant_32:
+    name: Lowlands.Verdant.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.32
+      activator: PASSIVE
+  upgrade_lowlands_verdant_33:
+    name: Lowlands.Verdant.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.33
+      activator: PASSIVE
+  upgrade_lowlands_verdant_34:
+    name: Lowlands.Verdant.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.34
+      activator: PASSIVE
+  upgrade_lowlands_verdant_35:
+    name: Lowlands.Verdant.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.35
+      activator: PASSIVE
+  upgrade_lowlands_verdant_36:
+    name: Lowlands.Verdant.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.36
+      activator: PASSIVE
+  upgrade_lowlands_verdant_37:
+    name: Lowlands.Verdant.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.37
+      activator: PASSIVE
+  upgrade_lowlands_verdant_38:
+    name: Lowlands.Verdant.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.38
+      activator: PASSIVE
+  upgrade_lowlands_verdant_39:
+    name: Lowlands.Verdant.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.39
+      activator: PASSIVE
+  upgrade_lowlands_verdant_40:
+    name: Lowlands.Verdant.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.40
+      activator: PASSIVE
+  upgrade_lowlands_verdant_41:
+    name: Lowlands.Verdant.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.41
+      activator: PASSIVE
+  upgrade_lowlands_verdant_42:
+    name: Lowlands.Verdant.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.42
+      activator: PASSIVE
+  upgrade_lowlands_verdant_43:
+    name: Lowlands.Verdant.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.43
+      activator: PASSIVE
+  upgrade_lowlands_verdant_44:
+    name: Lowlands.Verdant.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.44
+      activator: PASSIVE
+  upgrade_lowlands_verdant_45:
+    name: Lowlands.Verdant.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.45
+      activator: PASSIVE
+  upgrade_lowlands_verdant_46:
+    name: Lowlands.Verdant.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.46
+      activator: PASSIVE
+  upgrade_lowlands_verdant_47:
+    name: Lowlands.Verdant.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.47
+      activator: PASSIVE
+  upgrade_lowlands_verdant_48:
+    name: Lowlands.Verdant.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.48
+      activator: PASSIVE
+  upgrade_lowlands_verdant_49:
+    name: Lowlands.Verdant.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.49
+      activator: PASSIVE
+  upgrade_lowlands_verdant_50:
+    name: Lowlands.Verdant.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.verdant.50
+      activator: PASSIVE
+  upgrade_lowlands_wild_01:
+    name: Lowlands.Wild.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.01
+      activator: PASSIVE
+  upgrade_lowlands_wild_02:
+    name: Lowlands.Wild.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.02
+      activator: PASSIVE
+  upgrade_lowlands_wild_03:
+    name: Lowlands.Wild.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.03
+      activator: PASSIVE
+  upgrade_lowlands_wild_04:
+    name: Lowlands.Wild.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.04
+      activator: PASSIVE
+  upgrade_lowlands_wild_05:
+    name: Lowlands.Wild.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.05
+      activator: PASSIVE
+  upgrade_lowlands_wild_06:
+    name: Lowlands.Wild.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.06
+      activator: PASSIVE
+  upgrade_lowlands_wild_07:
+    name: Lowlands.Wild.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.07
+      activator: PASSIVE
+  upgrade_lowlands_wild_08:
+    name: Lowlands.Wild.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.08
+      activator: PASSIVE
+  upgrade_lowlands_wild_09:
+    name: Lowlands.Wild.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.09
+      activator: PASSIVE
+  upgrade_lowlands_wild_10:
+    name: Lowlands.Wild.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.10
+      activator: PASSIVE
+  upgrade_lowlands_wild_11:
+    name: Lowlands.Wild.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.11
+      activator: PASSIVE
+  upgrade_lowlands_wild_12:
+    name: Lowlands.Wild.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.12
+      activator: PASSIVE
+  upgrade_lowlands_wild_13:
+    name: Lowlands.Wild.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.13
+      activator: PASSIVE
+  upgrade_lowlands_wild_14:
+    name: Lowlands.Wild.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.14
+      activator: PASSIVE
+  upgrade_lowlands_wild_15:
+    name: Lowlands.Wild.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.15
+      activator: PASSIVE
+  upgrade_lowlands_wild_16:
+    name: Lowlands.Wild.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.16
+      activator: PASSIVE
+  upgrade_lowlands_wild_17:
+    name: Lowlands.Wild.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.17
+      activator: PASSIVE
+  upgrade_lowlands_wild_18:
+    name: Lowlands.Wild.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.18
+      activator: PASSIVE
+  upgrade_lowlands_wild_19:
+    name: Lowlands.Wild.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.19
+      activator: PASSIVE
+  upgrade_lowlands_wild_20:
+    name: Lowlands.Wild.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.20
+      activator: PASSIVE
+  upgrade_lowlands_wild_21:
+    name: Lowlands.Wild.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.21
+      activator: PASSIVE
+  upgrade_lowlands_wild_22:
+    name: Lowlands.Wild.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.22
+      activator: PASSIVE
+  upgrade_lowlands_wild_23:
+    name: Lowlands.Wild.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.23
+      activator: PASSIVE
+  upgrade_lowlands_wild_24:
+    name: Lowlands.Wild.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.24
+      activator: PASSIVE
+  upgrade_lowlands_wild_25:
+    name: Lowlands.Wild.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.25
+      activator: PASSIVE
+  upgrade_lowlands_wild_26:
+    name: Lowlands.Wild.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.26
+      activator: PASSIVE
+  upgrade_lowlands_wild_27:
+    name: Lowlands.Wild.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.27
+      activator: PASSIVE
+  upgrade_lowlands_wild_28:
+    name: Lowlands.Wild.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.28
+      activator: PASSIVE
+  upgrade_lowlands_wild_29:
+    name: Lowlands.Wild.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.29
+      activator: PASSIVE
+  upgrade_lowlands_wild_30:
+    name: Lowlands.Wild.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.30
+      activator: PASSIVE
+  upgrade_lowlands_wild_31:
+    name: Lowlands.Wild.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.31
+      activator: PASSIVE
+  upgrade_lowlands_wild_32:
+    name: Lowlands.Wild.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.32
+      activator: PASSIVE
+  upgrade_lowlands_wild_33:
+    name: Lowlands.Wild.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.33
+      activator: PASSIVE
+  upgrade_lowlands_wild_34:
+    name: Lowlands.Wild.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.34
+      activator: PASSIVE
+  upgrade_lowlands_wild_35:
+    name: Lowlands.Wild.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.35
+      activator: PASSIVE
+  upgrade_lowlands_wild_36:
+    name: Lowlands.Wild.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.36
+      activator: PASSIVE
+  upgrade_lowlands_wild_37:
+    name: Lowlands.Wild.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.37
+      activator: PASSIVE
+  upgrade_lowlands_wild_38:
+    name: Lowlands.Wild.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.38
+      activator: PASSIVE
+  upgrade_lowlands_wild_39:
+    name: Lowlands.Wild.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.39
+      activator: PASSIVE
+  upgrade_lowlands_wild_40:
+    name: Lowlands.Wild.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.40
+      activator: PASSIVE
+  upgrade_lowlands_wild_41:
+    name: Lowlands.Wild.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.41
+      activator: PASSIVE
+  upgrade_lowlands_wild_42:
+    name: Lowlands.Wild.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.42
+      activator: PASSIVE
+  upgrade_lowlands_wild_43:
+    name: Lowlands.Wild.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.43
+      activator: PASSIVE
+  upgrade_lowlands_wild_44:
+    name: Lowlands.Wild.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.44
+      activator: PASSIVE
+  upgrade_lowlands_wild_45:
+    name: Lowlands.Wild.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.45
+      activator: PASSIVE
+  upgrade_lowlands_wild_46:
+    name: Lowlands.Wild.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.46
+      activator: PASSIVE
+  upgrade_lowlands_wild_47:
+    name: Lowlands.Wild.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.47
+      activator: PASSIVE
+  upgrade_lowlands_wild_48:
+    name: Lowlands.Wild.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.48
+      activator: PASSIVE
+  upgrade_lowlands_wild_49:
+    name: Lowlands.Wild.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.49
+      activator: PASSIVE
+  upgrade_lowlands_wild_50:
+    name: Lowlands.Wild.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.wild.50
+      activator: PASSIVE
+  upgrade_snow_frost_01:
+    name: Snow.Frost.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.01
+      activator: PASSIVE
+  upgrade_snow_frost_02:
+    name: Snow.Frost.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.02
+      activator: PASSIVE
+  upgrade_snow_frost_03:
+    name: Snow.Frost.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.03
+      activator: PASSIVE
+  upgrade_snow_frost_04:
+    name: Snow.Frost.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.04
+      activator: PASSIVE
+  upgrade_snow_frost_05:
+    name: Snow.Frost.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.05
+      activator: PASSIVE
+  upgrade_snow_frost_06:
+    name: Snow.Frost.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.06
+      activator: PASSIVE
+  upgrade_snow_frost_07:
+    name: Snow.Frost.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.07
+      activator: PASSIVE
+  upgrade_snow_frost_08:
+    name: Snow.Frost.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.08
+      activator: PASSIVE
+  upgrade_snow_frost_09:
+    name: Snow.Frost.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.09
+      activator: PASSIVE
+  upgrade_snow_frost_10:
+    name: Snow.Frost.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.10
+      activator: PASSIVE
+  upgrade_snow_frost_11:
+    name: Snow.Frost.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.11
+      activator: PASSIVE
+  upgrade_snow_frost_12:
+    name: Snow.Frost.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.12
+      activator: PASSIVE
+  upgrade_snow_frost_13:
+    name: Snow.Frost.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.13
+      activator: PASSIVE
+  upgrade_snow_frost_14:
+    name: Snow.Frost.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.14
+      activator: PASSIVE
+  upgrade_snow_frost_15:
+    name: Snow.Frost.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.15
+      activator: PASSIVE
+  upgrade_snow_frost_16:
+    name: Snow.Frost.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.16
+      activator: PASSIVE
+  upgrade_snow_frost_17:
+    name: Snow.Frost.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.17
+      activator: PASSIVE
+  upgrade_snow_frost_18:
+    name: Snow.Frost.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.18
+      activator: PASSIVE
+  upgrade_snow_frost_19:
+    name: Snow.Frost.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.19
+      activator: PASSIVE
+  upgrade_snow_frost_20:
+    name: Snow.Frost.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.20
+      activator: PASSIVE
+  upgrade_snow_frost_21:
+    name: Snow.Frost.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.21
+      activator: PASSIVE
+  upgrade_snow_frost_22:
+    name: Snow.Frost.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.22
+      activator: PASSIVE
+  upgrade_snow_frost_23:
+    name: Snow.Frost.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.23
+      activator: PASSIVE
+  upgrade_snow_frost_24:
+    name: Snow.Frost.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.24
+      activator: PASSIVE
+  upgrade_snow_frost_25:
+    name: Snow.Frost.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.25
+      activator: PASSIVE
+  upgrade_snow_frost_26:
+    name: Snow.Frost.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.26
+      activator: PASSIVE
+  upgrade_snow_frost_27:
+    name: Snow.Frost.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.27
+      activator: PASSIVE
+  upgrade_snow_frost_28:
+    name: Snow.Frost.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.28
+      activator: PASSIVE
+  upgrade_snow_frost_29:
+    name: Snow.Frost.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.29
+      activator: PASSIVE
+  upgrade_snow_frost_30:
+    name: Snow.Frost.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.30
+      activator: PASSIVE
+  upgrade_snow_frost_31:
+    name: Snow.Frost.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.31
+      activator: PASSIVE
+  upgrade_snow_frost_32:
+    name: Snow.Frost.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.32
+      activator: PASSIVE
+  upgrade_snow_frost_33:
+    name: Snow.Frost.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.33
+      activator: PASSIVE
+  upgrade_snow_frost_34:
+    name: Snow.Frost.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.34
+      activator: PASSIVE
+  upgrade_snow_frost_35:
+    name: Snow.Frost.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.35
+      activator: PASSIVE
+  upgrade_snow_frost_36:
+    name: Snow.Frost.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.36
+      activator: PASSIVE
+  upgrade_snow_frost_37:
+    name: Snow.Frost.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.37
+      activator: PASSIVE
+  upgrade_snow_frost_38:
+    name: Snow.Frost.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.38
+      activator: PASSIVE
+  upgrade_snow_frost_39:
+    name: Snow.Frost.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.39
+      activator: PASSIVE
+  upgrade_snow_frost_40:
+    name: Snow.Frost.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.40
+      activator: PASSIVE
+  upgrade_snow_frost_41:
+    name: Snow.Frost.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.41
+      activator: PASSIVE
+  upgrade_snow_frost_42:
+    name: Snow.Frost.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.42
+      activator: PASSIVE
+  upgrade_snow_frost_43:
+    name: Snow.Frost.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.43
+      activator: PASSIVE
+  upgrade_snow_frost_44:
+    name: Snow.Frost.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.44
+      activator: PASSIVE
+  upgrade_snow_frost_45:
+    name: Snow.Frost.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.45
+      activator: PASSIVE
+  upgrade_snow_frost_46:
+    name: Snow.Frost.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.46
+      activator: PASSIVE
+  upgrade_snow_frost_47:
+    name: Snow.Frost.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.47
+      activator: PASSIVE
+  upgrade_snow_frost_48:
+    name: Snow.Frost.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.48
+      activator: PASSIVE
+  upgrade_snow_frost_49:
+    name: Snow.Frost.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.49
+      activator: PASSIVE
+  upgrade_snow_frost_50:
+    name: Snow.Frost.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.50
+      activator: PASSIVE
+  upgrade_snow_frost_51:
+    name: Snow.Frost.51
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.51
+      activator: PASSIVE
+  upgrade_snow_frost_52:
+    name: Snow.Frost.52
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.52
+      activator: PASSIVE
+  upgrade_snow_frost_53:
+    name: Snow.Frost.53
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.53
+      activator: PASSIVE
+  upgrade_snow_frost_54:
+    name: Snow.Frost.54
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.54
+      activator: PASSIVE
+  upgrade_snow_frost_55:
+    name: Snow.Frost.55
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.55
+      activator: PASSIVE
+  upgrade_snow_frost_56:
+    name: Snow.Frost.56
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.56
+      activator: PASSIVE
+  upgrade_snow_frost_57:
+    name: Snow.Frost.57
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.57
+      activator: PASSIVE
+  upgrade_snow_frost_58:
+    name: Snow.Frost.58
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.58
+      activator: PASSIVE
+  upgrade_snow_frost_59:
+    name: Snow.Frost.59
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.59
+      activator: PASSIVE
+  upgrade_snow_frost_60:
+    name: Snow.Frost.60
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.60
+      activator: PASSIVE
+  upgrade_snow_frost_61:
+    name: Snow.Frost.61
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.61
+      activator: PASSIVE
+  upgrade_snow_frost_62:
+    name: Snow.Frost.62
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.62
+      activator: PASSIVE
+  upgrade_snow_frost_63:
+    name: Snow.Frost.63
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.63
+      activator: PASSIVE
+  upgrade_snow_frost_64:
+    name: Snow.Frost.64
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.64
+      activator: PASSIVE
+  upgrade_snow_frost_65:
+    name: Snow.Frost.65
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.65
+      activator: PASSIVE
+  upgrade_snow_frost_66:
+    name: Snow.Frost.66
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.66
+      activator: PASSIVE
+  upgrade_snow_frost_67:
+    name: Snow.Frost.67
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.67
+      activator: PASSIVE
+  upgrade_snow_frost_68:
+    name: Snow.Frost.68
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.68
+      activator: PASSIVE
+  upgrade_snow_frost_69:
+    name: Snow.Frost.69
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.69
+      activator: PASSIVE
+  upgrade_snow_frost_70:
+    name: Snow.Frost.70
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.frost.70
+      activator: PASSIVE
+  upgrade_snow_glacier_01:
+    name: Snow.Glacier.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.01
+      activator: PASSIVE
+  upgrade_snow_glacier_02:
+    name: Snow.Glacier.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.02
+      activator: PASSIVE
+  upgrade_snow_glacier_03:
+    name: Snow.Glacier.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.03
+      activator: PASSIVE
+  upgrade_snow_glacier_04:
+    name: Snow.Glacier.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.04
+      activator: PASSIVE
+  upgrade_snow_glacier_05:
+    name: Snow.Glacier.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.05
+      activator: PASSIVE
+  upgrade_snow_glacier_06:
+    name: Snow.Glacier.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.06
+      activator: PASSIVE
+  upgrade_snow_glacier_07:
+    name: Snow.Glacier.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.07
+      activator: PASSIVE
+  upgrade_snow_glacier_08:
+    name: Snow.Glacier.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.08
+      activator: PASSIVE
+  upgrade_snow_glacier_09:
+    name: Snow.Glacier.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.09
+      activator: PASSIVE
+  upgrade_snow_glacier_10:
+    name: Snow.Glacier.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.10
+      activator: PASSIVE
+  upgrade_snow_glacier_11:
+    name: Snow.Glacier.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.11
+      activator: PASSIVE
+  upgrade_snow_glacier_12:
+    name: Snow.Glacier.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.12
+      activator: PASSIVE
+  upgrade_snow_glacier_13:
+    name: Snow.Glacier.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.13
+      activator: PASSIVE
+  upgrade_snow_glacier_14:
+    name: Snow.Glacier.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.14
+      activator: PASSIVE
+  upgrade_snow_glacier_15:
+    name: Snow.Glacier.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.15
+      activator: PASSIVE
+  upgrade_snow_glacier_16:
+    name: Snow.Glacier.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.16
+      activator: PASSIVE
+  upgrade_snow_glacier_17:
+    name: Snow.Glacier.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.17
+      activator: PASSIVE
+  upgrade_snow_glacier_18:
+    name: Snow.Glacier.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.18
+      activator: PASSIVE
+  upgrade_snow_glacier_19:
+    name: Snow.Glacier.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.19
+      activator: PASSIVE
+  upgrade_snow_glacier_20:
+    name: Snow.Glacier.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.20
+      activator: PASSIVE
+  upgrade_snow_glacier_21:
+    name: Snow.Glacier.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.21
+      activator: PASSIVE
+  upgrade_snow_glacier_22:
+    name: Snow.Glacier.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.22
+      activator: PASSIVE
+  upgrade_snow_glacier_23:
+    name: Snow.Glacier.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.23
+      activator: PASSIVE
+  upgrade_snow_glacier_24:
+    name: Snow.Glacier.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.24
+      activator: PASSIVE
+  upgrade_snow_glacier_25:
+    name: Snow.Glacier.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.25
+      activator: PASSIVE
+  upgrade_snow_glacier_26:
+    name: Snow.Glacier.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.26
+      activator: PASSIVE
+  upgrade_snow_glacier_27:
+    name: Snow.Glacier.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.27
+      activator: PASSIVE
+  upgrade_snow_glacier_28:
+    name: Snow.Glacier.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.28
+      activator: PASSIVE
+  upgrade_snow_glacier_29:
+    name: Snow.Glacier.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.29
+      activator: PASSIVE
+  upgrade_snow_glacier_30:
+    name: Snow.Glacier.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.30
+      activator: PASSIVE
+  upgrade_snow_glacier_31:
+    name: Snow.Glacier.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.31
+      activator: PASSIVE
+  upgrade_snow_glacier_32:
+    name: Snow.Glacier.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.32
+      activator: PASSIVE
+  upgrade_snow_glacier_33:
+    name: Snow.Glacier.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.33
+      activator: PASSIVE
+  upgrade_snow_glacier_34:
+    name: Snow.Glacier.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.34
+      activator: PASSIVE
+  upgrade_snow_glacier_35:
+    name: Snow.Glacier.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.35
+      activator: PASSIVE
+  upgrade_snow_glacier_36:
+    name: Snow.Glacier.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.36
+      activator: PASSIVE
+  upgrade_snow_glacier_37:
+    name: Snow.Glacier.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.37
+      activator: PASSIVE
+  upgrade_snow_glacier_38:
+    name: Snow.Glacier.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.38
+      activator: PASSIVE
+  upgrade_snow_glacier_39:
+    name: Snow.Glacier.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.39
+      activator: PASSIVE
+  upgrade_snow_glacier_40:
+    name: Snow.Glacier.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.40
+      activator: PASSIVE
+  upgrade_snow_glacier_41:
+    name: Snow.Glacier.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.41
+      activator: PASSIVE
+  upgrade_snow_glacier_42:
+    name: Snow.Glacier.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.42
+      activator: PASSIVE
+  upgrade_snow_glacier_43:
+    name: Snow.Glacier.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.43
+      activator: PASSIVE
+  upgrade_snow_glacier_44:
+    name: Snow.Glacier.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.44
+      activator: PASSIVE
+  upgrade_snow_glacier_45:
+    name: Snow.Glacier.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.45
+      activator: PASSIVE
+  upgrade_snow_glacier_46:
+    name: Snow.Glacier.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.46
+      activator: PASSIVE
+  upgrade_snow_glacier_47:
+    name: Snow.Glacier.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.47
+      activator: PASSIVE
+  upgrade_snow_glacier_48:
+    name: Snow.Glacier.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.48
+      activator: PASSIVE
+  upgrade_snow_glacier_49:
+    name: Snow.Glacier.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.49
+      activator: PASSIVE
+  upgrade_snow_glacier_50:
+    name: Snow.Glacier.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.50
+      activator: PASSIVE
+  upgrade_snow_glacier_51:
+    name: Snow.Glacier.51
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.51
+      activator: PASSIVE
+  upgrade_snow_glacier_52:
+    name: Snow.Glacier.52
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.52
+      activator: PASSIVE
+  upgrade_snow_glacier_53:
+    name: Snow.Glacier.53
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.53
+      activator: PASSIVE
+  upgrade_snow_glacier_54:
+    name: Snow.Glacier.54
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.54
+      activator: PASSIVE
+  upgrade_snow_glacier_55:
+    name: Snow.Glacier.55
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.55
+      activator: PASSIVE
+  upgrade_snow_glacier_56:
+    name: Snow.Glacier.56
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.56
+      activator: PASSIVE
+  upgrade_snow_glacier_57:
+    name: Snow.Glacier.57
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.57
+      activator: PASSIVE
+  upgrade_snow_glacier_58:
+    name: Snow.Glacier.58
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.58
+      activator: PASSIVE
+  upgrade_snow_glacier_59:
+    name: Snow.Glacier.59
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.59
+      activator: PASSIVE
+  upgrade_snow_glacier_60:
+    name: Snow.Glacier.60
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.60
+      activator: PASSIVE
+  upgrade_snow_glacier_61:
+    name: Snow.Glacier.61
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.61
+      activator: PASSIVE
+  upgrade_snow_glacier_62:
+    name: Snow.Glacier.62
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.62
+      activator: PASSIVE
+  upgrade_snow_glacier_63:
+    name: Snow.Glacier.63
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.63
+      activator: PASSIVE
+  upgrade_snow_glacier_64:
+    name: Snow.Glacier.64
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.64
+      activator: PASSIVE
+  upgrade_snow_glacier_65:
+    name: Snow.Glacier.65
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.65
+      activator: PASSIVE
+  upgrade_snow_glacier_66:
+    name: Snow.Glacier.66
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.66
+      activator: PASSIVE
+  upgrade_snow_glacier_67:
+    name: Snow.Glacier.67
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.67
+      activator: PASSIVE
+  upgrade_snow_glacier_68:
+    name: Snow.Glacier.68
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.68
+      activator: PASSIVE
+  upgrade_snow_glacier_69:
+    name: Snow.Glacier.69
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.69
+      activator: PASSIVE
+  upgrade_snow_glacier_70:
+    name: Snow.Glacier.70
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.glacier.70
+      activator: PASSIVE
+  upgrade_snow_whiteout_01:
+    name: Snow.Whiteout.01
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.01
+      activator: PASSIVE
+  upgrade_snow_whiteout_02:
+    name: Snow.Whiteout.02
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.02
+      activator: PASSIVE
+  upgrade_snow_whiteout_03:
+    name: Snow.Whiteout.03
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.03
+      activator: PASSIVE
+  upgrade_snow_whiteout_04:
+    name: Snow.Whiteout.04
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.04
+      activator: PASSIVE
+  upgrade_snow_whiteout_05:
+    name: Snow.Whiteout.05
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.05
+      activator: PASSIVE
+  upgrade_snow_whiteout_06:
+    name: Snow.Whiteout.06
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.06
+      activator: PASSIVE
+  upgrade_snow_whiteout_07:
+    name: Snow.Whiteout.07
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.07
+      activator: PASSIVE
+  upgrade_snow_whiteout_08:
+    name: Snow.Whiteout.08
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.08
+      activator: PASSIVE
+  upgrade_snow_whiteout_09:
+    name: Snow.Whiteout.09
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.09
+      activator: PASSIVE
+  upgrade_snow_whiteout_10:
+    name: Snow.Whiteout.10
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.10
+      activator: PASSIVE
+  upgrade_snow_whiteout_11:
+    name: Snow.Whiteout.11
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.11
+      activator: PASSIVE
+  upgrade_snow_whiteout_12:
+    name: Snow.Whiteout.12
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.12
+      activator: PASSIVE
+  upgrade_snow_whiteout_13:
+    name: Snow.Whiteout.13
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.13
+      activator: PASSIVE
+  upgrade_snow_whiteout_14:
+    name: Snow.Whiteout.14
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.14
+      activator: PASSIVE
+  upgrade_snow_whiteout_15:
+    name: Snow.Whiteout.15
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.15
+      activator: PASSIVE
+  upgrade_snow_whiteout_16:
+    name: Snow.Whiteout.16
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.16
+      activator: PASSIVE
+  upgrade_snow_whiteout_17:
+    name: Snow.Whiteout.17
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.17
+      activator: PASSIVE
+  upgrade_snow_whiteout_18:
+    name: Snow.Whiteout.18
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.18
+      activator: PASSIVE
+  upgrade_snow_whiteout_19:
+    name: Snow.Whiteout.19
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.19
+      activator: PASSIVE
+  upgrade_snow_whiteout_20:
+    name: Snow.Whiteout.20
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.20
+      activator: PASSIVE
+  upgrade_snow_whiteout_21:
+    name: Snow.Whiteout.21
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.21
+      activator: PASSIVE
+  upgrade_snow_whiteout_22:
+    name: Snow.Whiteout.22
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.22
+      activator: PASSIVE
+  upgrade_snow_whiteout_23:
+    name: Snow.Whiteout.23
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.23
+      activator: PASSIVE
+  upgrade_snow_whiteout_24:
+    name: Snow.Whiteout.24
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.24
+      activator: PASSIVE
+  upgrade_snow_whiteout_25:
+    name: Snow.Whiteout.25
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.25
+      activator: PASSIVE
+  upgrade_snow_whiteout_26:
+    name: Snow.Whiteout.26
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.26
+      activator: PASSIVE
+  upgrade_snow_whiteout_27:
+    name: Snow.Whiteout.27
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.27
+      activator: PASSIVE
+  upgrade_snow_whiteout_28:
+    name: Snow.Whiteout.28
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.28
+      activator: PASSIVE
+  upgrade_snow_whiteout_29:
+    name: Snow.Whiteout.29
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.29
+      activator: PASSIVE
+  upgrade_snow_whiteout_30:
+    name: Snow.Whiteout.30
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.30
+      activator: PASSIVE
+  upgrade_snow_whiteout_31:
+    name: Snow.Whiteout.31
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.31
+      activator: PASSIVE
+  upgrade_snow_whiteout_32:
+    name: Snow.Whiteout.32
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.32
+      activator: PASSIVE
+  upgrade_snow_whiteout_33:
+    name: Snow.Whiteout.33
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.33
+      activator: PASSIVE
+  upgrade_snow_whiteout_34:
+    name: Snow.Whiteout.34
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.34
+      activator: PASSIVE
+  upgrade_snow_whiteout_35:
+    name: Snow.Whiteout.35
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.35
+      activator: PASSIVE
+  upgrade_snow_whiteout_36:
+    name: Snow.Whiteout.36
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.36
+      activator: PASSIVE
+  upgrade_snow_whiteout_37:
+    name: Snow.Whiteout.37
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.37
+      activator: PASSIVE
+  upgrade_snow_whiteout_38:
+    name: Snow.Whiteout.38
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.38
+      activator: PASSIVE
+  upgrade_snow_whiteout_39:
+    name: Snow.Whiteout.39
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.39
+      activator: PASSIVE
+  upgrade_snow_whiteout_40:
+    name: Snow.Whiteout.40
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.40
+      activator: PASSIVE
+  upgrade_snow_whiteout_41:
+    name: Snow.Whiteout.41
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.41
+      activator: PASSIVE
+  upgrade_snow_whiteout_42:
+    name: Snow.Whiteout.42
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.42
+      activator: PASSIVE
+  upgrade_snow_whiteout_43:
+    name: Snow.Whiteout.43
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.43
+      activator: PASSIVE
+  upgrade_snow_whiteout_44:
+    name: Snow.Whiteout.44
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.44
+      activator: PASSIVE
+  upgrade_snow_whiteout_45:
+    name: Snow.Whiteout.45
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.45
+      activator: PASSIVE
+  upgrade_snow_whiteout_46:
+    name: Snow.Whiteout.46
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.46
+      activator: PASSIVE
+  upgrade_snow_whiteout_47:
+    name: Snow.Whiteout.47
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.47
+      activator: PASSIVE
+  upgrade_snow_whiteout_48:
+    name: Snow.Whiteout.48
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.48
+      activator: PASSIVE
+  upgrade_snow_whiteout_49:
+    name: Snow.Whiteout.49
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.49
+      activator: PASSIVE
+  upgrade_snow_whiteout_50:
+    name: Snow.Whiteout.50
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.50
+      activator: PASSIVE
+  upgrade_snow_whiteout_51:
+    name: Snow.Whiteout.51
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.51
+      activator: PASSIVE
+  upgrade_snow_whiteout_52:
+    name: Snow.Whiteout.52
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.52
+      activator: PASSIVE
+  upgrade_snow_whiteout_53:
+    name: Snow.Whiteout.53
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.53
+      activator: PASSIVE
+  upgrade_snow_whiteout_54:
+    name: Snow.Whiteout.54
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.54
+      activator: PASSIVE
+  upgrade_snow_whiteout_55:
+    name: Snow.Whiteout.55
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.55
+      activator: PASSIVE
+  upgrade_snow_whiteout_56:
+    name: Snow.Whiteout.56
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.56
+      activator: PASSIVE
+  upgrade_snow_whiteout_57:
+    name: Snow.Whiteout.57
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.57
+      activator: PASSIVE
+  upgrade_snow_whiteout_58:
+    name: Snow.Whiteout.58
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.58
+      activator: PASSIVE
+  upgrade_snow_whiteout_59:
+    name: Snow.Whiteout.59
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.59
+      activator: PASSIVE
+  upgrade_snow_whiteout_60:
+    name: Snow.Whiteout.60
+    rarity: common
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.whiteout.60
+      activator: PASSIVE
+  upgrade_nether_boss_01:
+    name: Nether.Boss.01
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.01
+      activator: PASSIVE
+  upgrade_nether_boss_02:
+    name: Nether.Boss.02
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.02
+      activator: PASSIVE
+  upgrade_nether_boss_03:
+    name: Nether.Boss.03
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.03
+      activator: PASSIVE
+  upgrade_nether_boss_04:
+    name: Nether.Boss.04
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.04
+      activator: PASSIVE
+  upgrade_nether_boss_05:
+    name: Nether.Boss.05
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.05
+      activator: PASSIVE
+  upgrade_nether_boss_06:
+    name: Nether.Boss.06
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.06
+      activator: PASSIVE
+  upgrade_nether_boss_07:
+    name: Nether.Boss.07
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.07
+      activator: PASSIVE
+  upgrade_nether_boss_08:
+    name: Nether.Boss.08
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.08
+      activator: PASSIVE
+  upgrade_nether_boss_09:
+    name: Nether.Boss.09
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.nether.boss.09
+      activator: PASSIVE
+  upgrade_dark_oak_boss_01:
+    name: Dark Oak.Boss.01
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.01
+      activator: PASSIVE
+  upgrade_dark_oak_boss_02:
+    name: Dark Oak.Boss.02
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.02
+      activator: PASSIVE
+  upgrade_dark_oak_boss_03:
+    name: Dark Oak.Boss.03
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.03
+      activator: PASSIVE
+  upgrade_dark_oak_boss_04:
+    name: Dark Oak.Boss.04
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.04
+      activator: PASSIVE
+  upgrade_dark_oak_boss_05:
+    name: Dark Oak.Boss.05
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.05
+      activator: PASSIVE
+  upgrade_dark_oak_boss_06:
+    name: Dark Oak.Boss.06
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.06
+      activator: PASSIVE
+  upgrade_dark_oak_boss_07:
+    name: Dark Oak.Boss.07
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.07
+      activator: PASSIVE
+  upgrade_dark_oak_boss_08:
+    name: Dark Oak.Boss.08
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.dark_oak.boss.08
+      activator: PASSIVE
+  upgrade_highlands_boss_01:
+    name: Highlands.Boss.01
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.01
+      activator: PASSIVE
+  upgrade_highlands_boss_02:
+    name: Highlands.Boss.02
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.02
+      activator: PASSIVE
+  upgrade_highlands_boss_03:
+    name: Highlands.Boss.03
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.03
+      activator: PASSIVE
+  upgrade_highlands_boss_04:
+    name: Highlands.Boss.04
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.04
+      activator: PASSIVE
+  upgrade_highlands_boss_05:
+    name: Highlands.Boss.05
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.05
+      activator: PASSIVE
+  upgrade_highlands_boss_06:
+    name: Highlands.Boss.06
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.06
+      activator: PASSIVE
+  upgrade_highlands_boss_07:
+    name: Highlands.Boss.07
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.07
+      activator: PASSIVE
+  upgrade_highlands_boss_08:
+    name: Highlands.Boss.08
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.08
+      activator: PASSIVE
+  upgrade_highlands_boss_09:
+    name: Highlands.Boss.09
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.09
+      activator: PASSIVE
+  upgrade_highlands_boss_10:
+    name: Highlands.Boss.10
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.highlands.boss.10
+      activator: PASSIVE
+  upgrade_lowlands_boss_01:
+    name: Lowlands.Boss.01
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.01
+      activator: PASSIVE
+  upgrade_lowlands_boss_02:
+    name: Lowlands.Boss.02
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.02
+      activator: PASSIVE
+  upgrade_lowlands_boss_03:
+    name: Lowlands.Boss.03
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.03
+      activator: PASSIVE
+  upgrade_lowlands_boss_04:
+    name: Lowlands.Boss.04
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.04
+      activator: PASSIVE
+  upgrade_lowlands_boss_05:
+    name: Lowlands.Boss.05
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.05
+      activator: PASSIVE
+  upgrade_lowlands_boss_06:
+    name: Lowlands.Boss.06
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.06
+      activator: PASSIVE
+  upgrade_lowlands_boss_07:
+    name: Lowlands.Boss.07
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.07
+      activator: PASSIVE
+  upgrade_lowlands_boss_08:
+    name: Lowlands.Boss.08
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.08
+      activator: PASSIVE
+  upgrade_lowlands_boss_09:
+    name: Lowlands.Boss.09
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.09
+      activator: PASSIVE
+  upgrade_lowlands_boss_10:
+    name: Lowlands.Boss.10
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.10
+      activator: PASSIVE
+  upgrade_lowlands_boss_11:
+    name: Lowlands.Boss.11
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.11
+      activator: PASSIVE
+  upgrade_lowlands_boss_12:
+    name: Lowlands.Boss.12
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.12
+      activator: PASSIVE
+  upgrade_lowlands_boss_13:
+    name: Lowlands.Boss.13
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.13
+      activator: PASSIVE
+  upgrade_lowlands_boss_14:
+    name: Lowlands.Boss.14
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.14
+      activator: PASSIVE
+  upgrade_lowlands_boss_15:
+    name: Lowlands.Boss.15
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.15
+      activator: PASSIVE
+  upgrade_lowlands_boss_16:
+    name: Lowlands.Boss.16
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.16
+      activator: PASSIVE
+  upgrade_lowlands_boss_17:
+    name: Lowlands.Boss.17
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.17
+      activator: PASSIVE
+  upgrade_lowlands_boss_18:
+    name: Lowlands.Boss.18
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.lowlands.boss.18
+      activator: PASSIVE
+  upgrade_snow_boss_01:
+    name: Snow.Boss.01
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.01
+      activator: PASSIVE
+  upgrade_snow_boss_02:
+    name: Snow.Boss.02
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.02
+      activator: PASSIVE
+  upgrade_snow_boss_03:
+    name: Snow.Boss.03
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.03
+      activator: PASSIVE
+  upgrade_snow_boss_04:
+    name: Snow.Boss.04
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.04
+      activator: PASSIVE
+  upgrade_snow_boss_05:
+    name: Snow.Boss.05
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.05
+      activator: PASSIVE
+  upgrade_snow_boss_06:
+    name: Snow.Boss.06
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.06
+      activator: PASSIVE
+  upgrade_snow_boss_07:
+    name: Snow.Boss.07
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.07
+      activator: PASSIVE
+  upgrade_snow_boss_08:
+    name: Snow.Boss.08
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.08
+      activator: PASSIVE
+  upgrade_snow_boss_09:
+    name: Snow.Boss.09
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.09
+      activator: PASSIVE
+  upgrade_snow_boss_10:
+    name: Snow.Boss.10
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.10
+      activator: PASSIVE
+  upgrade_snow_boss_11:
+    name: Snow.Boss.11
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.11
+      activator: PASSIVE
+  upgrade_snow_boss_12:
+    name: Snow.Boss.12
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.12
+      activator: PASSIVE
+  upgrade_snow_boss_13:
+    name: Snow.Boss.13
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.13
+      activator: PASSIVE
+  upgrade_snow_boss_14:
+    name: Snow.Boss.14
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.14
+      activator: PASSIVE
+  upgrade_snow_boss_15:
+    name: Snow.Boss.15
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.15
+      activator: PASSIVE
+  upgrade_snow_boss_16:
+    name: Snow.Boss.16
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.16
+      activator: PASSIVE
+  upgrade_snow_boss_17:
+    name: Snow.Boss.17
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.17
+      activator: PASSIVE
+  upgrade_snow_boss_18:
+    name: Snow.Boss.18
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.18
+      activator: PASSIVE
+  upgrade_snow_boss_19:
+    name: Snow.Boss.19
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.19
+      activator: PASSIVE
+  upgrade_snow_boss_20:
+    name: Snow.Boss.20
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.20
+      activator: PASSIVE
+  upgrade_snow_boss_21:
+    name: Snow.Boss.21
+    rarity: rare
+    compatibility:
+      - weapon
+      - armor
+    spell:
+      ability: ability.upgrade.snow.boss.21
+      activator: PASSIVE

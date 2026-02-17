@@ -38,7 +38,6 @@ import org.bukkit.inventory.view.AnvilView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
-import dev.patric.dungeonsreborn.gui.GuiI18n;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
@@ -54,10 +53,10 @@ public final class GuiManager implements Listener {
    * <ul>
    * <li>Route top-inventory clicks to {@link Window} components</li>
    * <li>Optionally block interaction with the player inventory while a window is open</li>
-   * <li>Provide chat-based text input sessions for components like {@code TextButton}</li>
+   * <li>Provide command-based text input sessions for components like {@code TextButton}</li>
    * </ul>
    */
-  public record TextRequest(Component prompt, String cancelWord, Duration timeout,
+  public record TextRequest(Component prompt, String cancelWord, Duration timeout, boolean commandOnly,
       BiConsumer<Player, String> onText, Consumer<Player> onCancel, Consumer<Player> onTimeout) {
     public TextRequest {
       Objects.requireNonNull(prompt, "prompt");
@@ -69,7 +68,7 @@ public final class GuiManager implements Listener {
     }
 
     public TextRequest(Component prompt, String cancelWord, Duration timeout, BiConsumer<Player, String> onText) {
-      this(prompt, cancelWord, timeout, onText, player -> {
+      this(prompt, cancelWord, timeout, true, onText, player -> {
       }, player -> {
       });
     }
@@ -404,6 +403,7 @@ public final class GuiManager implements Listener {
     debug("requestText: player=" + player.getName() + " cancelWord=" + request.cancelWord()
         + " timeout=" + request.timeout().toSeconds() + "s");
     player.sendMessage(request.prompt());
+    player.sendMessage(GuiI18n.tr(player, "gui.textInput.commandHint"));
     if (!request.cancelWord().isBlank()) {
       player.sendMessage(GuiI18n.tr(player, "gui.textInput.cancelHint",
           Placeholder.unparsed("cancel", request.cancelWord())));
@@ -802,6 +802,10 @@ public final class GuiManager implements Listener {
     if (request == null) {
       return;
     }
+    if (request.commandOnly()) {
+      pendingText.put(player.getUniqueId(), request);
+      return;
+    }
     event.setCancelled(true);
 
     String text = plain.serialize(event.message()).trim();
@@ -813,6 +817,21 @@ public final class GuiManager implements Listener {
     }
 
     Bukkit.getScheduler().runTask(plugin, () -> request.onText().accept(player, text));
+  }
+
+  public boolean submitText(Player player, String text) {
+    Objects.requireNonNull(player, "player");
+    TextRequest request = pendingText.remove(player.getUniqueId());
+    if (request == null) {
+      return false;
+    }
+    String trimmed = Objects.requireNonNullElse(text, "").trim();
+    if (!request.cancelWord().isBlank() && trimmed.equalsIgnoreCase(request.cancelWord())) {
+      request.onCancel().accept(player);
+      return true;
+    }
+    request.onText().accept(player, trimmed);
+    return true;
   }
 
   @EventHandler

@@ -1,0 +1,51 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_boss_05:
+    name: Ability Upgrade Nether Boss 05
+    costs:
+      -
+        type: mana
+        amount: 26.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: LAVA
+          radius: 3.0030000000000006
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: CRIT
+          radius: 2.689995000000001
+          points: 3
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.4
+          maxDistance: 20
+          hitRadius: 0.35
+          trail:
+            particle: SOUL_FIRE_FLAME
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 17.5
+            damageCause: PROJECTILE
+          onHit:
+            type: sequence
+            actions:
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 60
+                amplifier: 0
+              -
+                type: potion
+                effect: WITHER
+                durationTicks: 40
+                amplifier: 0

@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_abyssal_warden_phase_01_main:
+    name: Ability Boss Snow Abyssal Warden Phase 01 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_cylinder
+          particle: SOUL
+          radius: 8.918700000000001
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: WITCH
+          radius: 7.96824
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: SOUL
+          radius: 9.374400000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: WITCH
+          radius: 8.355585
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 7.9
+          radius: 6.2
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 6.2
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 7.0
+          points: 18

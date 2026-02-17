@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_19:
+    name: Ability Upgrade Snow Glacier 19
+    costs:
+      -
+        type: mana
+        amount: 16.4
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polyline
+          particle: CRIT
+          points:
+            -
+              x: 2.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.37
+              y: 0.0
+              z: 2.38
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.38
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 28.21

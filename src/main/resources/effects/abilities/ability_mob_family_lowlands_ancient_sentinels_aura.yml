@@ -1,0 +1,118 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_lowlands_ancient_sentinels_aura:
+    name: Lowlands Ancient_Sentinels
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cylinder
+          particle: DRIPPING_DRIPSTONE_WATER
+          radius: 4.435625
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: HAPPY_VILLAGER
+          radius: 3.9450624999999997
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: CRIMSON_SPORE
+          points:
+            -
+              x: 3.38
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.69
+              y: 0.0
+              z: 2.93
+            -
+              x: -1.69
+              y: 0.0
+              z: -2.93
+          up: -1.0
+        -
+          type: particles_disk
+          particle: DRIPPING_DRIPSTONE_WATER
+          radius: 4.64125
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: HAPPY_VILLAGER
+          radius: 3.2459374999999997
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: CRIMSON_SPORE
+          points:
+            -
+              x: 3.38
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.69
+              y: 0.0
+              z: 2.93
+            -
+              x: -1.69
+              y: 0.0
+              z: -2.93
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: DRIPPING_DRIPSTONE_WATER
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.54
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.54
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: HAPPY_VILLAGER
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          up: -1.0
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: preset_swirl
+          radius: 2.35
+          points: 3
+          up: -2.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 2.35
+        -
+          type: damage_over_time
+          amount: 0.8
+          durationTicks: 40
+          radius: 2.35

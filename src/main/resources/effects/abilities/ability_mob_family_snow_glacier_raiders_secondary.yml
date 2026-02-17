@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_snow_glacier_raiders_secondary:
+    name: Snow Glacier_Raiders Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: ELDER_GUARDIAN
+          radius: 8.843750000000002
+          angleDegrees: 45
+          points: 1
+          up: 0.0
+        -
+          type: damage_over_time
+          amount: 3.31
+          durationTicks: 110
+          radius: 5.45
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 110
+          amplifier: 0
+          radius: 5.2

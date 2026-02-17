@@ -1,0 +1,29 @@
+name: <green><bold>Plains Quarry</bold></green> <gray>VI</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Damage Mult by 1.25.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_quarry_06
+  activator: LEFT_CLICK
+requirements:
+  level: 18
+modifiers:
+  -
+    type: damage_mult
+    value: 1.252
+  -
+    type: damage_add
+    value: 0.333
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: projectile_protection
+    level: 1
+allowUnsafe: true

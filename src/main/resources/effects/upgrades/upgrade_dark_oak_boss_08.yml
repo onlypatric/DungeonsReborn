@@ -1,0 +1,56 @@
+name: <dark_purple><bold>Dark Oak Boss</bold></dark_purple> <gray>VIII</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.16.</gray> <gray>Grants Generic Max Health +8.99.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_boss_08
+  activator: PASSIVE
+requirements:
+  level: 1100
+modifiers:
+  -
+    type: damage_mult
+    value: 1.162
+  -
+    type: cooldown_mult
+    value: 0.966
+  -
+    type: radius_add
+    value: 3.127
+  -
+    type: duration_mult
+    value: 1.133
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 8.992
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.071
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.167
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.04
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: fire_aspect
+    level: 2
+  -
+    enchant: knockback
+    level: 2
+allowUnsafe: true

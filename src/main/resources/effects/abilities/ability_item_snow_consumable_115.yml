@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_115:
+    name: Ability Item Snow Consumable 115
+    cooldown:
+      ticks: 154
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FALLING_HONEY
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.02
+            -
+              x: -0.21
+              y: 0.0
+              z: -0.01
+          up: -1.0
+        -
+          particle: FALLING_LAVA
+          type: particles_points
+          points:
+            -
+              x: -0.4
+              y: 0.0
+              z: 0.13
+            -
+              x: 0.19
+              y: 0.0
+              z: -0.26
+            -
+              x: -0.22
+              y: 0.0
+              z: -0.02
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 21.3
+            policy: any

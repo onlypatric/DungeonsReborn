@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import dev.patric.dungeonsreborn.gui.components.NextPageButton;
@@ -183,6 +182,6 @@ public class PaginatedWindow extends Window {
   }
 
   protected GuiComponent defaultPageIndicator() {
-    return new PageIndicator(this, Material.PAPER);
+    return new PageIndicator(this);
   }
 }

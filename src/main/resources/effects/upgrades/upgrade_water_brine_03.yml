@@ -1,0 +1,29 @@
+name: <aqua><bold>Water Brine</bold></aqua> <gray>III</gray>
+description: <gray>Oceanic force swells your resolve.</gray> <gray>Boosts Duration Mult by 0.83.</gray> <gray>Grants Generic Armor +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_water_brine_03
+  activator: RIGHT_CLICK
+requirements:
+  level: 155
+modifiers:
+  -
+    type: duration_mult
+    value: 0.832
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.047
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: efficiency
+    level: 1
+allowUnsafe: true

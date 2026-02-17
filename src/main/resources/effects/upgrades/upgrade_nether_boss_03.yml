@@ -1,0 +1,56 @@
+name: <red><bold>Nether Boss</bold></red> <gray>III</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.15.</gray> <gray>Grants Generic Max Health +7.99.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_boss_03
+  activator: RIGHT_CLICK
+requirements:
+  level: 647
+modifiers:
+  -
+    type: damage_mult
+    value: 1.148
+  -
+    type: cooldown_mult
+    value: 0.947
+  -
+    type: radius_add
+    value: 2.931
+  -
+    type: duration_mult
+    value: 1.096
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 7.989
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.065
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.103
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.047
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: looting
+    level: 1
+  -
+    enchant: piercing
+    level: 1
+allowUnsafe: true

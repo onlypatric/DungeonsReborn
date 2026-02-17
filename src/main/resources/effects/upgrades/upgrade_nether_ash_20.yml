@@ -1,0 +1,30 @@
+name: <red><bold>Nether Ash</bold></red> <gray>XX</gray>
+description: <gray>Embers smolder beneath your skin.</gray> <gray>Grants Generic Armor +0.09.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_ash_20
+  activator: PASSIVE
+requirements:
+  level: 370
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.087
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: -0.051
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: luck_of_the_sea
+    level: 1
+allowUnsafe: true

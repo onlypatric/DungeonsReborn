@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_snow_glacier_raiders_aura:
+    name: Snow Glacier_Raiders
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: ELDER_GUARDIAN
+          length: 6.545000000000001
+          points: 1
+          up: -1.0
+        -
+          type: particles_line
+          particle: SNOWFLAKE
+          length: 5.23875
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.2

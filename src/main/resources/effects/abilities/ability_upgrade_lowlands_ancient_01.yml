@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_ancient_01:
+    name: Ability Upgrade Lowlands Ancient 01
+    costs:
+      -
+        type: mana
+        amount: 15.2
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: ITEM_SLIME
+          radius: 3.96
+          points: 3
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.8
+          maxDistance: 28
+          hitRadius: 0.35
+          trail:
+            particle: CLOUD
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 22.6
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

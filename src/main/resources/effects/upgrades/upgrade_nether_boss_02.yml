@@ -1,0 +1,56 @@
+name: <red><bold>Nether Boss</bold></red> <gray>II</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.10.</gray> <gray>Grants Generic Max Health +7.58.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_boss_02
+  activator: PASSIVE
+requirements:
+  level: 650
+modifiers:
+  -
+    type: damage_mult
+    value: 1.099
+  -
+    type: cooldown_mult
+    value: 0.975
+  -
+    type: radius_add
+    value: 3.653
+  -
+    type: duration_mult
+    value: 1.082
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 7.585
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.099
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.063
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.033
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: knockback
+    level: 1
+  -
+    enchant: lure
+    level: 1
+allowUnsafe: true

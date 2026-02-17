@@ -1,0 +1,20 @@
+quests:
+  quest_plains_gather_007:
+    name: Plains Foraging VIII
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 4
+        itemId: item_plains_material_wood_01
+    gui:
+      head: ICON_QUESTS
+    rewards:
+      xp: 50
+      tokens: 0
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_plains_consumable_005

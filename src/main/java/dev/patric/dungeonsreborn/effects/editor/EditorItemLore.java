@@ -80,6 +80,10 @@ public final class EditorItemLore {
     if (item == null || engine == null) {
       return item;
     }
+    if (dev.patric.dungeonsreborn.effects.items.ItemMarkers.has(
+        item, dev.patric.dungeonsreborn.effects.items.ItemMarkers.HIDE_EFFECTS_LORE)) {
+      return item;
+    }
     ItemMeta meta = item.getItemMeta();
     if (meta == null) {
       return item;

@@ -1,0 +1,22 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_frost_14:
+    name: Ability Upgrade Snow Frost 14
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: ELDER_GUARDIAN
+          count: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

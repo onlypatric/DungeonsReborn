@@ -1,0 +1,51 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_boss_02:
+    name: Ability Upgrade Nether Boss 02
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: SOUL_FIRE_FLAME
+          points:
+            -
+              x: 2.73
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.36
+              y: 0.0
+              z: 2.36
+            -
+              x: -1.37
+              y: 0.0
+              z: -2.36
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: TOTEM_OF_UNDYING
+          points:
+            -
+              x: 2.32
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.16
+              y: 0.0
+              z: 2.01
+            -
+              x: -1.16
+              y: 0.0
+              z: -2.01
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

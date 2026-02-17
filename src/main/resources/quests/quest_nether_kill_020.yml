@@ -1,0 +1,23 @@
+quests:
+  quest_nether_kill_020:
+    name: Nether Culling IX
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_nether_ash_legion_10
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 364
+    rewards:
+      xp: 80
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_material_ash_04
+          amount: 3

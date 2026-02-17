@@ -1,0 +1,219 @@
+schemaVersion: 1
+mobs:
+  mob_snow_boss_abyssal_warden:
+    type: WARDEN
+    name: <red><bold>Snow Abyssal Warden</bold></red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1024.0
+      ATTACK_DAMAGE: 18.5
+      scaleVariance: 4.0
+    loot:
+      pools:
+        -
+          id: world_snow_boss
+    resistances:
+      PHYSICAL: 0.2438095238095238
+      MAGIC: 0.2438095238095238
+      FIRE: 0.2438095238095238
+      ICE: 0.2438095238095238
+      LIGHTNING: 0.2438095238095238
+      POISON: 0.2438095238095238
+      WITHER: 0.2438095238095238
+      BLEED: 0.2438095238095238
+      HOLY: 0.2438095238095238
+      ARCANE: 0.2438095238095238
+      VOID: 0.2438095238095238
+      EXPLOSION: 0.2438095238095238
+      PROJECTILE: 0.2438095238095238
+    xpGating:
+      minLevel: 5000
+    phases:
+      -
+        id: snow_abyssal_warden_phase_1
+        healthBelow: 0.85
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_01_main
+            trigger: MELEE
+            cooldownTicks: 65
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_01_secondary
+            trigger: MELEE
+            cooldownTicks: 97
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_01_aura
+            periodTicks: 40
+        scaleMultiplier: 1.05
+      -
+        id: snow_abyssal_warden_phase_2
+        healthBelow: 0.7
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_02_main
+            trigger: MELEE
+            cooldownTicks: 70
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_02_secondary
+            trigger: MELEE
+            cooldownTicks: 104
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_02_aura
+            periodTicks: 40
+        scaleMultiplier: 1.1
+      -
+        id: snow_abyssal_warden_phase_3
+        healthBelow: 0.55
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_03_main
+            trigger: MELEE
+            cooldownTicks: 75
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_03_secondary
+            trigger: MELEE
+            cooldownTicks: 111
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_03_aura
+            periodTicks: 40
+        scaleMultiplier: 1.15
+      -
+        id: snow_abyssal_warden_phase_4
+        healthBelow: 0.4
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_04_main
+            trigger: MELEE
+            cooldownTicks: 80
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_04_secondary
+            trigger: MELEE
+            cooldownTicks: 118
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_04_aura
+            periodTicks: 40
+        scaleMultiplier: 1.2
+      -
+        id: snow_abyssal_warden_phase_5
+        healthBelow: 0.25
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_05_main
+            trigger: MELEE
+            cooldownTicks: 85
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_05_secondary
+            trigger: MELEE
+            cooldownTicks: 125
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_05_aura
+            periodTicks: 40
+        scaleMultiplier: 1.25
+      -
+        id: snow_abyssal_warden_phase_6
+        healthBelow: 0.12
+        attacks:
+          main:
+            ability: ability_boss_snow_abyssal_warden_phase_06_main
+            trigger: MELEE
+            cooldownTicks: 90
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_snow_abyssal_warden_phase_06_secondary
+            trigger: MELEE
+            cooldownTicks: 132
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_snow_abyssal_warden_phase_06_aura
+            periodTicks: 40
+        scaleMultiplier: 1.3

@@ -1,0 +1,25 @@
+quests:
+  quest_desert_boss_009:
+    name: Desert Ascendance X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 1
+        mob: mob_desert_boss_sand_king
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 320
+    rewards:
+      xp: 120
+      tokens: 10
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_upgrade_core_08
+        -
+          id: item_desert_material_fire_04
+          amount: 3

@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>XI</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 0.68.</gray> <gray>Grants Generic Max Health +1.31.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_11
+  activator: LEFT_CLICK
+requirements:
+  level: 2255
+modifiers:
+  -
+    type: duration_add
+    value: 0.677
+  -
+    type: damage_add
+    value: 0.206
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 1.313
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: loyalty
+    level: 3
+  -
+    enchant: projectile_protection
+    level: 3
+allowUnsafe: true

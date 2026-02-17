@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_mushroom_sporelings_panic:
+    name: Mushroom Sporelings Panic
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: DRIPPING_OBSIDIAN_TEAR
+          radius: 3.1681250000000003
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: SPEED
+          durationTicks: 60
+          amplifier: 0

@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_snow_icebound_guardians_31:
+    type: IRON_GOLEM
+    name: <gold>Snow Iron Golem Apex</gold>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 204.3
+      ATTACK_DAMAGE: 9.26
+      scaleVariance: 1.35
+    attacks:
+      main:
+        ability: ability_mob_family_snow_icebound_guardians_main
+        trigger: MELEE
+        cooldownTicks: 32
+        targetMode: NEAREST_PLAYER
+        range: 6.25
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_snow_icebound_guardians_secondary
+        trigger: RANGED
+        cooldownTicks: 62
+        targetMode: NEAREST_PLAYER
+        range: 9.85
+        chance: 0.55
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_snow_icebound_guardians_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_snow_icebound_guardians_stronger
+    xpGating:
+      minLevel: 3885

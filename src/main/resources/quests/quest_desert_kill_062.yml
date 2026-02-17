@@ -1,0 +1,23 @@
+quests:
+  quest_desert_kill_062:
+    name: Desert Culling III
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 7
+        mob: mob_desert_sand_hunters_12
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 147
+    rewards:
+      xp: 60
+      tokens: 2
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_relic_06
+          amount: 2

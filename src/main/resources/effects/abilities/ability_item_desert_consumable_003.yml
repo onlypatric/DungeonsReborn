@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_desert_consumable_003:
+    name: Ability Item Desert Consumable 003
+    cooldown:
+      ticks: 82
+    action:
+      type: sequence
+      actions:
+        -
+          particle: CURRENT_DOWN
+          type: particles_points
+          points:
+            -
+              x: -0.25
+              y: 0.0
+              z: 0.19
+            -
+              x: -0.45
+              y: 0.0
+              z: -0.2
+          up: -1.0
+        -
+          particle: DAMAGE_INDICATOR
+          type: particles_points
+          points:
+            -
+              x: 0.0
+              y: 0.0
+              z: 0.01
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.0
+            -
+              x: -0.02
+              y: 0.0
+              z: 0.01
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 6.4
+            policy: any

@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: recipe_desert_consumable_034
+name: Desert Consumable 34
+costs:
+  -
+    type: tokens
+    amount: 2
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: SAND
+        amount: 2
+      -
+        material: BONE
+      -
+        material: PRISMARINE_SHARD
+outputs:
+  -
+    item: item_desert_consumable_034

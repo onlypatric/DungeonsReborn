@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>XXXVIII</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 0.59.</gray> <gray>Grants Generic Max Health +1.42.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_38
+  activator: PASSIVE
+requirements:
+  level: 2288
+modifiers:
+  -
+    type: duration_add
+    value: 0.587
+  -
+    type: damage_add
+    value: 0.46
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 1.424
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: quick_charge
+    level: 3
+  -
+    enchant: smite
+    level: 3
+allowUnsafe: true

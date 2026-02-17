@@ -1,0 +1,14 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <dark_purple><bold>Verdantguard</bold></dark_purple> <gray>of Dark Oak</gray>
+    lore:
+      - <gold>Ward</gold> <dark_gray>❯</dark_gray> <gray>Fortifies with +ARM 4.4–5.9.</gray>
+  meta:
+    skull:
+      head: REQ_MANGROVE_PLANK_OUTER
+attributes:
+  ARMOR: 4.4
+gui:
+  head: ICON_ITEMS

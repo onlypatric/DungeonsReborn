@@ -1,0 +1,23 @@
+quests:
+  quest_dark_oak_kill_013:
+    name: Dark Oak Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_dark_oak_shadow_fauna_13
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 710
+    rewards:
+      xp: 100
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_material_bark_03
+          amount: 2

@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: recipe_swamp_consumable_002
+name: Swamp Consumable 2
+costs:
+  -
+    type: tokens
+    amount: 4
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: SLIME_BALL
+        amount: 2
+      -
+        material: STICK
+      -
+        material: GUNPOWDER
+outputs:
+  -
+    item: item_swamp_consumable_002

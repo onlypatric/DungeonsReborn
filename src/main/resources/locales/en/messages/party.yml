@@ -49,3 +49,15 @@ messages.party.result.requestDenied: Denied request from {player}.
 messages.party.result.requestSent: Requested to join {leader}'s party.
 messages.party.result.roleChanged: '{player} is now {role}.'
 messages.party.result.transfer: Transferred leadership.
+messages.command.party.admin.list.header: <gold>Parties</gold> <gray>({count})</gray>
+messages.command.party.admin.list.entry: <gray>-</gray> <white>{id}</white> <gray>leader=</gray><white>{leader}</white> <gray>size=</gray><white>{size}</white> <gray>public=</gray><white>{public}</white> <gray>world=</gray><white>{world}</white>
+messages.command.party.admin.info.header: <gold>Party</gold> <white>{id}</white>
+messages.command.party.admin.info.leader: <gray>Leader:</gray> <white>{leader}</white>
+messages.command.party.admin.info.world: <gray>World:</gray> <white>{world}</white>
+messages.command.party.admin.info.public: <gray>Public:</gray> <white>{public}</white>
+messages.command.party.admin.info.invites: <gray>Invites:</gray> <white>{count}</white>
+messages.command.party.admin.info.requests: <gray>Requests:</gray> <white>{count}</white>
+messages.command.party.admin.info.members: <gray>Members:</gray> <white>{count}</white>
+messages.command.party.admin.info.member: <gray>-</gray> <white>{player}</white> <gray>role=</gray><white>{role}</white> <gray>online=</gray><white>{online}</white>
+messages.command.party.admin.disbanded: <green>Party disbanded.</green>
+messages.command.party.admin.cleanup: <green>Cleanup complete:</green> <gray>invites {invites}, requests {requests}, parties {parties}</gray>

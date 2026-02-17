@@ -1,0 +1,57 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_15:
+    name: Ability Upgrade Snow Boss 15
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: GUST
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.2012000000000003
+            right: 2.4024000000000005
+            up: 0.4
+          p2:
+            forward: 2.4024000000000005
+            right: -1.8018000000000003
+            up: 0.8
+          p3:
+            forward: 3.6036000000000006
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: CRIT
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.0759980000000005
+            right: 2.151996000000001
+            up: 0.4
+          p2:
+            forward: 2.151996000000001
+            right: -1.6139970000000006
+            up: 0.8
+          p3:
+            forward: 3.227994000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

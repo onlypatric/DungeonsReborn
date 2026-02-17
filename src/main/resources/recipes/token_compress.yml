@@ -1,0 +1,12 @@
+schemaVersion: 1
+id: token_compress
+name: Token Compress
+variants:
+  -
+    inputs:
+      -
+        item: item_currency_token
+        amount: 64
+outputs:
+  -
+    item: item_currency_compressed_token

@@ -1,0 +1,29 @@
+name: <white><bold>Snow Frost</bold></white> <gray>XLIV</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.02.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_44
+  activator: PASSIVE
+requirements:
+  level: 3435
+modifiers:
+  -
+    type: duration_mult
+    value: 1.023
+  -
+    type: radius_add
+    value: 1.857
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: vanishing_curse
+    level: 3
+  -
+    enchant: channeling
+    level: 3
+allowUnsafe: true

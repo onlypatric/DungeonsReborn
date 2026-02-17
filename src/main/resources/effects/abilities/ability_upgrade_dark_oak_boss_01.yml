@@ -1,0 +1,73 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_boss_01:
+    name: Ability Upgrade Dark Oak Boss 01
+    costs:
+      -
+        type: mana
+        amount: 29.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_points
+          particle: OMINOUS_SPAWNING
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.55
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.55
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SMOKE
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.5
+          maxDistance: 22
+          hitRadius: 0.35
+          trail:
+            particle: CRIT
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 21.98
+            damageCause: PROJECTILE
+          onHit:
+            type: sequence
+            actions:
+              -
+                type: potion
+                effect: "minecraft:slowness"
+                durationTicks: 60
+                amplifier: 0
+              -
+                type: potion
+                effect: BLINDNESS
+                durationTicks: 30
+                amplifier: 0

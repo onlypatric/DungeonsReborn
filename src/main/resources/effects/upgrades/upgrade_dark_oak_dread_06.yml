@@ -1,0 +1,29 @@
+name: <dark_purple><bold>Dark Oak Dread</bold></dark_purple> <gray>VI</gray>
+description: <gray>Shadowed fear unsettles your foes.</gray> <gray>Boosts Duration Add by 0.84.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_dark_oak_dread_06
+  activator: LEFT_CLICK
+requirements:
+  level: 718
+modifiers:
+  -
+    type: duration_add
+    value: 0.839
+  -
+    type: loot_add
+    value: 0.049
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: blast_protection
+    level: 2
+allowUnsafe: true

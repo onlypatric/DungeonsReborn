@@ -1,0 +1,23 @@
+quests:
+  quest_swamp_kill_005:
+    name: Swamp Culling VI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_swamp_bog_stalkers_02
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 970
+    rewards:
+      xp: 120
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_swamp_material_mire_03
+          amount: 2

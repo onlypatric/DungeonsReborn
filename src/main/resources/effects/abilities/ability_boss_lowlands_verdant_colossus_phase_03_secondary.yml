@@ -1,0 +1,95 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_verdant_colossus_phase_03_secondary:
+    name: Ability Boss Lowlands Verdant Colossus Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_mesh
+          particle: FIREFLY
+          points:
+            -
+              x: 5.67
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.83
+              y: 0.0
+              z: 4.91
+            -
+              x: -2.84
+              y: 0.0
+              z: -4.91
+          triangles:
+            -
+              -
+                x: 5.67
+                y: 0.0
+                z: 0.0
+              -
+                x: -2.83
+                y: 0.0
+                z: 4.91
+              -
+                x: -2.84
+                y: 0.0
+                z: -4.91
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: LARGE_SMOKE
+          points:
+            -
+              x: 4.82
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.41
+              y: 0.0
+              z: 4.17
+            -
+              x: -2.41
+              y: 0.0
+              z: -4.17
+          triangles:
+            -
+              -
+                x: 4.82
+                y: 0.0
+                z: 0.0
+              -
+                x: -2.41
+                y: 0.0
+                z: 4.17
+              -
+                x: -2.41
+                y: 0.0
+                z: -4.17
+          up: -1.0
+        -
+          type: particles_physics
+          particle: FIREFLY
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: LARGE_SMOKE
+          count: 2
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 5.4
+        -
+          type: damage_over_time
+          amount: 1.09
+          durationTicks: 96
+          radius: 5.4

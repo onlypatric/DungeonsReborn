@@ -1,0 +1,42 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_highlands_stone_sentinels_aura:
+    name: Highlands Stone_Sentinels
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: CRIT
+          radius: 3.510625
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: WITCH
+          radius: 3.1365
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: CRIT
+          radius: 3.69
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: WITCH
+          radius: 3.28896875
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 2.05
+        -
+          type: damage_over_time
+          amount: 0.6
+          durationTicks: 40
+          radius: 2.05

@@ -1,0 +1,22 @@
+quests:
+  quest_water_kill_013:
+    name: Water Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_water_brine_hunters_05
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 147
+    rewards:
+      xp: 60
+      tokens: 2
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_water_material_current_02

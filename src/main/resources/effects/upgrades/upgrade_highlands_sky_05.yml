@@ -1,0 +1,29 @@
+name: <gray><bold>Highlands Sky</bold></gray> <gray>V</gray>
+description: <gray>Highland winds favor the bold.</gray> <gray>Boosts Damage Mult by 1.23.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_sky_05
+  activator: RIGHT_CLICK
+requirements:
+  level: 1527
+modifiers:
+  -
+    type: damage_mult
+    value: 1.231
+  -
+    type: radius_mult
+    value: 1.301
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: respiration
+    level: 2
+  -
+    enchant: sweeping_edge
+    level: 2
+allowUnsafe: true

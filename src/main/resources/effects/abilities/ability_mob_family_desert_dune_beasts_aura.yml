@@ -1,0 +1,53 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_dune_beasts_aura:
+    name: Desert Dune_Beasts
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: ITEM
+          width: 7.7387500000000005
+          height: 2.2
+          depth: 7.7387500000000005
+          points: 3
+          up: -1.0
+          data:
+            type: STONE
+        -
+          type: particles_box
+          particle: LAVA
+          width: 6.882875
+          height: 2.2
+          depth: 6.882875
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: ITEM
+          radius: 4.84875
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+          data:
+            type: STONE
+        -
+          type: particles_cone
+          particle: LAVA
+          radius: 3.6315625000000002
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          particle: SMOKE
+          type: preset_swirl
+          radius: 2.05
+          points: 3
+          up: -2.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.05

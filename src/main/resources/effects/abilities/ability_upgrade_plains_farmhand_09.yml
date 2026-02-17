@@ -1,0 +1,40 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_farmhand_09:
+    name: Ability Upgrade Plains Farmhand 09
+    costs:
+      -
+        type: mana
+        amount: 10.0
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_polyline
+          particle: FALLING_DRIPSTONE_LAVA
+          points:
+            -
+              x: 3.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.62
+              y: 0.0
+              z: 2.81
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.81
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 3.4
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 2.71

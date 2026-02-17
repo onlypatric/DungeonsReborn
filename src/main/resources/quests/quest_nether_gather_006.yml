@@ -1,0 +1,22 @@
+quests:
+  quest_nether_gather_006:
+    name: Harvest of Nether VII
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 3
+        itemId: item_nether_material_ash_06
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 324
+    rewards:
+      xp: 90
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_consumable_006

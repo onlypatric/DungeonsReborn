@@ -1,0 +1,28 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_57:
+    name: Ability Upgrade Snow Glacier 57
+    costs:
+      -
+        type: mana
+        amount: 18.4
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: SMALL_FLAME
+          count: 2
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 6.31
+            times: 4
+            periodTicks: 10

@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_plains_consumable_049:
+    name: Ability Item Plains Consumable 049
+    cooldown:
+      ticks: 70
+    action:
+      type: sequence
+      actions:
+        -
+          particle: BUBBLE_COLUMN_UP
+          type: particles_points
+          points:
+            -
+              x: 0.23
+              y: 0.0
+              z: 0.16
+            -
+              x: 0.14
+              y: 0.0
+              z: 0.14
+          up: -1.0
+        -
+          particle: BUBBLE_POP
+          type: particles_points
+          points:
+            -
+              x: 0.14
+              y: 0.0
+              z: 0.32
+            -
+              x: -0.03
+              y: 0.0
+              z: -0.09
+            -
+              x: 0.17
+              y: 0.0
+              z: 0.07
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 4.5
+            policy: any

@@ -1,0 +1,57 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_04:
+    name: Ability Upgrade Snow Boss 04
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: FALLING_SPORE_BLOSSOM
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.7757600000000004
+            right: 3.551520000000001
+            up: 0.4
+          p2:
+            forward: 3.551520000000001
+            right: -2.6636400000000005
+            up: 0.8
+          p3:
+            forward: 5.327280000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: particles_bezier
+          particle: CLOUD
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.5793680000000003
+            right: 3.1587360000000007
+            up: 0.4
+          p2:
+            forward: 3.1587360000000007
+            right: -2.3690520000000004
+            up: 0.8
+          p3:
+            forward: 4.738104000000001
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_ash_warlord_phase_03_aura:
+    name: Ability Boss Nether Ash Warlord Phase 03 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: WHITE_ASH
+          count: 5
+          up: -1.0
+        -
+          type: particles_point
+          particle: SCULK_CHARGE_POP
+          count: 4
+          up: -1.0
+        -
+          type: particles_points
+          particle: WHITE_ASH
+          points:
+            -
+              x: 3.26
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.63
+              y: 0.0
+              z: 2.82
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.82
+          up: -1.0
+        -
+          type: particles_points
+          particle: SCULK_CHARGE_POP
+          points:
+            -
+              x: 2.77
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.38
+              y: 0.0
+              z: 2.4
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.4
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 3.1
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 54
+          amplifier: 0
+          radius: 3.1
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 3.9000000000000004
+          points: 18

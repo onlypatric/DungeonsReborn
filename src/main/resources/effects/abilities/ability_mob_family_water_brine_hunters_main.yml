@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_brine_hunters_main:
+    name: Water Brine_Hunters Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: DRIPPING_WATER
+          length: 6.43
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 2.87
+          radius: 2.12
+          damageCause: DIRECT

@@ -1,0 +1,32 @@
+name: <dark_green><bold>Lowlands Wild</bold></dark_green> <gray>VI</gray>
+description: <gray>Untamed ferocity answers your call.</gray> <gray>Boosts Radius Add by 5.72.</gray> <gray>Grants Generic Armor +0.05.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_wild_06
+  activator: PASSIVE
+requirements:
+  level: 2266
+modifiers:
+  -
+    type: radius_add
+    value: 5.725
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.047
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: bane_of_arthropods
+    level: 3
+  -
+    enchant: channeling
+    level: 3
+allowUnsafe: true

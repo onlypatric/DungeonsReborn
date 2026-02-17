@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 final class CommandMessages {
   private CommandMessages() {
@@ -41,7 +41,11 @@ final class CommandMessages {
   }
 
   static void sendResult(CommandSender sender, boolean success, Component message) {
-    String rendered = PlainTextComponentSerializer.plainText().serialize(message);
+    if (message == null) {
+      sendResult(sender, success, "");
+      return;
+    }
+    String rendered = MiniMessage.miniMessage().serialize(message);
     sendResult(sender, success, rendered);
   }
 

@@ -19,12 +19,13 @@ import org.bukkit.entity.Player;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.PartyAuditLog;
 import dev.patric.dungeonsreborn.quests.QuestRegion;
+import net.kyori.adventure.text.Component;
 
 public final class PartyService {
-  public record Result(boolean success, String message) {
+  public record Result(boolean success, Component message) {
   }
 
-  public record InviteResult(boolean success, String message, PartyInvite invite) {
+  public record InviteResult(boolean success, Component message, PartyInvite invite) {
   }
 
   public record CleanupResult(int invitesRemoved, int requestsRemoved, int partiesDisbanded) {
@@ -198,100 +199,100 @@ public final class PartyService {
 
   public Result createParty(Player leader) {
     if (leader == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     if (!worldAllowed.test(leader.getWorld())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.onlyRpgWorld"));
+      return new Result(false, Locales.component(leader, "messages.party.error.onlyRpgWorld"));
     }
     if (!isRegionAllowed(leader.getLocation())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.regionRestricted"));
+      return new Result(false, Locales.component(leader, "messages.party.error.regionRestricted"));
     }
     if (memberParties.containsKey(leader.getUniqueId())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.alreadyInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.alreadyInParty"));
     }
     Party party = new Party(leader.getUniqueId(), leader.getWorld().getName(), leader.getWorld().getKey().toString());
     parties.put(party.id(), party);
     memberParties.put(leader.getUniqueId(), party);
     saveParty(party);
     audit("create", party, leader.getUniqueId(), leader.getName(), null, null, null);
-    return new Result(true, Locales.text(leader, "messages.party.create"));
+    return new Result(true, Locales.component(leader, "messages.party.create"));
   }
 
   public InviteResult invite(Player leader, Player target) {
     if (leader == null || target == null) {
-      return new InviteResult(false, Locales.text(null, "messages.party.error.targetNotFound"), null);
+      return new InviteResult(false, Locales.component(null, "messages.party.error.targetNotFound"), null);
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.notInParty"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.notInParty"), null);
     }
     if (!hasPermission(leader.getUniqueId(), Permission.INVITE)) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.notLeader"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.notLeader"), null);
     }
     if (!worldAllowed.test(leader.getWorld())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.onlyRpgWorld"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.onlyRpgWorld"), null);
     }
     if (!worldAllowed.test(target.getWorld())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.onlyRpgWorld"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.onlyRpgWorld"), null);
     }
     if (!isRegionAllowed(leader.getLocation()) || !isRegionAllowed(target.getLocation())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.regionRestricted"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.regionRestricted"), null);
     }
     if (!allowCrossWorldInvite(leader.getWorld(), target.getWorld())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.sameWorld"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.sameWorld"), null);
     }
     if (party.hasMember(target.getUniqueId())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.alreadyInYourParty"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.alreadyInYourParty"), null);
     }
     if (memberParties.containsKey(target.getUniqueId())) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.error.targetAlreadyInParty"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.error.targetAlreadyInParty"), null);
     }
     if (party.size() >= maxSize) {
-      return new InviteResult(false, Locales.text(leader, "messages.party.full"), null);
+      return new InviteResult(false, Locales.component(leader, "messages.party.full"), null);
     }
     PartyInvite invite = new PartyInvite(party.id(), party.leader(), leader.getName(),
         System.currentTimeMillis() + inviteMillis);
     invites.put(target.getUniqueId(), invite);
     saveInvite(target.getUniqueId(), invite);
     audit("invite", party, leader.getUniqueId(), leader.getName(), target.getUniqueId(), target.getName(), null);
-    return new InviteResult(true, Locales.text(leader, "messages.party.result.inviteSent",
+    return new InviteResult(true, Locales.component(leader, "messages.party.result.inviteSent",
         Map.of("player", target.getName())), invite);
   }
 
   public Result acceptInvite(Player player, String leaderName) {
     if (player == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     PartyInvite invite = invites.get(player.getUniqueId());
     if (invite == null) {
-      return new Result(false, Locales.text(player, "messages.party.error.inviteMissing"));
+      return new Result(false, Locales.component(player, "messages.party.error.inviteMissing"));
     }
     if (invite.expired()) {
       removeInvite(player.getUniqueId());
-      return new Result(false, Locales.text(player, "messages.party.error.inviteExpired"));
+      return new Result(false, Locales.component(player, "messages.party.error.inviteExpired"));
     }
     if (leaderName != null && !invite.leaderName().equalsIgnoreCase(leaderName)) {
-      return new Result(false, Locales.text(player, "messages.party.error.inviteLeaderNotFound"));
+      return new Result(false, Locales.component(player, "messages.party.error.inviteLeaderNotFound"));
     }
     Party party = parties.get(invite.partyId());
     if (party == null) {
       removeInvite(player.getUniqueId());
-      return new Result(false, Locales.text(player, "messages.party.error.partyMissing"));
+      return new Result(false, Locales.component(player, "messages.party.error.partyMissing"));
     }
     if (!worldAllowed.test(player.getWorld())) {
-      return new Result(false, Locales.text(player, "messages.party.error.onlyRpgWorld"));
+      return new Result(false, Locales.component(player, "messages.party.error.onlyRpgWorld"));
     }
     if (!isRegionAllowed(player.getLocation())) {
-      return new Result(false, Locales.text(player, "messages.party.error.regionRestricted"));
+      return new Result(false, Locales.component(player, "messages.party.error.regionRestricted"));
     }
     if (!allowsPartyWorld(player.getWorld(), party)) {
-      return new Result(false, Locales.text(player, "messages.party.error.mustBeSameWorldLeader"));
+      return new Result(false, Locales.component(player, "messages.party.error.mustBeSameWorldLeader"));
     }
     if (party.size() >= maxSize) {
-      return new Result(false, Locales.text(player, "messages.party.full"));
+      return new Result(false, Locales.component(player, "messages.party.full"));
     }
     if (memberParties.containsKey(player.getUniqueId())) {
-      return new Result(false, Locales.text(player, "messages.party.error.alreadyInParty"));
+      return new Result(false, Locales.component(player, "messages.party.error.alreadyInParty"));
     }
     party.addMember(player.getUniqueId());
     memberParties.put(player.getUniqueId(), party);
@@ -300,61 +301,61 @@ public final class PartyService {
     saveParty(party);
     audit("accept_invite", party, player.getUniqueId(), player.getName(), invite.leaderId(), invite.leaderName(), null);
     broadcast(party, "messages.party.broadcast.join", Map.of("player", player.getName()));
-    return new Result(true, Locales.text(player, "messages.party.join"));
+    return new Result(true, Locales.component(player, "messages.party.join"));
   }
 
   public Result setPublic(Player leader, boolean open) {
     if (leader == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notInParty"));
     }
     if (!hasPermission(leader.getUniqueId(), Permission.MANAGE_PUBLIC)) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notLeader"));
     }
     party.setPublic(open);
     saveParty(party);
-    return new Result(true, Locales.text(leader,
+    return new Result(true, Locales.component(leader,
         open ? "messages.party.result.publicOn" : "messages.party.result.publicOff"));
   }
 
   public Result requestJoin(Player requester, UUID partyId) {
     if (requester == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     if (partyId == null) {
-      return new Result(false, Locales.text(requester, "messages.party.error.partyMissing"));
+      return new Result(false, Locales.component(requester, "messages.party.error.partyMissing"));
     }
     if (memberParties.containsKey(requester.getUniqueId())) {
-      return new Result(false, Locales.text(requester, "messages.party.error.alreadyInParty"));
+      return new Result(false, Locales.component(requester, "messages.party.error.alreadyInParty"));
     }
     Party party = parties.get(partyId);
     if (party == null) {
-      return new Result(false, Locales.text(requester, "messages.party.error.partyMissing"));
+      return new Result(false, Locales.component(requester, "messages.party.error.partyMissing"));
     }
     if (!party.isPublic()) {
-      return new Result(false, Locales.text(requester, "messages.party.error.notPublic"));
+      return new Result(false, Locales.component(requester, "messages.party.error.notPublic"));
     }
     if (!worldAllowed.test(requester.getWorld())) {
-      return new Result(false, Locales.text(requester, "messages.party.error.onlyRpgWorld"));
+      return new Result(false, Locales.component(requester, "messages.party.error.onlyRpgWorld"));
     }
     if (!isRegionAllowed(requester.getLocation())) {
-      return new Result(false, Locales.text(requester, "messages.party.error.regionRestricted"));
+      return new Result(false, Locales.component(requester, "messages.party.error.regionRestricted"));
     }
     if (!allowsPartyWorld(requester.getWorld(), party)) {
-      return new Result(false, Locales.text(requester, "messages.party.error.mustBeSameWorldLeader"));
+      return new Result(false, Locales.component(requester, "messages.party.error.mustBeSameWorldLeader"));
     }
     if (party.size() >= maxSize) {
-      return new Result(false, Locales.text(requester, "messages.party.full"));
+      return new Result(false, Locales.component(requester, "messages.party.full"));
     }
     JoinRequest existing = joinRequests.get(requester.getUniqueId());
     if (existing != null) {
       if (existing.expired()) {
         joinRequests.remove(requester.getUniqueId());
       } else if (existing.partyId().equals(partyId)) {
-        return new Result(false, Locales.text(requester, "messages.party.error.requestPending"));
+        return new Result(false, Locales.component(requester, "messages.party.error.requestPending"));
       }
     }
     JoinRequest request = new JoinRequest(partyId, requester.getUniqueId(), requester.getName(),
@@ -362,36 +363,36 @@ public final class PartyService {
     joinRequests.put(requester.getUniqueId(), request);
     notifyJoinRequest(party, request);
     audit("request_join", party, requester.getUniqueId(), requester.getName(), party.leader(), leaderName(party), null);
-    return new Result(true, Locales.text(requester, "messages.party.result.requestSent",
+    return new Result(true, Locales.component(requester, "messages.party.result.requestSent",
         Map.of("leader", leaderName(party))));
   }
 
   public Result acceptRequest(Player leader, String requesterName) {
     if (leader == null || requesterName == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(null, "messages.party.error.targetNotFound"));
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notInParty"));
     }
     if (!hasPermission(leader.getUniqueId(), Permission.INVITE)) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notLeader"));
     }
     Player requester = Bukkit.getPlayerExact(requesterName);
     if (requester == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(leader, "messages.party.error.targetNotFound"));
     }
     JoinRequest request = joinRequests.get(requester.getUniqueId());
     if (request == null || request.expired() || !request.partyId().equals(party.id())) {
       joinRequests.remove(requester.getUniqueId());
-      return new Result(false, Locales.text(leader, "messages.party.error.requestMissing"));
+      return new Result(false, Locales.component(leader, "messages.party.error.requestMissing"));
     }
     if (memberParties.containsKey(requester.getUniqueId())) {
       joinRequests.remove(requester.getUniqueId());
-      return new Result(false, Locales.text(leader, "messages.party.error.targetAlreadyInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.targetAlreadyInParty"));
     }
     if (party.size() >= maxSize) {
-      return new Result(false, Locales.text(leader, "messages.party.full"));
+      return new Result(false, Locales.component(leader, "messages.party.full"));
     }
     party.addMember(requester.getUniqueId());
     party.setRole(requester.getUniqueId(), Party.Role.MEMBER);
@@ -402,35 +403,35 @@ public final class PartyService {
         null);
     broadcast(party, "messages.party.broadcast.join", Map.of("player", requester.getName()));
     requester.sendMessage(Locales.component(requester, "messages.party.join"));
-    return new Result(true, Locales.text(leader, "messages.party.result.requestAccepted",
+    return new Result(true, Locales.component(leader, "messages.party.result.requestAccepted",
         Map.of("player", requester.getName())));
   }
 
   public Result denyRequest(Player leader, String requesterName) {
     if (leader == null || requesterName == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(null, "messages.party.error.targetNotFound"));
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notInParty"));
     }
     if (!hasPermission(leader.getUniqueId(), Permission.INVITE)) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notLeader"));
     }
     Player requester = Bukkit.getPlayerExact(requesterName);
     if (requester == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(leader, "messages.party.error.targetNotFound"));
     }
     JoinRequest request = joinRequests.get(requester.getUniqueId());
     if (request == null || request.expired() || !request.partyId().equals(party.id())) {
       joinRequests.remove(requester.getUniqueId());
-      return new Result(false, Locales.text(leader, "messages.party.error.requestMissing"));
+      return new Result(false, Locales.component(leader, "messages.party.error.requestMissing"));
     }
     joinRequests.remove(requester.getUniqueId());
     audit("request_deny", party, leader.getUniqueId(), leader.getName(), requester.getUniqueId(), requester.getName(),
         null);
     requester.sendMessage(Locales.component(requester, "messages.party.result.requestDenied"));
-    return new Result(true, Locales.text(leader, "messages.party.result.requestDenied",
+    return new Result(true, Locales.component(leader, "messages.party.result.requestDenied",
         Map.of("player", requester.getName())));
   }
 
@@ -440,11 +441,11 @@ public final class PartyService {
 
   public Result leave(Player player, boolean notify) {
     if (player == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     Party party = memberParties.get(player.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(player, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(player, "messages.party.error.notInParty"));
     }
     boolean leader = party.leader().equals(player.getUniqueId());
     removeMember(party, player.getUniqueId());
@@ -453,7 +454,7 @@ public final class PartyService {
     }
     if (party.size() == 0) {
       disband(party);
-      return new Result(true, Locales.text(player, "messages.party.disband"));
+      return new Result(true, Locales.component(player, "messages.party.disband"));
     }
     if (leader) {
       UUID newLeader = party.members().iterator().next();
@@ -465,7 +466,7 @@ public final class PartyService {
     }
     saveParty(party);
     audit("leave", party, player.getUniqueId(), player.getName(), null, null, null);
-    return new Result(true, Locales.text(player, "messages.party.leave"));
+    return new Result(true, Locales.component(player, "messages.party.leave"));
   }
 
   public boolean forceDisband(UUID partyId, UUID actorId, String actorName, String reason) {
@@ -485,83 +486,83 @@ public final class PartyService {
 
   public Result kick(Player leader, Player target) {
     if (leader == null || target == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(null, "messages.party.error.targetNotFound"));
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notInParty"));
     }
     if (!hasPermission(leader.getUniqueId(), Permission.KICK)) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notLeader"));
     }
     if (!party.hasMember(target.getUniqueId())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.targetNotInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.targetNotInParty"));
     }
     if (leader.getUniqueId().equals(target.getUniqueId())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.kickSelf"));
+      return new Result(false, Locales.component(leader, "messages.party.error.kickSelf"));
     }
     removeMember(party, target.getUniqueId());
     broadcast(party, "messages.party.broadcast.kicked", Map.of("player", target.getName()));
     target.sendMessage(Locales.component(target, "messages.party.kicked"));
     saveParty(party);
     audit("kick", party, leader.getUniqueId(), leader.getName(), target.getUniqueId(), target.getName(), null);
-    return new Result(true, Locales.text(leader, "messages.party.result.kicked",
+    return new Result(true, Locales.component(leader, "messages.party.result.kicked",
         Map.of("player", target.getName())));
   }
 
   public Result transferLeader(Player leader, Player target) {
     if (leader == null || target == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(null, "messages.party.error.targetNotFound"));
     }
     Party party = memberParties.get(leader.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notInParty"));
     }
     if (!hasPermission(leader.getUniqueId(), Permission.TRANSFER_LEADER)) {
-      return new Result(false, Locales.text(leader, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(leader, "messages.party.error.notLeader"));
     }
     if (!party.hasMember(target.getUniqueId())) {
-      return new Result(false, Locales.text(leader, "messages.party.error.targetNotInParty"));
+      return new Result(false, Locales.component(leader, "messages.party.error.targetNotInParty"));
     }
     party.leader(target.getUniqueId());
     party.setRole(target.getUniqueId(), Party.Role.LEADER);
     broadcast(party, "messages.party.broadcast.newLeader", Map.of("player", target.getName()));
     saveParty(party);
     audit("transfer_leader", party, leader.getUniqueId(), leader.getName(), target.getUniqueId(), target.getName(), null);
-    return new Result(true, Locales.text(leader, "messages.party.result.transfer"));
+    return new Result(true, Locales.component(leader, "messages.party.result.transfer"));
   }
 
   public Result toggleChat(Player player, boolean enabled) {
     if (player == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     Party party = memberParties.get(player.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(player, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(player, "messages.party.error.notInParty"));
     }
     if (enabled) {
       chatEnabled.add(player.getUniqueId());
-      return new Result(true, Locales.text(player, "messages.party.chat.true"));
+      return new Result(true, Locales.component(player, "messages.party.chat.true"));
     }
     chatEnabled.remove(player.getUniqueId());
-    return new Result(true, Locales.text(player, "messages.party.chat.false"));
+    return new Result(true, Locales.component(player, "messages.party.chat.false"));
   }
 
   public Result sendChat(Player sender, String message) {
     if (sender == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.playersOnly"));
+      return new Result(false, Locales.component(null, "messages.party.error.playersOnly"));
     }
     Party party = memberParties.get(sender.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(sender, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(sender, "messages.party.error.notInParty"));
     }
     if (message == null || message.isBlank()) {
-      return new Result(false, Locales.text(sender, "messages.party.error.messageEmpty"));
+      return new Result(false, Locales.component(sender, "messages.party.error.messageEmpty"));
     }
     broadcast(party, "messages.party.broadcast.chat", Map.of(
         "player", sender.getName(),
         "message", message));
-    return new Result(true, Locales.text(sender, "messages.party.result.messageSent"));
+    return new Result(true, Locales.component(sender, "messages.party.result.messageSent"));
   }
 
   public void handleQuit(Player player) {
@@ -617,20 +618,20 @@ public final class PartyService {
 
   private Result setRole(Player actor, Player target, Party.Role role) {
     if (actor == null || target == null) {
-      return new Result(false, Locales.text(null, "messages.party.error.targetNotFound"));
+      return new Result(false, Locales.component(null, "messages.party.error.targetNotFound"));
     }
     Party party = memberParties.get(actor.getUniqueId());
     if (party == null) {
-      return new Result(false, Locales.text(actor, "messages.party.error.notInParty"));
+      return new Result(false, Locales.component(actor, "messages.party.error.notInParty"));
     }
     if (!hasPermission(actor.getUniqueId(), Permission.MANAGE_ROLES)) {
-      return new Result(false, Locales.text(actor, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(actor, "messages.party.error.notLeader"));
     }
     if (!party.hasMember(target.getUniqueId())) {
-      return new Result(false, Locales.text(actor, "messages.party.error.targetNotInParty"));
+      return new Result(false, Locales.component(actor, "messages.party.error.targetNotInParty"));
     }
     if (target.getUniqueId().equals(party.leader())) {
-      return new Result(false, Locales.text(actor, "messages.party.error.notLeader"));
+      return new Result(false, Locales.component(actor, "messages.party.error.notLeader"));
     }
     boolean changed = party.setRole(target.getUniqueId(), role);
     saveParty(party);
@@ -641,7 +642,7 @@ public final class PartyService {
       audit("role_change", party, actor.getUniqueId(), actor.getName(), target.getUniqueId(), target.getName(),
           role.name().toLowerCase(java.util.Locale.ROOT));
     }
-    return new Result(true, Locales.text(actor, "messages.party.result.roleChanged",
+    return new Result(true, Locales.component(actor, "messages.party.result.roleChanged",
         Map.of("player", target.getName(), "role", role.name().toLowerCase(java.util.Locale.ROOT))));
   }
 

@@ -1,0 +1,47 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sun_priest_phase_02_secondary:
+    name: Ability Boss Desert Sun Priest Phase 02 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_ring
+          particle: CHERRY_LEAVES
+          radius: 5.6406
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: SPORE_BLOSSOM_AIR
+          radius: 3.94485
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: CHERRY_LEAVES
+          radius: 4.641
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: SPORE_BLOSSOM_AIR
+          radius: 4.157265000000001
+          points: 3
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 100
+          amplifier: 1
+          radius: 3.4
+        -
+          type: damage_over_time
+          amount: 0.76
+          durationTicks: 84
+          radius: 3.4

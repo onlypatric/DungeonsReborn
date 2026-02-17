@@ -1,0 +1,53 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sand_king_phase_03_main:
+    name: Ability Boss Desert Sand King Phase 03 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_box
+          particle: POOF
+          width: 9.828000000000001
+          height: 2.2
+          depth: 9.828000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: SQUID_INK
+          width: 8.80362
+          height: 2.2
+          depth: 8.80362
+          points: 3
+          up: -1.0
+        -
+          type: particles_cone
+          particle: POOF
+          radius: 5.9786
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: SQUID_INK
+          radius: 5.4267199999999995
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: damage
+          amount: 3.7
+          radius: 3.6
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 70
+          amplifier: 1
+          radius: 3.6

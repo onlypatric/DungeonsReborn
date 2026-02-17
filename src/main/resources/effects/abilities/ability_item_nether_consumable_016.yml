@@ -1,0 +1,66 @@
+schemaVersion: 1
+abilities:
+  ability_item_nether_consumable_016:
+    name: Ability Item Nether Consumable 016
+    cooldown:
+      ticks: 200
+    action:
+      type: sequence
+      actions:
+        -
+          particle: TRIAL_OMEN
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: -0.32
+            -
+              x: -0.1
+              y: 0.0
+              z: -0.03
+            -
+              x: -0.04
+              y: 0.0
+              z: 0.3
+          up: -1.0
+        -
+          particle: TRIAL_SPAWNER_DETECTION
+          type: particles_points
+          points:
+            -
+              x: 0.07
+              y: 0.0
+              z: -0.11
+            -
+              x: 0.18
+              y: 0.0
+              z: 0.14
+          up: -1.0
+        -
+          particle: TRIAL_SPAWNER_DETECTION_OMINOUS
+          type: particles_points
+          points:
+            -
+              x: -0.17
+              y: 0.0
+              z: -0.07
+            -
+              x: 0.19
+              y: 0.0
+              z: -0.03
+            -
+              x: -0.23
+              y: 0.0
+              z: 0.07
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: fire_resistance
+            durationTicks: 150
+            amplifier: 0

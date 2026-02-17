@@ -1,0 +1,97 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_abyssal_warden_phase_05_aura:
+    name: Ability Boss Snow Abyssal Warden Phase 05 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_points
+          particle: VIBRATION
+          points:
+            -
+              x: 5.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.52
+              y: 0.0
+              z: 4.36
+            -
+              x: -2.52
+              y: 0.0
+              z: -4.36
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_physics_points
+          particle: SOUL
+          points:
+            -
+              x: 4.28
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.14
+              y: 0.0
+              z: 3.71
+            -
+              x: -2.14
+              y: 0.0
+              z: -3.71
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: VIBRATION
+          points:
+            -
+              x: 5.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.52
+              y: 0.0
+              z: 4.36
+            -
+              x: -2.52
+              y: 0.0
+              z: -4.36
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_physics_polyline
+          particle: SOUL
+          points:
+            -
+              x: 4.28
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.14
+              y: 0.0
+              z: 3.71
+            -
+              x: -2.14
+              y: 0.0
+              z: -3.71
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.65
+          durationTicks: 40
+          radius: 4.8
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 70
+          amplifier: 0
+          radius: 4.8
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 5.6
+          points: 18

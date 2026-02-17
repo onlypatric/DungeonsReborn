@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_lowlands_consumable_080:
+    name: Ability Item Lowlands Consumable 080
+    cooldown:
+      ticks: 142
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FALLING_SPORE_BLOSSOM
+          type: particles_points
+          points:
+            -
+              x: -0.02
+              y: 0.0
+              z: -0.11
+            -
+              x: -0.04
+              y: 0.0
+              z: -0.03
+          up: -1.0
+        -
+          particle: FALLING_WATER
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: 0.0
+            -
+              x: 0.05
+              y: 0.0
+              z: 0.25
+            -
+              x: -0.0
+              y: 0.0
+              z: -0.05
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 18.9
+            policy: any

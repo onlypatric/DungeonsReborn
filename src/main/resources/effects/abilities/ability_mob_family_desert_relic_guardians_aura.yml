@@ -1,0 +1,92 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_relic_guardians_aura:
+    name: Desert Relic_Guardians
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: ANGRY_VILLAGER
+          length: 6.635625
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: DUST_PLUME
+          length: 6.1450625
+          points: 3
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: ANGRY_VILLAGER
+          points:
+            -
+              x: 2.94
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.47
+              y: 0.0
+              z: 2.54
+            -
+              x: -1.47
+              y: 0.0
+              z: -2.54
+          triangles:
+            -
+              -
+                x: 2.94
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.47
+                y: 0.0
+                z: 2.54
+              -
+                x: -1.47
+                y: 0.0
+                z: -2.54
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: DUST_PLUME
+          points:
+            -
+              x: 2.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.25
+              y: 0.0
+              z: 2.16
+            -
+              x: -1.25
+              y: 0.0
+              z: -2.16
+          triangles:
+            -
+              -
+                x: 2.5
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.25
+                y: 0.0
+                z: 2.16
+              -
+                x: -1.25
+                y: 0.0
+                z: -2.16
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 2.35
+        -
+          type: damage_over_time
+          amount: 0.8
+          durationTicks: 40
+          radius: 2.35

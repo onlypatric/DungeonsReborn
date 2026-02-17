@@ -1,0 +1,32 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_scavengers_panic:
+    name: Desert Scavengers Panic
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_bezier
+          particle: SPLASH
+          p0:
+            forward: 0.0
+            right: 0.0
+            up: 0.0
+          p1:
+            forward: 1.332
+            right: 2.664
+            up: 0.4
+          p2:
+            forward: 2.664
+            right: -1.998
+            up: 0.8
+          p3:
+            forward: 3.996
+            right: 0.0
+            up: 1.0
+          up: -1.0
+        -
+          type: potion
+          effect: SPEED
+          durationTicks: 60
+          amplifier: 0

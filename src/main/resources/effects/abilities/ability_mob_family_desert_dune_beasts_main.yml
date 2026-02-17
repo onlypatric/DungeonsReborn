@@ -1,0 +1,18 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_dune_beasts_main:
+    name: Desert Dune_Beasts Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: RAID_OMEN
+          radius: 4.2299999999999995
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 3.21
+          radius: 2.12
+          damageCause: DIRECT

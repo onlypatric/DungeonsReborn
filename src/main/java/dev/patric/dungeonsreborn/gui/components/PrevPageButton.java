@@ -3,13 +3,12 @@ package dev.patric.dungeonsreborn.gui.components;
 import java.util.List;
 import java.util.Objects;
 
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import dev.patric.dungeonsreborn.gui.GuiI18n;
-import dev.patric.dungeonsreborn.gui.GuiItems;
 import dev.patric.dungeonsreborn.gui.PaginatedWindow;
+import dev.patric.dungeonsreborn.gui.style.GuiButtons;
 import dev.patric.dungeonsreborn.locale.Locales;
 import net.kyori.adventure.text.Component;
 
@@ -38,8 +37,8 @@ public final class PrevPageButton extends Button {
     Component pageText = Locales.component(player, "gui.list.page",
         Locales.placeholders("current", window.page() + 1, "total", window.pageCount()));
     if (window.hasPrevious()) {
-      return GuiItems.head("LEFT", titleLabel, List.of(pageText));
+      return GuiButtons.item(GuiButtons.Type.PREV, titleLabel, List.of(pageText));
     }
-    return GuiItems.named(Material.GRAY_DYE, titleLabel, List.of(pageText, disabledLabel));
+    return GuiButtons.item(GuiButtons.Type.PREV, titleLabel, List.of(pageText, disabledLabel));
   }
 }

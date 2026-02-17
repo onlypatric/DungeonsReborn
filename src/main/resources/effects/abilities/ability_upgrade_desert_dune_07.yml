@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_dune_07:
+    name: Ability Upgrade Desert Dune 07
+    costs:
+      -
+        type: mana
+        amount: 9.2
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: LAVA
+          count: 2
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 12
+          raySize: 0.35
+          then:
+            type: damage
+            amount: 6.78

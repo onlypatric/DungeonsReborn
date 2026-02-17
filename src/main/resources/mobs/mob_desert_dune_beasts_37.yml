@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_desert_dune_beasts_37:
+    type: SPIDER
+    name: <yellow>Desert Spider Raider</yellow>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 52.5
+      ATTACK_DAMAGE: 2.2
+      scaleVariance: 1.05
+    attacks:
+      main:
+        ability: ability_mob_family_desert_dune_beasts_main
+        trigger: MELEE
+        cooldownTicks: 44
+        targetMode: NEAREST_PLAYER
+        range: 4.15
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_desert_dune_beasts_secondary
+        trigger: MELEE
+        cooldownTicks: 77
+        targetMode: NEAREST_PLAYER
+        range: 6.55
+        chance: 0.45
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_desert_dune_beasts_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_desert_dune_beasts_aggressive
+    xpGating:
+      minLevel: 151

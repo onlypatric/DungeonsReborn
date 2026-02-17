@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_snow_processing_006
+name: Snow Processing 6
+costs:
+  -
+    type: tokens
+    amount: 4
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: SNOWBALL
+        amount: 2
+      -
+        material: ICE
+        amount: 2
+outputs:
+  -
+    item: item_snow_material_frost_06

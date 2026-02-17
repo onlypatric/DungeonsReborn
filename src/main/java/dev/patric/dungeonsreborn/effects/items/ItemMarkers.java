@@ -11,6 +11,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.DeathProtection;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 
@@ -53,8 +55,17 @@ public final class ItemMarkers {
   public static final NamespacedKey UPGRADE_TIER_BUDGET = new NamespacedKey("dungeonsreborn", "effects_upgrade_tier_budget");
   public static final NamespacedKey UPGRADE_SCALE = new NamespacedKey("dungeonsreborn", "effects_upgrade_scale");
   public static final NamespacedKey ITEM_INSTANCE_ID = new NamespacedKey("dungeonsreborn", "effects_item_instance_id");
+  public static final NamespacedKey HIDE_EFFECTS_LORE = new NamespacedKey("dungeonsreborn", "effects_hide_effects_lore");
 
   private ItemMarkers() {
+  }
+
+  private static void applyMeta(ItemStack item, ItemMeta meta) {
+    DeathProtection deathProtection = item.getData(DataComponentTypes.DEATH_PROTECTION);
+    item.setItemMeta(meta);
+    if (deathProtection != null) {
+      item.setData(DataComponentTypes.DEATH_PROTECTION, deathProtection);
+    }
   }
 
   public static boolean has(ItemStack item, NamespacedKey key) {
@@ -84,7 +95,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().remove(key);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -143,7 +154,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, String.join("\n", normalized));
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -202,7 +213,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, String.join("\n", normalized));
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -404,7 +415,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, value);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -423,7 +434,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, value);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -452,7 +463,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().remove(UPGRADE_LORE_COMPACT);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -521,7 +532,7 @@ public final class ItemMarkers {
         meta.getPersistentDataContainer().set(UPGRADE_MODIFIERS, PersistentDataType.STRING, String.join("\n", lines));
       }
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -587,7 +598,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(ITEM_ID, PersistentDataType.STRING, Ids.normalize(id));
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -620,7 +631,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(ITEM_VERSION, PersistentDataType.INTEGER, version);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -653,7 +664,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(UPGRADE_ID, PersistentDataType.STRING, Ids.normalize(id));
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -716,7 +727,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(key, PersistentDataType.DOUBLE, value);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -807,7 +818,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(CONSUME_MODE, PersistentDataType.STRING, mode.name().toLowerCase(java.util.Locale.ROOT));
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -840,7 +851,7 @@ public final class ItemMarkers {
     } else {
       meta.getPersistentDataContainer().set(CONSUME_AMOUNT, PersistentDataType.INTEGER, amount);
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 
@@ -911,7 +922,7 @@ public final class ItemMarkers {
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, String.join("\n", lines));
       }
     }
-    item.setItemMeta(meta);
+    applyMeta(item, meta);
     return item;
   }
 }

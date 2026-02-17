@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_dune_03:
+    name: Ability Upgrade Desert Dune 03
+    costs:
+      -
+        type: mana
+        amount: 11.2
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_disk
+          particle: WHITE_SMOKE
+          radius: 4.530000000000001
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.5
+            times: 4
+            periodTicks: 10

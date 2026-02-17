@@ -1,0 +1,22 @@
+quests:
+  quest_snow_gather_017:
+    name: Snow Reclaiming VI
+    enabled: true
+    objectives:
+      -
+        type: use_item
+        count: 5
+        itemId: item_snow_material_whiteout_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 3201
+    rewards:
+      xp: 190
+      tokens: 8
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_snow_consumable_015

@@ -1,0 +1,33 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_farmhand_08:
+    name: Ability Upgrade Plains Farmhand 08
+    costs:
+      -
+        type: mana
+        amount: 8.0
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: CRIT
+          count: 2
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 10
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 4.62
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

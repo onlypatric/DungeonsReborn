@@ -1,0 +1,30 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_nightbark_05:
+    name: Ability Upgrade Dark Oak Nightbark 05
+    costs:
+      -
+        type: mana
+        amount: 13.6
+    cooldown:
+      ticks: 20
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_helix
+          particle: DAMAGE_INDICATOR
+          radius: 3.96
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 4.19
+            times: 4
+            periodTicks: 10

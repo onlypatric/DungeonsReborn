@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_inferno_05:
+    name: Ability Upgrade Nether Inferno 05
+    costs:
+      -
+        type: mana
+        amount: 22.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 5.135
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 1.95
+            times: 4
+            periodTicks: 10

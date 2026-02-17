@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_item_nether_consumable_012:
+    name: Ability Item Nether Consumable 012
+    cooldown:
+      ticks: 118
+    action:
+      type: sequence
+      actions:
+        -
+          particle: SOUL
+          type: particles_points
+          points:
+            -
+              x: 0.05
+              y: 0.0
+              z: 0.47
+            -
+              x: 0.02
+              y: 0.0
+              z: 0.03
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.02
+          up: -1.0
+        -
+          particle: SOUL_FIRE_FLAME
+          type: particles_points
+          points:
+            -
+              x: -0.1
+              y: 0.0
+              z: 0.41
+            -
+              x: -0.27
+              y: 0.0
+              z: -0.2
+          up: -1.0
+        -
+          particle: SPIT
+          type: particles_points
+          points:
+            -
+              x: -0.29
+              y: 0.0
+              z: -0.14
+            -
+              x: -0.03
+              y: 0.0
+              z: -0.03
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.23
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal_over_time
+            amount: 2.6
+            times: 4
+            periodTicks: 10
+            policy: any

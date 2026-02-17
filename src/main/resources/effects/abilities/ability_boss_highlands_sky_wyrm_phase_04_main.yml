@@ -1,0 +1,70 @@
+schemaVersion: 1
+abilities:
+  ability_boss_highlands_sky_wyrm_phase_04_main:
+    name: Ability Boss Highlands Sky Wyrm Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_points
+          particle: VIBRATION
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_helix
+          particle: CRIT
+          radius: 6.72945
+          height: 3.2
+          points: 3
+          up: -1.0
+        -
+          type: particles_line
+          particle: VIBRATION
+          length: 10.117
+          points: 3
+          up: -1.0
+          data:
+            arrivalTicks: 20
+            destinationAt: origin
+        -
+          type: particles_line
+          particle: CRIT
+          length: 9.291805
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 7.2
+          radius: 5.8
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 5.8
+        -
+          particle: ENCHANT
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

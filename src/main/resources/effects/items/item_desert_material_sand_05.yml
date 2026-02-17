@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <gold><bold>Duneglass Relic</bold></gold> <gray>V</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Desert wilds.</gray>
+  meta:
+    skull:
+      head: REQ_APPLE
+gui:
+  head: ICON_ITEMS

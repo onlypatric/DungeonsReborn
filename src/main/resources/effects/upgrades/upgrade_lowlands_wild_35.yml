@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Wild</bold></dark_green> <gray>XXXV</gray>
+description: <gray>Untamed ferocity answers your call.</gray> <gray>Boosts Radius Add by 3.73.</gray> <gray>Grants Generic Armor +0.03.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_wild_35
+  activator: PASSIVE
+requirements:
+  level: 2233
+modifiers:
+  -
+    type: radius_add
+    value: 3.725
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.025
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: fortune
+    level: 3
+  -
+    enchant: infinity
+    level: 3
+allowUnsafe: true

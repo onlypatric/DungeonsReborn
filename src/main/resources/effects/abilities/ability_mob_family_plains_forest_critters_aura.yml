@@ -1,0 +1,19 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_plains_forest_critters_aura:
+    name: Plains Forest_Critters
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_filled
+          particle: INSTANT_EFFECT
+          radius: 3.69
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: SCULK_CHARGE
+          radius: 3.28896875
+          points: 3
+          up: -1.0

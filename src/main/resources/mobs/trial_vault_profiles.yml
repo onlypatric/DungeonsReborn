@@ -1,0 +1,106 @@
+schemaVersion: 1
+mobs:
+  mob_trial_lowlands_scout:
+    type: ZOMBIE
+    name: <green>Lowlands Scout</green>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 165.76
+      ATTACK_DAMAGE: 16.89
+      MOVEMENT_SPEED: 0.28
+      ARMOR: 2.08
+      ATTACK_SPEED: 1.054
+  mob_trial_lowlands_brute:
+    type: HUSK
+    name: <gold>Lowlands Brute</gold>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 381.25
+      ATTACK_DAMAGE: 26.18
+      MOVEMENT_SPEED: 0.24
+      ARMOR: 2.5
+      ATTACK_SPEED: 1.107
+  mob_trial_lowlands_ominous_brute:
+    type: WITHER_SKELETON
+    name: <red>Ominous Lowlands Brute</red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1326.08
+      ATTACK_DAMAGE: 37.16
+      MOVEMENT_SPEED: 0.26
+      ARMOR: 3.02
+      ATTACK_SPEED: 1.159
+trialSpawners:
+  trial_lowlands_normal:
+    mobPool:
+      -
+        mobId: mob_trial_lowlands_scout
+        weight: 3.0
+      -
+        mobId: mob_trial_lowlands_brute
+        weight: 1.0
+    waves: 3
+    simultaneous: 2
+    cooldownTicks: 100
+    requiredPlayers: 1
+    activationRange: 14.0
+    keyLootPool: pool_trial_keys_lowlands_normal
+    ominousProfile:
+      mobPool:
+        -
+          mobId: mob_trial_lowlands_scout
+          weight: 2.0
+        -
+          mobId: mob_trial_lowlands_ominous_brute
+          weight: 2.0
+      waves: 4
+      simultaneous: 3
+      cooldownTicks: 80
+      keyLootPool: pool_trial_keys_lowlands_ominous
+  trial_lowlands_ominous:
+    mobPool:
+      -
+        mobId: mob_trial_lowlands_brute
+        weight: 2.0
+      -
+        mobId: mob_trial_lowlands_ominous_brute
+        weight: 3.0
+    waves: 5
+    simultaneous: 3
+    cooldownTicks: 70
+    requiredPlayers: 1
+    activationRange: 16.0
+    keyLootPool: pool_trial_keys_lowlands_ominous
+vaults:
+  vault_lowlands_normal:
+    keyItem: item_trial_key_lowlands
+    lootPoolNormal: pool_vault_lowlands_normal
+    lootPoolOminous: pool_vault_lowlands_ominous
+    activationRange: 5.0
+    deactivationRange: 8.0
+    displayedItemPool:
+      -
+        itemId: item_trial_key_lowlands
+        weight: 3.0
+      -
+        itemId: item_trial_supply_lowlands
+        weight: 1.0
+  vault_lowlands_ominous:
+    keyItem: item_trial_key_lowlands_ominous
+    lootPoolNormal: pool_vault_lowlands_normal
+    lootPoolOminous: pool_vault_lowlands_ominous
+    activationRange: 5.0
+    deactivationRange: 8.0
+    displayedItemPool:
+      -
+        itemId: item_trial_key_lowlands_ominous
+        weight: 3.0
+      -
+        itemId: item_trial_relic_lowlands
+        weight: 1.0

@@ -1,0 +1,42 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_highlands_cliff_raiders_aura:
+    name: Highlands Cliff_Raiders
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: TRIAL_SPAWNER_DETECTION_OMINOUS
+          radius: 4.345000000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: ENCHANT
+          radius: 3.03875
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: TRIAL_SPAWNER_DETECTION_OMINOUS
+          radius: 3.575
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: ENCHANT
+          radius: 3.202375
+          points: 3
+          up: -1.0
+        -
+          particle: CRIT
+          type: preset_shockwave
+          radius: 3.4000000000000004
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 2.2

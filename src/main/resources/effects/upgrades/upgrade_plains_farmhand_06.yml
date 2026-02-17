@@ -1,0 +1,26 @@
+name: <green><bold>Plains Farmhand</bold></green> <gray>VI</gray>
+description: <gray>Ancient power reshapes your battle rhythm.</gray> <gray>Boosts Loot Mult by 1.00.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_plains_farmhand_06
+  activator: LEFT_CLICK
+requirements:
+  level: 18
+modifiers:
+  -
+    type: loot_mult
+    value: 0.997
+  -
+    type: duration_mult
+    value: 1.004
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: protection
+    level: 2
+allowUnsafe: true

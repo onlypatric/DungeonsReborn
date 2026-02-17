@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_lowlands_ancient_sentinels_29:
+    type: GIANT
+    name: <gold>Lowlands Giant Marauder</gold>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 203.5
+      ATTACK_DAMAGE: 9.08
+      scaleVariance: 1.35
+    attacks:
+      main:
+        ability: ability_mob_family_lowlands_ancient_sentinels_main
+        trigger: MELEE
+        cooldownTicks: 36
+        targetMode: NEAREST_PLAYER
+        range: 5.9
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_lowlands_ancient_sentinels_secondary
+        trigger: RANGED
+        cooldownTicks: 58
+        targetMode: NEAREST_PLAYER
+        range: 9.3
+        chance: 0.55
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_lowlands_ancient_sentinels_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_lowlands_ancient_sentinels_stronger
+    xpGating:
+      minLevel: 2563

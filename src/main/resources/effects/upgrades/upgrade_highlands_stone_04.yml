@@ -1,0 +1,32 @@
+name: <gray><bold>Highlands Stone</bold></gray> <gray>IV</gray>
+description: <gray>Unyielding stone anchors your form.</gray> <gray>Boosts Duration Mult by 0.69.</gray> <gray>Grants Generic Knockback Resistance +0.12.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_highlands_stone_04
+  activator: RIGHT_CLICK
+requirements:
+  level: 1499
+modifiers:
+  -
+    type: duration_mult
+    value: 0.693
+attributes:
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.119
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 2
+  -
+    enchant: breach
+    level: 2
+  -
+    enchant: feather_falling
+    level: 2
+allowUnsafe: true

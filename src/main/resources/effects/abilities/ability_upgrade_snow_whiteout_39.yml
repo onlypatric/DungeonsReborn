@@ -1,0 +1,31 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_39:
+    name: Ability Upgrade Snow Whiteout 39
+    costs:
+      -
+        type: mana
+        amount: 32.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: DUST_PILLAR
+          radius: 3.4250000000000003
+          points: 3
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.2
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 17.01

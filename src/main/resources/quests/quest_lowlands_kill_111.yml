@@ -1,0 +1,23 @@
+quests:
+  quest_lowlands_kill_111:
+    name: Wrath of Lowlands IV
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_lowlands_warden_raiders_21
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2244
+    rewards:
+      xp: 160
+      tokens: 10
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_lowlands_material_verdant_02
+          amount: 3

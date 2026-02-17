@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_12:
+    name: Ability Upgrade Snow Whiteout 12
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: DUST
+          count: 4
+          up: -1.0
+          data:
+            color: "#6960fa"
+            size: 1.5
+        -
+          type: raycast_hit_entity
+          maxDistance: 24
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 34.0
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

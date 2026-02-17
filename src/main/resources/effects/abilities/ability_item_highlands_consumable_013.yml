@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_item_highlands_consumable_013:
+    name: Ability Item Highlands Consumable 013
+    cooldown:
+      ticks: 190
+    action:
+      type: sequence
+      actions:
+        -
+          particle: LARGE_SMOKE
+          type: particles_points
+          points:
+            -
+              x: -0.49
+              y: 0.0
+              z: -0.04
+            -
+              x: -0.31
+              y: 0.0
+              z: 0.19
+          up: -1.0
+        -
+          particle: LAVA
+          type: particles_points
+          points:
+            -
+              x: -0.22
+              y: 0.0
+              z: 0.43
+            -
+              x: 0.09
+              y: 0.0
+              z: -0.3
+            -
+              x: 0.15
+              y: 0.0
+              z: -0.28
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: strength
+            durationTicks: 125
+            amplifier: 1

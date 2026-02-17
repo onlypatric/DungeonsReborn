@@ -1,0 +1,22 @@
+quests:
+  quest_plains_kill_021:
+    name: Wrath of Plains X
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_plains_meadow_fauna_21
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 15
+    rewards:
+      xp: 40
+      tokens: 1
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_plains_material_earth_01

@@ -1,0 +1,67 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_03_secondary:
+    name: Ability Boss Snow Frost Monarch Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_point
+          particle: CLOUD
+          count: 4
+          up: -1.0
+        -
+          type: particles_point
+          particle: SPLASH
+          count: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: CLOUD
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          up: -1.0
+        -
+          type: particles_points
+          particle: SPLASH
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.19
+          durationTicks: 96
+          radius: 5.8

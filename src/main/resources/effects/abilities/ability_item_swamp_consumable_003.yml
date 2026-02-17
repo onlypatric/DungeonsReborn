@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_item_swamp_consumable_003:
+    name: Ability Item Swamp Consumable 003
+    cooldown:
+      ticks: 118
+    action:
+      type: sequence
+      actions:
+        -
+          particle: FIREWORK
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: -0.06
+            -
+              x: 0.25
+              y: 0.0
+              z: -0.35
+            -
+              x: 0.32
+              y: 0.0
+              z: 0.35
+          up: -1.0
+        -
+          particle: FISHING
+          type: particles_points
+          points:
+            -
+              x: 0.04
+              y: 0.0
+              z: 0.04
+            -
+              x: 0.01
+              y: 0.0
+              z: -0.03
+          up: -1.0
+        -
+          particle: FLAME
+          type: particles_points
+          points:
+            -
+              x: 0.32
+              y: 0.0
+              z: -0.24
+            -
+              x: -0.14
+              y: 0.0
+              z: -0.11
+            -
+              x: -0.39
+              y: 0.0
+              z: 0.27
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 14.1
+            policy: any

@@ -1,0 +1,122 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_whiteout_oracle_phase_01_secondary:
+    name: Ability Boss Snow Whiteout Oracle Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_cylinder
+          particle: SPORE_BLOSSOM_AIR
+          radius: 7.917
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 7.091805000000001
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SNOWFLAKE
+          points:
+            -
+              x: 7.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.5
+              y: 0.0
+              z: 6.07
+            -
+              x: -3.5
+              y: 0.0
+              z: -6.07
+          up: -1.0
+        -
+          type: particles_disk
+          particle: SPORE_BLOSSOM_AIR
+          radius: 8.343300000000001
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 7.45416
+          points: 3
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SNOWFLAKE
+          points:
+            -
+              x: 7.0
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.5
+              y: 0.0
+              z: 6.07
+            -
+              x: -3.5
+              y: 0.0
+              z: -6.07
+          up: -1.0
+        -
+          type: particles_physics_points
+          particle: SPORE_BLOSSOM_AIR
+          points:
+            -
+              x: 6.09
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.04
+              y: 0.0
+              z: 5.27
+            -
+              x: -3.05
+              y: 0.0
+              z: -5.27
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: LANDING_OBSIDIAN_TEAR
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.13
+          durationTicks: 72
+          radius: 5.8
+        -
+          particle: SNOWFLAKE
+          type: preset_shockwave
+          radius: 6.6
+          points: 18

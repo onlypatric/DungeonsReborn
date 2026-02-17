@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.UUID;
+import java.lang.reflect.Method;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -47,6 +48,7 @@ import dev.patric.dungeonsreborn.shops.ShopTokenSpec;
 import dev.patric.dungeonsreborn.shops.ShopTokenTierSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.logging.AdvancementAuditLog;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.inventory.ItemStack;
 
@@ -2054,6 +2056,51 @@ public final class AdvancementService {
     return advancementLookup.get(AdvancementIds.key(id));
   }
 
+  public List<String> advancementIds() {
+    List<String> ids = new ArrayList<>(advancementLookup.keySet());
+    ids.sort(String.CASE_INSENSITIVE_ORDER);
+    return ids;
+  }
+
+  public Component advancementTitle(String id) {
+    BaseAdvancement advancement = lookupAdvancement(id);
+    Component title = extractAdvancementTitle(advancement);
+    return title == null ? Component.text(id) : title;
+  }
+
+  private Component extractAdvancementTitle(BaseAdvancement advancement) {
+    if (advancement == null) {
+      return null;
+    }
+    Object display = invoke(advancement, "getDisplay");
+    if (display == null) {
+      display = invoke(advancement, "display");
+    }
+    if (display == null) {
+      return null;
+    }
+    Object title = invoke(display, "getTitle");
+    if (title == null) {
+      title = invoke(display, "title");
+    }
+    if (title instanceof Component component) {
+      return component;
+    }
+    if (title != null) {
+      return Component.text(title.toString());
+    }
+    return null;
+  }
+
+  private static Object invoke(Object target, String methodName) {
+    try {
+      Method method = target.getClass().getMethod(methodName);
+      return method.invoke(target);
+    } catch (ReflectiveOperationException ex) {
+      return null;
+    }
+  }
+
   public int replayAuditLog(boolean dryRun) {
     if (auditLog == null) {
       return 0;
@@ -2103,8 +2150,12 @@ public final class AdvancementService {
     if (raw == null || raw.isBlank()) {
       return fallback;
     }
+    String trimmed = raw.trim();
+    if (trimmed.regionMatches(true, 0, "head:", 0, 5)) {
+      return Material.PLAYER_HEAD;
+    }
     try {
-      return Material.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+      return Material.valueOf(trimmed.toUpperCase(Locale.ROOT));
     } catch (IllegalArgumentException ex) {
       warn("Invalid material '" + raw + "' for '" + id + "', using " + fallback);
       return fallback;

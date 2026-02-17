@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_dark_oak_rotbound_12:
+    type: ENDERMAN
+    name: <gold>Dark Oak Enderman Warlord</gold>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 122.5
+      ATTACK_DAMAGE: 5.1
+      scaleVariance: 1.25
+    attacks:
+      main:
+        ability: ability_mob_family_dark_oak_rotbound_main
+        trigger: MELEE
+        cooldownTicks: 38
+        targetMode: NEAREST_PLAYER
+        range: 4.85
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_dark_oak_rotbound_secondary
+        trigger: RANGED
+        cooldownTicks: 73
+        targetMode: NEAREST_PLAYER
+        range: 7.65
+        chance: 0.55
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_dark_oak_rotbound_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_dark_oak_rotbound_stronger
+    xpGating:
+      minLevel: 835

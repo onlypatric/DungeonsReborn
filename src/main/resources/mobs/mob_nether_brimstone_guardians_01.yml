@@ -1,0 +1,46 @@
+schemaVersion: 1
+mobs:
+  mob_nether_brimstone_guardians_01:
+    type: HOGLIN
+    name: <gold>Nether Hoglin Marauder</gold>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 95.0
+      ATTACK_DAMAGE: 3.9
+      scaleVariance: 1.3
+    attacks:
+      main:
+        ability: ability_mob_family_nether_brimstone_guardians_main
+        trigger: MELEE
+        cooldownTicks: 42
+        targetMode: NEAREST_PLAYER
+        range: 4.5
+        chance: 1.0
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+      secondary:
+        ability: ability_mob_family_nether_brimstone_guardians_secondary
+        trigger: RANGED
+        cooldownTicks: 72
+        targetMode: NEAREST_PLAYER
+        range: 7.1
+        chance: 0.55
+        requireLineOfSight: true
+        requireTarget: true
+        priorityWeight: 1.0
+        internalCooldownTicks: 0
+    passives:
+      -
+        ability: ability_mob_family_nether_brimstone_guardians_aura
+        periodTicks: 80
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_nether_brimstone_guardians_stronger
+    xpGating:
+      minLevel: 459

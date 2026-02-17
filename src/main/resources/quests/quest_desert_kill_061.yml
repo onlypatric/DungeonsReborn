@@ -1,0 +1,22 @@
+quests:
+  quest_desert_kill_061:
+    name: Desert Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_desert_sand_hunters_11
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 149
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_sand_07

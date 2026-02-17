@@ -1,0 +1,91 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_ash_warlord_phase_03_secondary:
+    name: Ability Boss Nether Ash Warlord Phase 03 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_physics_points
+          particle: ITEM_COBWEB
+          points:
+            -
+              x: 3.99
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.99
+              y: 0.0
+              z: 3.46
+            -
+              x: -2.0
+              y: 0.0
+              z: -3.46
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SCULK_SOUL
+          points:
+            -
+              x: 3.39
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.7
+              y: 0.0
+              z: 2.94
+            -
+              x: -1.7
+              y: 0.0
+              z: -2.94
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: ITEM_COBWEB
+          points:
+            -
+              x: 3.99
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.99
+              y: 0.0
+              z: 3.46
+            -
+              x: -2.0
+              y: 0.0
+              z: -3.46
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: SCULK_SOUL
+          points:
+            -
+              x: 3.39
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.7
+              y: 0.0
+              z: 2.94
+            -
+              x: -1.7
+              y: 0.0
+              z: -2.94
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 120
+          amplifier: 1
+          radius: 3.8
+        -
+          type: damage_over_time
+          amount: 0.94
+          durationTicks: 96
+          radius: 3.8

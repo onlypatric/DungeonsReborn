@@ -1,0 +1,31 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_16:
+    name: Ability Upgrade Snow Boss 16
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_cone
+          particle: CLOUD
+          radius: 4.252400000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: particles_cone
+          particle: DRIPPING_HONEY
+          radius: 3.884480000000001
+          angleDegrees: 45
+          points: 3
+          up: 0.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: REGENERATION
+            durationTicks: 80
+            amplifier: 0

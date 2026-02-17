@@ -1,0 +1,29 @@
+name: <white><bold>Snow Frost</bold></white> <gray>LXV</gray>
+description: <gray>Cold restraint sharpens every blow.</gray> <gray>Boosts Duration Mult by 1.04.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_frost_65
+  activator: RIGHT_CLICK
+requirements:
+  level: 3435
+modifiers:
+  -
+    type: duration_mult
+    value: 1.043
+  -
+    type: radius_add
+    value: 2.282
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: bane_of_arthropods
+    level: 3
+  -
+    enchant: density
+    level: 3
+allowUnsafe: true

@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_gale_06:
+    name: Ability Upgrade Highlands Gale 06
+    costs:
+      -
+        type: mana
+        amount: 20.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics
+          particle: CRIT
+          count: 2
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.7
+          maxDistance: 26
+          hitRadius: 0.35
+          trail:
+            particle: CLOUD
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 22.8
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

@@ -1,0 +1,22 @@
+quests:
+  quest_mushroom_kill_013:
+    name: Mushroom Hunt II
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 8
+        mob: mob_mushroom_sporelings_03
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 965
+    rewards:
+      xp: 120
+      tokens: 4
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_mushroom_material_spore_04

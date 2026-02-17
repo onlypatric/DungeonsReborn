@@ -1,0 +1,45 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_desert_relic_08:
+    name: Ability Upgrade Desert Relic 08
+    costs:
+      -
+        type: mana
+        amount: 13.6
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_points
+          particle: SMOKE
+          points:
+            -
+              x: 2.75
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.37
+              y: 0.0
+              z: 2.38
+            -
+              x: -1.38
+              y: 0.0
+              z: -2.38
+          up: -1.0
+        -
+          type: raycast_hit_entity
+          maxDistance: 12
+          raySize: 0.35
+          then:
+            type: sequence
+            actions:
+              -
+                type: damage
+                amount: 7.14
+              -
+                type: potion
+                effect: "minecraft:weakness"
+                durationTicks: 60
+                amplifier: 0

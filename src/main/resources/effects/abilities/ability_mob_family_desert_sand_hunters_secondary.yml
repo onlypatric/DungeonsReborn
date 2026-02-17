@@ -1,0 +1,25 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_desert_sand_hunters_secondary:
+    name: Desert Sand_Hunters Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_arc
+          particle: PORTAL
+          radius: 4.9075
+          points: 3
+          angleDegrees: 140
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.2
+          durationTicks: 50
+          radius: 2.86
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.73

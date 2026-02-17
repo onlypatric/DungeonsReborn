@@ -1,0 +1,22 @@
+quests:
+  quest_plains_kill_010:
+    name: Plains Hunt XI
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_plains_meadow_fauna_10
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 19
+    rewards:
+      xp: 40
+      tokens: 2
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_plains_material_earth_02

@@ -1,0 +1,30 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_glacier_16:
+    name: Ability Upgrade Snow Glacier 16
+    costs:
+      -
+        type: mana
+        amount: 18.4
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: BLOCK
+          count: 6
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.6
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 13.37

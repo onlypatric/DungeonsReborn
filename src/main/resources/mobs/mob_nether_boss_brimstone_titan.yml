@@ -1,0 +1,124 @@
+schemaVersion: 1
+mobs:
+  mob_nether_boss_brimstone_titan:
+    type: HOGLIN
+    name: <red><bold>Nether Brimstone Titan</bold></red>
+    showName: true
+    gui:
+      head: ICON_MOBS
+    stats:
+      MAX_HEALTH: 1024.0
+      ATTACK_DAMAGE: 8.2
+      scaleVariance: 1.2
+    loot:
+      clearVanilla: true
+      pools:
+        -
+          id: world_nether_boss
+    resistances:
+      PHYSICAL: 0.95
+      MAGIC: 0.95
+      FIRE: 0.95
+      ICE: 0.95
+      LIGHTNING: 0.95
+      POISON: 0.95
+      WITHER: 0.95
+      BLEED: 0.95
+      HOLY: 0.95
+      ARCANE: 0.95
+      VOID: 0.95
+      EXPLOSION: 0.95
+      PROJECTILE: 0.95
+    xpGating:
+      minLevel: 644
+    phases:
+      -
+        id: nether_brimstone_titan_phase_1
+        healthBelow: 0.75
+        attacks:
+          main:
+            ability: ability_boss_nether_brimstone_titan_phase_01_main
+            trigger: MELEE
+            cooldownTicks: 65
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_nether_brimstone_titan_phase_01_secondary
+            trigger: MELEE
+            cooldownTicks: 97
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_nether_brimstone_titan_phase_01_aura
+            periodTicks: 40
+      -
+        id: nether_brimstone_titan_phase_2
+        healthBelow: 0.5
+        attacks:
+          main:
+            ability: ability_boss_nether_brimstone_titan_phase_02_main
+            trigger: MELEE
+            cooldownTicks: 70
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_nether_brimstone_titan_phase_02_secondary
+            trigger: MELEE
+            cooldownTicks: 104
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_nether_brimstone_titan_phase_02_aura
+            periodTicks: 40
+      -
+        id: nether_brimstone_titan_phase_3
+        healthBelow: 0.25
+        attacks:
+          main:
+            ability: ability_boss_nether_brimstone_titan_phase_03_main
+            trigger: MELEE
+            cooldownTicks: 75
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 1.0
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+          secondary:
+            ability: ability_boss_nether_brimstone_titan_phase_03_secondary
+            trigger: MELEE
+            cooldownTicks: 111
+            targetMode: NEAREST_PLAYER
+            range: 10.0
+            chance: 0.45
+            requireLineOfSight: true
+            requireTarget: true
+            priorityWeight: 1.0
+            internalCooldownTicks: 0
+        passives:
+          -
+            ability: ability_boss_nether_brimstone_titan_phase_03_aura
+            periodTicks: 40

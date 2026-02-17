@@ -1,0 +1,22 @@
+quests:
+  quest_lowlands_explore_088:
+    name: Lowlands Recon V
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - lowlands
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 2134
+    rewards:
+      xp: 175
+      tokens: 12
+      compressed: 0
+      pallet: 0
+      mana: 0.0

@@ -1,0 +1,35 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_water_depth_guardians_secondary:
+    name: Water Depth_Guardians Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_physics_points
+          particle: DRIPPING_DRIPSTONE_WATER
+          points:
+            -
+              x: 3.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.62
+              y: 0.0
+              z: 2.81
+            -
+              x: -1.63
+              y: 0.0
+              z: -2.81
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.67
+          durationTicks: 50
+          radius: 2.86
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 50
+          amplifier: 0
+          radius: 2.73

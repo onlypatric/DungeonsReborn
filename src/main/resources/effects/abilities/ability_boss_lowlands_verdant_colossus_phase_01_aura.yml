@@ -1,0 +1,83 @@
+schemaVersion: 1
+abilities:
+  ability_boss_lowlands_verdant_colossus_phase_01_aura:
+    name: Ability Boss Lowlands Verdant Colossus Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: REVERSE_PORTAL
+          radius: 6.50055
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: TRAIL
+          radius: 5.7816149999999995
+          points: 3
+          up: -1.0
+          data:
+            color: "#7950ca"
+            durationTicks: 24
+        -
+          type: particles_spline
+          particle: REVERSE_PORTAL
+          points:
+            -
+              x: 4.3
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.15
+              y: 0.0
+              z: 3.73
+            -
+              x: -2.15
+              y: 0.0
+              z: -3.73
+          up: -1.0
+        -
+          type: particles_box
+          particle: TRAIL
+          width: 9.51405
+          height: 2.2
+          depth: 9.51405
+          points: 3
+          up: -1.0
+          data:
+            color: "#9eabdb"
+            durationTicks: 24
+        -
+          type: particles_points
+          particle: LANDING_HONEY
+          points:
+            -
+              x: 4.52
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.26
+              y: 0.0
+              z: 3.91
+            -
+              x: -2.26
+              y: 0.0
+              z: -3.91
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 1.5
+          durationTicks: 40
+          radius: 4.1
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 4.1
+        -
+          particle: CLOUD
+          type: preset_shockwave
+          radius: 4.8999999999999995
+          points: 18

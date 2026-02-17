@@ -1,9 +1,30 @@
-labels.upgrades.lore.conflicts: <dark_gray>This item may conflict with {binding}</dark_gray>
-labels.upgrades.requirements.manaMin: Requires {mana} max mana to apply this upgrade.
-labels.upgrades.requirements.manaMissing: Mana system not available.
-labels.upgrades.requirements.totalXpConsume: Requires {xp} custom XP to consume for this upgrade.
-labels.upgrades.requirements.totalXpMin: Requires {xp} custom XP to apply this upgrade.
-labels.upgrades.requirements.xpLevelConsume: Requires level {level} to consume XP for this upgrade.
-labels.upgrades.requirements.xpLevelMin: Requires level {level} to apply this upgrade.
-labels.upgrades.requirements.xpProgressConsume: Requires {percent} custom XP progress to consume for this upgrade.
-labels.upgrades.requirements.xpProgressMin: Requires {percent} custom XP progress to apply this upgrade.
+labels.upgrades.lore.conflicts: "<dark_gray>This item may conflict with {binding}</dark_gray>"
+labels.upgrades.lore.bookName: "<gold><bold>Upgrade</bold></gold>"
+labels.upgrades.lore.activation: "<gray>Activation:</gray> <white>{binding}</white>"
+labels.upgrades.lore.activator.passive: "<white>Passive</white>"
+labels.upgrades.lore.activator.left: "<white>Left Click</white>"
+labels.upgrades.lore.activator.right: "<white>Right Click</white>"
+labels.upgrades.lore.activator.shiftLeft: "<white>Shift + Left Click</white>"
+labels.upgrades.lore.activator.shiftRight: "<white>Shift + Right Click</white>"
+labels.upgrades.lore.hintApply: "<dark_gray>Use on a compatible item.</dark_gray>"
+labels.upgrades.lore.appliedHeader: "<gray>Applied Upgrades</gray>"
+labels.upgrades.lore.appliedTotals: "<gray>Applied Totals</gray>"
+labels.upgrades.lore.attribute: "<dark_gray>◆</dark_gray> <aqua><bold>Attribute</bold></aqua> <white>{value}</white>"
+labels.upgrades.lore.attributeValue: "{sign}{amount} {name}"
+labels.upgrades.lore.enchant: "<dark_gray>✦</dark_gray> <gold><bold>Enchant</bold></gold> <white>{value}</white>"
+labels.upgrades.lore.enchantValue: "{name} {level}"
+labels.upgrades.requirements.manaMin: "Requires {mana} max mana to apply this upgrade."
+labels.upgrades.requirements.manaMissing: "Mana system not available."
+labels.upgrades.requirements.totalXpConsume: "Requires {xp} custom XP to consume for this upgrade."
+labels.upgrades.requirements.totalXpMin: "Requires {xp} custom XP to apply this upgrade."
+labels.upgrades.requirements.xpLevelConsume: "Requires level {level} to consume XP for this upgrade."
+labels.upgrades.requirements.xpLevelMin: "Requires level {level} to apply this upgrade."
+labels.upgrades.requirements.xpProgressConsume: "Requires {percent} custom XP progress to consume for this upgrade."
+labels.upgrades.requirements.xpProgressMin: "Requires {percent} custom XP progress to apply this upgrade."
+labels.system.crafting: "Crafting"
+labels.system.dungeons: "Dungeons"
+labels.system.kits: "Kits"
+labels.system.party: "Party"
+labels.system.quests: "Quests"
+labels.system.shops: "Shops"
+labels.system.upgrades: "Upgrades"

@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_plains_quarry_07:
+    name: Ability Upgrade Plains Quarry 07
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_fill
+          particle: CURRENT_DOWN
+          radius: 2.9250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

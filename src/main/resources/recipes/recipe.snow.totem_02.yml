@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: recipe_snow_totem_02
+name: Snow Totem 2
+costs:
+  -
+    type: tokens
+    amount: 31
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+  -
+    type: item
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    item:
+      item: item_currency_snow_voucher
+variants:
+  -
+    inputs:
+      -
+        item: item_snow_material_frost_01
+        amount: 3
+      -
+        item: item_snow_material_whiteout_05
+        amount: 2
+      -
+        item: item_snow_upgrade_core_02
+outputs:
+  -
+    item: item_snow_totem_02

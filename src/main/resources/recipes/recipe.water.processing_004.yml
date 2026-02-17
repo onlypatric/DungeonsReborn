@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: recipe_water_processing_004
+name: Water Processing 4
+costs:
+  -
+    type: tokens
+    amount: 1
+    resource: <function CraftingCostSpec.resource at 0x1017ae660>
+    tokenTier: common
+variants:
+  -
+    inputs:
+      -
+        material: KELP
+        amount: 2
+      -
+        material: PRISMARINE_SHARD
+        amount: 2
+outputs:
+  -
+    item: item_water_material_brine_04

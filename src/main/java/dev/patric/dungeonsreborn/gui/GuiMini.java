@@ -23,12 +23,16 @@ public final class GuiMini {
 
   public static Component mm(String template) {
     Objects.requireNonNull(template, "template");
-    return TextStyles.noItalic(MM.deserialize(template));
+    return TextStyles.noItalic(MM.deserialize(normalize(template)));
   }
 
   public static Component mm(String template, TagResolver... resolvers) {
     Objects.requireNonNull(template, "template");
-    return TextStyles.noItalic(MM.deserialize(template, resolvers));
+    return TextStyles.noItalic(MM.deserialize(normalize(template), resolvers));
+  }
+
+  private static String normalize(String template) {
+    return template.replace("\\n", "<newline>").replace("\n", "<newline>");
   }
 
   public static List<Component> loreMm(List<String> linesMm, TagResolver... resolvers) {

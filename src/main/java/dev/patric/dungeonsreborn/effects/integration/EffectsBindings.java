@@ -25,6 +25,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.util.Vector;
 
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
@@ -527,6 +528,11 @@ public final class EffectsBindings implements Listener {
     boolean rightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
     boolean leftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
 
+    if (rightClick && item != null && isItemOnCooldown(player, item)) {
+      event.setCancelled(true);
+      return;
+    }
+
     boolean castAny = false;
     boolean shouldCancel = false;
     boolean boundRightClick = false;
@@ -606,6 +612,9 @@ public final class EffectsBindings implements Listener {
               if (!engine.hasAbility(abilityId)) {
                 continue;
               }
+              if (engine.cooldownRemainingTicks(player.getUniqueId(), abilityId) > 0L) {
+                continue;
+              }
               castWithItem(player, abilityId, item, true);
               castAny = true;
               useDefaultConsume = true;
@@ -636,6 +645,9 @@ public final class EffectsBindings implements Listener {
       if (binding.cancelEvent()) {
         shouldCancel = true;
       }
+      if (engine.cooldownRemainingTicks(player.getUniqueId(), binding.abilityId()) > 0L) {
+        continue;
+      }
       castWithItem(player, binding.abilityId(), item, true);
       castAny = true;
       useDefaultConsume = true;
@@ -649,6 +661,7 @@ public final class EffectsBindings implements Listener {
       event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
     }
     if (castAny && item != null) {
+      applyItemCooldown(player, item);
       if (useDefaultConsume) {
         consumeItem(player, event.getHand(), item);
       }
@@ -677,6 +690,40 @@ public final class EffectsBindings implements Listener {
       default -> {
       }
     }
+  }
+
+  private static boolean isItemOnCooldown(Player player, ItemStack item) {
+    long ticks = player.getCooldown(item.getType());
+    return ticks > 0L;
+  }
+
+  private static void applyItemCooldown(Player player, ItemStack item) {
+    long ticks = useCooldownTicks(item);
+    if (ticks <= 0L) {
+      return;
+    }
+    if (player.getCooldown(item.getType()) < ticks) {
+      player.setCooldown(item.getType(), (int) Math.min(Integer.MAX_VALUE, ticks));
+    }
+  }
+
+  private static long useCooldownTicks(ItemStack item) {
+    if (item == null) {
+      return 0L;
+    }
+    ItemMeta meta = item.getItemMeta();
+    if (meta == null) {
+      return 0L;
+    }
+    UseCooldownComponent cooldown = meta.getUseCooldown();
+    if (cooldown == null) {
+      return 0L;
+    }
+    double seconds = cooldown.getCooldownSeconds();
+    if (!Double.isFinite(seconds) || seconds <= 0.0) {
+      return 0L;
+    }
+    return Math.max(1L, Math.round(seconds * 20.0));
   }
 
   private static void consumeStack(Player player, EquipmentSlot hand, ItemStack item, int amount) {

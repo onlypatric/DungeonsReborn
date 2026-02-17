@@ -1,0 +1,23 @@
+quests:
+  quest_nether_kill_011:
+    name: Nether Culling XII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 6
+        mob: mob_nether_ash_legion_01
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 370
+    rewards:
+      xp: 80
+      tokens: 6
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_material_brimstone_01
+          amount: 3

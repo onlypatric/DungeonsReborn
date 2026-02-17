@@ -1,0 +1,62 @@
+name: <dark_green><bold>Lowlands Boss</bold></dark_green> <gray>XIV</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.12.</gray> <gray>Grants Generic Max Health +12.32.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_boss_14
+  activator: RIGHT_CLICK
+requirements:
+  level: 3167
+modifiers:
+  -
+    type: damage_mult
+    value: 1.121
+  -
+    type: cooldown_mult
+    value: 0.943
+  -
+    type: radius_add
+    value: 4.168
+  -
+    type: duration_mult
+    value: 1.137
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 12.317
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.125
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.313
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.061
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: knockback
+    level: 3
+  -
+    enchant: power
+    level: 5
+  -
+    enchant: sharpness
+    level: 5
+allowUnsafe: true

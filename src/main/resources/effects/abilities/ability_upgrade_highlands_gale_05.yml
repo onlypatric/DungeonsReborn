@@ -1,0 +1,22 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_highlands_gale_05:
+    name: Ability Upgrade Highlands Gale 05
+    action:
+      type: sequence
+      actions:
+        -
+          particle: ENCHANT
+          type: preset_shockwave
+          radius: 1.8
+          points: 3
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

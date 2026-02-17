@@ -369,7 +369,12 @@ public final class MobRegistry implements Listener {
     }
     MobVariantSpec variant = chooseVariant(spec);
     MobTraitSpec trait = chooseTrait(spec);
-    applySpec(spec, living, ownerId, variant, trait);
+    try {
+      applySpec(spec, living, ownerId, variant, trait);
+    } catch (RuntimeException ex) {
+      living.remove();
+      throw ex;
+    }
     recordSpawn(spec.id());
     logMobEvent("spawn", spec, living, ownerId, null, 0.0);
     active.put(living.getUniqueId(), new MobInstance(spec.id(), ownerId));
@@ -400,6 +405,7 @@ public final class MobRegistry implements Listener {
     MobMarkers.setTrait(entity, trait == null ? null : trait.id());
     applyModelSpec(entity, spec.modelSpec());
     applyCollidable(entity, resolveCollidable(spec, variant, null));
+    applyInvulnerable(entity, spec.invulnerable());
 
     var equipment = entity.getEquipment();
     if (equipment != null) {
@@ -418,10 +424,26 @@ public final class MobRegistry implements Listener {
     if (trait != null) {
       applyTrait(entity, trait);
     }
+    syncHealthToMax(entity);
     applyScaleVariance(entity, spec.scaleVariance());
     applyResistances(entity, spec.resistances());
     if (trait != null && trait.resistances() != null && !trait.resistances().isEmpty()) {
       applyResistances(entity, trait.resistances());
+    }
+  }
+
+  private void syncHealthToMax(LivingEntity entity) {
+    AttributeInstance inst = entity.getAttribute(Attribute.MAX_HEALTH);
+    if (inst == null) {
+      return;
+    }
+    double max = inst.getValue();
+    if (!Double.isFinite(max) || max <= 0.0) {
+      return;
+    }
+    double current = entity.getHealth();
+    if (!Double.isFinite(current) || current != max) {
+      entity.setHealth(max);
     }
   }
 
@@ -1905,6 +1927,13 @@ public final class MobRegistry implements Listener {
     entity.setCollidable(collidable.booleanValue());
   }
 
+  private void applyInvulnerable(LivingEntity entity, Boolean invulnerable) {
+    if (invulnerable == null) {
+      return;
+    }
+    entity.setInvulnerable(invulnerable.booleanValue());
+  }
+
   private Boolean resolveCollidable(MobSpec spec, MobVariantSpec variant, MobPhaseSpec phase) {
     if (phase != null && phase.collidable() != null) {
       return phase.collidable();
@@ -1938,7 +1967,7 @@ public final class MobRegistry implements Listener {
       base = 1.0;
     }
     double delta = (rng.nextDouble() * 2.0 - 1.0) * variance;
-    double next = Math.max(0.1, base + delta);
+    double next = Math.max(0.85, base + delta);
     inst.setBaseValue(next);
   }
 

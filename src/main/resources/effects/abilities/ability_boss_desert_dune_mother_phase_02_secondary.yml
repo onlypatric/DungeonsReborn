@@ -1,0 +1,95 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_dune_mother_phase_02_secondary:
+    name: Ability Boss Desert Dune Mother Phase 02 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_mesh
+          particle: LAVA
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          triangles:
+            -
+              -
+                x: 3.57
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.78
+                y: 0.0
+                z: 3.09
+              -
+                x: -1.79
+                y: 0.0
+                z: -3.09
+          up: -1.0
+        -
+          type: particles_mesh
+          particle: LANDING_LAVA
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          triangles:
+            -
+              -
+                x: 3.03
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.52
+                y: 0.0
+                z: 2.63
+              -
+                x: -1.52
+                y: 0.0
+                z: -2.63
+          up: -1.0
+        -
+          type: particles_physics
+          particle: LAVA
+          count: 2
+          up: -1.0
+        -
+          type: particles_physics
+          particle: LANDING_LAVA
+          count: 2
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 100
+          amplifier: 1
+          radius: 3.4
+        -
+          type: damage_over_time
+          amount: 0.61
+          durationTicks: 84
+          radius: 3.4

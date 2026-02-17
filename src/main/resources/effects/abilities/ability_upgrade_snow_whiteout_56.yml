@@ -1,0 +1,36 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_56:
+    name: Ability Upgrade Snow Whiteout 56
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 4
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_point
+          particle: DRIPPING_DRIPSTONE_LAVA
+          count: 4
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.9
+          maxDistance: 30
+          hitRadius: 0.35
+          trail:
+            particle: CRIT
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 32.55
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

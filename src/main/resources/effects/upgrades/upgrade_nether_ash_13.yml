@@ -1,0 +1,30 @@
+name: <red><bold>Nether Ash</bold></red> <gray>XIII</gray>
+description: <gray>Embers smolder beneath your skin.</gray> <gray>Grants Generic Armor +0.08.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_nether_ash_13
+  activator: SHIFT_RIGHT
+requirements:
+  level: 370
+attributes:
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.077
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: -0.044
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 1
+  -
+    enchant: multishot
+    level: 1
+allowUnsafe: true

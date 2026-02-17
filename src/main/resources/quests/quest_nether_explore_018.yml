@@ -1,0 +1,22 @@
+quests:
+  quest_nether_explore_018:
+    name: Path of Nether VII
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - nether
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 330
+    rewards:
+      xp: 95
+      tokens: 9
+      compressed: 0
+      pallet: 0
+      mana: 0.0

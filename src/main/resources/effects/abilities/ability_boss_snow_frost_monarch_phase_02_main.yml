@@ -1,0 +1,49 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_02_main:
+    name: Ability Boss Snow Frost Monarch Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_cylinder
+          particle: DOLPHIN
+          radius: 9.6768
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_cylinder
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 8.62512
+          height: 3.0
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: DOLPHIN
+          radius: 10.147200000000002
+          points: 3
+          up: -1.0
+        -
+          type: particles_disk
+          particle: TRIAL_SPAWNER_DETECTION
+          radius: 9.024960000000002
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 8.2
+          radius: 6.4
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 6.4

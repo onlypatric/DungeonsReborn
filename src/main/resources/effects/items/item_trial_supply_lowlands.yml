@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: HONEY_BOTTLE
+  display:
+    name: <green><bold>Meadow Field Ration</bold></green>
+    lore:
+      - <gray>Reliable sustain from lowlands supplies.</gray>
+gui:
+  head: ICON_ITEMS

@@ -1,0 +1,66 @@
+schemaVersion: 1
+abilities:
+  ability_item_snow_consumable_064:
+    name: Ability Item Snow Consumable 064
+    cooldown:
+      ticks: 174
+    action:
+      type: sequence
+      actions:
+        -
+          particle: DUST_PLUME
+          type: particles_points
+          points:
+            -
+              x: -0.03
+              y: 0.0
+              z: -0.36
+            -
+              x: 0.01
+              y: 0.0
+              z: 0.18
+            -
+              x: 0.34
+              y: 0.0
+              z: 0.34
+          up: -1.0
+        -
+          particle: EFFECT
+          type: particles_points
+          points:
+            -
+              x: -0.06
+              y: 0.0
+              z: -0.07
+            -
+              x: 0.26
+              y: 0.0
+              z: 0.05
+          up: -1.0
+        -
+          particle: EGG_CRACK
+          type: particles_points
+          points:
+            -
+              x: -0.0
+              y: 0.0
+              z: -0.0
+            -
+              x: -0.41
+              y: 0.0
+              z: -0.11
+            -
+              x: 0.0
+              y: 0.0
+              z: -0.0
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: speed
+            durationTicks: 227
+            amplifier: 0

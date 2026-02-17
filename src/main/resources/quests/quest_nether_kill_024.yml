@@ -1,0 +1,23 @@
+quests:
+  quest_nether_kill_024:
+    name: Wrath of Nether I
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_nether_ash_legion_14
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 373
+    rewards:
+      xp: 80
+      tokens: 5
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_nether_material_brimstone_05
+          amount: 3

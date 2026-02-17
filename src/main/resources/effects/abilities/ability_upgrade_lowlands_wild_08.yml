@@ -1,0 +1,31 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_wild_08:
+    name: Ability Upgrade Lowlands Wild 08
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_box
+          particle: ANGRY_VILLAGER
+          width: 9.060000000000002
+          height: 2.2
+          depth: 9.060000000000002
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 6.6
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 14.4

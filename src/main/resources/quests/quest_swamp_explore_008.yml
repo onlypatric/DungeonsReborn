@@ -1,0 +1,22 @@
+quests:
+  quest_swamp_explore_008:
+    name: Swamp Charting IX
+    enabled: true
+    objectives:
+      -
+        type: visit_region
+        count: 1
+        worlds:
+          - world
+        biomes:
+          - swamp
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 910
+    rewards:
+      xp: 135
+      tokens: 7
+      compressed: 0
+      pallet: 0
+      mana: 0.0

@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_wild_04:
+    name: Ability Upgrade Lowlands Wild 04
+    costs:
+      -
+        type: mana
+        amount: 30.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere_shell
+          particle: SCULK_CHARGE
+          radius: 5.135
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.4
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 14.8

@@ -1,0 +1,52 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sand_king_phase_02_main:
+    name: Ability Boss Desert Sand King Phase 02 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_sphere_fill
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 5.6406
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: SNEEZE
+          radius: 3.94485
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: LANDING_OBSIDIAN_TEAR
+          radius: 4.641
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_filled
+          particle: SNEEZE
+          radius: 4.157265000000001
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 3.4
+          radius: 3.4
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 60
+          amplifier: 0
+          radius: 3.4
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.2
+          points: 18

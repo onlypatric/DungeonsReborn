@@ -1,0 +1,9 @@
+item:
+  type: material
+  material: PAPER
+  display:
+    name: <dark_green><bold>Verdant Bloom</bold></dark_green> <gray>V</gray>
+    lore:
+      - <dark_gray>✦</dark_gray> <gray>Harvested from the Lowlands wilds.</gray>
+gui:
+  head: ICON_ITEMS

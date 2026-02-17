@@ -1,0 +1,23 @@
+quests:
+  quest_desert_kill_064:
+    name: Desert Hunt V
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 9
+        mob: mob_desert_sand_hunters_14
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 157
+    rewards:
+      xp: 60
+      tokens: 3
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_desert_material_sand_04
+          amount: 2

@@ -1,0 +1,12 @@
+item:
+  type: material
+  material: PLAYER_HEAD
+  display:
+    name: <aqua>Snow Core XV</aqua>
+    lore:
+      - <aqua>Infusion</aqua> <dark_gray>❯</dark_gray> <gray>Fuel for powerful upgrades.</gray>
+  meta:
+    skull:
+      head: REQ_SOLID_MUSHROOM_BLOCK_BLUE_2
+gui:
+  head: ICON_ITEMS

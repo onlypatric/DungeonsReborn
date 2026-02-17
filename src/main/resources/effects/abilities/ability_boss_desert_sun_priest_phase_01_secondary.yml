@@ -1,0 +1,100 @@
+schemaVersion: 1
+abilities:
+  ability_boss_desert_sun_priest_phase_01_secondary:
+    name: Ability Boss Desert Sun Priest Phase 01 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_physics_points
+          particle: BLOCK
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: particles_physics_polyline
+          particle: SPLASH
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          up: -1.0
+        -
+          type: particles_physics_polyline
+          particle: BLOCK
+          points:
+            -
+              x: 3.57
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.78
+              y: 0.0
+              z: 3.09
+            -
+              x: -1.79
+              y: 0.0
+              z: -3.09
+          up: -1.0
+          data:
+            material: STONE
+        -
+          type: particles_physics_polyline
+          particle: SPLASH
+          points:
+            -
+              x: 3.03
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.63
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.63
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 3.4
+        -
+          type: damage_over_time
+          amount: 0.68
+          durationTicks: 72
+          radius: 3.4
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 4.2
+          points: 18

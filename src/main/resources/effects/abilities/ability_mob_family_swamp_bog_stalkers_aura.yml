@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_mob_family_swamp_bog_stalkers_aura:
+    name: Swamp Bog_Stalkers
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: SCULK_CHARGE
+          radius: 3.58625
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: ITEM_SLIME
+          radius: 3.189625
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: SCULK_CHARGE
+          radius: 3.7525000000000004
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_fill
+          particle: ITEM_SLIME
+          radius: 2.6243749999999997
+          points: 3
+          up: -1.0
+        -
+          particle: SMOKE
+          type: preset_swirl
+          radius: 1.9
+          points: 3
+          up: -2.0
+        -
+          particle: SMOKE
+          type: preset_shockwave
+          radius: 3.0999999999999996
+          points: 3
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 40
+          amplifier: 0
+          radius: 1.9

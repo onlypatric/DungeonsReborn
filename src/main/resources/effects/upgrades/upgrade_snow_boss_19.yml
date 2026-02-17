@@ -1,0 +1,62 @@
+name: <white><bold>Snow Boss</bold></white> <gray>XIX</gray>
+description: <gray>Boss‑forged might answers your oath.</gray> <gray>Boosts Damage Mult by 1.15.</gray> <gray>Grants Generic Max Health +25.25.</gray>
+rarity: rare
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_boss_19
+  activator: SHIFT_RIGHT
+requirements:
+  level: 4964
+modifiers:
+  -
+    type: damage_mult
+    value: 1.148
+  -
+    type: cooldown_mult
+    value: 0.912
+  -
+    type: radius_add
+    value: 4.033
+  -
+    type: duration_mult
+    value: 1.139
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 25.248
+    slot: ANY
+  -
+    attribute: generic_armor
+    operation: ADD_SCALAR
+    amount: 0.172
+    slot: ANY
+  -
+    attribute: generic_knockback_resistance
+    operation: ADD_SCALAR
+    amount: 0.342
+    slot: ANY
+  -
+    attribute: generic_movement_speed
+    operation: ADD_SCALAR
+    amount: 0.07
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: vanishing_curse
+    level: 3
+  -
+    enchant: blast_protection
+    level: 3
+  -
+    enchant: depth_strider
+    level: 3
+allowUnsafe: true

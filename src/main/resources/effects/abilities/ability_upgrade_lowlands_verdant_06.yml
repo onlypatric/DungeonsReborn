@@ -1,0 +1,23 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_lowlands_verdant_06:
+    name: Ability Upgrade Lowlands Verdant 06
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_ring
+          particle: FALLING_SPORE_BLOSSOM
+          radius: 2.9250000000000003
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: potion
+            effect: RESISTANCE
+            durationTicks: 80
+            amplifier: 0

@@ -1,0 +1,48 @@
+schemaVersion: 1
+abilities:
+  ability_item_desert_consumable_029:
+    name: Ability Item Desert Consumable 029
+    cooldown:
+      ticks: 82
+    action:
+      type: sequence
+      actions:
+        -
+          particle: REVERSE_PORTAL
+          type: particles_points
+          points:
+            -
+              x: 0.46
+              y: 0.0
+              z: -0.17
+            -
+              x: 0.02
+              y: 0.0
+              z: -0.37
+          up: -1.0
+        -
+          particle: SCRAPE
+          type: particles_points
+          points:
+            -
+              x: -0.09
+              y: 0.0
+              z: 0.42
+            -
+              x: -0.16
+              y: 0.0
+              z: 0.28
+            -
+              x: 0.06
+              y: 0.0
+              z: -0.11
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: self
+          mode: first
+          then:
+            type: heal
+            amount: 7.4
+            policy: any

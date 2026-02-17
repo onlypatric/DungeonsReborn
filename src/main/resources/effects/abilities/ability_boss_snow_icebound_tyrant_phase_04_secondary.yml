@@ -1,0 +1,60 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_icebound_tyrant_phase_04_secondary:
+    name: Ability Boss Snow Icebound Tyrant Phase 04 Secondary
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.evoker.cast_spell"
+          volume: 0.9
+          pitch: 1.1
+        -
+          type: particles_sphere_shell
+          particle: SMOKE
+          radius: 9.6222
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere_shell
+          particle: ENCHANT
+          radius: 6.72945
+          points: 3
+          up: -1.0
+        -
+          type: particles_box
+          particle: SMOKE
+          width: 15.834
+          height: 2.2
+          depth: 15.834
+          points: 3
+          up: -1.0
+        -
+          type: particles_spline
+          particle: ENCHANT
+          points:
+            -
+              x: 5.18
+              y: 0.0
+              z: 0.0
+            -
+              x: -2.59
+              y: 0.0
+              z: 4.48
+            -
+              x: -2.59
+              y: 0.0
+              z: -4.48
+          up: -1.0
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 140
+          amplifier: 2
+          radius: 5.8
+        -
+          type: damage_over_time
+          amount: 1.32
+          durationTicks: 108
+          radius: 5.8

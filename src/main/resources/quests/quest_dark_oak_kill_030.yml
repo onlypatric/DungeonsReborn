@@ -1,0 +1,23 @@
+quests:
+  quest_dark_oak_kill_030:
+    name: Wrath of Dark Oak VII
+    enabled: true
+    objectives:
+      -
+        type: kill_mob
+        count: 5
+        mob: mob_dark_oak_shadow_fauna_30
+    gui:
+      head: ICON_QUESTS
+    requirements:
+      level: 726
+    rewards:
+      xp: 100
+      tokens: 8
+      compressed: 0
+      pallet: 0
+      mana: 0.0
+      items:
+        -
+          id: item_dark_oak_material_dread_03
+          amount: 2

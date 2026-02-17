@@ -1,0 +1,29 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_whiteout_51:
+    name: Ability Upgrade Snow Whiteout 51
+    costs:
+      -
+        type: mana
+        amount: 32.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_line
+          particle: FIREWORK
+          length: 5.125
+          points: 3
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 7.2
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 16.6

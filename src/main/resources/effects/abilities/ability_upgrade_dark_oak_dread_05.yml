@@ -1,0 +1,54 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_dark_oak_dread_05:
+    name: Ability Upgrade Dark Oak Dread 05
+    costs:
+      -
+        type: mana
+        amount: 18.8
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_mesh
+          particle: DAMAGE_INDICATOR
+          points:
+            -
+              x: 2.25
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.12
+              y: 0.0
+              z: 1.95
+            -
+              x: -1.13
+              y: 0.0
+              z: -1.95
+          triangles:
+            -
+              -
+                x: 2.25
+                y: 0.0
+                z: 0.0
+              -
+                x: -1.12
+                y: 0.0
+                z: 1.95
+              -
+                x: -1.13
+                y: 0.0
+                z: -1.95
+          up: -1.0
+        -
+          type: for_each_target
+          targeter:
+            type: sphere
+            radius: 5.2
+            ignoreCaster: true
+          mode: each
+          then:
+            type: damage
+            amount: 7.86

@@ -1,0 +1,86 @@
+schemaVersion: 1
+abilities:
+  ability_boss_nether_infernal_warden_phase_01_aura:
+    name: Ability Boss Nether Infernal Warden Phase 01 Aura
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polygon
+          particle: SOUL_FIRE_FLAME
+          points:
+            -
+              x: 3.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.64
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.64
+          up: -1.0
+        -
+          type: particles_polygon
+          particle: CLOUD
+          points:
+            -
+              x: 2.59
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.29
+              y: 0.0
+              z: 2.24
+            -
+              x: -1.29
+              y: 0.0
+              z: -2.24
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: SOUL_FIRE_FLAME
+          points:
+            -
+              x: 3.04
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.52
+              y: 0.0
+              z: 2.64
+            -
+              x: -1.52
+              y: 0.0
+              z: -2.64
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: CLOUD
+          points:
+            -
+              x: 2.59
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.29
+              y: 0.0
+              z: 2.24
+            -
+              x: -1.29
+              y: 0.0
+              z: -2.24
+          up: -1.0
+        -
+          type: damage_over_time
+          amount: 0.9
+          durationTicks: 40
+          radius: 2.9
+        -
+          type: potion
+          effect: "minecraft:weakness"
+          durationTicks: 38
+          amplifier: 0
+          radius: 2.9

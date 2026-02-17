@@ -1,0 +1,37 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_nether_ash_16:
+    name: Ability Upgrade Nether Ash 16
+    costs:
+      -
+        type: mana
+        amount: 10.4
+    cooldown:
+      ticks: 10
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_sphere
+          particle: CHERRY_LEAVES
+          radius: 5.135
+          points: 3
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.4
+          maxDistance: 20
+          hitRadius: 0.35
+          trail:
+            particle: LAVA
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 9.64
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

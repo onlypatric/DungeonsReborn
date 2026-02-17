@@ -1,0 +1,32 @@
+name: <white><bold>Snow Whiteout</bold></white> <gray>XXIX</gray>
+description: <gray>Blinding storms shroud your advance.</gray> <gray>Boosts Damage Mult by 1.35.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_snow_whiteout_29
+  activator: PASSIVE
+requirements:
+  level: 3489
+modifiers:
+  -
+    type: damage_mult
+    value: 1.347
+  -
+    type: damage_add
+    value: 1.078
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: mending
+    level: 1
+  -
+    enchant: lure
+    level: 3
+  -
+    enchant: protection
+    level: 5
+allowUnsafe: true

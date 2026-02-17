@@ -1,0 +1,65 @@
+schemaVersion: 1
+abilities:
+  ability_upgrade_snow_boss_11:
+    name: Ability Upgrade Snow Boss 11
+    costs:
+      -
+        type: mana
+        amount: 41.0
+    cooldown:
+      ticks: 6
+    action:
+      type: sequence
+      actions:
+        -
+          type: particles_polyline
+          particle: EGG_CRACK
+          points:
+            -
+              x: 2.52
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.26
+              y: 0.0
+              z: 2.18
+            -
+              x: -1.26
+              y: 0.0
+              z: -2.18
+          up: -1.0
+        -
+          type: particles_polyline
+          particle: FLAME
+          points:
+            -
+              x: 2.14
+              y: 0.0
+              z: 0.0
+            -
+              x: -1.07
+              y: 0.0
+              z: 1.86
+            -
+              x: -1.07
+              y: 0.0
+              z: -1.86
+          up: -1.0
+        -
+          type: projectile
+          speedPerTick: 1.9
+          maxDistance: 30
+          hitRadius: 0.35
+          trail:
+            particle: ENCHANT
+            count: 1
+            offset: 0.02
+            extra: 0.0
+          damage:
+            amount: 42.5
+            damageCause: PROJECTILE
+          onHit:
+            type: potion
+            effect: "minecraft:slowness"
+            durationTicks: 60
+            amplifier: 0

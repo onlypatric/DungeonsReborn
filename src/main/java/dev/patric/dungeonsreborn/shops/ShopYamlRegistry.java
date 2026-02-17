@@ -4,12 +4,17 @@ import java.io.File;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 import java.util.function.Function;
 
 import org.bukkit.Bukkit;
@@ -62,6 +67,10 @@ public final class ShopYamlRegistry {
 
   public File file() {
     return new File(plugin.getDataFolder(), "shops.yml");
+  }
+
+  public File shopsDir() {
+    return new File(plugin.getDataFolder(), "shops");
   }
 
   public ShopTokenSpec tokenSpec() {
@@ -169,14 +178,26 @@ public final class ShopYamlRegistry {
     Map<String, ShopTokenTierSpec> nextTiers = parseTokenTiers(cfg, nextToken, errors);
     Map<String, ShopCurrencySpec> nextCurrencies = parseCurrencies(cfg, errors);
     ShopValueTable nextValues = parseValues(cfg, errors);
-    Map<String, ShopSpec> nextShops = parseShops(cfg, errors);
+    Map<String, ShopCurrencySpec> previousCurrencies = currencies;
+    currencies = nextCurrencies;
+    Map<String, ShopSpec> nextShops = new LinkedHashMap<>(parseShops(cfg, errors));
+    File[] files = shopsDir().listFiles((dir, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml")
+        || name.toLowerCase(Locale.ROOT).endsWith(".yaml"));
+    if (files != null) {
+      java.util.Arrays.sort(files, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
+      for (File shopFile : files) {
+        YamlConfiguration shopCfg = YamlConfiguration.loadConfiguration(shopFile);
+        mergeShops(nextShops, parseShops(shopCfg, errors), errors, shopFile.getPath());
+      }
+    }
     if (errors.isEmpty()) {
       tokenSpec = nextToken;
       tokenTiers = nextTiers;
-      currencies = nextCurrencies;
       valueTable = nextValues;
       shops.clear();
       shops.putAll(nextShops);
+    } else {
+      currencies = previousCurrencies;
     }
     lastErrors = List.copyOf(errors);
     if (!errors.isEmpty()) {
@@ -207,14 +228,6 @@ public final class ShopYamlRegistry {
       }
       player.sendMessage("§c[Shops] Reload had " + errors.size() + " errors. Check console for details.");
     }
-  }
-
-  private void ensureFile() {
-    File file = file();
-    if (file.exists()) {
-      return;
-    }
-    plugin.saveResource("shops.yml", false);
   }
 
   private ShopTokenSpec parseToken(YamlConfiguration cfg, List<String> errors) {
@@ -638,6 +651,71 @@ public final class ShopYamlRegistry {
       }
     }
     return out;
+  }
+
+  private void mergeShops(Map<String, ShopSpec> target, Map<String, ShopSpec> incoming, List<String> errors,
+      String source) {
+    for (Map.Entry<String, ShopSpec> entry : incoming.entrySet()) {
+      if (target.containsKey(entry.getKey())) {
+        errors.add(source + ": duplicate shop id=" + entry.getKey());
+        continue;
+      }
+      target.put(entry.getKey(), entry.getValue());
+    }
+  }
+
+  private void ensureFile() {
+    File file = file();
+    if (!file.exists()) {
+      plugin.saveResource("shops.yml", false);
+    }
+    File dir = shopsDir();
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+    copyBundledShops(dir);
+  }
+
+  private void copyBundledShops(File dir) {
+    List<String> entries = readResourceIndex("shops/index.txt");
+    for (String entry : entries) {
+      String trimmed = entry.trim();
+      if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+        continue;
+      }
+      if (!trimmed.endsWith(".yml") && !trimmed.endsWith(".yaml")) {
+        continue;
+      }
+      String resourcePath = "shops/" + trimmed;
+      File target = new File(dir, trimmed);
+      if (target.exists()) {
+        continue;
+      }
+      if (plugin.getResource(resourcePath) == null) {
+        logger.warn("[Shops] Missing bundled shop: " + resourcePath + " (skipping copy)");
+        continue;
+      }
+      plugin.saveResource(resourcePath, false);
+    }
+  }
+
+  private List<String> readResourceIndex(String path) {
+    try (InputStream stream = plugin.getResource(path)) {
+      if (stream == null) {
+        return List.of();
+      }
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+        List<String> lines = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+          lines.add(line);
+        }
+        return lines;
+      }
+    } catch (Exception ex) {
+      logger.warn("[Shops] Unable to read " + path + ": " + ex.getMessage());
+      return List.of();
+    }
   }
 
   private ShopStockSpec parseStock(Object raw, String path, List<String> errors) {

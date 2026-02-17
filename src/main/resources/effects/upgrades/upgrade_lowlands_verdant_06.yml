@@ -1,0 +1,35 @@
+name: <dark_green><bold>Lowlands Verdant</bold></dark_green> <gray>VI</gray>
+description: <gray>Living growth surges through your strikes.</gray> <gray>Boosts Duration Add by 0.78.</gray> <gray>Grants Generic Max Health +2.83.</gray>
+rarity: common
+compatibility:
+  - weapon
+  - armor
+spell:
+  ability: ability_upgrade_lowlands_verdant_06
+  activator: PASSIVE
+requirements:
+  level: 2266
+modifiers:
+  -
+    type: duration_add
+    value: 0.784
+  -
+    type: damage_add
+    value: 0.246
+attributes:
+  -
+    attribute: generic_max_health
+    operation: ADD_NUMBER
+    amount: 2.827
+    slot: ANY
+enchants:
+  -
+    enchant: unbreaking
+    level: 3
+  -
+    enchant: frost_walker
+    level: 3
+  -
+    enchant: lure
+    level: 3
+allowUnsafe: true

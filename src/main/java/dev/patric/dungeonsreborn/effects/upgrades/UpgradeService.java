@@ -680,9 +680,11 @@ public final class UpgradeService {
       }
     }
     boolean activationConflict = false;
+    UpgradeActivator conflictActivator = null;
     for (UpgradeSpellSpec spell : spec.spells()) {
       if (hasActivationConflict(player, target, spell.activator())) {
         activationConflict = true;
+        conflictActivator = spell.activator();
         break;
       }
     }
@@ -711,6 +713,11 @@ public final class UpgradeService {
 
     Set<String> consumedRecords = collectConsumedRecords(target, spec);
     double scale = resolveUpgradeScale(player);
+    if (activationConflict && !spec.spells().isEmpty()) {
+      String activatorName = conflictActivator == null ? "activation" : conflictActivator.name();
+      return fail("This item already has an upgrade bound to " + activatorName + ".", dryRun, player, target, upgradeItem, "activator");
+    }
+
     ItemStack updated = applyUpgradeSpec(target, spec, resolved.recordId(), consumedRecords, scale);
     if (updated == null) {
       return fail("Target item has no meta.", dryRun, player, target, upgradeItem, "meta");
@@ -1976,65 +1983,17 @@ public final class UpgradeService {
     if (incoming == null) {
       return false;
     }
+    if (existing != null) {
+      // Do not auto-remove existing upgrades; rely on explicit limits/compatibility checks instead.
+      return false;
+    }
     if (incoming != null && !incoming.spells().isEmpty()) {
       // Spell activators can overlap; do not treat as a hard conflict.
     }
     if (!incoming.enchants().isEmpty()) {
       for (UpgradeEnchantSpec enchantSpec : incoming.enchants()) {
-        if (existing != null) {
-          for (UpgradeEnchantSpec other : existing.enchants()) {
-            if (other.enchantment().equals(enchantSpec.enchantment())) {
-              return true;
-            }
-          }
-        }
         if (vanilla != null && vanilla.containsKey(enchantSpec.enchantment().getKey().toString())) {
           return true;
-        }
-      }
-    }
-    if (!incoming.modifiers().isEmpty() && existing != null) {
-      for (UpgradeModifierSpec modifier : incoming.modifiers()) {
-        for (UpgradeModifierSpec other : existing.modifiers()) {
-          if (other.type() == modifier.type()) {
-            return true;
-          }
-        }
-      }
-    }
-    if (!incoming.behaviors().statusEffects().isEmpty() && existing != null) {
-      for (UpgradeStatusEffectSpec effect : incoming.behaviors().statusEffects()) {
-        for (UpgradeStatusEffectSpec other : existing.behaviors().statusEffects()) {
-          if (other.type().equals(effect.type())) {
-            return true;
-          }
-        }
-      }
-    }
-    if (!incoming.behaviors().inventoryEffects().isEmpty() && existing != null) {
-      for (UpgradeStatusEffectSpec effect : incoming.behaviors().inventoryEffects()) {
-        for (UpgradeStatusEffectSpec other : existing.behaviors().inventoryEffects()) {
-          if (other.type().equals(effect.type())) {
-            return true;
-          }
-        }
-      }
-    }
-    if (!incoming.behaviors().onDamagedEffects().isEmpty() && existing != null) {
-      for (UpgradeOnDamagedSpec effect : incoming.behaviors().onDamagedEffects()) {
-        for (UpgradeOnDamagedSpec other : existing.behaviors().onDamagedEffects()) {
-          if (other.effect().type().equals(effect.effect().type())) {
-            return true;
-          }
-        }
-      }
-    }
-    if (!incoming.attributes().isEmpty() && existing != null) {
-      for (UpgradeAttributeSpec attr : incoming.attributes()) {
-        for (UpgradeAttributeSpec other : existing.attributes()) {
-          if (other.attribute().equals(attr.attribute())) {
-            return true;
-          }
         }
       }
     }

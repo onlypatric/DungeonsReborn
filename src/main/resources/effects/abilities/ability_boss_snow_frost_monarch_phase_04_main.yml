@@ -1,0 +1,64 @@
+schemaVersion: 1
+abilities:
+  ability_boss_snow_frost_monarch_phase_04_main:
+    name: Ability Boss Snow Frost Monarch Phase 04 Main
+    action:
+      type: sequence
+      actions:
+        -
+          type: sound
+          sound: "minecraft:entity.ender_dragon.growl"
+          volume: 1.0
+          pitch: 1.0
+        -
+          type: particles_ring
+          particle: ENCHANT
+          radius: 11.2812
+          points: 3
+          up: -1.0
+        -
+          type: particles_ring
+          particle: BUBBLE
+          radius: 7.8897
+          points: 3
+          up: -1.0
+        -
+          type: particles_points
+          particle: DRIPPING_DRIPSTONE_LAVA
+          points:
+            -
+              x: 7.5
+              y: 0.0
+              z: 0.0
+            -
+              x: -3.75
+              y: 0.0
+              z: 6.49
+            -
+              x: -3.75
+              y: 0.0
+              z: -6.49
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: ENCHANT
+          radius: 9.282
+          points: 3
+          up: -1.0
+        -
+          type: particles_sphere
+          particle: BUBBLE
+          radius: 8.314530000000001
+          points: 3
+          up: -1.0
+        -
+          type: damage
+          amount: 8.8
+          radius: 6.8
+          damageCause: DIRECT
+        -
+          type: potion
+          effect: "minecraft:slowness"
+          durationTicks: 80
+          amplifier: 1
+          radius: 6.8
