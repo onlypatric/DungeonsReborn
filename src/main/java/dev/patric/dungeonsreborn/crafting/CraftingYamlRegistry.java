@@ -1805,6 +1805,7 @@ public final class CraftingYamlRegistry {
     List<String> requires = readStringList(map.get("requires"));
     List<String> grants = readStringList(map.get("grants"));
     boolean unlockOnCraft = YamlValues.bool(map.get("unlockOnCraft"), false);
+    boolean showInBook = YamlValues.bool(map.get("showInBook"), YamlValues.bool(map.get("showInRecipeBook"), false));
     int researchSeconds = YamlValues.intValue(map.get("researchSeconds"), 0);
 
     List<String> questUnlocks = List.of();
@@ -1833,6 +1834,15 @@ public final class CraftingYamlRegistry {
       errors.add(path + ".researchSeconds: must be >= 0");
       researchSeconds = 0;
     }
-    return new CraftingDiscoverySpec(hidden, requires, grants, questUnlocks, dropItemIds, dropMaterials, unlockOnCraft, researchSeconds);
+    return new CraftingDiscoverySpec(
+        hidden,
+        requires,
+        grants,
+        questUnlocks,
+        dropItemIds,
+        dropMaterials,
+        unlockOnCraft,
+        showInBook,
+        researchSeconds);
   }
 }

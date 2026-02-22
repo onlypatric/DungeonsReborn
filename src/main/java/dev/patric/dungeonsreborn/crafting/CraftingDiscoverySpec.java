@@ -10,6 +10,7 @@ public final class CraftingDiscoverySpec {
   private final List<String> dropItemIds;
   private final List<String> dropMaterials;
   private final boolean unlockOnCraft;
+  private final boolean showInBook;
   private final int researchSeconds;
 
   public CraftingDiscoverySpec(boolean hidden,
@@ -19,6 +20,7 @@ public final class CraftingDiscoverySpec {
                                List<String> dropItemIds,
                                List<String> dropMaterials,
                                boolean unlockOnCraft,
+                               boolean showInBook,
                                int researchSeconds) {
     this.hidden = hidden;
     this.requires = List.copyOf(requires == null ? List.of() : requires);
@@ -27,11 +29,12 @@ public final class CraftingDiscoverySpec {
     this.dropItemIds = List.copyOf(dropItemIds == null ? List.of() : dropItemIds);
     this.dropMaterials = List.copyOf(dropMaterials == null ? List.of() : dropMaterials);
     this.unlockOnCraft = unlockOnCraft;
+    this.showInBook = showInBook;
     this.researchSeconds = Math.max(0, researchSeconds);
   }
 
   public static CraftingDiscoverySpec empty() {
-    return new CraftingDiscoverySpec(false, List.of(), List.of(), List.of(), List.of(), List.of(), false, 0);
+    return new CraftingDiscoverySpec(false, List.of(), List.of(), List.of(), List.of(), List.of(), false, false, 0);
   }
 
   public boolean hidden() {
@@ -60,6 +63,10 @@ public final class CraftingDiscoverySpec {
 
   public boolean unlockOnCraft() {
     return unlockOnCraft;
+  }
+
+  public boolean showInBook() {
+    return showInBook;
   }
 
   public int researchSeconds() {

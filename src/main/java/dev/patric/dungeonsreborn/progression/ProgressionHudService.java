@@ -339,7 +339,11 @@ public final class ProgressionHudService {
       Objects.requireNonNull(plugin, "plugin");
       File file = new File(plugin.getDataFolder(), "scoreboard.yml");
       if (!file.exists()) {
-        plugin.saveResource("scoreboard.yml", false);
+        if (plugin.getResource("scoreboard.yml") != null) {
+          plugin.saveResource("scoreboard.yml", false);
+        } else {
+          writeDefaultScoreboard(file);
+        }
       }
       org.bukkit.configuration.file.YamlConfiguration yaml =
           org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
@@ -352,6 +356,22 @@ public final class ProgressionHudService {
       }
       Component titleComponent = MiniMessage.miniMessage().deserialize(title);
       return new Layout(enabled, updateTicks, titleComponent, lines);
+    }
+
+    private static void writeDefaultScoreboard(File file) {
+      try {
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+          parent.mkdirs();
+        }
+        org.bukkit.configuration.file.YamlConfiguration yaml = new org.bukkit.configuration.file.YamlConfiguration();
+        yaml.set("enabled", true);
+        yaml.set("updateTicks", DEFAULT_UPDATE_TICKS);
+        yaml.set("title", "<gold>DungeonsReborn</gold>");
+        yaml.set("lines", defaultLines());
+        yaml.save(file);
+      } catch (Exception ignored) {
+      }
     }
 
     private static List<String> defaultLines() {

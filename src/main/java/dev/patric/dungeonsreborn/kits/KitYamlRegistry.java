@@ -18,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 
 public final class KitYamlRegistry {
@@ -81,11 +82,7 @@ public final class KitYamlRegistry {
   }
 
   private void ensureFile() {
-    File file = file();
-    if (file.exists()) {
-      return;
-    }
-    plugin.saveResource("kits.yml", false);
+    PluginResources.ensureYamlFile(plugin, file(), "kits.yml", cfg -> cfg.createSection("kits"), logger, "Kits");
   }
 
   private Map<String, KitSpec> parseKits(YamlConfiguration cfg, List<String> errors) {

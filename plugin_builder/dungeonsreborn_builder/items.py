@@ -293,6 +293,19 @@ class DisplaySpec:
 
 
 @dataclass
+class ItemVisualSpec:
+    texture: str
+    model_key: Optional[str] = None
+    apply: bool = True
+
+    def to_dict(self) -> Dict[str, Any]:
+        data: Dict[str, Any] = {"texture": self.texture, "apply": self.apply}
+        if self.model_key:
+            data["modelKey"] = self.model_key
+        return data
+
+
+@dataclass
 class MetaSpec:
     display_name: Optional[str] = None
     display_name_key: Optional[str] = None
@@ -857,6 +870,7 @@ class ItemBuilder(BuilderBase):
         self._version: Optional[int] = None
         self._attributes: Dict[Attribute, float] = {}
         self._gui_preview: Optional[GuiPreviewSpec] = None
+        self._visual: Optional[ItemVisualSpec] = None
 
     def material(self, material: Material | str) -> "ItemBuilder":
         if isinstance(material, str):
@@ -1006,6 +1020,28 @@ class ItemBuilder(BuilderBase):
         display = self._display or DisplaySpec()
         display.custom_model_data = value
         self._display = display
+        return self
+
+    def visual(self, spec: ItemVisualSpec) -> "ItemBuilder":
+        self._visual = spec
+        return self
+
+    def visual_texture(self, path: str) -> "ItemBuilder":
+        visual = self._visual or ItemVisualSpec(texture=path)
+        visual.texture = path
+        self._visual = visual
+        return self
+
+    def visual_model_key(self, key: str) -> "ItemBuilder":
+        visual = self._visual or ItemVisualSpec(texture="")
+        visual.model_key = key
+        self._visual = visual
+        return self
+
+    def visual_apply(self, apply: bool) -> "ItemBuilder":
+        visual = self._visual or ItemVisualSpec(texture="")
+        visual.apply = apply
+        self._visual = visual
         return self
 
     def meta_display_name(self, value: str) -> "ItemBuilder":
@@ -1402,6 +1438,10 @@ class ItemBuilder(BuilderBase):
             meta_dict = self._meta.to_dict()
             if meta_dict:
                 item["meta"] = meta_dict
+        if self._visual is not None and self._visual.texture:
+            visual_dict = self._visual.to_dict()
+            if visual_dict:
+                item["visual"] = visual_dict
 
         data: Dict[str, Any] = {"item": item}
         if self._bindings:

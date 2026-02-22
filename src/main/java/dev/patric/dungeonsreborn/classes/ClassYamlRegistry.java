@@ -21,6 +21,7 @@ import dev.patric.dungeonsreborn.effects.integration.ItemMatchers;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import dev.patric.dungeonsreborn.classes.skills.SkillAttributeSpec;
 import dev.patric.dungeonsreborn.classes.skills.SkillAbilitySpec;
@@ -189,11 +190,8 @@ public final class ClassYamlRegistry {
   }
 
   private void ensureFile() {
-    File file = file();
-    if (file.exists()) {
-      return;
-    }
-    plugin.saveResource("classes.yml", false);
+    PluginResources.ensureYamlFile(plugin, file(), "classes.yml", cfg -> cfg.createSection("classes"), logger,
+        "Classes");
   }
 
   private Map<String, ClassSpec> parseClasses(YamlConfiguration cfg, List<String> errors) {

@@ -76,6 +76,12 @@ import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.heal.HealType;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileSpec;
 import dev.patric.dungeonsreborn.effects.Vars;
+import dev.patric.dungeonsreborn.effects.combat.CombatCooldownScope;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventBinding;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventFilters;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventSource;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventTargetBind;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventType;
 import dev.patric.dungeonsreborn.effects.config.actions.ActionParserContext;
 import dev.patric.dungeonsreborn.effects.config.actions.ActionParsers;
 import dev.patric.dungeonsreborn.effects.targeting.Targeters;
@@ -119,6 +125,7 @@ import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.logging.ServiceLogManager;
 import dev.patric.dungeonsreborn.mobs.MobParticlesSpec;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -192,6 +199,8 @@ public final class EffectsYamlAbilities {
   private volatile boolean scriptTrace;
   private final double globalMinMana;
   private final double globalMinManaPct;
+  private final boolean strictCombatSchema;
+  private final boolean combatMigrationRequired;
   private static final String YAML_LAST_ENTITY = "yaml_last_entity";
   private static final String YAML_INVOKE_STACK = "yaml_invoke_stack";
   private static final String DSL_ON_HIT = "dsl_on_hit";
@@ -245,6 +254,17 @@ public final class EffectsYamlAbilities {
       "chain_lightning", "damage_chain");
   private static final java.util.Set<String> REMOVED_DSL_STATEMENTS = java.util.Set.of(
       "dash");
+  private static final java.util.Set<String> LEGACY_COMBAT_ACTION_KEYS = java.util.Set.of(
+      "armor_pen_flat",
+      "armor_pen_pct",
+      "resist_pen_pct",
+      "vulnerability_tag",
+      "crit_chance",
+      "crit_multiplier",
+      "min_damage_floor",
+      "mitigation_profile",
+      "pipeline_tags",
+      "snapshot_at_cast");
   private final java.util.Set<String> deprecatedWarnings = java.util.concurrent.ConcurrentHashMap.newKeySet();
   private String unsafePermission;
   public enum EasingId {
@@ -267,6 +287,8 @@ public final class EffectsYamlAbilities {
     this.bindingsLog = Objects.requireNonNull(bindingsLog, "bindingsLog");
     this.globalMinMana = plugin.getConfig().getDouble("mana.minToCast", 0.0);
     this.globalMinManaPct = plugin.getConfig().getDouble("mana.minToCastPct", 0.0);
+    this.strictCombatSchema = plugin.getConfig().getBoolean("effects.combat.strictSchema", false);
+    this.combatMigrationRequired = plugin.getConfig().getBoolean("effects.combat.migration.required", false);
   }
 
   public File file() {
@@ -275,6 +297,10 @@ public final class EffectsYamlAbilities {
 
   public File abilitiesDir() {
     return new File(plugin.getDataFolder(), "effects/abilities");
+  }
+
+  public EffectsCombatMigrator.MigrationReport migrateCombatSchema(boolean createBackups) {
+    return EffectsCombatMigrator.migrate(file(), abilitiesDir(), createBackups);
   }
 
   public File itemsDir() {
@@ -524,6 +550,10 @@ public final class EffectsYamlAbilities {
       if (!node.containsKey(oldKey)) {
         continue;
       }
+      if (combatMigrationRequired && LEGACY_COMBAT_ACTION_KEYS.contains(oldKey)) {
+        throw new IllegalArgumentException(path + "." + oldKey
+            + " is a legacy combat key and migration is required (run /dr effects combat migrate)");
+      }
       String newKey = entry.getValue();
       if (node.containsKey(newKey)) {
         warnDeprecatedOnce(path + "." + oldKey, path + "." + oldKey + " is deprecated and ignored because " + newKey + " is already set");
@@ -654,12 +684,12 @@ public final class EffectsYamlAbilities {
     new java.io.File(plugin.getDataFolder(), "effects/scripts").mkdirs();
     boolean cancelRunningOnReload = YamlConfiguration.loadConfiguration(file()).getBoolean("options.cancelRunningOnReload", false);
     // Provide a starter file for iteration.
-    if (!file().exists()) {
-      try {
-        plugin.saveResource("effects.yml", false);
-      } catch (IllegalArgumentException ignored) {
-      }
-    }
+    PluginResources.ensureYamlFile(plugin, file(), "effects.yml", cfg -> {
+      cfg.set("schemaVersion", 1);
+      cfg.createSection("options");
+      cfg.createSection("macros");
+      cfg.createSection("abilities");
+    }, plugin.getLogger(), "Effects");
 
     if (cancelRunningOnReload && !loadedAbilityIds.isEmpty()) {
       Set<String> previous = new HashSet<>(loadedAbilityIds);
@@ -709,6 +739,9 @@ public final class EffectsYamlAbilities {
     if (bindings != null) {
       for (String id : loadedBindingIds) {
         bindings.unregister(id);
+        bindings.unregisterPassive(id);
+        bindings.unregisterEvent(id);
+        bindings.unregisterCombatEvent(id);
       }
     }
     loadedBindingIds.clear();
@@ -962,7 +995,10 @@ public final class EffectsYamlAbilities {
       if (out.exists()) {
         continue;
       }
-      plugin.saveResource("effects/abilities/" + trimmed, false);
+      String resourcePath = "effects/abilities/" + trimmed;
+      if (!PluginResources.saveResourceIfPresent(plugin, resourcePath, false)) {
+        effectsLog.warn("[Effects] Missing bundled ability: " + resourcePath + " (skipping copy)");
+      }
     }
   }
 
@@ -2067,12 +2103,96 @@ public final class EffectsYamlAbilities {
     builder.action(compiled);
     yamlActionGraphs.put(id, compiled);
 
-    // Triggers (Phase 3): compile YAML triggers into InteractBindings.
+    // Triggers: compile YAML triggers into InteractBindings / CombatEvent bindings.
     var triggers = a.getMapList("triggers");
     for (int i = 0; i < triggers.size(); i++) {
       Map<?, ?> raw = triggers.get(i);
       Map<String, Object> trig = castMap(raw, base + ".triggers[" + i + "]");
       String type = requireString(trig, "type", base + ".triggers[" + i + "].type").trim().toLowerCase(Locale.ROOT);
+      if (type.equals("event")) {
+        String eventRaw = requireString(trig, "event", base + ".triggers[" + i + "].event");
+        String normalizedEvent = eventRaw.trim().toUpperCase(Locale.ROOT).replace('-', '_');
+        boolean legacyAlias = "ON_HIT".equals(normalizedEvent) || "ON_KILL".equals(normalizedEvent);
+        if ((strictCombatSchema || combatMigrationRequired) && legacyAlias) {
+          String mode = strictCombatSchema ? "effects.combat.strictSchema=true" : "effects.combat.migration.required=true";
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].event: legacy alias value=" + eventRaw
+              + " is not allowed when " + mode + " (run /dr effects combat migrate)");
+        }
+        CombatEventType eventType = CombatEventType.parse(eventRaw);
+        String abilityId = requireString(trig, "ability", base + ".triggers[" + i + "].ability");
+        if (!engine.hasAbility(abilityId)) {
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].ability: ability not registered: " + abilityId);
+        }
+        String bindingId = trig.containsKey("id") ? String.valueOf(trig.get("id")) : null;
+        if (bindingId == null || bindingId.isBlank()) {
+          bindingId = "yaml:event:" + id + ":" + i;
+        } else if (!bindingId.startsWith("yaml:")) {
+          bindingId = "yaml:" + bindingId;
+        }
+
+        double chance = trig.containsKey("chance") ? doubleValue(trig, "chance", 1.0) : 1.0;
+        String requiredPermission = trig.containsKey("permission") ? String.valueOf(trig.get("permission")) : null;
+        if (requiredPermission != null && requiredPermission.isBlank()) {
+          requiredPermission = null;
+        }
+        boolean requireSneaking = bool(trig, "requireSneaking", false);
+        long cooldownTicks = longValue(trig, "cooldownTicks", 0L);
+        CombatCooldownScope cooldownScope = CombatCooldownScope.PER_PLAYER;
+        Object cooldownRaw = trig.get("cooldown");
+        if (cooldownRaw instanceof Map<?, ?> || cooldownRaw instanceof ConfigurationSection) {
+          Map<String, Object> cooldownNode = castMap(cooldownRaw, base + ".triggers[" + i + "].cooldown");
+          cooldownTicks = longValue(cooldownNode, "ticks", cooldownTicks);
+          cooldownScope = CombatCooldownScope.parse(string(cooldownNode, "scope", "per_player"), CombatCooldownScope.PER_PLAYER);
+        }
+
+        CombatEventTargetBind targetBind = CombatEventTargetBind.EVENT_PRIMARY;
+        Object targetRaw = trig.get("target");
+        if (targetRaw instanceof Map<?, ?> || targetRaw instanceof ConfigurationSection) {
+          Map<String, Object> targetNode = castMap(targetRaw, base + ".triggers[" + i + "].target");
+          targetBind = CombatEventTargetBind.parse(string(targetNode, "bind", "event_primary"), CombatEventTargetBind.EVENT_PRIMARY);
+        }
+
+        CombatEventFilters filters = CombatEventFilters.none();
+        Object filtersRaw = trig.get("filters");
+        if (filtersRaw instanceof Map<?, ?> || filtersRaw instanceof ConfigurationSection) {
+          Map<String, Object> filtersNode = castMap(filtersRaw, base + ".triggers[" + i + "].filters");
+          Set<DamageType> damageTypes = parseEnumSet(filtersNode.get("damageType"), DamageType.class, base + ".triggers[" + i + "].filters.damageType");
+          Set<CombatEventSource> sources = parseEnumSet(filtersNode.get("source"), CombatEventSource.class, base + ".triggers[" + i + "].filters.source");
+          Set<dev.patric.dungeonsreborn.effects.relations.Relation> relations =
+              parseEnumSet(filtersNode.get("victimRelation"), dev.patric.dungeonsreborn.effects.relations.Relation.class,
+                  base + ".triggers[" + i + "].filters.victimRelation");
+          double minDamage = doubleValue(filtersNode, "minDamage", 0.0);
+          boolean critOnly = bool(filtersNode, "critOnly", false);
+          boolean blockedOnly = bool(filtersNode, "blockedOnly", false);
+          Set<String> ccTypes = stringSet(filtersNode.get("ccType"));
+          Set<String> dotTags = stringSet(filtersNode.get("dotTag"));
+          String weaponTag = string(filtersNode, "weaponTag", null);
+          filters = new CombatEventFilters(weaponTag, damageTypes, sources, relations, minDamage, critOnly, blockedOnly, ccTypes, dotTags);
+        }
+
+        CombatEventBinding binding = new CombatEventBinding(
+            bindingId,
+            abilityId,
+            eventType,
+            chance,
+            cooldownTicks,
+            cooldownScope,
+            requireSneaking,
+            requiredPermission,
+            filters,
+            targetBind);
+        if (bindings != null) {
+          bindings.registerCombatEvent(binding);
+          loadedBindingIds.add(bindingId);
+        }
+        continue;
+      }
+
+      if (combatMigrationRequired && ("on_hit".equals(type) || "on_kill".equals(type) || "on_dodge".equals(type) || "on_sprint".equals(type))) {
+        throw new IllegalArgumentException(base + ".triggers[" + i + "].type: legacy trigger type=" + type
+            + " is not allowed when effects.combat.migration.required=true (run /dr effects combat migrate)");
+      }
+
       if (!type.equals("interact") && !type.equals("item_bind") && !type.equals("item-bind")) {
         throw new IllegalArgumentException(base + ".triggers[" + i + "].type: unknown trigger type: " + type);
       }
@@ -2250,6 +2370,61 @@ public final class EffectsYamlAbilities {
       case "durability", "damage", "durable" -> ItemConsumeMode.DURABILITY;
       default -> throw new IllegalArgumentException(path + ": invalid consumable mode=" + raw + " (use stack|durability)");
     };
+  }
+
+  private static Set<String> stringSet(Object raw) {
+    if (raw == null) {
+      return Set.of();
+    }
+    if (raw instanceof String s) {
+      if (s.isBlank()) {
+        return Set.of();
+      }
+      return Set.of(s.trim());
+    }
+    if (raw instanceof List<?> list) {
+      HashSet<String> out = new HashSet<>();
+      for (Object value : list) {
+        if (value == null) {
+          continue;
+        }
+        String s = String.valueOf(value).trim();
+        if (!s.isEmpty()) {
+          out.add(s);
+        }
+      }
+      return Set.copyOf(out);
+    }
+    return Set.of(String.valueOf(raw));
+  }
+
+  private static <E extends Enum<E>> Set<E> parseEnumSet(Object raw, Class<E> type, String path) {
+    if (raw == null) {
+      return Set.of();
+    }
+    HashSet<E> out = new HashSet<>();
+    if (raw instanceof List<?> list) {
+      for (Object value : list) {
+        if (value == null) {
+          continue;
+        }
+        out.add(parseEnumValue(String.valueOf(value), type, path));
+      }
+      return Set.copyOf(out);
+    }
+    out.add(parseEnumValue(String.valueOf(raw), type, path));
+    return Set.copyOf(out);
+  }
+
+  private static <E extends Enum<E>> E parseEnumValue(String raw, Class<E> type, String path) {
+    if (raw == null || raw.isBlank()) {
+      throw new IllegalArgumentException(path + ": missing value");
+    }
+    try {
+      return Enum.valueOf(type, raw.trim().toUpperCase(Locale.ROOT).replace('-', '_'));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid value=" + raw);
+    }
   }
 
   private Map<String, Object> vars(CastContext ctx, VarScope scope) {
@@ -6285,6 +6460,16 @@ public final class EffectsYamlAbilities {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         NumValue cap = numValue(node, "cap", 0.0, path);
         NumValue maxPercent = numValue(node, "maxPercent", 0.0, path);
+        NumValue armorPenFlat = numValue(node, "armorPenFlat", 0.0, path);
+        NumValue armorPenPct = numValue(node, "armorPenPct", 0.0, path);
+        NumValue resistPenPct = numValue(node, "resistPenPct", 0.0, path);
+        NumValue critChance = numValue(node, "critChance", 0.0, path);
+        NumValue critMultiplier = numValue(node, "critMultiplier", 1.5, path);
+        NumValue minDamageFloor = numValue(node, "minDamageFloor", 0.0, path);
+        String vulnerabilityTag = string(node, "vulnerabilityTag", null);
+        String mitigationProfile = string(node, "mitigationProfile", null);
+        Set<String> pipelineTags = stringSet(node.get("pipelineTags"));
+        boolean snapshotAtCast = bool(node, "snapshotAtCast", false);
         DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.DIRECT);
         String source = string(node, "source", null);
         java.util.Set<String> tags = damageTagSet(node, path);
@@ -6312,6 +6497,17 @@ public final class EffectsYamlAbilities {
             double maxPercentValue = evalDouble(maxPercent, ctx);
             DamageSpec spec = DamageSpec.flat(dmg, DamageType.PHYSICAL, cause, false, p)
                 .withCaps(Math.max(0.0, capValue), Math.max(0.0, maxPercentValue));
+            spec = spec.withPipeline(
+                Math.max(0.0, evalDouble(armorPenFlat, ctx)),
+                Math.max(0.0, evalDouble(armorPenPct, ctx)),
+                Math.max(0.0, evalDouble(resistPenPct, ctx)),
+                vulnerabilityTag,
+                Math.max(0.0, evalDouble(critChance, ctx)),
+                Math.max(1.0, evalDouble(critMultiplier, ctx)),
+                Math.max(0.0, evalDouble(minDamageFloor, ctx)),
+                mitigationProfile,
+                pipelineTags,
+                snapshotAtCast);
             if (source != null && !source.isBlank()) {
               spec = spec.withSource(source);
             }
@@ -6327,6 +6523,16 @@ public final class EffectsYamlAbilities {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         NumValue cap = numValue(node, "cap", 0.0, path);
         NumValue maxPercent = numValue(node, "maxPercent", 0.0, path);
+        NumValue armorPenFlat = numValue(node, "armorPenFlat", 0.0, path);
+        NumValue armorPenPct = numValue(node, "armorPenPct", 0.0, path);
+        NumValue resistPenPct = numValue(node, "resistPenPct", 0.0, path);
+        NumValue critChance = numValue(node, "critChance", 0.0, path);
+        NumValue critMultiplier = numValue(node, "critMultiplier", 1.5, path);
+        NumValue minDamageFloor = numValue(node, "minDamageFloor", 0.0, path);
+        String vulnerabilityTag = string(node, "vulnerabilityTag", null);
+        String mitigationProfile = string(node, "mitigationProfile", null);
+        Set<String> pipelineTags = stringSet(node.get("pipelineTags"));
+        boolean snapshotAtCast = bool(node, "snapshotAtCast", false);
         DamageType dmgType = damageTypeValue(node, path + ".damageType");
         boolean ignoreResistance = bool(node, "ignoreResistance", false);
         DamageCause cause = damageCauseValue(node, path + ".damageCause", DamageCause.DIRECT);
@@ -6351,6 +6557,17 @@ public final class EffectsYamlAbilities {
             double maxPercentValue = evalDouble(maxPercent, ctx);
             DamageSpec spec = DamageSpec.flat(dmg, dmgType, cause, ignoreResistance, p)
                 .withCaps(Math.max(0.0, capValue), Math.max(0.0, maxPercentValue));
+            spec = spec.withPipeline(
+                Math.max(0.0, evalDouble(armorPenFlat, ctx)),
+                Math.max(0.0, evalDouble(armorPenPct, ctx)),
+                Math.max(0.0, evalDouble(resistPenPct, ctx)),
+                vulnerabilityTag,
+                Math.max(0.0, evalDouble(critChance, ctx)),
+                Math.max(1.0, evalDouble(critMultiplier, ctx)),
+                Math.max(0.0, evalDouble(minDamageFloor, ctx)),
+                mitigationProfile,
+                pipelineTags,
+                snapshotAtCast);
             if (source != null && !source.isBlank()) {
               spec = spec.withSource(source);
             }
@@ -6892,12 +7109,16 @@ public final class EffectsYamlAbilities {
         PotionEffectType effect = potionEffectValue(node, "effect", path + ".effect");
         NumValue durationTicks = numValue(node, "durationTicks", 60.0, path);
         NumValue amplifier = numValue(node, "amplifier", 0.0, path);
+        boolean ambient = bool(node, "ambient", false);
+        boolean particles = bool(node, "particles", true);
+        boolean icon = bool(node, "icon", true);
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
           if (target != null) {
             long ticks = Math.max(1L, evalLong(durationTicks, ctx));
             int amp = Math.max(0, evalInt(amplifier, ctx));
-            EntityActions.potion(effect, Duration.ofMillis(ticks * 50L), amp).execute(ctx, target);
+            EntityActions.potion(effect, Duration.ofMillis(ticks * 50L), amp, ambient, particles, icon)
+                .execute(ctx, target);
           }
         };
       }
@@ -7131,7 +7352,17 @@ public final class EffectsYamlAbilities {
       String source,
       java.util.Set<String> tags,
       NumValue cap,
-      NumValue maxPercent) {
+      NumValue maxPercent,
+      NumValue armorPenFlat,
+      NumValue armorPenPct,
+      NumValue resistPenPct,
+      String vulnerabilityTag,
+      NumValue critChance,
+      NumValue critMultiplier,
+      NumValue minDamageFloor,
+      String mitigationProfile,
+      Set<String> pipelineTags,
+      boolean snapshotAtCast) {
     DamageSpec toSpec(CastContext ctx) {
       double value = evalDouble(amount, ctx);
       if (!(value > 0.0)) {
@@ -7155,6 +7386,17 @@ public final class EffectsYamlAbilities {
       if (tags != null && !tags.isEmpty()) {
         spec = spec.withTags(tags);
       }
+      spec = spec.withPipeline(
+          armorPenFlat == null ? 0.0 : Math.max(0.0, evalDouble(armorPenFlat, ctx)),
+          armorPenPct == null ? 0.0 : Math.max(0.0, evalDouble(armorPenPct, ctx)),
+          resistPenPct == null ? 0.0 : Math.max(0.0, evalDouble(resistPenPct, ctx)),
+          vulnerabilityTag,
+          critChance == null ? 0.0 : Math.max(0.0, evalDouble(critChance, ctx)),
+          critMultiplier == null ? 1.5 : Math.max(1.0, evalDouble(critMultiplier, ctx)),
+          minDamageFloor == null ? 0.0 : Math.max(0.0, evalDouble(minDamageFloor, ctx)),
+          mitigationProfile,
+          pipelineTags,
+          snapshotAtCast);
       return spec;
     }
   }
@@ -7182,13 +7424,25 @@ public final class EffectsYamlAbilities {
     java.util.Set<String> tags = damageTagSet(node, path);
     NumValue cap = node.containsKey("cap") ? numValue(node, "cap", 0.0, path) : null;
     NumValue maxPercent = node.containsKey("maxPercent") ? numValue(node, "maxPercent", 0.0, path) : null;
+    NumValue armorPenFlat = node.containsKey("armorPenFlat") ? numValue(node, "armorPenFlat", 0.0, path) : null;
+    NumValue armorPenPct = node.containsKey("armorPenPct") ? numValue(node, "armorPenPct", 0.0, path) : null;
+    NumValue resistPenPct = node.containsKey("resistPenPct") ? numValue(node, "resistPenPct", 0.0, path) : null;
+    String vulnerabilityTag = string(node, "vulnerabilityTag", null);
+    NumValue critChance = node.containsKey("critChance") ? numValue(node, "critChance", 0.0, path) : null;
+    NumValue critMultiplier = node.containsKey("critMultiplier") ? numValue(node, "critMultiplier", 1.5, path) : null;
+    NumValue minDamageFloor = node.containsKey("minDamageFloor") ? numValue(node, "minDamageFloor", 0.0, path) : null;
+    String mitigationProfile = string(node, "mitigationProfile", null);
+    Set<String> pipelineTags = stringSet(node.get("pipelineTags"));
+    boolean snapshotAtCast = bool(node, "snapshotAtCast", false);
     if (mode == DamageAmountMode.TRUE) {
       type = null;
       ignoreResistance = true;
     } else if (type == null) {
       type = DamageType.PHYSICAL;
     }
-    return new DamageSpecTemplate(amount, mode, type, cause, ignoreResistance, policy, source, tags, cap, maxPercent);
+    return new DamageSpecTemplate(amount, mode, type, cause, ignoreResistance, policy, source, tags, cap, maxPercent,
+        armorPenFlat, armorPenPct, resistPenPct, vulnerabilityTag, critChance, critMultiplier, minDamageFloor,
+        mitigationProfile, pipelineTags, snapshotAtCast);
   }
 
   private EffectsEngine.AbilityCombatProfile parseAbilityCombatProfile(ConfigurationSection section, String path) {
@@ -13982,6 +14236,10 @@ public final class EffectsYamlAbilities {
     boolean cacheable = true;
     Targeter<LivingEntity> base = switch (type) {
       case "self" -> Targeters.self();
+      case "context_target", "context-target" -> {
+        String key = string(node, "key", Vars.MOB_TARGET);
+        yield Targeters.contextTarget(key);
+      }
       case "projectile_hit", "projectile-hit" -> Targeters.projectileHit();
       case "look_ray", "look-ray" -> {
         NumValue maxDistance = numValue(node, "maxDistance", 20.0, path);
@@ -16122,9 +16380,9 @@ public final class EffectsYamlAbilities {
       if (target.exists()) {
         continue;
       }
-      try {
-        plugin.saveResource("effects/items/" + file, false);
-      } catch (IllegalArgumentException ignored) {
+      String resourcePath = "effects/items/" + file;
+      if (!PluginResources.saveResourceIfPresent(plugin, resourcePath, false)) {
+        effectsLog.warn("[Effects] Missing bundled item template: " + resourcePath + " (skipping copy)");
       }
     }
   }

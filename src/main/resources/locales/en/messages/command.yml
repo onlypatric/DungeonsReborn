@@ -38,6 +38,7 @@ messages.command.crafting.unknown: <red>Unknown recipe:</red> <white>{id}</white
 messages.command.crafting.validate.entry: <gray>-</gray> <white>{error}</white>
 messages.command.crafting.validate.errors: <red>Crafting validation had {count} errors.</red>
 messages.command.crafting.validate.ok: <green>Crafting validation OK.</green>
+messages.command.crafting.vanillaOnly: <yellow>Crafting now uses the vanilla crafting grid/table. The old crafting GUI was removed.</yellow>
 messages.command.dungeons.abortedReload: Messages command dungeons abortedReload
 messages.command.dungeons.active: Active
 messages.command.dungeons.queued: Queued
@@ -241,6 +242,7 @@ messages.command.help.adminKitsReload: <gray>/{root} admin kits reload</gray> <d
 messages.command.help.adminLocaleReload: <gray>/{root} admin locale reload</gray> <dark_gray>- reload locales</dark_gray>
 messages.command.help.adminLocaleValidate: <gray>/{root} admin locale validate</gray> <dark_gray>- validate locale coverage</dark_gray>
 messages.command.help.adminMobs: <gray>/{root} admin mobs ...</gray> <dark_gray>- mobs commands</dark_gray>
+messages.command.help.adminTextures: <gray>/{root} admin textures ...</gray> <dark_gray>- rebuild/validate/send textures pack</dark_gray>
 messages.command.help.adminQuestsReload: <gray>/{root} admin quests reload</gray> <dark_gray>- reload quests</dark_gray>
 messages.command.help.adminReload: <gray>/{root} admin reload</gray> <dark_gray>- reload all plugin data</dark_gray>
 messages.command.help.adminRoot: <gray>/{root} admin</gray> <dark_gray>- open admin hub</dark_gray>
@@ -258,6 +260,19 @@ messages.command.help.partyChat: <gray>/{root} party chat on|off</gray> <dark_gr
 messages.command.help.partyMessage: <gray>/{root} chat &lt;message&gt;</gray> <dark_gray>- party chat message</dark_gray>
 messages.command.help.root: <gray>/{root}</gray> <dark_gray>- open user hub</dark_gray>
 messages.command.help.user: <gray>/{root} user</gray> <dark_gray>- open user hub</dark_gray>
+messages.command.textures.rebuild.summary: <green>Textures rebuild:</green> <white>{textures}</white> <gray>textures,</gray>
+  <white>{models}</white> <gray>models, warnings</gray> <white>{warnings}</white> <gray>errors</gray> <white>{errors}</white>
+messages.command.textures.rebuild.zip: <gray>Pack:</gray> <white>{path}</white> <gray>sha1=</gray><white>{sha1}</white>
+messages.command.textures.stats.header: <gold>[Textures]</gold> <white>Stats</white>
+messages.command.textures.stats.entry: <gray>enabled=</gray><white>{enabled}</white> <gray>textures=</gray><white>{textures}</white>
+  <gray>cmdMappings=</gray><white>{models}</white> <gray>warnings=</gray><white>{warnings}</white> <gray>errors=</gray><white>{errors}</white>
+messages.command.textures.validate.ok: <green>Texture validation OK.</green>
+messages.command.textures.validate.summary: <yellow>Texture validation found {count} issues.</yellow>
+messages.command.textures.entry: <gray>-</gray> <white>{message}</white>
+messages.command.textures.send.count: <green>Sent resource pack prompt to</green> <white>{count}</white> <green>players.</green>
+messages.command.textures.send.player: <green>Sent resource pack prompt to</green> <white>{player}</white>
+messages.command.textures.send.failed: <red>Failed to send resource pack prompt to</red> <white>{player}</white>
+messages.command.textures.delivery: <gray>Delivery URL:</gray> <white>{url}</white>
 messages.command.help.settings: <gray>/{root} settings</gray> <dark_gray>- open settings</dark_gray>
 messages.command.items.holdMainHand: <red>Hold an item in your main hand.</red>
 messages.command.itemGiven: <green>Gave item</green> <white>{id}</white> <green>x</green><white>{amount}</white> <green>to</green> <white>{player}</white>
@@ -269,11 +284,19 @@ messages.command.mobs.help.editor: Editor
 messages.command.mobs.help.egg: Egg
 messages.command.mobs.help.header: Header
 messages.command.mobs.help.list: List
+messages.command.mobs.help.modelsStatus: <gray>/dr mobs models status</gray>
 messages.command.mobs.help.lootInfo: Loot info
 messages.command.mobs.help.lootList: Loot pools
 messages.command.mobs.help.reload: Reload
 messages.command.mobs.help.spawn: Spawn
 messages.command.mobs.help.spawners: Spawners
+messages.command.mobs.help.aiStatus: <gray>/dr mobs ai status</gray>
+messages.command.mobs.help.aiMetrics: <gray>/dr mobs ai metrics</gray>
+messages.command.mobs.help.aiAsyncStatus: <gray>/dr mobs ai async status</gray>
+messages.command.mobs.help.aiAsyncTune: <gray>/dr mobs ai async tune &lt;key&gt; &lt;value&gt;</gray>
+messages.command.mobs.help.aiDegradeStatus: <gray>/dr mobs ai degrade status</gray>
+messages.command.mobs.help.aiSimulate: <gray>/dr mobs ai simulate &lt;mobId&gt; &lt;ticks&gt;</gray>
+messages.command.mobs.help.aiDebug: <gray>/dr mobs ai debug &lt;mobId&gt;</gray>
 messages.command.mobs.loot.entry: <gray>-</gray> <white>{id}</white>
 messages.command.mobs.loot.header: <gold><bold>Loot Pools</bold></gold> <gray>({count})</gray>
 messages.command.mobs.loot.info.clearVanilla: <gray>Clear vanilla drops:</gray> <white>{value}</white>
@@ -291,6 +314,23 @@ messages.command.mobs.snapshot.variant: Variant
 messages.command.mobs.snapshot.world: World
 messages.command.mobs.spawned: Spawned
 messages.command.mobs.spawnFailed: <red>Failed to spawn:</red> <white>{message}</white>
+messages.command.mobs.models.header: <gold>[Mobs]</gold> <white>Model bridge status</white>
+messages.command.mobs.models.entry: <gray>enabled=</gray><white>{enabled}</white> <gray>provider=</gray><white>{provider}</white>
+  <gray>available=</gray><white>{available}</white> <gray>activeModeled=</gray><white>{activeModeled}</white>
+  <gray>fallbacks=</gray><white>{fallbacks}</white> <gray>sync=</gray><white>{sync}</white>
+  <gray>policy=</gray><white>{policy}</white> <gray>debug=</gray><white>{debug}</white> <gray>lastReload=</gray><white>{lastReload}</white>
+messages.command.mobs.ai.status.header: <gold>[Mobs]</gold> <white>AI status</white>
+messages.command.mobs.ai.status.entry: <gray>enabled=</gray><white>{enabled}</white> <gray>engine=</gray><white>{engine}</white> <gray>pathfinder=</gray><white>{pathfinderEnabled}</white> <gray>mobGoals=</gray><white>{useMobGoalsApi}</white> <gray>async=</gray><white>{asyncEnabled}</white> <gray>queue=</gray><white>{asyncQueue}</white> <gray>workers=</gray><white>{asyncWorkers}</white> <gray>active=</gray><white>{active}</white> <gray>steps/tick=</gray><white>{steps}</white> <gray>paths/tick=</gray><white>{paths}</white> <gray>guardrails=</gray><white>{guardrails}</white> <gray>fallbacks=</gray><white>{fallbacks}</white> <gray>stalePlans=</gray><white>{stalePlans}</white> <gray>degrade=</gray><white>{degrade}</white>
+messages.command.mobs.ai.metrics.header: <gold>[Mobs]</gold> <white>AI metrics</white>
+messages.command.mobs.ai.metrics.entry: <gray>last=</gray><white>{stepsLastTick}</white><gray>/</gray><white>{pathsLastTick}</white> <gray>totals=</gray><white>{totalSteps}</white><gray>/</gray><white>{totalPaths}</white> <gray>guardrails=</gray><white>{guardrails}</white> <gray>fallbacks=</gray><white>{fallbacks}</white> <gray>window=</gray><white>{window}t</white>
+messages.command.mobs.ai.async.header: <gold>[Mobs]</gold> <white>AI async status</white>
+messages.command.mobs.ai.async.entry: <gray>enabled=</gray><white>{enabled}</white> <gray>workers=</gray><white>{workers}</white> <gray>queue=</gray><white>{queue}/{queueCapacity}</white> <gray>maxJobs/tick=</gray><white>{maxJobsPerTick}</white> <gray>ttl=</gray><white>{planTtlTicks}</white> <gray>submitted=</gray><white>{submitted}</white> <gray>completed=</gray><white>{completed}</white> <gray>stale=</gray><white>{staleDiscards}</white> <gray>dropped=</gray><white>{dropped}</white> <gray>failed=</gray><white>{failed}</white>
+messages.command.mobs.ai.async.tuned: <green>AI async tuning applied:</green> <white>{key}={value}</white>
+messages.command.mobs.ai.async.tuneFailed: <red>Invalid AI async tuning key/value:</red> <white>{key}={value}</white>
+messages.command.mobs.ai.degrade.status: <gold>[Mobs]</gold> <white>AI degrade tier:</white> <white>{tier}</white>
+messages.command.mobs.ai.simulate.result: <gold>[Mobs]</gold> <white>AI simulate</white> <gray>{id}</gray> <gray>ticks=</gray><white>{ticks}</white> <gray>-></gray> <white>{result}</white>
+messages.command.mobs.ai.debug.enabled: <green>Enabled AI debug overlay for</green> <white>{id}</white>
+messages.command.mobs.ai.debug.disabled: <yellow>Disabled AI debug overlay for</yellow> <white>{id}</white>
 messages.command.party.inviteHint: Messages command party inviteHint
 messages.command.party.inviteReceived: Messages command party inviteReceived
 messages.command.reload.allErrors: <red>Reload completed with {errors} errors. Check logs.</red>

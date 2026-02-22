@@ -34,8 +34,14 @@ import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiEngineMode;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiHooksSpec;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiPhaseMergeMode;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiProfile;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.textures.TextureBuildResult;
+import dev.patric.dungeonsreborn.textures.TextureService;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
 
@@ -94,6 +100,7 @@ public final class MobYamlRegistry {
   private final EffectsYamlAbilities yamlAbilities;
   private final ShopYamlRegistry shopRegistry;
   private UpgradeYamlRegistry upgradeRegistry;
+  private TextureService textureService;
   private final MobRegistry registry;
   private final MobSpawnManager spawns;
   private final ServiceLogger logger;
@@ -106,6 +113,8 @@ public final class MobYamlRegistry {
   private final Map<String, MobLootSpec> lootPools = new HashMap<>();
   private final Map<String, MobStyleSpec> stylePresets = new HashMap<>();
   private List<String> lastErrors = List.of();
+  private boolean warnedLegacyModelTextureFields;
+  private boolean warnedLegacyVisualBlocks;
 
   public MobYamlRegistry(JavaPlugin plugin, EffectsEngine engine, EffectsYamlAbilities yamlAbilities,
       ShopYamlRegistry shopRegistry, MobRegistry registry, MobSpawnManager spawns, ServiceLogger logger) {
@@ -121,6 +130,10 @@ public final class MobYamlRegistry {
 
   public void setUpgradeRegistry(UpgradeYamlRegistry upgradeRegistry) {
     this.upgradeRegistry = upgradeRegistry;
+  }
+
+  public void setTextureService(TextureService textureService) {
+    this.textureService = textureService;
   }
 
   public File file() {
@@ -272,6 +285,8 @@ public final class MobYamlRegistry {
   }
 
   public ReloadResult reload() {
+    warnedLegacyModelTextureFields = false;
+    warnedLegacyVisualBlocks = false;
     plugin.getDataFolder().mkdirs();
     File file = file();
     if (!file.exists()) {
@@ -329,7 +344,6 @@ public final class MobYamlRegistry {
       engine.unregisterAbility(abilityId);
     }
     loadedScriptAbilityIds.clear();
-
     Map<String, MobLootSpec> nextLootPools = new HashMap<>();
     for (YamlSource source : sources) {
       parseLootPools(source.cfg(), nextLootPools, errors, source.source(), null);
@@ -393,6 +407,14 @@ public final class MobYamlRegistry {
     vaults.putAll(nextVaults);
     spawns.setMaxSpawnersPerTick(maxSpawnersPerTick);
     spawns.reload(spawnSpecs, enabledWorlds, despawnOnReload);
+    registry.markModelRegistryReload();
+    if (textureService != null) {
+      TextureBuildResult modelBuild = textureService.rebuildIfAutoEnabled();
+      if (modelBuild != null && modelBuild.success() && modelBuild.zipFile() != null) {
+        logger.info("[Mobs] Built texture pack: " + modelBuild.zipFile().getPath()
+            + " sha1=" + modelBuild.zipSha1());
+      }
+    }
 
     if (!errors.isEmpty()) {
       logger.warn("[Mobs] YAML reload had " + errors.size() + " errors (some mobs/spawns may be missing)");
@@ -1239,15 +1261,22 @@ public final class MobYamlRegistry {
       builder.bossBar(new MobBossBarSpec(MobText.parse(title), color, overlay, audience));
     }
 
-    MobModelSpec modelSpec = parseModelSpec(node.getConfigurationSection("model"), base + ".model");
+    MobModelSpec modelSpec = parseModelSpec(node.getConfigurationSection("model"), base + ".model", errors, type, id);
     if (modelSpec != null) {
       builder.modelSpec(modelSpec);
+    }
+    MobVisualSpec visualSpec = parseVisualSpec(node.getConfigurationSection("visual"), base + ".visual", errors);
+    if (visualSpec != null) {
+      builder.visualSpec(visualSpec);
     }
     if (node.contains("collidable")) {
       builder.collidable(node.getBoolean("collidable"));
     }
     if (node.contains("invulnerable")) {
       builder.invulnerable(node.getBoolean("invulnerable"));
+    }
+    if (node.contains("silent")) {
+      builder.silent(node.getBoolean("silent"));
     }
 
     ConfigurationSection bossBroadcast = node.getConfigurationSection("bossBroadcast");
@@ -1480,51 +1509,10 @@ public final class MobYamlRegistry {
     builder.allowBlockDamage(allowBlockDamage);
 
     ConfigurationSection ai = node.getConfigurationSection("ai");
+    MobAiSpec baseAiSpec = null;
     if (ai != null) {
-      MobAiSpec.Builder aiBuilder = MobAiSpec.builder()
-          .enabled(ai.getBoolean("enabled", true))
-          .overrideDefault(ai.getBoolean("overrideDefault", false))
-          .aggroRadius(ai.getDouble("aggroRadius", 12.0))
-          .leashRadius(ai.getDouble("leashRadius", 24.0))
-          .leashTeleportRadius(ai.getDouble("leashTeleportRadius", 36.0))
-          .preferLastAttacker(ai.getBoolean("preferLastAttacker", true))
-          .targetSwitchCooldownTicks(ai.getLong("targetSwitchCooldownTicks", 40L))
-          .fleeHealthRatio(ai.getDouble("fleeHealthRatio", 0.0))
-          .fleeSpeed(ai.getDouble("fleeSpeed", 0.35))
-          .idleWanderRadius(ai.getDouble("idleWanderRadius", 6.0))
-          .idleWanderIntervalTicks(ai.getLong("idleWanderIntervalTicks", 80L))
-          .roamRadius(ai.getDouble("roamRadius", 0.0))
-          .kiteMinRange(ai.getDouble("kiteMinRange", 0.0))
-          .kiteSpeed(ai.getDouble("kiteSpeed", 0.0))
-          .chaseSpeed(ai.getDouble("chaseSpeed", 0.25))
-          .rageHealthRatio(ai.getDouble("rageHealthRatio", 0.0))
-          .rageSpeed(ai.getDouble("rageSpeed", 0.35))
-          .locomotionMode(parseLocomotionMode(YamlValues.string(ai, "locomotion", "GROUND"),
-              base + ".ai.locomotion"))
-          .avoidWater(ai.getBoolean("avoidWater", false))
-          .avoidLava(ai.getBoolean("avoidLava", false))
-          .preferGround(ai.getBoolean("preferGround", true));
-      String mode = YamlValues.string(ai, "aggroTargetMode", "NEAREST_PLAYER");
-      aiBuilder.aggroTargetMode(parseTargetMode(mode, base + ".ai.aggroTargetMode"));
-      String partyRule = YamlValues.string(ai, "partyRule", "NONE");
-      aiBuilder.partyRule(parsePartyRule(partyRule, base + ".ai.partyRule"));
-      List<Map<?, ?>> goals = ai.getMapList("goals");
-      for (int i = 0; i < goals.size(); i++) {
-        Map<?, ?> raw = goals.get(i);
-        String goalPath = base + ".ai.goals[" + i + "]";
-        aiBuilder.addGoal(parseAiGoal(raw, goalPath));
-      }
-      List<Map<?, ?>> guardPoints = ai.getMapList("guardPoints");
-      for (int i = 0; i < guardPoints.size(); i++) {
-        Map<?, ?> pointMap = guardPoints.get(i);
-        @SuppressWarnings("unused")
-        String pointPath = base + ".ai.guardPoints[" + i + "]";
-        double x = YamlValues.doubleValueStrict(pointMap, "x", 0.0);
-        double y = YamlValues.doubleValueStrict(pointMap, "y", 0.0);
-        double z = YamlValues.doubleValueStrict(pointMap, "z", 0.0);
-        aiBuilder.addGuardPoint(new Vector(x, y, z));
-      }
-      builder.aiSpec(aiBuilder.build());
+      baseAiSpec = parseAiSpec(ai, base + ".ai", null);
+      builder.aiSpec(baseAiSpec);
     }
 
     ConfigurationSection events = node.getConfigurationSection("events");
@@ -1626,7 +1614,7 @@ public final class MobYamlRegistry {
     for (int i = 0; i < phases.size(); i++) {
       Map<?, ?> raw = phases.get(i);
       String path = base + ".phases[" + i + "]";
-      builder.addPhase(parsePhase(raw, path, id, i, tier));
+      builder.addPhase(parsePhase(raw, path, id, i, type, tier, baseAiSpec, errors));
     }
 
     MobManaDropSpec manaDrop = parseManaDrops(node, base + ".manaDrops");
@@ -1684,7 +1672,15 @@ public final class MobYamlRegistry {
     return builder.build();
   }
 
-  private MobPhaseSpec parsePhase(Map<?, ?> raw, String path, String mobId, int index, String tier) {
+  private MobPhaseSpec parsePhase(
+      Map<?, ?> raw,
+      String path,
+      String mobId,
+      int index,
+      EntityType mobType,
+      String tier,
+      MobAiSpec baseAiSpec,
+      List<String> errors) {
     String id = YamlValues.string(raw, "id", "phase_" + (index + 1));
     double healthBelow = YamlValues.doubleValueStrict(raw, "healthBelow", YamlValues.doubleValueStrict(raw, "healthRatio", -1.0));
     if (healthBelow <= 0.0 || healthBelow > 1.0) {
@@ -1767,13 +1763,30 @@ public final class MobYamlRegistry {
     MobModelSpec modelSpec = null;
     Object modelRaw = raw.get("model");
     if (modelRaw instanceof ConfigurationSection section) {
-      modelSpec = parseModelSpec(section, path + ".model");
+      modelSpec = parseModelSpec(section, path + ".model", errors, mobType, mobId);
     } else if (modelRaw instanceof Map<?, ?> modelMap) {
-      modelSpec = parseModelSpec(modelMap, path + ".model");
+      modelSpec = parseModelSpec(modelMap, path + ".model", errors, mobType, mobId);
+    }
+    MobVisualSpec visualSpec = null;
+    Object visualRaw = raw.get("visual");
+    if (visualRaw instanceof ConfigurationSection visualSection) {
+      visualSpec = parseVisualSpec(visualSection, path + ".visual", errors);
+    } else if (visualRaw instanceof Map<?, ?> visualMap) {
+      visualSpec = parseVisualSpec(visualMap, path + ".visual", errors);
+    }
+    MobAiSpec phaseAiSpec = null;
+    MobAiPhaseMergeMode aiMergeMode = MobAiPhaseMergeMode.PATCH;
+    Object phaseAiRaw = raw.get("ai");
+    if (phaseAiRaw != null) {
+      Map<String, Object> phaseAiMap = materializeMap(phaseAiRaw, path + ".ai");
+      Object mergeRaw = phaseAiMap.remove("merge");
+      aiMergeMode = parseAiMergeMode(mergeRaw == null ? null : String.valueOf(mergeRaw), path + ".ai.merge");
+      MobAiSpec mergeBase = aiMergeMode == MobAiPhaseMergeMode.PATCH ? baseAiSpec : null;
+      phaseAiSpec = parseAiSpec(phaseAiMap, path + ".ai", mergeBase);
     }
     MobStyleSpec style = resolveStyleSpec(raw, path, tier);
     return new MobPhaseSpec(phaseId, healthBelow, main, secondary, passives, mainHand, offHand, head, chest, legs, feet,
-        scaleMultiplier, collidable, modelSpec, style);
+        scaleMultiplier, collidable, modelSpec, style, visualSpec, phaseAiSpec, aiMergeMode);
   }
 
   private static MobCompositeRole parseCompositeRole(String raw, String path) {
@@ -2560,6 +2573,7 @@ public final class MobYamlRegistry {
     return switch (key) {
       case "maxhealth", "health" -> Attribute.MAX_HEALTH;
       case "attackdamage", "damage" -> Attribute.ATTACK_DAMAGE;
+      case "attackspeed" -> Attribute.ATTACK_SPEED;
       case "movementspeed", "speed" -> Attribute.MOVEMENT_SPEED;
       case "followrange", "range" -> Attribute.FOLLOW_RANGE;
       case "knockbackresistance" -> Attribute.KNOCKBACK_RESISTANCE;
@@ -2831,30 +2845,93 @@ public final class MobYamlRegistry {
     return new MobBossBarSpec(MobText.parse(title), color, overlay, audience);
   }
 
-  private MobModelSpec parseModelSpec(ConfigurationSection section, String path) {
-    if (section == null) {
-      return null;
-    }
-    String id = YamlValues.string(section, "id", YamlValues.string(section, "modelId", null));
-    if (id == null || id.isBlank()) {
-      return null;
-    }
-    String animation = YamlValues.string(section, "animation", YamlValues.string(section, "animationId", null));
-    double speed = section.getDouble("animationSpeed", 1.0);
-    return new MobModelSpec(id, animation, speed);
+  private MobModelSpec parseModelSpec(
+      ConfigurationSection section,
+      String path,
+      List<String> errors,
+      EntityType mobType,
+      String mobId) {
+    return null;
   }
 
-  private MobModelSpec parseModelSpec(Map<?, ?> map, String path) {
-    if (map == null) {
-      return null;
+  private MobModelSpec parseModelSpec(
+      Map<?, ?> map,
+      String path,
+      List<String> errors,
+      EntityType mobType,
+      String mobId) {
+    return null;
+  }
+
+  private Map<String, String> parseModelAnimations(Object raw, String path, List<String> errors) {
+    if (raw == null) {
+      return Map.of();
     }
-    String id = YamlValues.string(map, "id", YamlValues.string(map, "modelId", null));
-    if (id == null || id.isBlank()) {
-      return null;
+    Map<String, String> out = new LinkedHashMap<>();
+    if (raw instanceof ConfigurationSection section) {
+      for (String key : section.getKeys(false)) {
+        String value = YamlValues.string(section, key, null);
+        if (value == null || value.isBlank()) {
+          if (errors != null) {
+            errors.add(path + "." + key + ": must be a non-empty string");
+          }
+          continue;
+        }
+        out.put(key, value.trim());
+      }
+      return out;
     }
-    String animation = YamlValues.string(map, "animation", YamlValues.string(map, "animationId", null));
-    double speed = YamlValues.doubleValue(map.get("animationSpeed"), 1.0);
-    return new MobModelSpec(id, animation, speed);
+    if (raw instanceof Map<?, ?> map) {
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        if (entry == null || entry.getKey() == null) {
+          continue;
+        }
+        String key = String.valueOf(entry.getKey()).trim();
+        String value = YamlValues.string(entry.getValue(), null);
+        if (value == null || value.isBlank()) {
+          if (errors != null) {
+            errors.add(path + "." + key + ": must be a non-empty string");
+          }
+          continue;
+        }
+        out.put(key, value.trim());
+      }
+      return out;
+    }
+    if (errors != null) {
+      errors.add(path + ": must be an object");
+    }
+    return Map.of();
+  }
+
+  private String defaultModelProviderRaw() {
+    String fromConfig = plugin.getConfig().getString("mobs.models.provider", "model_engine");
+    if (fromConfig == null || fromConfig.isBlank()) {
+      return "model_engine";
+    }
+    return fromConfig.trim();
+  }
+
+  private void warnLegacyModelTextureFields(
+      String path,
+      String mobId,
+      String asset,
+      String texture,
+      boolean hasTextureOverrides) {
+    // Model blocks are intentionally ignored to keep mob visuals vanilla.
+  }
+
+  private MobVisualSpec parseVisualSpec(ConfigurationSection section, String path, List<String> errors) {
+    return null;
+  }
+
+  private MobVisualSpec parseVisualSpec(Map<?, ?> map, String path, List<String> errors) {
+    return null;
+  }
+
+  private MobVisualSpec warnLegacyVisual(String path) {
+    // Visual override blocks are intentionally ignored to keep mob visuals vanilla.
+    return null;
   }
 
   private static MobLootSpec mergeLootSpec(MobLootSpec pool, MobLootSpec local, ConfigurationSection loot) {
@@ -3145,6 +3222,20 @@ public final class MobYamlRegistry {
     return out;
   }
 
+  private static Map<String, Object> materializeMap(Object raw, String path) {
+    Object source = raw;
+    if (source instanceof ConfigurationSection section) {
+      source = section.getValues(false);
+    }
+    if (source == null) {
+      return java.util.Map.of();
+    }
+    if (!(source instanceof Map<?, ?> map)) {
+      throw new IllegalArgumentException(path + ": must be an object");
+    }
+    return castMap(map);
+  }
+
   private static List<Map<?, ?>> castMapList(Object raw) {
     if (!(raw instanceof List<?> listRaw)) {
       return List.of();
@@ -3196,6 +3287,343 @@ public final class MobYamlRegistry {
     }
   }
 
+  private MobAiSpec parseAiSpec(ConfigurationSection section, String path, MobAiSpec base) {
+    if (section == null) {
+      return base;
+    }
+    return parseAiSpec(materializeMap(section, path), path, base);
+  }
+
+  private MobAiSpec parseAiSpec(Map<?, ?> raw, String path, MobAiSpec base) {
+    MobAiSpec.Builder builder = base == null ? MobAiSpec.builder() : MobAiSpec.builder(base);
+    Map<String, Object> map = castMap(raw);
+    if (map.containsKey("version")) {
+      String version = YamlValues.string(map, "version", "V2");
+      String normalizedVersion = version == null ? "V2" : version.trim().toUpperCase(Locale.ROOT);
+      if (!normalizedVersion.equals("V2") && !normalizedVersion.equals("V3") && !normalizedVersion.equals("LEGACY")) {
+        throw new IllegalArgumentException(path + ".version: invalid ai version=" + version);
+      }
+      if (normalizedVersion.equals("V3") && !map.containsKey("engine")) {
+        builder.engineMode(MobAiEngineMode.V3);
+      }
+    }
+    // V3 module-style schema (mapped into runtime fields for backwards compatibility)
+    if (map.containsKey("perception")) {
+      Map<String, Object> perception = materializeMap(map.get("perception"), path + ".perception");
+      if (perception.containsKey("aggroRadius")) {
+        builder.aggroRadius(YamlValues.doubleValueStrict(perception, "aggroRadius", 12.0));
+      }
+      if (perception.containsKey("retargetCooldownTicks")) {
+        builder.targetSwitchCooldownTicks(YamlValues.longValueStrict(perception, "retargetCooldownTicks", 40L));
+      }
+      if (perception.containsKey("targetSwitchCooldownTicks")) {
+        builder.targetSwitchCooldownTicks(YamlValues.longValueStrict(perception, "targetSwitchCooldownTicks", 40L));
+      }
+      if (perception.containsKey("targetPolicy")) {
+        Map<String, Object> targetPolicy = materializeMap(perception.get("targetPolicy"), path + ".perception.targetPolicy");
+        if (targetPolicy.containsKey("mode")) {
+          builder.aggroTargetMode(parseTargetMode(YamlValues.string(targetPolicy, "mode", "NEAREST_PLAYER"),
+              path + ".perception.targetPolicy.mode"));
+        }
+        if (targetPolicy.containsKey("preferLastAttacker")) {
+          builder.preferLastAttacker(YamlValues.bool(targetPolicy, "preferLastAttacker", true));
+        }
+      }
+    }
+    if (map.containsKey("combat")) {
+      Map<String, Object> combat = materializeMap(map.get("combat"), path + ".combat");
+      if (combat.containsKey("preferredRange")) {
+        Map<String, Object> range = materializeMap(combat.get("preferredRange"), path + ".combat.preferredRange");
+        if (range.containsKey("min")) {
+          builder.kiteMinRange(YamlValues.doubleValueStrict(range, "min", 0.0));
+        }
+      }
+      if (combat.containsKey("kite")) {
+        Map<String, Object> kite = materializeMap(combat.get("kite"), path + ".combat.kite");
+        if (kite.containsKey("speed")) {
+          builder.kiteSpeed(YamlValues.doubleValueStrict(kite, "speed", 0.0));
+        }
+      }
+      if (combat.containsKey("flee")) {
+        Map<String, Object> flee = materializeMap(combat.get("flee"), path + ".combat.flee");
+        if (flee.containsKey("healthRatio")) {
+          builder.fleeHealthRatio(YamlValues.doubleValueStrict(flee, "healthRatio", 0.0));
+        }
+        if (flee.containsKey("speed")) {
+          builder.fleeSpeed(YamlValues.doubleValueStrict(flee, "speed", 0.35));
+        }
+      }
+      if (combat.containsKey("rage")) {
+        Map<String, Object> rage = materializeMap(combat.get("rage"), path + ".combat.rage");
+        if (rage.containsKey("healthRatio")) {
+          builder.rageHealthRatio(YamlValues.doubleValueStrict(rage, "healthRatio", 0.0));
+        }
+      }
+      if (combat.containsKey("targetPolicy")) {
+        Map<String, Object> targetPolicy = materializeMap(combat.get("targetPolicy"), path + ".combat.targetPolicy");
+        if (targetPolicy.containsKey("mode")) {
+          builder.aggroTargetMode(parseTargetMode(YamlValues.string(targetPolicy, "mode", "NEAREST_PLAYER"),
+              path + ".combat.targetPolicy.mode"));
+        }
+        if (targetPolicy.containsKey("preferLastAttacker")) {
+          builder.preferLastAttacker(YamlValues.bool(targetPolicy, "preferLastAttacker", true));
+        }
+      }
+    }
+    if (map.containsKey("group")) {
+      Map<String, Object> group = materializeMap(map.get("group"), path + ".group");
+      if (group.containsKey("callForHelpRadius")) {
+        builder.callForHelpRadius(YamlValues.doubleValueStrict(group, "callForHelpRadius", 0.0));
+      }
+      if (group.containsKey("assistRadius")) {
+        builder.assistRadius(YamlValues.doubleValueStrict(group, "assistRadius", 0.0));
+      }
+    }
+    if (map.containsKey("environment")) {
+      Map<String, Object> environment = materializeMap(map.get("environment"), path + ".environment");
+      if (environment.containsKey("avoid")) {
+        Map<String, Object> avoid = materializeMap(environment.get("avoid"), path + ".environment.avoid");
+        if (avoid.containsKey("water")) {
+          builder.avoidWater(YamlValues.bool(avoid, "water", false));
+        }
+        if (avoid.containsKey("lava")) {
+          builder.avoidLava(YamlValues.bool(avoid, "lava", true));
+        }
+        if (avoid.containsKey("powderSnow")) {
+          builder.avoidPowderSnow(YamlValues.bool(avoid, "powderSnow", true));
+        }
+        if (avoid.containsKey("cactus")) {
+          builder.avoidCactus(YamlValues.bool(avoid, "cactus", true));
+        }
+        if (avoid.containsKey("sunlight")) {
+          builder.avoidSunlight(YamlValues.bool(avoid, "sunlight", false));
+        }
+      }
+      if (environment.containsKey("interactions")) {
+        Map<String, Object> interactions = materializeMap(environment.get("interactions"), path + ".environment.interactions");
+        if (interactions.containsKey("openDoors")) {
+          builder.openDoors(YamlValues.bool(interactions, "openDoors", false));
+        }
+        if (interactions.containsKey("breakDoors")) {
+          builder.breakDoors(YamlValues.bool(interactions, "breakDoors", false));
+        }
+      }
+    }
+    if (map.containsKey("scheduler")) {
+      Map<String, Object> scheduler = materializeMap(map.get("scheduler"), path + ".scheduler");
+      if (scheduler.containsKey("stateTransitionCooldownTicks")) {
+        builder.stateTransitionCooldownTicks(YamlValues.longValueStrict(scheduler, "stateTransitionCooldownTicks", 10L));
+      }
+    }
+    if (map.containsKey("utility")) {
+      Map<String, Object> utility = materializeMap(map.get("utility"), path + ".utility");
+      if (utility.containsKey("selectors")) {
+        builder.clearGoals();
+        List<Map<?, ?>> selectors = castMapList(utility.get("selectors"));
+        for (int i = 0; i < selectors.size(); i++) {
+          String selectorPath = path + ".utility.selectors[" + i + "]";
+          Map<String, Object> selector = materializeMap(selectors.get(i), selectorPath);
+          int priority = 100;
+          if (selector.containsKey("score")) {
+            Map<String, Object> score = materializeMap(selector.get("score"), selectorPath + ".score");
+            int baseScore = YamlValues.intValueStrict(score, "base", 50);
+            priority = Math.max(1, 200 - baseScore);
+          }
+          List<Map<?, ?>> actions = castMapList(selector.get("actions"));
+          for (int j = 0; j < actions.size(); j++) {
+            Map<String, Object> actionMap = materializeMap(actions.get(j), selectorPath + ".actions[" + j + "]");
+            String typeRaw = YamlValues.string(actionMap, "type", "CHASE");
+            MobAiGoalType goalType;
+            try {
+              goalType = MobAiGoalType.valueOf(typeRaw.trim().toUpperCase(Locale.ROOT));
+            } catch (Exception ex) {
+              throw new IllegalArgumentException(selectorPath + ".actions[" + j + "].type: invalid action type=" + typeRaw);
+            }
+            double speed = YamlValues.doubleValueStrict(actionMap, "speed", 0.0);
+            double radius = YamlValues.doubleValueStrict(actionMap, "radius", 0.0);
+            double minRange = YamlValues.doubleValueStrict(actionMap, "minRange", 0.0);
+            double maxRange = YamlValues.doubleValueStrict(actionMap, "maxRange", 0.0);
+            long intervalTicks = YamlValues.longValueStrict(actionMap, "intervalTicks", 0L);
+            builder.addGoal(new MobAiGoalSpec(goalType, priority, radius, speed, intervalTicks, minRange, maxRange, List.of()));
+          }
+        }
+      }
+    }
+    if (map.containsKey("engine")) {
+      builder.engineMode(parseAiEngineMode(YamlValues.string(map, "engine", "LEGACY"), path + ".engine"));
+    }
+    if (map.containsKey("profile")) {
+      builder.profile(parseAiProfile(YamlValues.string(map, "profile", "NEUTRAL"), path + ".profile"));
+    }
+    if (map.containsKey("enabled")) {
+      builder.enabled(YamlValues.bool(map, "enabled", true));
+    }
+    if (map.containsKey("overrideDefault")) {
+      builder.overrideDefault(YamlValues.bool(map, "overrideDefault", false));
+    }
+    if (map.containsKey("aggroRadius")) {
+      builder.aggroRadius(YamlValues.doubleValueStrict(map, "aggroRadius", 12.0));
+    }
+    if (map.containsKey("leashRadius")) {
+      builder.leashRadius(YamlValues.doubleValueStrict(map, "leashRadius", 24.0));
+    }
+    if (map.containsKey("leashTeleportRadius")) {
+      builder.leashTeleportRadius(YamlValues.doubleValueStrict(map, "leashTeleportRadius", 36.0));
+    }
+    if (map.containsKey("aggroTargetMode")) {
+      builder.aggroTargetMode(
+          parseTargetMode(YamlValues.string(map, "aggroTargetMode", "NEAREST_PLAYER"), path + ".aggroTargetMode"));
+    }
+    if (map.containsKey("preferLastAttacker")) {
+      builder.preferLastAttacker(YamlValues.bool(map, "preferLastAttacker", true));
+    }
+    if (map.containsKey("targetSwitchCooldownTicks")) {
+      builder.targetSwitchCooldownTicks(YamlValues.longValueStrict(map, "targetSwitchCooldownTicks", 40L));
+    }
+    if (map.containsKey("fleeHealthRatio")) {
+      builder.fleeHealthRatio(YamlValues.doubleValueStrict(map, "fleeHealthRatio", 0.0));
+    }
+    if (map.containsKey("fleeSpeed")) {
+      builder.fleeSpeed(YamlValues.doubleValueStrict(map, "fleeSpeed", 0.35));
+    }
+    if (map.containsKey("idleWanderRadius")) {
+      builder.idleWanderRadius(YamlValues.doubleValueStrict(map, "idleWanderRadius", 6.0));
+    }
+    if (map.containsKey("idleWanderIntervalTicks")) {
+      builder.idleWanderIntervalTicks(YamlValues.longValueStrict(map, "idleWanderIntervalTicks", 80L));
+    }
+    if (map.containsKey("roamRadius")) {
+      builder.roamRadius(YamlValues.doubleValueStrict(map, "roamRadius", 0.0));
+    }
+    if (map.containsKey("kiteMinRange")) {
+      builder.kiteMinRange(YamlValues.doubleValueStrict(map, "kiteMinRange", 0.0));
+    }
+    if (map.containsKey("kiteSpeed")) {
+      builder.kiteSpeed(YamlValues.doubleValueStrict(map, "kiteSpeed", 0.0));
+    }
+    if (map.containsKey("chaseSpeed")) {
+      builder.chaseSpeed(YamlValues.doubleValueStrict(map, "chaseSpeed", 0.25));
+    }
+    if (map.containsKey("rageHealthRatio")) {
+      builder.rageHealthRatio(YamlValues.doubleValueStrict(map, "rageHealthRatio", 0.0));
+    }
+    if (map.containsKey("rageSpeed")) {
+      builder.rageSpeed(YamlValues.doubleValueStrict(map, "rageSpeed", 0.35));
+    }
+    if (map.containsKey("locomotion")) {
+      builder.locomotionMode(
+          parseLocomotionMode(YamlValues.string(map, "locomotion", "GROUND"), path + ".locomotion"));
+    }
+    if (map.containsKey("avoidWater")) {
+      builder.avoidWater(YamlValues.bool(map, "avoidWater", false));
+    }
+    if (map.containsKey("avoidLava")) {
+      builder.avoidLava(YamlValues.bool(map, "avoidLava", false));
+    }
+    if (map.containsKey("openDoors")) {
+      builder.openDoors(YamlValues.bool(map, "openDoors", false));
+    }
+    if (map.containsKey("breakDoors")) {
+      builder.breakDoors(YamlValues.bool(map, "breakDoors", false));
+    }
+    if (map.containsKey("avoidSunlight")) {
+      builder.avoidSunlight(YamlValues.bool(map, "avoidSunlight", false));
+    }
+    if (map.containsKey("avoidPowderSnow")) {
+      builder.avoidPowderSnow(YamlValues.bool(map, "avoidPowderSnow", true));
+    }
+    if (map.containsKey("avoidCactus")) {
+      builder.avoidCactus(YamlValues.bool(map, "avoidCactus", true));
+    }
+    if (map.containsKey("callForHelpRadius")) {
+      builder.callForHelpRadius(YamlValues.doubleValueStrict(map, "callForHelpRadius", 0.0));
+    }
+    if (map.containsKey("assistRadius")) {
+      builder.assistRadius(YamlValues.doubleValueStrict(map, "assistRadius", 0.0));
+    }
+    if (map.containsKey("stateTransitionCooldownTicks")) {
+      builder.stateTransitionCooldownTicks(YamlValues.longValueStrict(map, "stateTransitionCooldownTicks", 10L));
+    }
+    if (map.containsKey("preferGround")) {
+      builder.preferGround(YamlValues.bool(map, "preferGround", true));
+    }
+    if (map.containsKey("partyRule")) {
+      builder.partyRule(parsePartyRule(YamlValues.string(map, "partyRule", "NONE"), path + ".partyRule"));
+    }
+    if (map.containsKey("guardPoints")) {
+      builder.clearGuardPoints();
+      List<Map<?, ?>> guardPoints = castMapList(map.get("guardPoints"));
+      for (int i = 0; i < guardPoints.size(); i++) {
+        Map<?, ?> pointMap = guardPoints.get(i);
+        double x = YamlValues.doubleValueStrict(pointMap, "x", 0.0);
+        double y = YamlValues.doubleValueStrict(pointMap, "y", 0.0);
+        double z = YamlValues.doubleValueStrict(pointMap, "z", 0.0);
+        builder.addGuardPoint(new Vector(x, y, z));
+      }
+    }
+    if (map.containsKey("goals")) {
+      builder.clearGoals();
+      List<Map<?, ?>> goals = castMapList(map.get("goals"));
+      for (int i = 0; i < goals.size(); i++) {
+        Map<?, ?> goalRaw = goals.get(i);
+        String goalPath = path + ".goals[" + i + "]";
+        builder.addGoal(parseAiGoal(goalRaw, goalPath));
+      }
+    }
+    if (map.containsKey("hooks")) {
+      Map<String, Object> hooksRaw = materializeMap(map.get("hooks"), path + ".hooks");
+      builder.hooks(parseAiHooks(hooksRaw, path + ".hooks", base == null ? null : base.hooks()));
+    }
+    return builder.build();
+  }
+
+  private static MobAiHooksSpec parseAiHooks(Map<?, ?> map, String path, MobAiHooksSpec base) {
+    MobAiHooksSpec fallback = base == null ? MobAiHooksSpec.empty() : base;
+    String onIdle = map.containsKey("onEnterIdle")
+        ? YamlValues.string(map, "onEnterIdle", null)
+        : fallback.onEnterIdle();
+    String onEngage = map.containsKey("onEnterEngage")
+        ? YamlValues.string(map, "onEnterEngage", null)
+        : fallback.onEnterEngage();
+    String onRetreat = map.containsKey("onEnterRetreat")
+        ? YamlValues.string(map, "onEnterRetreat", null)
+        : fallback.onEnterRetreat();
+    String onRage = map.containsKey("onEnterRage")
+        ? YamlValues.string(map, "onEnterRage", null)
+        : fallback.onEnterRage();
+    try {
+      return new MobAiHooksSpec(onIdle, onEngage, onRetreat, onRage);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid hooks: " + ex.getMessage());
+    }
+  }
+
+  private static MobAiEngineMode parseAiEngineMode(String raw, String path) {
+    try {
+      String key = raw == null ? "LEGACY" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiEngineMode.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai engine=" + raw);
+    }
+  }
+
+  private static MobAiProfile parseAiProfile(String raw, String path) {
+    try {
+      String key = raw == null ? "NEUTRAL" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiProfile.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai profile=" + raw);
+    }
+  }
+
+  private static MobAiPhaseMergeMode parseAiMergeMode(String raw, String path) {
+    try {
+      return MobAiPhaseMergeMode.parse(raw);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": " + ex.getMessage());
+    }
+  }
+
   private static MobAiGoalSpec parseAiGoal(Map<?, ?> raw, String path) {
     String typeRaw = YamlValues.string(raw, "type", null);
     if (typeRaw == null || typeRaw.isBlank()) {
@@ -3211,6 +3639,8 @@ public final class MobYamlRegistry {
     double radius = YamlValues.doubleValueStrict(raw, "radius", 6.0);
     double speed = YamlValues.doubleValueStrict(raw, "speed", 0.2);
     long intervalTicks = YamlValues.longValueStrict(raw, "intervalTicks", 80L);
+    double minRange = YamlValues.doubleValueStrict(raw, "minRange", 0.0);
+    double maxRange = YamlValues.doubleValueStrict(raw, "maxRange", 0.0);
     List<Vector> points = new ArrayList<>();
     Object pointsRaw = raw.get("points");
     if (pointsRaw instanceof List<?> list) {
@@ -3225,7 +3655,7 @@ public final class MobYamlRegistry {
         points.add(new Vector(x, y, z));
       }
     }
-    return new MobAiGoalSpec(type, priority, radius, speed, intervalTicks, points);
+    return new MobAiGoalSpec(type, priority, radius, speed, intervalTicks, minRange, maxRange, points);
   }
 
   private static MobBossBarAudience parseBossBarAudience(String raw, String path) {
@@ -3390,19 +3820,44 @@ public final class MobYamlRegistry {
       return null;
     }
     String raw = YamlValues.requireString(sec, "sound", path + ".sound");
-    NamespacedKey key = raw.contains(":")
-        ? NamespacedKey.fromString(raw.toLowerCase(Locale.ROOT))
-        : NamespacedKey.fromString("minecraft:" + raw.toLowerCase(Locale.ROOT));
-    if (key == null) {
-      throw new IllegalArgumentException(path + ".sound: invalid key=" + raw);
-    }
-    Sound sound = Registry.SOUND_EVENT.get(key);
+    Sound sound = resolveSound(raw);
     if (sound == null) {
       throw new IllegalArgumentException(path + ".sound: unknown sound=" + raw);
     }
     float volume = (float) sec.getDouble("volume", 1.0);
     float pitch = (float) sec.getDouble("pitch", 1.0);
     return new MobSoundSpec(sound, volume, pitch);
+  }
+
+  private static Sound resolveSound(String raw) {
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    String trimmed = raw.trim();
+    List<String> candidates = new ArrayList<>();
+    candidates.add(trimmed.toLowerCase(Locale.ROOT));
+    candidates.add(trimmed.toLowerCase(Locale.ROOT).replace('_', '.'));
+    if (!trimmed.contains(":")) {
+      String lower = trimmed.toLowerCase(Locale.ROOT);
+      candidates.add("minecraft:" + lower);
+      candidates.add("minecraft:" + lower.replace('_', '.'));
+    } else {
+      int idx = trimmed.indexOf(':');
+      String ns = trimmed.substring(0, idx).toLowerCase(Locale.ROOT);
+      String value = trimmed.substring(idx + 1).toLowerCase(Locale.ROOT);
+      candidates.add(ns + ":" + value.replace('_', '.'));
+    }
+    for (String candidate : candidates) {
+      NamespacedKey key = NamespacedKey.fromString(candidate);
+      if (key == null) {
+        continue;
+      }
+      Sound sound = Registry.SOUND_EVENT.get(key);
+      if (sound != null) {
+        return sound;
+      }
+    }
+    return null;
   }
 
   private List<MobSpawnGroupSpec> parseSpawnerGroups(List<Map<?, ?>> rawGroups, String base) {

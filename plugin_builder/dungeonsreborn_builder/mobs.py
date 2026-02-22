@@ -72,12 +72,44 @@ class MobBehaviorState(MobEnum):
     RAGE = "RAGE"
 
 
+class MobAiEngine(MobEnum):
+    LEGACY = "LEGACY"
+    V2 = "V2"
+    V3 = "V3"
+
+
+class MobAiVersion(MobEnum):
+    V2 = "V2"
+    V3 = "V3"
+
+
+class MobAiProfile(MobEnum):
+    AGGRESSIVE = "AGGRESSIVE"
+    DEFENSIVE = "DEFENSIVE"
+    NEUTRAL = "NEUTRAL"
+    PASSIVE = "PASSIVE"
+    SUPPORT = "SUPPORT"
+    SCOUT = "SCOUT"
+    BERSERKER = "BERSERKER"
+
+
 class MobAiGoalType(MobEnum):
     AVOID = "AVOID"
     GUARD = "GUARD"
     PATROL = "PATROL"
     RETURN = "RETURN"
     WANDER = "WANDER"
+    CHASE = "CHASE"
+    HOLD_RANGE = "HOLD_RANGE"
+    FLEE = "FLEE"
+    ASSIST = "ASSIST"
+    CALL_HELP = "CALL_HELP"
+    HOLD_POSITION = "HOLD_POSITION"
+
+
+class MobAiPhaseMergeMode(MobEnum):
+    PATCH = "PATCH"
+    REPLACE = "REPLACE"
 
 
 class MobAttackAoEShape(MobEnum):
@@ -195,16 +227,34 @@ class MobBroadcastSpec:
 
 @dataclass
 class MobModelSpec:
-    model_id: str
+    model_id: Optional[str] = None
+    provider: str = "model_engine"
+    replace_visual: bool = False
+    hide_base_entity: Optional[bool] = None
     animation: Optional[str] = None
     animation_speed: float = 1.0
+    animations: Optional[Mapping[str, str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        payload: Dict[str, Any] = {"id": self.model_id}
+        if not self.model_id:
+            raise ValueError("MobModelSpec requires model_id")
+        payload: Dict[str, Any] = {}
+        if self.model_id:
+            payload["id"] = self.model_id
+        if self.provider and self.provider.lower() != "model_engine":
+            payload["provider"] = self.provider
+        if self.replace_visual:
+            payload["replaceVisual"] = True
+        if self.hide_base_entity is not None:
+            payload["hideBaseEntity"] = self.hide_base_entity
+        elif self.replace_visual:
+            payload["hideBaseEntity"] = True
         if self.animation:
             payload["animation"] = self.animation
         if self.animation_speed != 1.0:
             payload["animationSpeed"] = self.animation_speed
+        if self.animations:
+            payload["animations"] = {str(k): str(v) for k, v in self.animations.items()}
         return payload
 
 
@@ -272,11 +322,32 @@ class MobEquipmentSpec:
 
 
 @dataclass
+class MobVisualSpec:
+    texture: str
+    slot: str = "head"
+    material: Optional[Material | str] = None
+    model_key: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
+            "texture": self.texture,
+            "slot": self.slot,
+        }
+        if self.material is not None:
+            payload["material"] = _enum_or_str(self.material, "material")
+        if self.model_key:
+            payload["modelKey"] = self.model_key
+        return payload
+
+
+@dataclass
 class MobAiGoalSpec:
     goal_type: MobAiGoalType | str
     priority: int = 0
     radius: float = 0.0
     speed: float = 0.0
+    min_range: float = 0.0
+    max_range: float = 0.0
     interval_ticks: int = 0
     points: List[Vec3] = field(default_factory=list)
 
@@ -289,6 +360,10 @@ class MobAiGoalSpec:
             payload["radius"] = self.radius
         if self.speed:
             payload["speed"] = self.speed
+        if self.min_range:
+            payload["minRange"] = self.min_range
+        if self.max_range:
+            payload["maxRange"] = self.max_range
         if self.interval_ticks:
             payload["intervalTicks"] = self.interval_ticks
         if self.points:
@@ -297,7 +372,156 @@ class MobAiGoalSpec:
 
 
 @dataclass
+class MobAiHooksSpec:
+    on_enter_idle: Optional[str] = None
+    on_enter_engage: Optional[str] = None
+    on_enter_retreat: Optional[str] = None
+    on_enter_rage: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        if self.on_enter_idle:
+            payload["onEnterIdle"] = self.on_enter_idle
+        if self.on_enter_engage:
+            payload["onEnterEngage"] = self.on_enter_engage
+        if self.on_enter_retreat:
+            payload["onEnterRetreat"] = self.on_enter_retreat
+        if self.on_enter_rage:
+            payload["onEnterRage"] = self.on_enter_rage
+        return payload
+
+
+@dataclass
+class MobAiPerceptionSpec:
+    aggro_radius: Optional[float] = None
+    retarget_cooldown_ticks: Optional[int] = None
+    line_of_sight_required: Optional[bool] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        if self.aggro_radius is not None:
+            payload["aggroRadius"] = self.aggro_radius
+        if self.retarget_cooldown_ticks is not None:
+            payload["retargetCooldownTicks"] = self.retarget_cooldown_ticks
+        if self.line_of_sight_required is not None:
+            payload["lineOfSightRequired"] = self.line_of_sight_required
+        return payload
+
+
+@dataclass
+class MobAiCombatSpec:
+    flee_health_ratio: Optional[float] = None
+    flee_speed: Optional[float] = None
+    rage_health_ratio: Optional[float] = None
+    chase_speed: Optional[float] = None
+    kite_min_range: Optional[float] = None
+    kite_speed: Optional[float] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        if self.flee_health_ratio is not None or self.flee_speed is not None:
+            flee: Dict[str, Any] = {}
+            if self.flee_health_ratio is not None:
+                flee["healthRatio"] = self.flee_health_ratio
+            if self.flee_speed is not None:
+                flee["speed"] = self.flee_speed
+            payload["flee"] = flee
+        if self.rage_health_ratio is not None:
+            payload["rage"] = {"healthRatio": self.rage_health_ratio}
+        if self.chase_speed is not None:
+            payload["chaseSpeed"] = self.chase_speed
+        if self.kite_min_range is not None or self.kite_speed is not None:
+            kite: Dict[str, Any] = {}
+            if self.kite_min_range is not None:
+                kite["minRange"] = self.kite_min_range
+            if self.kite_speed is not None:
+                kite["speed"] = self.kite_speed
+            payload["kite"] = kite
+        return payload
+
+
+@dataclass
+class MobAiGroupSpec:
+    assist_radius: Optional[float] = None
+    call_for_help_radius: Optional[float] = None
+    focus_fire: Optional[bool] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        if self.assist_radius is not None:
+            payload["assistRadius"] = self.assist_radius
+        if self.call_for_help_radius is not None:
+            payload["callForHelpRadius"] = self.call_for_help_radius
+        if self.focus_fire is not None:
+            payload["focusFire"] = self.focus_fire
+        return payload
+
+
+@dataclass
+class MobAiEnvironmentSpec:
+    avoid_lava: Optional[bool] = None
+    avoid_water: Optional[bool] = None
+    avoid_powder_snow: Optional[bool] = None
+    avoid_cactus: Optional[bool] = None
+    avoid_sunlight: Optional[bool] = None
+    open_doors: Optional[bool] = None
+    break_doors: Optional[bool] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        avoid: Dict[str, Any] = {}
+        if self.avoid_lava is not None:
+            avoid["lava"] = self.avoid_lava
+        if self.avoid_water is not None:
+            avoid["water"] = self.avoid_water
+        if self.avoid_powder_snow is not None:
+            avoid["powderSnow"] = self.avoid_powder_snow
+        if self.avoid_cactus is not None:
+            avoid["cactus"] = self.avoid_cactus
+        if self.avoid_sunlight is not None:
+            avoid["sunlight"] = self.avoid_sunlight
+        if avoid:
+            payload["avoid"] = avoid
+        interactions: Dict[str, Any] = {}
+        if self.open_doors is not None:
+            interactions["openDoors"] = self.open_doors
+        if self.break_doors is not None:
+            interactions["breakDoors"] = self.break_doors
+        if interactions:
+            payload["interactions"] = interactions
+        return payload
+
+
+@dataclass
+class MobAiSchedulerSpec:
+    state_transition_cooldown_ticks: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {}
+        if self.state_transition_cooldown_ticks is not None:
+            payload["stateTransitionCooldownTicks"] = self.state_transition_cooldown_ticks
+        return payload
+
+
+@dataclass
+class MobAiUtilitySelectorSpec:
+    selector_id: str
+    base_score: int = 50
+    actions: List[MobAiGoalSpec] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.selector_id,
+            "score": {"base": self.base_score},
+            "actions": [action.to_dict() for action in self.actions],
+        }
+
+
+@dataclass
 class MobAiSpec:
+    version: Optional[MobAiVersion | str] = None
+    engine: Optional[MobAiEngine | str] = None
+    profile: Optional[MobAiProfile | str] = None
     enabled: Optional[bool] = None
     override_default: Optional[bool] = None
     aggro_radius: Optional[float] = None
@@ -317,15 +541,36 @@ class MobAiSpec:
     locomotion_mode: Optional[MobLocomotionMode | str] = None
     avoid_water: Optional[bool] = None
     avoid_lava: Optional[bool] = None
+    open_doors: Optional[bool] = None
+    break_doors: Optional[bool] = None
+    avoid_sunlight: Optional[bool] = None
+    avoid_powder_snow: Optional[bool] = None
+    avoid_cactus: Optional[bool] = None
+    call_for_help_radius: Optional[float] = None
+    assist_radius: Optional[float] = None
+    state_transition_cooldown_ticks: Optional[int] = None
     prefer_ground: Optional[bool] = None
     guard_points: List[Vec3] = field(default_factory=list)
     rage_health_ratio: Optional[float] = None
     rage_speed: Optional[float] = None
     party_rule: Optional[MobPartyRule | str] = None
     goals: List[MobAiGoalSpec] = field(default_factory=list)
+    hooks: Optional[MobAiHooksSpec] = None
+    perception: Optional[MobAiPerceptionSpec] = None
+    combat: Optional[MobAiCombatSpec] = None
+    group: Optional[MobAiGroupSpec] = None
+    environment: Optional[MobAiEnvironmentSpec] = None
+    scheduler: Optional[MobAiSchedulerSpec] = None
+    utility_selectors: List[MobAiUtilitySelectorSpec] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         payload: Dict[str, Any] = {}
+        if self.version is not None:
+            payload["version"] = _enum_or_str(self.version, "version")
+        if self.engine is not None:
+            payload["engine"] = _enum_or_str(self.engine, "engine")
+        if self.profile is not None:
+            payload["profile"] = _enum_or_str(self.profile, "profile")
         if self.enabled is not None:
             payload["enabled"] = self.enabled
         if self.override_default is not None:
@@ -359,11 +604,27 @@ class MobAiSpec:
         if self.chase_speed is not None:
             payload["chaseSpeed"] = self.chase_speed
         if self.locomotion_mode is not None:
-            payload["locomotionMode"] = _enum_or_str(self.locomotion_mode, "locomotion_mode")
+            payload["locomotion"] = _enum_or_str(self.locomotion_mode, "locomotion_mode")
         if self.avoid_water is not None:
             payload["avoidWater"] = self.avoid_water
         if self.avoid_lava is not None:
             payload["avoidLava"] = self.avoid_lava
+        if self.open_doors is not None:
+            payload["openDoors"] = self.open_doors
+        if self.break_doors is not None:
+            payload["breakDoors"] = self.break_doors
+        if self.avoid_sunlight is not None:
+            payload["avoidSunlight"] = self.avoid_sunlight
+        if self.avoid_powder_snow is not None:
+            payload["avoidPowderSnow"] = self.avoid_powder_snow
+        if self.avoid_cactus is not None:
+            payload["avoidCactus"] = self.avoid_cactus
+        if self.call_for_help_radius is not None:
+            payload["callForHelpRadius"] = self.call_for_help_radius
+        if self.assist_radius is not None:
+            payload["assistRadius"] = self.assist_radius
+        if self.state_transition_cooldown_ticks is not None:
+            payload["stateTransitionCooldownTicks"] = self.state_transition_cooldown_ticks
         if self.prefer_ground is not None:
             payload["preferGround"] = self.prefer_ground
         if self.guard_points:
@@ -376,6 +637,32 @@ class MobAiSpec:
             payload["partyRule"] = _enum_or_str(self.party_rule, "party_rule")
         if self.goals:
             payload["goals"] = [goal.to_dict() for goal in self.goals]
+        if self.hooks is not None:
+            hooks_payload = self.hooks.to_dict()
+            if hooks_payload:
+                payload["hooks"] = hooks_payload
+        if self.perception is not None:
+            perception_payload = self.perception.to_dict()
+            if perception_payload:
+                payload["perception"] = perception_payload
+        if self.combat is not None:
+            combat_payload = self.combat.to_dict()
+            if combat_payload:
+                payload["combat"] = combat_payload
+        if self.group is not None:
+            group_payload = self.group.to_dict()
+            if group_payload:
+                payload["group"] = group_payload
+        if self.environment is not None:
+            environment_payload = self.environment.to_dict()
+            if environment_payload:
+                payload["environment"] = environment_payload
+        if self.scheduler is not None:
+            scheduler_payload = self.scheduler.to_dict()
+            if scheduler_payload:
+                payload["scheduler"] = scheduler_payload
+        if self.utility_selectors:
+            payload["utility"] = {"selectors": [selector.to_dict() for selector in self.utility_selectors]}
         return payload
 
 
@@ -454,6 +741,10 @@ class MobPhase:
     passives: List[MobPassive] = field(default_factory=list)
     scale_multiplier: Optional[float] = None
     collidable: Optional[bool] = None
+    model: Optional[MobModelSpec] = None
+    visual: Optional[MobVisualSpec] = None
+    ai: Optional[MobAiSpec] = None
+    ai_merge_mode: Optional[MobAiPhaseMergeMode | str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
@@ -470,6 +761,18 @@ class MobPhase:
             payload["scaleMultiplier"] = self.scale_multiplier
         if self.collidable is not None:
             payload["collidable"] = self.collidable
+        if self.model is not None:
+            payload["model"] = self.model.to_dict()
+        if self.visual is not None:
+            payload["visual"] = self.visual.to_dict()
+        if self.ai is not None or self.ai_merge_mode is not None:
+            ai_payload: Dict[str, Any] = {}
+            if self.ai is not None:
+                ai_payload.update(self.ai.to_dict())
+            if self.ai_merge_mode is not None:
+                ai_payload["merge"] = _enum_or_str(self.ai_merge_mode, "ai_merge_mode")
+            if ai_payload:
+                payload["ai"] = ai_payload
         return payload
 
 
@@ -1472,6 +1775,7 @@ class MobBuilder(BuilderBase):
         self._death_particles: Optional[MobParticlesSpec] = None
         self._death_sound: Optional[MobSoundSpec] = None
         self._equipment: Optional[MobEquipmentSpec] = None
+        self._visual: Optional[MobVisualSpec] = None
         self._variants: List[MobVariantSpec] = []
         self._traits: List[MobTraitSpec] = []
         self._resistances: Dict[str, float] = {}
@@ -1594,6 +1898,29 @@ class MobBuilder(BuilderBase):
 
     def model(self, spec: MobModelSpec) -> "MobBuilder":
         self._model = spec
+        return self
+
+    def model_full_replacement(
+        self,
+        model_id: Optional[str] = None,
+        *,
+        provider: str = "model_engine",
+        hide_base: bool = True,
+        animation: Optional[str] = None,
+        animation_speed: float = 1.0,
+        animations: Optional[Mapping[str, str]] = None,
+    ) -> "MobBuilder":
+        if not model_id:
+            raise ValueError("model_full_replacement requires model_id")
+        self._model = MobModelSpec(
+            model_id=model_id,
+            provider=provider,
+            replace_visual=True,
+            hide_base_entity=hide_base,
+            animation=animation,
+            animation_speed=animation_speed,
+            animations=animations,
+        )
         return self
 
     def boss_broadcast(self, spec: MobBroadcastSpec) -> "MobBuilder":
@@ -1745,6 +2072,66 @@ class MobBuilder(BuilderBase):
         self._ai = spec
         return self
 
+    def ai_simple(self, profile: MobAiProfile | str, **overrides: Any) -> "MobBuilder":
+        """Configure simple AI from a profile plus optional field overrides."""
+        spec = MobAiSpec(
+            version=MobAiVersion.V3,
+            engine=MobAiEngine.V3,
+            profile=profile,
+            enabled=True,
+        )
+        aliases = {
+            "locomotion": "locomotion_mode",
+            "stateTransitionCooldownTicks": "state_transition_cooldown_ticks",
+            "callForHelpRadius": "call_for_help_radius",
+            "assistRadius": "assist_radius",
+        }
+        for key, value in overrides.items():
+            target_key = aliases.get(key, key)
+            if not hasattr(spec, target_key):
+                raise ValueError(f"unknown ai override field: {key}")
+            setattr(spec, target_key, value)
+        self._ai = spec
+        return self
+
+    def ai_advanced(self, spec: MobAiSpec) -> "MobBuilder":
+        self._ai = spec
+        return self
+
+    def ai_profile_v3(self, profile: MobAiProfile | str, **overrides: Any) -> "MobBuilder":
+        spec = MobAiSpec(
+            version=MobAiVersion.V3,
+            engine=MobAiEngine.V3,
+            profile=profile,
+            enabled=True,
+        )
+        for key, value in overrides.items():
+            if not hasattr(spec, key):
+                raise ValueError(f"unknown ai v3 override field: {key}")
+            setattr(spec, key, value)
+        self._ai = spec
+        return self
+
+    def ai_selector(
+        self,
+        selector_id: str,
+        *,
+        base_score: int = 50,
+        actions: Optional[List[MobAiGoalSpec]] = None,
+    ) -> "MobBuilder":
+        spec = self._ai or MobAiSpec(version=MobAiVersion.V3, engine=MobAiEngine.V3, enabled=True)
+        selectors = list(spec.utility_selectors)
+        selectors.append(
+            MobAiUtilitySelectorSpec(
+                selector_id=selector_id,
+                base_score=base_score,
+                actions=list(actions or []),
+            )
+        )
+        spec.utility_selectors = selectors
+        self._ai = spec
+        return self
+
     def main_attack(self, attack: MobAttack) -> "MobBuilder":
         self._attacks["main"] = attack
         return self
@@ -1784,6 +2171,47 @@ class MobBuilder(BuilderBase):
     def equipment(self, spec: MobEquipmentSpec) -> "MobBuilder":
         self._equipment = spec
         return self
+
+    def visual(self, spec: MobVisualSpec) -> "MobBuilder":
+        self._visual = spec
+        return self
+
+    def phase_visual(self, phase_id: str, spec: MobVisualSpec) -> "MobBuilder":
+        for phase in self._phases:
+            if phase.phase_id == phase_id:
+                phase.visual = spec
+                return self
+        raise ValueError(f"unknown phase_id: {phase_id}")
+
+    def phase_model(self, phase_id: str, spec: MobModelSpec) -> "MobBuilder":
+        for phase in self._phases:
+            if phase.phase_id == phase_id:
+                phase.model = spec
+                return self
+        raise ValueError(f"unknown phase_id: {phase_id}")
+
+    def phase_ai(
+        self,
+        phase_id: str,
+        spec: MobAiSpec,
+        merge_mode: MobAiPhaseMergeMode | str = MobAiPhaseMergeMode.PATCH,
+    ) -> "MobBuilder":
+        for phase in self._phases:
+            if phase.phase_id == phase_id:
+                phase.ai = spec
+                phase.ai_merge_mode = merge_mode
+                return self
+        raise ValueError(f"unknown phase_id: {phase_id}")
+
+    def phase_ai_v3(
+        self,
+        phase_id: str,
+        spec: MobAiSpec,
+        merge_mode: MobAiPhaseMergeMode | str = MobAiPhaseMergeMode.PATCH,
+    ) -> "MobBuilder":
+        spec.version = spec.version or MobAiVersion.V3
+        spec.engine = spec.engine or MobAiEngine.V3
+        return self.phase_ai(phase_id, spec, merge_mode)
 
     def main_hand(self, item: Any) -> "MobBuilder":
         spec = self._equipment or MobEquipmentSpec()
@@ -1929,6 +2357,8 @@ class MobBuilder(BuilderBase):
             payload["loot"] = self._loot.to_dict()
         if self._equipment:
             payload["equipment"] = self._equipment.to_dict()
+        if self._visual:
+            payload["visual"] = self._visual.to_dict()
         if self._variants:
             payload["variants"] = [variant.to_dict() for variant in self._variants]
         if self._traits:

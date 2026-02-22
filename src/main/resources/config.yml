@@ -15,6 +15,29 @@ logging:
   locales: INFO
   advancements: INFO
 
+effects:
+  combat:
+    enabled: true
+    engineVersion: V2
+    strictSchema: true
+    legacyFallbackEnabled: false
+    legacyWarnOnce: true
+    migration:
+      required: true
+    debug: false
+    asyncPlanner:
+      enabled: true
+      workerThreads: auto
+      maxJobsPerTick: 2000
+      queueCapacity: 12000
+      planTtlTicks: 1
+    guardrails:
+      maxEventDispatchPerTick: 2000
+      maxDamagePacketsPerTick: 4000
+      degradePolicy: DROP_LOW_PRIORITY
+    metrics:
+      enabled: true
+
 # Locale settings.
 locales:
   # Default locale code used for all players unless overridden.
@@ -38,6 +61,44 @@ debug:
     waveLogs: false
   mobs:
     spawnLogs: false
+
+# Runtime texture pipeline (PNG-only).
+assets:
+  textures:
+    enabled: true
+    namespace: dungeonsreborn
+    autoBuildOnReload: true
+    sourceDir: assets/textures
+    buildDir: assets/generated/resourcepack
+    zipName: dungeonsreborn-generated-pack.zip
+    packDescription: DungeonsReborn Generated Pack
+    # Set this to your target Minecraft resource pack format.
+    packFormat: 46
+    delivery:
+      enabled: true
+      url: ""
+      sha1: ""
+      required: false
+      prompt: <gold>Custom textures required</gold>
+      # Optional built-in HTTP delivery to avoid external hosting.
+      # When enabled, if url is empty the plugin serves the generated zip and uses that URL.
+      embedded:
+        enabled: true
+        # Bind address for the local HTTP server.
+        bind: 0.0.0.0
+        # Port to bind (0 = random free port).
+        port: 0
+        # Public host players should use (set this for real servers).
+        publicHost: ""
+        # Public port override (0 = use bound port).
+        publicPort: 0
+        # Public scheme (use https if you're behind TLS proxy).
+        scheme: http
+        # Route where the generated zip is served.
+        path: /dungeonsreborn/generated-pack.zip
+    compat:
+      writeCustomModelData: true
+      cmdRegistryStart: 10000
 
 # Advancement system settings.
 advancements:
@@ -71,6 +132,32 @@ mobs:
   performance:
     # Optional cap on how many active mobs are processed per tick (0 = unlimited).
     maxTickMobs: 0
+  ai:
+    enabled: true
+    defaultEngine: V3
+    pathfinder:
+      enabled: true
+      useMobGoalsApi: true
+    async:
+      enabled: true
+      workerThreads: auto
+      maxWorkerThreads: 8
+      maxJobsPerTick: 2000
+      queueCapacity: 10000
+      planTtlTicks: 1
+    guardrails:
+      maxAiStepsPerTick: 3000
+      maxPathMutationsPerTick: 500
+      retargetMinIntervalTicks: 5
+      pathRecalcMinIntervalTicks: 10
+      degradePolicy: PRIORITY_DESC
+      fallbackMode: LIGHTWEIGHT
+    metrics:
+      enabled: true
+      sampleWindowTicks: 200
+  models:
+    # Custom mob model bridge is disabled; mobs use vanilla visuals.
+    enabled: false
   xpGating:
     # Require a minimum XP level to damage certain mobs.
     enabled: true

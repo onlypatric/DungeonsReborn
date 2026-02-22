@@ -38,6 +38,7 @@ import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 
 public final class UpgradeYamlRegistry {
@@ -156,7 +157,10 @@ public final class UpgradeYamlRegistry {
       if (out.exists()) {
         continue;
       }
-      plugin.saveResource("effects/upgrades/" + trimmed, false);
+      String resourcePath = "effects/upgrades/" + trimmed;
+      if (!PluginResources.saveResourceIfPresent(plugin, resourcePath, false)) {
+        logger.warn("[Upgrades] Missing bundled upgrade: " + resourcePath + " (skipping copy)");
+      }
     }
   }
 

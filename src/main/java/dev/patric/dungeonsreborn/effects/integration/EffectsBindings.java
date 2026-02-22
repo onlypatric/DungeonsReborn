@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,10 @@ import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.items.ItemConsumeMode;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventBinding;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventContext;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventSource;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventType;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeModifierType;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeSpellBindingSpec;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
@@ -44,6 +49,7 @@ public final class EffectsBindings implements Listener {
   private final List<InteractBinding> interactBindings = new ArrayList<>();
   private final List<PassiveBinding> passiveBindings = new ArrayList<>();
   private final List<EventBinding> eventBindings = new ArrayList<>();
+  private final List<CombatEventBinding> combatEventBindings = new ArrayList<>();
   private final java.util.Map<java.util.UUID, Long> lastHandledInteractTickByPlayer = new java.util.HashMap<>();
   private static final long PASSIVE_TICK_PERIOD = 1L;
   private static final long ITEM_PASSIVE_PERIOD = 20L;
@@ -78,6 +84,19 @@ public final class EffectsBindings implements Listener {
   public boolean unregisterEvent(String bindingId) {
     Objects.requireNonNull(bindingId, "bindingId");
     return eventBindings.removeIf(b -> b.id().equals(bindingId));
+  }
+
+  public void registerCombatEvent(CombatEventBinding binding) {
+    Objects.requireNonNull(binding, "binding");
+    combatEventBindings.add(binding);
+    engine.combatDispatcher().register(binding);
+  }
+
+  public boolean unregisterCombatEvent(String bindingId) {
+    Objects.requireNonNull(bindingId, "bindingId");
+    boolean removed = combatEventBindings.removeIf(b -> b.id().equals(bindingId));
+    engine.combatDispatcher().unregister(bindingId);
+    return removed;
   }
 
   public void register(AbilitySpec spec) {
@@ -155,16 +174,71 @@ public final class EffectsBindings implements Listener {
     return Collections.unmodifiableList(eventBindings);
   }
 
+  public List<CombatEventBinding> combatEventBindings() {
+    return Collections.unmodifiableList(combatEventBindings);
+  }
+
   @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
   public void onHit(EntityDamageByEntityEvent event) {
     Player attacker = resolvePlayerAttacker(event.getDamager());
-    if (attacker == null) {
-      return;
+    LivingEntity victim = event.getEntity() instanceof LivingEntity living ? living : null;
+    LivingEntity sourceAttacker = resolveLivingAttacker(event.getDamager());
+    if (sourceAttacker != null && victim != null) {
+      CombatEventSource source = event.getDamager() instanceof Projectile ? CombatEventSource.PROJECTILE : CombatEventSource.MELEE;
+      engine.combatDispatcher().dispatch(new CombatEventContext(
+          engine.tickNow(),
+          CombatEventType.ON_ATTACK_ATTEMPT,
+          sourceAttacker,
+          victim,
+          victim,
+          event.getDamager(),
+          source,
+          event.getFinalDamage(),
+          isLikelyCritical(sourceAttacker),
+          false,
+          false,
+          null,
+          dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+          null,
+          null));
+      if (event.getFinalDamage() > 0.0) {
+        engine.combatDispatcher().dispatch(new CombatEventContext(
+            engine.tickNow(),
+            CombatEventType.ON_ATTACK_HIT,
+            sourceAttacker,
+            victim,
+            victim,
+            event.getDamager(),
+            source,
+            event.getFinalDamage(),
+            isLikelyCritical(sourceAttacker),
+            false,
+            false,
+            null,
+            dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+            null,
+            null));
+        engine.combatDispatcher().dispatch(new CombatEventContext(
+            engine.tickNow(),
+            CombatEventType.ON_HIT_TAKEN,
+            sourceAttacker,
+            victim,
+            victim,
+            event.getDamager(),
+            source,
+            event.getFinalDamage(),
+            false,
+            false,
+            false,
+            null,
+            dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+            null,
+            null));
+      }
     }
-    if (!(event.getFinalDamage() > 0.0)) {
-      return;
+    if (attacker != null && event.getFinalDamage() > 0.0) {
+      triggerEvent(EventTrigger.ON_HIT, attacker);
     }
-    triggerEvent(EventTrigger.ON_HIT, attacker);
   }
 
   @EventHandler(priority = EventPriority.MONITOR)
@@ -175,6 +249,23 @@ public final class EffectsBindings implements Listener {
     if (!event.isCancelled() && event.getFinalDamage() > 0.0) {
       return;
     }
+    LivingEntity attacker = resolveLivingAttacker(event.getDamager());
+    engine.combatDispatcher().dispatch(new CombatEventContext(
+        engine.tickNow(),
+        CombatEventType.ON_DODGE,
+        attacker,
+        player,
+        player,
+        event.getDamager(),
+        event.getDamager() instanceof Projectile ? CombatEventSource.PROJECTILE : CombatEventSource.MELEE,
+        0.0,
+        false,
+        player.isBlocking(),
+        true,
+        null,
+        dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+        null,
+        null));
     triggerEvent(EventTrigger.ON_DODGE, player);
   }
 
@@ -184,6 +275,23 @@ public final class EffectsBindings implements Listener {
     if (killer == null) {
       return;
     }
+    LivingEntity victim = event.getEntity();
+    engine.combatDispatcher().dispatch(new CombatEventContext(
+        engine.tickNow(),
+        CombatEventType.ON_ATTACK_KILL,
+        killer,
+        victim,
+        victim,
+        killer,
+        CombatEventSource.MELEE,
+        0.0,
+        false,
+        false,
+        false,
+        null,
+        dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+        null,
+        null));
     triggerEvent(EventTrigger.ON_KILL, killer);
   }
 
@@ -192,6 +300,22 @@ public final class EffectsBindings implements Listener {
     if (!event.isSprinting()) {
       return;
     }
+    engine.combatDispatcher().dispatch(new CombatEventContext(
+        engine.tickNow(),
+        CombatEventType.ON_SPRINT,
+        event.getPlayer(),
+        null,
+        null,
+        event.getPlayer(),
+        CombatEventSource.UNKNOWN,
+        0.0,
+        false,
+        false,
+        false,
+        null,
+        dev.patric.dungeonsreborn.effects.damage.DamageCause.DIRECT,
+        null,
+        null));
     triggerEvent(EventTrigger.ON_SPRINT, event.getPlayer());
   }
 
@@ -263,6 +387,23 @@ public final class EffectsBindings implements Listener {
       return player;
     }
     return null;
+  }
+
+  private static LivingEntity resolveLivingAttacker(Entity damager) {
+    if (damager instanceof LivingEntity living) {
+      return living;
+    }
+    if (damager instanceof Projectile projectile && projectile.getShooter() instanceof LivingEntity living) {
+      return living;
+    }
+    return null;
+  }
+
+  private static boolean isLikelyCritical(LivingEntity attacker) {
+    if (!(attacker instanceof Player player)) {
+      return false;
+    }
+    return player.getFallDistance() > 0.0f && !player.isOnGround() && !player.isInWater() && !player.isInsideVehicle();
   }
 
   private void tickItemPassives() {

@@ -2,6 +2,7 @@ package dev.patric.dungeonsreborn.mobs;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,8 @@ import java.util.function.Predicate;
 import org.bukkit.Location;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Openable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -35,6 +38,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.ArmorStand;
@@ -65,8 +69,26 @@ import dev.patric.dungeonsreborn.progression.ProgressionService;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpProfile;
 import dev.patric.dungeonsreborn.progression.custom.CustomXpService;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiEngineMode;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiNavigationDriver;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiProfile;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiRuntimeMetrics;
+import dev.patric.dungeonsreborn.mobs.ai.MobGoalsNavigationDriver;
+import dev.patric.dungeonsreborn.mobs.ai.VelocityNavigationDriver;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiGuardrailController;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiPlan;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiPlannerService;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiSnapshot;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiV3Resolver;
+import dev.patric.dungeonsreborn.mobs.ai.v3.MobAiV3Spec;
+import dev.patric.dungeonsreborn.mobs.model.ModelRuntimeSpec;
+import dev.patric.dungeonsreborn.mobs.model.MobModelBridge;
+import dev.patric.dungeonsreborn.mobs.model.NoopMobModelBridge;
+import dev.patric.dungeonsreborn.textures.TextureService;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -86,6 +108,49 @@ public final class MobRegistry implements Listener {
       String cooldownSummary, String pathInfo, long stateAgeTicks) {
   }
 
+  public record ModelBridgeStatus(
+      boolean enabled,
+      String provider,
+      boolean available,
+      int activeModeledEntities,
+      long fallbackCount,
+      long lastReloadEpochMs,
+      long syncPeriodTicks,
+      String missingProviderPolicy,
+      boolean debug) {
+  }
+
+  public record AiStatusSnapshot(
+      boolean enabled,
+      String defaultEngine,
+      boolean pathfinderEnabled,
+      boolean useMobGoalsApi,
+      boolean asyncEnabled,
+      int asyncQueueSize,
+      int asyncWorkers,
+      int activeMobs,
+      int aiStepsLastTick,
+      int pathMutationsLastTick,
+      long guardrailTrips,
+      long fallbackTicks,
+      long stalePlanDiscards,
+      String degradeTier) {
+  }
+
+  public record AiAsyncStatusSnapshot(
+      boolean enabled,
+      int workers,
+      int queueSize,
+      int queueCapacity,
+      int maxJobsPerTick,
+      long planTtlTicks,
+      long submitted,
+      long completed,
+      long staleDiscards,
+      long droppedBackpressure,
+      long failed) {
+  }
+
   private static final long TICK_PERIOD = 1L;
   private final Map<String, MobSpec> specs = new LinkedHashMap<>();
   private final Map<UUID, MobInstance> active = new java.util.HashMap<>();
@@ -97,6 +162,7 @@ public final class MobRegistry implements Listener {
   private final Random rng = new Random();
   private final EffectsEngine engine;
   private ServiceLogger logger;
+  private TextureService textureService;
   private MinionManager minionManager;
   private MobSpawnManager spawnManager;
   private ShopYamlRegistry shopRegistry;
@@ -119,6 +185,44 @@ public final class MobRegistry implements Listener {
   private MinionKillCredit minionXpCredit = MinionKillCredit.OWNER;
   private final Map<UUID, Long> nextXpGateMessageAt = new java.util.HashMap<>();
   private Predicate<World> worldAllowed = world -> true;
+  private MobModelBridge modelBridge = new NoopMobModelBridge();
+  private boolean modelBridgeEnabled = true;
+  private String modelBridgeProvider = "model_engine";
+  private boolean modelBridgeDebug;
+  private long modelSyncPeriodTicks = 5L;
+  private String modelMissingProviderPolicy = "WARN_AND_FALLBACK";
+  private long modelFallbackCount;
+  private final Set<String> modelFallbackWarnings = new HashSet<>();
+  private long modelLastReloadEpochMs;
+  private static final double MODEL_MOVE_THRESHOLD_SQ = 0.02D * 0.02D;
+  private boolean aiEnabled = true;
+  private MobAiEngineMode aiDefaultEngine = MobAiEngineMode.LEGACY;
+  private boolean aiPathfinderEnabled = true;
+  private boolean aiUseMobGoalsApi = true;
+  private int aiMaxStepsPerTick = 3000;
+  private int aiMaxPathMutationsPerTick = 500;
+  private long aiRetargetMinIntervalTicks = 5L;
+  private long aiPathRecalcMinIntervalTicks = 10L;
+  private long aiSampleWindowTicks = 200L;
+  private boolean aiAsyncEnabled = true;
+  private int aiAsyncWorkerThreads = Math.max(1, Math.min(8, Runtime.getRuntime().availableProcessors() - 1));
+  private int aiAsyncMaxJobsPerTick = 2000;
+  private int aiAsyncQueueCapacity = 10_000;
+  private long aiAsyncPlanTtlTicks = 1L;
+  private int aiStepsThisTick;
+  private int aiPathMutationsThisTick;
+  private int aiStepsLastTick;
+  private int aiPathMutationsLastTick;
+  private long aiTotalSteps;
+  private long aiTotalPathMutations;
+  private long aiGuardrailTrips;
+  private long aiFallbackTicks;
+  private long aiStalePlanDiscards;
+  private MobAiGuardrailController.DegradeTier aiCurrentDegradeTier = MobAiGuardrailController.DegradeTier.NONE;
+  private final MobAiGuardrailController aiGuardrailController = new MobAiGuardrailController();
+  private MobAiPlannerService aiPlannerService;
+  private final MobAiNavigationDriver mobGoalsNavigationDriver = new MobGoalsNavigationDriver();
+  private final MobAiNavigationDriver velocityNavigationDriver = new VelocityNavigationDriver();
 
   private static final class MobState {
     private UUID lastAttacker;
@@ -150,6 +254,11 @@ public final class MobRegistry implements Listener {
     private double baseScale = 1.0;
     private UUID compositePartner;
     private boolean compositeKeepAlive;
+    private long nextModelSyncTick;
+    private boolean modelMoving;
+    private long nextCallHelpTick;
+    private long nextRetargetTick;
+    private long nextPathRecalcTick;
   }
 
   private record ManaKillStreak(long lastKillTick, int streak) {
@@ -157,6 +266,7 @@ public final class MobRegistry implements Listener {
 
   public MobRegistry(EffectsEngine engine) {
     this.engine = Objects.requireNonNull(engine, "engine");
+    this.aiPlannerService = new MobAiPlannerService(aiAsyncWorkerThreads, aiAsyncQueueCapacity);
     engine.runRepeating(TICK_PERIOD, TICK_PERIOD, this::tick);
   }
 
@@ -174,6 +284,216 @@ public final class MobRegistry implements Listener {
 
   public void setLogger(ServiceLogger logger) {
     this.logger = logger;
+  }
+
+  public void setTextureService(TextureService textureService) {
+    this.textureService = textureService;
+  }
+
+  public void configureModelBridge(MobModelBridge bridge, boolean enabled, String provider, boolean debug,
+      long syncPeriodTicks, String missingProviderPolicy) {
+    this.modelBridge = bridge == null ? new NoopMobModelBridge() : bridge;
+    this.modelBridgeEnabled = enabled;
+    this.modelBridgeProvider = provider == null || provider.isBlank() ? "model_engine" : provider;
+    this.modelBridgeDebug = debug;
+    this.modelSyncPeriodTicks = Math.max(1L, syncPeriodTicks);
+    this.modelMissingProviderPolicy = missingProviderPolicy == null || missingProviderPolicy.isBlank()
+        ? "WARN_AND_FALLBACK"
+        : missingProviderPolicy;
+    this.modelFallbackCount = 0L;
+    this.modelFallbackWarnings.clear();
+    this.modelLastReloadEpochMs = System.currentTimeMillis();
+  }
+
+  public ModelBridgeStatus modelBridgeStatus() {
+    return new ModelBridgeStatus(
+        modelBridgeEnabled,
+        modelBridgeProvider,
+        modelBridge != null && modelBridge.available(),
+        modelBridge == null ? 0 : modelBridge.activeCount(),
+        modelFallbackCount,
+        modelLastReloadEpochMs,
+        modelSyncPeriodTicks,
+        modelMissingProviderPolicy,
+        modelBridgeDebug);
+  }
+
+  public void configureAi(
+      boolean enabled,
+      MobAiEngineMode defaultEngine,
+      boolean pathfinderEnabled,
+      boolean useMobGoalsApi,
+      int maxAiStepsPerTick,
+      int maxPathMutationsPerTick,
+      long retargetMinIntervalTicks,
+      long pathRecalcMinIntervalTicks,
+      long sampleWindowTicks,
+      boolean asyncEnabled,
+      int asyncWorkerThreads,
+      int asyncMaxJobsPerTick,
+      int asyncQueueCapacity,
+      long asyncPlanTtlTicks) {
+    this.aiEnabled = enabled;
+    this.aiDefaultEngine = defaultEngine == null ? MobAiEngineMode.LEGACY : defaultEngine;
+    this.aiPathfinderEnabled = pathfinderEnabled;
+    this.aiUseMobGoalsApi = useMobGoalsApi;
+    this.aiMaxStepsPerTick = Math.max(0, maxAiStepsPerTick);
+    this.aiMaxPathMutationsPerTick = Math.max(0, maxPathMutationsPerTick);
+    this.aiRetargetMinIntervalTicks = Math.max(0L, retargetMinIntervalTicks);
+    this.aiPathRecalcMinIntervalTicks = Math.max(0L, pathRecalcMinIntervalTicks);
+    this.aiSampleWindowTicks = Math.max(1L, sampleWindowTicks);
+    this.aiAsyncEnabled = asyncEnabled;
+    this.aiAsyncWorkerThreads = Math.max(1, asyncWorkerThreads);
+    this.aiAsyncMaxJobsPerTick = Math.max(1, asyncMaxJobsPerTick);
+    this.aiAsyncQueueCapacity = Math.max(128, asyncQueueCapacity);
+    this.aiAsyncPlanTtlTicks = Math.max(1L, asyncPlanTtlTicks);
+    if (aiPlannerService != null) {
+      aiPlannerService.shutdown();
+    }
+    aiPlannerService = new MobAiPlannerService(aiAsyncWorkerThreads, aiAsyncQueueCapacity);
+  }
+
+  public AiStatusSnapshot aiStatus() {
+    return new AiStatusSnapshot(
+        aiEnabled,
+        aiDefaultEngine.name(),
+        aiPathfinderEnabled,
+        aiUseMobGoalsApi,
+        aiAsyncEnabled,
+        aiPlannerService == null ? 0 : aiPlannerService.queueSize(),
+        aiAsyncWorkerThreads,
+        active.size(),
+        aiStepsLastTick,
+        aiPathMutationsLastTick,
+        aiGuardrailTrips,
+        aiFallbackTicks,
+        aiStalePlanDiscards,
+        aiCurrentDegradeTier.name());
+  }
+
+  public MobAiRuntimeMetrics aiMetrics() {
+    return new MobAiRuntimeMetrics(
+        aiStepsLastTick,
+        aiPathMutationsLastTick,
+        aiTotalSteps,
+        aiTotalPathMutations,
+        aiGuardrailTrips,
+        aiFallbackTicks,
+        aiSampleWindowTicks);
+  }
+
+  public AiAsyncStatusSnapshot aiAsyncStatus() {
+    long submitted = 0L;
+    long completed = 0L;
+    long dropped = 0L;
+    long failed = 0L;
+    if (aiPlannerService != null && aiPlannerService.metrics() != null) {
+      submitted = aiPlannerService.metrics().submitted();
+      completed = aiPlannerService.metrics().completed();
+      dropped = aiPlannerService.metrics().droppedBackpressure();
+      failed = aiPlannerService.metrics().failed();
+    }
+    return new AiAsyncStatusSnapshot(
+        aiAsyncEnabled,
+        aiAsyncWorkerThreads,
+        aiPlannerService == null ? 0 : aiPlannerService.queueSize(),
+        aiAsyncQueueCapacity,
+        aiAsyncMaxJobsPerTick,
+        aiAsyncPlanTtlTicks,
+        submitted,
+        completed,
+        aiStalePlanDiscards,
+        dropped,
+        failed);
+  }
+
+  public String aiDegradeStatus() {
+    return aiCurrentDegradeTier.name();
+  }
+
+  public boolean tuneAiAsync(String key, String value) {
+    if (key == null || value == null) {
+      return false;
+    }
+    String k = key.trim().toLowerCase(Locale.ROOT);
+    try {
+      switch (k) {
+        case "enabled" -> aiAsyncEnabled = Boolean.parseBoolean(value);
+        case "workers" -> aiAsyncWorkerThreads = Math.max(1, Integer.parseInt(value));
+        case "maxjobspetick", "maxjobspertick", "max_jobs_per_tick" -> aiAsyncMaxJobsPerTick = Math.max(1, Integer.parseInt(value));
+        case "queuecapacity", "queue_capacity" -> aiAsyncQueueCapacity = Math.max(128, Integer.parseInt(value));
+        case "planttl", "plan_ttl", "planttlticks", "plan_ttl_ticks" -> aiAsyncPlanTtlTicks = Math.max(1L, Long.parseLong(value));
+        default -> {
+          return false;
+        }
+      }
+      if (k.equals("workers") || k.equals("queuecapacity") || k.equals("queue_capacity")) {
+        if (aiPlannerService != null) {
+          aiPlannerService.shutdown();
+        }
+        aiPlannerService = new MobAiPlannerService(aiAsyncWorkerThreads, aiAsyncQueueCapacity);
+      }
+      return true;
+    } catch (Exception ex) {
+      return false;
+    }
+  }
+
+  public String simulateAi(String mobId, int ticks) {
+    if (mobId == null || mobId.isBlank() || ticks <= 0) {
+      return "invalid";
+    }
+    MobSpec spec = specs.get(Ids.normalize(mobId));
+    if (spec == null) {
+      return "missing";
+    }
+    MobAiSpec ai = spec.aiSpec();
+    MobAiV3Spec resolved = MobAiV3Resolver.resolve(ai);
+    return "profile=" + resolved.profile().name() + ", goals=" + resolved.goals().size() + ", ticks=" + ticks;
+  }
+
+  public void markModelRegistryReload() {
+    modelLastReloadEpochMs = System.currentTimeMillis();
+    modelFallbackCount = 0L;
+    modelFallbackWarnings.clear();
+    if (modelBridge == null) {
+      return;
+    }
+    int refreshed = 0;
+    for (Map.Entry<UUID, MobInstance> entry : active.entrySet()) {
+      if (entry == null || entry.getKey() == null || entry.getValue() == null) {
+        continue;
+      }
+      Entity entity = Bukkit.getEntity(entry.getKey());
+      if (!(entity instanceof LivingEntity living) || !living.isValid() || living.isDead()) {
+        continue;
+      }
+      MobSpec spec = specs.get(entry.getValue().specId());
+      if (spec == null) {
+        detachModelBridge(living);
+        continue;
+      }
+      MobState state = states.get(entry.getKey());
+      MobPhaseSpec phase = currentPhase(state, spec);
+      MobModelSpec model = phase != null && phase.modelSpec() != null ? phase.modelSpec() : spec.modelSpec();
+      applyModelBridgeUpdate(living, model, spec.id());
+      refreshed++;
+    }
+    if (modelBridgeDebug && logger != null) {
+      logger.info("[Mobs] model bridge refresh on reload: refreshed=" + refreshed);
+    }
+  }
+
+  private MobPhaseSpec currentPhase(MobState state, MobSpec spec) {
+    if (state == null || spec == null || state.phaseId == null || state.phaseId.isBlank()) {
+      return null;
+    }
+    for (MobPhaseSpec phase : spec.phases()) {
+      if (phase != null && state.phaseId.equals(phase.id())) {
+        return phase;
+      }
+    }
+    return null;
   }
 
   public void setMaxActivePerTick(int maxActivePerTick) {
@@ -403,18 +723,27 @@ public final class MobRegistry implements Listener {
     MobMarkers.setOwner(entity, ownerId);
     MobMarkers.setVariant(entity, variant == null ? null : variant.id());
     MobMarkers.setTrait(entity, trait == null ? null : trait.id());
-    applyModelSpec(entity, spec.modelSpec());
+    MobModelSpec effectiveModel = spec.modelSpec();
+    applyModelSpec(entity, effectiveModel);
     applyCollidable(entity, resolveCollidable(spec, variant, null));
     applyInvulnerable(entity, spec.invulnerable());
+    entity.setSilent(spec.silent());
 
     var equipment = entity.getEquipment();
     if (equipment != null) {
-      equipment.setItemInMainHand(spec.mainHand());
-      equipment.setItemInOffHand(spec.offHand());
-      equipment.setHelmet(spec.head());
+      ItemStack mainHand = spec.mainHand();
+      ItemStack offHand = spec.offHand();
+      ItemStack head = spec.head();
+      equipment.setItemInMainHand(mainHand);
+      equipment.setItemInOffHand(offHand);
+      equipment.setHelmet(head);
       equipment.setChestplate(spec.chest());
       equipment.setLeggings(spec.legs());
       equipment.setBoots(spec.feet());
+      MobVisualSpec visual = resolveVisualSpec(spec.visualSpec(), effectiveModel, spec.id());
+      if (!isFullModelReplacement(effectiveModel)) {
+        applyVisualEquipment(equipment, visual, mainHand, offHand, head, spec.id());
+      }
     }
 
     applyAttributes(entity, spec.attributes());
@@ -430,6 +759,7 @@ public final class MobRegistry implements Listener {
     if (trait != null && trait.resistances() != null && !trait.resistances().isEmpty()) {
       applyResistances(entity, trait.resistances());
     }
+    applyModelBridgeAttach(entity, effectiveModel, spec.id());
   }
 
   private void syncHealthToMax(LivingEntity entity) {
@@ -510,6 +840,12 @@ public final class MobRegistry implements Listener {
       equipment.setChestplate(chest == null ? null : chest.clone());
       equipment.setLeggings(legs == null ? null : legs.clone());
       equipment.setBoots(feet == null ? null : feet.clone());
+      MobVisualSpec phaseVisual = phase != null && phase.visualSpec() != null ? phase.visualSpec() : spec.visualSpec();
+      MobModelSpec modelForVisual = phase != null && phase.modelSpec() != null ? phase.modelSpec() : spec.modelSpec();
+      MobVisualSpec visual = resolveVisualSpec(phaseVisual, modelForVisual, spec.id());
+      if (!isFullModelReplacement(modelForVisual)) {
+        applyVisualEquipment(equipment, visual, mainHand, offHand, head, spec.id());
+      }
     }
     Double phaseScaleMultiplier = phase == null ? null : phase.scaleMultiplier();
     AttributeInstance scale = entity.getAttribute(Attribute.SCALE);
@@ -526,7 +862,78 @@ public final class MobRegistry implements Listener {
     applyNameplate(spec, entity, variant, trait, style, hasVariantName, hasTraitName);
     MobModelSpec model = phase != null && phase.modelSpec() != null ? phase.modelSpec() : spec.modelSpec();
     applyModelSpec(entity, model);
+    applyModelBridgeUpdate(entity, model, spec.id());
     applyCollidable(entity, resolveCollidable(spec, variant, phase));
+  }
+
+  private void applyVisualEquipment(org.bukkit.inventory.EntityEquipment equipment, MobVisualSpec visual,
+      ItemStack explicitMainHand, ItemStack explicitOffHand, ItemStack explicitHead, String mobId) {
+    if (equipment == null || visual == null || textureService == null) {
+      return;
+    }
+    ItemStack visualItem = createVisualItem(visual);
+    if (visualItem == null) {
+      return;
+    }
+    switch (visual.slot()) {
+      case HEAD -> {
+        if (explicitHead != null) {
+          logVisualConflict(mobId, visual, "head");
+          return;
+        }
+        equipment.setHelmet(visualItem);
+        equipment.setHelmetDropChance(0.0f);
+      }
+      case MAIN_HAND -> {
+        if (explicitMainHand != null) {
+          logVisualConflict(mobId, visual, "mainHand");
+          return;
+        }
+        equipment.setItemInMainHand(visualItem);
+        equipment.setItemInMainHandDropChance(0.0f);
+      }
+      case OFF_HAND -> {
+        if (explicitOffHand != null) {
+          logVisualConflict(mobId, visual, "offHand");
+          return;
+        }
+        equipment.setItemInOffHand(visualItem);
+        equipment.setItemInOffHandDropChance(0.0f);
+      }
+    }
+  }
+
+  private ItemStack createVisualItem(MobVisualSpec visual) {
+    if (visual == null || visual.material() == null || visual.modelKey() == null || visual.modelKey().isBlank()) {
+      return null;
+    }
+    try {
+      ItemStack item = new ItemStack(visual.material());
+      item.setData(DataComponentTypes.ITEM_MODEL, Key.key(visual.modelKey()));
+      if (textureService.config().compatWriteCustomModelData()) {
+        int cmd = textureService.assignCompatCustomModelData(visual.modelKey());
+        if (cmd > 0) {
+          var meta = item.getItemMeta();
+          if (meta != null) {
+            meta.setCustomModelData(cmd);
+            item.setItemMeta(meta);
+          }
+        }
+      }
+      return item;
+    } catch (Exception ex) {
+      if (logger != null) {
+        logger.warn("[Mobs] visual item build failed for model " + visual.modelKey() + ": " + ex.getMessage());
+      }
+      return null;
+    }
+  }
+
+  private void logVisualConflict(String mobId, MobVisualSpec visual, String slot) {
+    if (logger != null) {
+      logger.warn("[Mobs] visual skipped due to explicit equipment slot: mob=" + mobId
+          + " slot=" + slot + " texture=" + visual.texturePath());
+    }
   }
 
   private double readScale(LivingEntity entity) {
@@ -551,6 +958,10 @@ public final class MobRegistry implements Listener {
     MobSpec spec = specs.get(id);
     if (spec == null) {
       return;
+    }
+    playModelAnimation(entity, "death");
+    if (aiPlannerService != null) {
+      aiPlannerService.cancelEntity(entity.getUniqueId());
     }
     MobInstance inst = active.remove(entity.getUniqueId());
     MobState state = states.remove(entity.getUniqueId());
@@ -588,6 +999,7 @@ public final class MobRegistry implements Listener {
     broadcastBossKill(spec, entity);
     spec.onDeath().accept(ctx);
     spec.onRemove().accept(ctx, MobRemovalReason.DEATH);
+    detachModelBridge(entity);
   }
 
   private enum MinionKillCredit {
@@ -619,7 +1031,13 @@ public final class MobRegistry implements Listener {
   @EventHandler
   public void onRemove(EntityRemoveFromWorldEvent event) {
     Entity entity = event.getEntity();
+    if (entity instanceof LivingEntity living && MobMarkers.getMobId(entity) != null) {
+      detachModelBridge(living);
+    }
     UUID uuid = entity.getUniqueId();
+    if (aiPlannerService != null) {
+      aiPlannerService.cancelEntity(uuid);
+    }
     MobInstance inst = active.remove(uuid);
     MobState state = states.remove(uuid);
     if (inst == null) {
@@ -744,6 +1162,10 @@ public final class MobRegistry implements Listener {
     }
     double distance = entity.getLocation().distance(state.home);
     String base = "homeDist=" + String.format(Locale.ROOT, "%.1f", distance);
+    if (aiDefaultEngine == MobAiEngineMode.V3) {
+      base = base + " asyncQ=" + (aiPlannerService == null ? 0 : aiPlannerService.queueSize())
+          + " tier=" + aiCurrentDegradeTier.name();
+    }
     if (state.patrolIndex > 0) {
       return base + " patrol=" + state.patrolIndex;
     }
@@ -784,6 +1206,7 @@ public final class MobRegistry implements Listener {
       triggerEventAbility(spec, (LivingEntity) entity, state, MobMarkers.getOwner(entity),
           spec.events().onHurt(), attacker);
     }
+    playModelAnimation((LivingEntity) entity, "hurt");
     if (spec != null) {
       logMobEvent("hurt", spec, (LivingEntity) entity, MobMarkers.getOwner(entity), attacker, event.getFinalDamage());
       applyCombatMitigation(spec, (LivingEntity) entity, state, event);
@@ -808,6 +1231,7 @@ public final class MobRegistry implements Listener {
     MobState state = states.get(attacker.getUniqueId());
     LivingEntity target = event.getEntity() instanceof LivingEntity living ? living : null;
     logMobEvent("attack", spec, attacker, MobMarkers.getOwner(attacker), target, event.getFinalDamage());
+    playModelAnimation(attacker, "attack");
     triggerEventAbility(spec, attacker, state, MobMarkers.getOwner(attacker), spec.events().onHit(), target);
   }
 
@@ -1030,7 +1454,16 @@ public final class MobRegistry implements Listener {
   }
 
   private void tick() {
+    aiStepsThisTick = 0;
+    aiPathMutationsThisTick = 0;
+    double overloadRatio = 1.0;
+    if (aiPlannerService != null && aiAsyncQueueCapacity > 0) {
+      overloadRatio = Math.max(1.0, (double) aiPlannerService.queueSize() / (double) aiAsyncQueueCapacity);
+    }
+    aiCurrentDegradeTier = aiGuardrailController.tierForOverload(overloadRatio);
     if (active.isEmpty()) {
+      aiStepsLastTick = 0;
+      aiPathMutationsLastTick = 0;
       return;
     }
     long now = engine.tickNow();
@@ -1049,6 +1482,9 @@ public final class MobRegistry implements Listener {
       MobSpec spec = specs.get(inst.specId());
       Entity entity = org.bukkit.Bukkit.getEntity(entityId);
       if (!(entity instanceof LivingEntity living) || !entity.isValid() || living.isDead()) {
+        if (entity instanceof LivingEntity stale) {
+          detachModelBridge(stale);
+        }
         if (toRemove == null) {
           toRemove = new ArrayList<>();
         }
@@ -1076,13 +1512,42 @@ public final class MobRegistry implements Listener {
       MobAttackSpec mainAttack = phase != null && phase.mainAttack() != null ? phase.mainAttack() : spec.mainAttack();
       MobAttackSpec secondaryAttack = phase != null && phase.secondaryAttack() != null ? phase.secondaryAttack() : spec.secondaryAttack();
       tickAttacks(spec, inst, mainAttack, secondaryAttack, living, state, now);
+      tickModelAnimations(living, state, now);
     }
     if (toRemove != null) {
       for (UUID id : toRemove) {
+        if (aiPlannerService != null) {
+          aiPlannerService.cancelEntity(id);
+        }
         active.remove(id);
         states.remove(id);
       }
     }
+    aiStepsLastTick = aiStepsThisTick;
+    aiPathMutationsLastTick = aiPathMutationsThisTick;
+  }
+
+  private void tickModelAnimations(LivingEntity entity, MobState state, long now) {
+    if (entity == null || state == null || modelBridge == null || !modelBridgeEnabled || !modelBridge.available()) {
+      return;
+    }
+    if (now < state.nextModelSyncTick) {
+      return;
+    }
+    state.nextModelSyncTick = now + modelSyncPeriodTicks;
+    Vector velocity = entity.getVelocity();
+    boolean moving = velocity != null && velocity.lengthSquared() > MODEL_MOVE_THRESHOLD_SQ;
+    if (moving == state.modelMoving) {
+      return;
+    }
+    boolean previous = state.modelMoving;
+    state.modelMoving = moving;
+    if (modelBridgeDebug && logger != null) {
+      logger.debug("[Mobs] state-transition entity=" + entity.getUniqueId()
+          + " from=" + (previous ? "walk" : "idle")
+          + " to=" + (moving ? "walk" : "idle"));
+    }
+    playModelAnimation(entity, moving ? "walk" : "idle");
   }
 
   private void tickPassives(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, UUID ownerId, long now) {
@@ -1107,11 +1572,33 @@ public final class MobRegistry implements Listener {
     if (minionManager != null && minionManager.disableBaseAi(entity.getUniqueId())) {
       return;
     }
-    MobAiSpec ai = spec.aiSpec();
+    if (!aiEnabled) {
+      return;
+    }
+    MobAiSpec ai = resolveEffectiveAi(spec, phase);
     if (ai == null || !ai.enabled()) {
       return;
     }
+    MobAiEngineMode mode = ai.engineMode() == null ? aiDefaultEngine : ai.engineMode();
+    if (mode == MobAiEngineMode.V3) {
+      tickAiV3(spec, phase, entity, state, ai, ownerId, now);
+      return;
+    }
+    if (mode == MobAiEngineMode.V2) {
+      tickAiV2(spec, phase, entity, state, ai, ownerId, now);
+      return;
+    }
+    tickAiLegacy(spec, phase, entity, state, ai, ownerId, now);
+  }
 
+  private MobAiSpec resolveEffectiveAi(MobSpec spec, MobPhaseSpec phase) {
+    if (phase != null && phase.aiSpec() != null) {
+      return phase.aiSpec();
+    }
+    return spec == null ? null : spec.aiSpec();
+  }
+
+  private void tickAiLegacy(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, MobAiSpec ai, UUID ownerId, long now) {
     LivingEntity owner = null;
     if (isMinion(entity)) {
       owner = resolveOwner(entity);
@@ -1237,6 +1724,472 @@ public final class MobRegistry implements Listener {
 
     if (ai.controller() != null) {
       ai.controller().tick(new ContextImpl(spec, entity, state, ownerId, now));
+    }
+  }
+
+  private void tickAiV2(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, MobAiSpec ai, UUID ownerId, long now) {
+    if (!consumeAiStepBudget()) {
+      aiFallbackTicks++;
+      return;
+    }
+    LivingEntity owner = null;
+    if (isMinion(entity)) {
+      owner = resolveOwner(entity);
+      if (owner != null && !ai.overrideDefault()) {
+        state.home = owner.getLocation().clone();
+      }
+    }
+    if (state.home == null) {
+      state.home = entity.getLocation().clone();
+    }
+    applyLocomotion(entity, ai);
+    if (applyTerrainAvoidanceV2(entity, state, ai)) {
+      return;
+    }
+    if (ai.openDoors()) {
+      tryOpenDoorAhead(entity);
+    }
+
+    if (!applyLeash(state, entity, ai)) {
+      return;
+    }
+
+    LivingEntity target = resolveTarget(state.currentTarget);
+    if (target != null && !isValidTarget(entity, target, ai.aggroRadius())) {
+      clearTarget(entity, state);
+      target = null;
+    }
+    LivingEntity desired = selectAggroTargetV2(entity, state, ai);
+    if (desired != null && (target == null || !desired.getUniqueId().equals(target.getUniqueId()))) {
+      long switchCooldown = Math.max(ai.targetSwitchCooldownTicks(), aiRetargetMinIntervalTicks);
+      if (now >= state.nextRetargetTick && (switchCooldown <= 0L || now - state.lastTargetSwitchTick >= switchCooldown)) {
+        setTarget(entity, state, desired, now);
+        state.nextRetargetTick = now + Math.max(1L, aiRetargetMinIntervalTicks);
+        target = desired;
+      }
+    }
+
+    if (target == null && ai.profile() == MobAiProfile.PASSIVE) {
+      clearTarget(entity, state);
+    }
+
+    if (target == null) {
+      if (owner != null) {
+        double followRadius = 3.5;
+        double distOwner = entity.getLocation().distanceSquared(owner.getLocation());
+        if (distOwner > followRadius * followRadius) {
+          navigateToward(entity, owner.getLocation(), ai.chaseSpeed(), ai);
+        }
+      } else {
+        boolean handled = applyAiGoalsV2(spec, phase, ai, entity, state, null, now);
+        if (!handled && ai.idleWanderRadius() > 0.0 && now >= state.nextWanderTick) {
+          state.nextWanderTick = now + Math.max(1L, ai.idleWanderIntervalTicks());
+          navigateToward(entity, randomHomeOffset(state.home, ai.idleWanderRadius()), Math.max(0.12, ai.chaseSpeed() * 0.7), ai);
+        }
+      }
+      updateBehaviorStateWithHooks(spec, entity, state, ai, null, ownerId, now);
+      return;
+    }
+
+    updateBehaviorStateWithHooks(spec, entity, state, ai, target, ownerId, now);
+    if (ai.callForHelpRadius() > 0.0) {
+      applyCallForHelp(spec, entity, state, target, ai, now);
+    }
+
+    if (applyAiGoalsV2(spec, phase, ai, entity, state, target, now)) {
+      if (ai.controller() != null) {
+        ai.controller().tick(new ContextImpl(spec, entity, state, ownerId, now));
+      }
+      return;
+    }
+
+    if (state.behaviorState == MobBehaviorState.RETREAT) {
+      navigateAwayFrom(entity, target, ai.fleeSpeed(), ai);
+      return;
+    }
+    if (ai.kiteMinRange() > 0.0 && hasRangedAttack(spec, phase)) {
+      double dist = entity.getLocation().distanceSquared(target.getLocation());
+      if (dist < ai.kiteMinRange() * ai.kiteMinRange()) {
+        navigateAwayFrom(entity, target, ai.kiteSpeed(), ai);
+        return;
+      }
+    }
+    if (now >= state.nextPathRecalcTick) {
+      state.nextPathRecalcTick = now + Math.max(1L, aiPathRecalcMinIntervalTicks);
+      navigateToward(entity, target.getLocation(), ai.chaseSpeed(), ai);
+    }
+    if (ai.controller() != null) {
+      ai.controller().tick(new ContextImpl(spec, entity, state, ownerId, now));
+    }
+  }
+
+  private void tickAiV3(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, MobAiSpec ai, UUID ownerId, long now) {
+    if (!consumeAiStepBudget()) {
+      aiFallbackTicks++;
+      return;
+    }
+    MobAiV3Spec resolved = MobAiV3Resolver.resolve(ai);
+    MobAiPlan plan = null;
+    if (aiAsyncEnabled && aiPlannerService != null) {
+      MobAiSnapshot snapshot = snapshotForV3(spec, phase, entity, state, ownerId, now, resolved);
+      if (aiPlannerService.queueSize() < aiAsyncMaxJobsPerTick) {
+        aiPlannerService.submit(snapshot);
+      } else {
+        aiFallbackTicks++;
+      }
+      plan = aiPlannerService.poll(entity.getUniqueId());
+    }
+    if (plan != null) {
+      if (now - plan.tick() > aiAsyncPlanTtlTicks || plan.tick() != now) {
+        aiStalePlanDiscards++;
+      } else {
+        applyV3Plan(spec, phase, entity, state, ai, ownerId, now, plan);
+        return;
+      }
+    }
+    // Synchronous fallback keeps behavior stable if async has no fresh plan.
+    tickAiV2(spec, phase, entity, state, ai, ownerId, now);
+  }
+
+  private MobAiSnapshot snapshotForV3(
+      MobSpec spec,
+      MobPhaseSpec phase,
+      LivingEntity entity,
+      MobState state,
+      UUID ownerId,
+      long now,
+      MobAiV3Spec resolved) {
+    LivingEntity target = resolveTarget(state.currentTarget);
+    double targetX = target == null ? entity.getLocation().getX() : target.getLocation().getX();
+    double targetY = target == null ? entity.getLocation().getY() : target.getLocation().getY();
+    double targetZ = target == null ? entity.getLocation().getZ() : target.getLocation().getZ();
+    double targetDistSq = target == null ? Double.MAX_VALUE : entity.getLocation().distanceSquared(target.getLocation());
+    Vector velocity = entity.getVelocity();
+    return new MobAiSnapshot(
+        now,
+        entity.getUniqueId(),
+        spec == null ? "" : spec.id(),
+        state == null ? null : state.phaseId,
+        ownerId,
+        entity.getLocation().getX(),
+        entity.getLocation().getY(),
+        entity.getLocation().getZ(),
+        velocity.getX(),
+        velocity.getY(),
+        velocity.getZ(),
+        entity.getHealth(),
+        maxHealth(entity),
+        target == null ? null : target.getUniqueId(),
+        targetX,
+        targetY,
+        targetZ,
+        targetDistSq,
+        state == null ? MobBehaviorState.IDLE : state.behaviorState,
+        resolved);
+  }
+
+  private void applyV3Plan(
+      MobSpec spec,
+      MobPhaseSpec phase,
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      UUID ownerId,
+      long now,
+      MobAiPlan plan) {
+    LivingEntity target = null;
+    if (plan.targetId() != null) {
+      Entity targetEntity = Bukkit.getEntity(plan.targetId());
+      if (targetEntity instanceof LivingEntity livingTarget) {
+        target = livingTarget;
+      }
+    }
+    if (plan.desiredState() != null) {
+      updateBehaviorStateWithHooks(spec, entity, state, ai, target, ownerId, now);
+    }
+    switch (plan.intent()) {
+      case CHASE, ASSIST -> {
+        Location goal = new Location(entity.getWorld(), plan.moveX(), plan.moveY(), plan.moveZ());
+        navigateToward(entity, goal, plan.speed(), ai);
+      }
+      case FLEE -> {
+        if (target != null) {
+          navigateAwayFrom(entity, target, plan.speed(), ai);
+        }
+      }
+      case HOLD_RANGE -> {
+        if (target != null) {
+          double dist = entity.getLocation().distanceSquared(target.getLocation());
+          double min = ai.kiteMinRange() > 0.0 ? ai.kiteMinRange() : 5.0;
+          if (dist < min * min) {
+            navigateAwayFrom(entity, target, Math.max(plan.speed(), ai.kiteSpeed()), ai);
+          } else {
+            navigateToward(entity, target.getLocation(), Math.max(plan.speed(), ai.chaseSpeed()), ai);
+          }
+        }
+      }
+      case CALL_HELP -> {
+        if (target != null) {
+          applyCallForHelp(spec, entity, state, target, ai, now);
+        }
+      }
+      case HOLD_POSITION, NONE -> stopNavigation(entity);
+      case WANDER -> {
+        Location wander = randomHomeOffset(state.home == null ? entity.getLocation() : state.home, ai.idleWanderRadius());
+        navigateToward(entity, wander, Math.max(0.1, plan.speed()), ai);
+      }
+    }
+  }
+
+  private LivingEntity selectAggroTargetV2(LivingEntity entity, MobState state, MobAiSpec ai) {
+    if (ai.profile() == MobAiProfile.PASSIVE) {
+      return null;
+    }
+    if (ai.profile() == MobAiProfile.NEUTRAL || ai.profile() == MobAiProfile.DEFENSIVE) {
+      LivingEntity attacker = resolveTarget(state.lastAttacker);
+      if (attacker != null && isValidTarget(entity, attacker, ai.aggroRadius())) {
+        return attacker;
+      }
+      LivingEntity current = resolveTarget(state.currentTarget);
+      if (current != null && isValidTarget(entity, current, ai.aggroRadius())) {
+        return current;
+      }
+      if (ai.profile() == MobAiProfile.NEUTRAL) {
+        return null;
+      }
+    }
+    return selectAggroTarget(entity, state, ai);
+  }
+
+  private boolean applyLeash(MobState state, LivingEntity entity, MobAiSpec ai) {
+    if (state == null || state.home == null) {
+      return true;
+    }
+    double leashRadius = ai.leashRadius();
+    if (leashRadius <= 0.0) {
+      return true;
+    }
+    double distHome = entity.getLocation().distanceSquared(state.home);
+    double leash = leashRadius * leashRadius;
+    if (distHome <= leash) {
+      return true;
+    }
+    clearTarget(entity, state);
+    if (ai.leashTeleportRadius() > 0.0 && distHome > ai.leashTeleportRadius() * ai.leashTeleportRadius()) {
+      entity.teleport(state.home);
+    } else {
+      navigateToward(entity, state.home, Math.max(0.15, ai.chaseSpeed()), ai);
+    }
+    return false;
+  }
+
+  private void updateBehaviorStateWithHooks(
+      MobSpec spec,
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      LivingEntity target,
+      UUID ownerId,
+      long now) {
+    MobBehaviorState desired = MobBehaviorState.IDLE;
+    double max = maxHealth(entity);
+    double ratio = max <= 0.0 ? 0.0 : (entity.getHealth() / max);
+    if (ai.rageHealthRatio() > 0.0 && ratio <= ai.rageHealthRatio()) {
+      desired = MobBehaviorState.RAGE;
+    } else if (ai.fleeHealthRatio() > 0.0 && ratio <= ai.fleeHealthRatio()) {
+      desired = MobBehaviorState.RETREAT;
+    } else if (target != null) {
+      desired = MobBehaviorState.ENGAGE;
+    }
+    if (state.behaviorState == desired) {
+      return;
+    }
+    long minCooldown = Math.max(0L, ai.stateTransitionCooldownTicks());
+    if (state.lastStateChangeTick > 0L && minCooldown > 0L && now - state.lastStateChangeTick < minCooldown) {
+      return;
+    }
+    state.behaviorState = desired;
+    state.lastStateChangeTick = now;
+    if (ai.hooks() == null || ai.hooks().isEmpty()) {
+      return;
+    }
+    String hook = ai.hooks().forState(desired.name());
+    if (hook != null && !hook.isBlank()) {
+      triggerEventAbility(spec, entity, state, ownerId, hook, target);
+    }
+  }
+
+  private boolean applyAiGoalsV2(
+      MobSpec spec,
+      MobPhaseSpec phase,
+      MobAiSpec ai,
+      LivingEntity entity,
+      MobState state,
+      LivingEntity target,
+      long now) {
+    List<MobAiGoalSpec> goals = ai.goals();
+    if (goals.isEmpty()) {
+      return false;
+    }
+    List<MobAiGoalSpec> ordered = new ArrayList<>(goals);
+    ordered.sort(java.util.Comparator.comparingInt(MobAiGoalSpec::priority));
+    for (MobAiGoalSpec goal : ordered) {
+      if (!consumeAiStepBudget()) {
+        aiFallbackTicks++;
+        return true;
+      }
+      switch (goal.type()) {
+        case CHASE -> {
+          if (target != null) {
+            return navigateToward(entity, target.getLocation(), goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+        case HOLD_RANGE -> {
+          if (target == null) {
+            continue;
+          }
+          double min = goal.minRange() > 0.0 ? goal.minRange() : ai.kiteMinRange();
+          double max = goal.maxRange() > 0.0 ? goal.maxRange() : Math.max(min + 2.0, goal.radius());
+          double dist = entity.getLocation().distanceSquared(target.getLocation());
+          if (min > 0.0 && dist < min * min) {
+            return navigateAwayFrom(entity, target, goal.speed() > 0.0 ? goal.speed() : ai.kiteSpeed(), ai);
+          }
+          if (max > 0.0 && dist > max * max) {
+            return navigateToward(entity, target.getLocation(), goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+          return true;
+        }
+        case FLEE -> {
+          if (target != null) {
+            return navigateAwayFrom(entity, target, goal.speed() > 0.0 ? goal.speed() : ai.fleeSpeed(), ai);
+          }
+        }
+        case ASSIST -> {
+          LivingEntity assistTarget = resolveAssistTarget(entity, state, goal.radius());
+          if (assistTarget != null) {
+            setTarget(entity, state, assistTarget, now);
+            return navigateToward(entity, assistTarget.getLocation(), goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+        case CALL_HELP -> {
+          if (target != null) {
+            applyCallForHelp(spec, entity, state, target, ai, now);
+            return true;
+          }
+        }
+        case HOLD_POSITION -> {
+          if (state.home == null) {
+            continue;
+          }
+          double holdRadius = goal.radius() > 0.0 ? goal.radius() : 2.0;
+          if (entity.getLocation().distanceSquared(state.home) > holdRadius * holdRadius) {
+            return navigateToward(entity, state.home, goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+          stopNavigation(entity);
+          return true;
+        }
+        case AVOID -> {
+          LivingEntity avoid = MobTargeting.nearestPlayer(entity, goal.radius());
+          if (avoid != null) {
+            return navigateAwayFrom(entity, avoid, goal.speed() > 0.0 ? goal.speed() : ai.fleeSpeed(), ai);
+          }
+        }
+        case GUARD -> {
+          if (state.home == null) {
+            continue;
+          }
+          org.bukkit.Location guard = resolveGuardPoint(ai, entity, state);
+          if (guard == null) {
+            guard = state.home;
+          }
+          double dist = entity.getLocation().distanceSquared(guard);
+          if (goal.radius() <= 0.0 || dist > goal.radius() * goal.radius()) {
+            return navigateToward(entity, guard, goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+        case RETURN -> {
+          if (state.home != null) {
+            return navigateToward(entity, state.home, goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+        case PATROL -> {
+          if (state.home == null || goal.points().isEmpty()) {
+            continue;
+          }
+          int index = Math.max(0, Math.min(state.patrolIndex, goal.points().size() - 1));
+          org.bukkit.Location waypoint = state.home.clone().add(goal.points().get(index));
+          if (entity.getLocation().distanceSquared(waypoint) <= 1.0) {
+            state.patrolIndex = (index + 1) % goal.points().size();
+            waypoint = state.home.clone().add(goal.points().get(state.patrolIndex));
+          }
+          return navigateToward(entity, waypoint, goal.speed() > 0.0 ? goal.speed() : ai.chaseSpeed(), ai);
+        }
+        case WANDER -> {
+          long interval = goal.intervalTicks() > 0 ? goal.intervalTicks() : ai.idleWanderIntervalTicks();
+          if (goal.radius() > 0.0 && now >= state.nextWanderTick) {
+            state.nextWanderTick = now + interval;
+            org.bukkit.Location wander = randomHomeOffset(state.home, goal.radius());
+            return navigateToward(entity, wander, goal.speed() > 0.0 ? goal.speed() : 0.18, ai);
+          }
+        }
+        default -> {
+        }
+      }
+    }
+    return false;
+  }
+
+  private LivingEntity resolveAssistTarget(LivingEntity entity, MobState state, double radius) {
+    if (entity == null || entity.getWorld() == null) {
+      return null;
+    }
+    double search = radius > 0.0 ? radius : 12.0;
+    LivingEntity best = null;
+    double bestDist = Double.MAX_VALUE;
+    for (LivingEntity nearby : entity.getWorld().getNearbyLivingEntities(entity.getLocation(), search, search, search)) {
+      if (nearby == entity || !nearby.isValid() || nearby.isDead()) {
+        continue;
+      }
+      MobState otherState = states.get(nearby.getUniqueId());
+      if (otherState == null || otherState.currentTarget == null) {
+        continue;
+      }
+      LivingEntity candidate = resolveTarget(otherState.currentTarget);
+      if (candidate == null || !candidate.isValid() || candidate.isDead()) {
+        continue;
+      }
+      double dist = entity.getLocation().distanceSquared(candidate.getLocation());
+      if (dist < bestDist) {
+        best = candidate;
+        bestDist = dist;
+      }
+    }
+    return best;
+  }
+
+  private void applyCallForHelp(MobSpec spec, LivingEntity entity, MobState state, LivingEntity target, MobAiSpec ai, long now) {
+    if (target == null || entity.getWorld() == null || ai.callForHelpRadius() <= 0.0 || now < state.nextCallHelpTick) {
+      return;
+    }
+    state.nextCallHelpTick = now + 20L;
+    double radius = ai.callForHelpRadius();
+    double assistRadiusSq = ai.assistRadius() <= 0.0 ? Double.MAX_VALUE : ai.assistRadius() * ai.assistRadius();
+    for (LivingEntity nearby : entity.getWorld().getNearbyLivingEntities(entity.getLocation(), radius, radius, radius)) {
+      if (nearby == entity || !nearby.isValid() || nearby.isDead()) {
+        continue;
+      }
+      String nearbyId = MobMarkers.getMobId(nearby);
+      if (nearbyId == null) {
+        continue;
+      }
+      MobState nearbyState = states.get(nearby.getUniqueId());
+      if (nearbyState == null) {
+        continue;
+      }
+      nearbyState.threat.merge(target.getUniqueId(), 1.0, Double::sum);
+      if (nearby.getLocation().distanceSquared(target.getLocation()) <= assistRadiusSq) {
+        setTarget(nearby, nearbyState, target, now);
+      }
     }
   }
 
@@ -1918,6 +2871,107 @@ public final class MobRegistry implements Listener {
     MobMarkers.setModelId(entity, modelSpec.modelId());
     MobMarkers.setAnimationId(entity, modelSpec.animationId());
     MobMarkers.setAnimationSpeed(entity, modelSpec.animationSpeed());
+  }
+
+  private boolean isFullModelReplacement(MobModelSpec modelSpec) {
+    return modelSpec != null
+        && modelSpec.replaceVisual()
+        && modelSpec.modelId() != null
+        && !modelSpec.modelId().isBlank();
+  }
+
+  private MobVisualSpec resolveVisualSpec(MobVisualSpec explicitVisual, MobModelSpec modelSpec, String mobId) {
+    return explicitVisual;
+  }
+
+  private ModelRuntimeSpec toRuntimeSpec(MobModelSpec modelSpec) {
+    if (modelSpec == null || !isFullModelReplacement(modelSpec)) {
+      return null;
+    }
+    return ModelRuntimeSpec.from(modelSpec);
+  }
+
+  private void applyModelBridgeAttach(LivingEntity entity, MobModelSpec modelSpec, String mobId) {
+    if (entity == null) {
+      return;
+    }
+    if (!modelBridgeEnabled || modelBridge == null) {
+      if (entity.isInvisible()) {
+        entity.setInvisible(false);
+      }
+      return;
+    }
+    ModelRuntimeSpec runtimeSpec = toRuntimeSpec(modelSpec);
+    if (runtimeSpec == null) {
+      modelBridge.detach(entity);
+      if (entity.isInvisible()) {
+        entity.setInvisible(false);
+      }
+      return;
+    }
+    if (!modelBridge.available() || !modelBridge.attach(entity, runtimeSpec)) {
+      modelFallbackCount++;
+      entity.setInvisible(false);
+      if (modelFallbackWarnings.add(mobId)) {
+        logModelFallback(mobId, runtimeSpec.modelId());
+      }
+    }
+  }
+
+  private void applyModelBridgeUpdate(LivingEntity entity, MobModelSpec modelSpec, String mobId) {
+    if (entity == null) {
+      return;
+    }
+    if (!modelBridgeEnabled || modelBridge == null) {
+      if (entity.isInvisible()) {
+        entity.setInvisible(false);
+      }
+      return;
+    }
+    ModelRuntimeSpec runtimeSpec = toRuntimeSpec(modelSpec);
+    if (runtimeSpec == null) {
+      modelBridge.detach(entity);
+      if (entity.isInvisible()) {
+        entity.setInvisible(false);
+      }
+      return;
+    }
+    if (!modelBridge.available()) {
+      modelFallbackCount++;
+      entity.setInvisible(false);
+      if (modelFallbackWarnings.add(mobId)) {
+        logModelFallback(mobId, runtimeSpec.modelId());
+      }
+      return;
+    }
+    modelBridge.update(entity, runtimeSpec);
+  }
+
+  private void detachModelBridge(LivingEntity entity) {
+    if (entity == null || modelBridge == null) {
+      return;
+    }
+    modelBridge.detach(entity);
+    if (entity.isInvisible()) {
+      entity.setInvisible(false);
+    }
+  }
+
+  private void playModelAnimation(LivingEntity entity, String animationKey) {
+    if (entity == null || modelBridge == null || !modelBridgeEnabled || !modelBridge.available()) {
+      return;
+    }
+    modelBridge.play(entity, animationKey);
+  }
+
+  private void logModelFallback(String mobId, String modelId) {
+    if (logger == null) {
+      return;
+    }
+    logger.warn("[Mobs] model replacement fallback: mob=" + mobId
+        + " model=" + modelId
+        + " provider=" + modelBridgeProvider
+        + " policy=" + modelMissingProviderPolicy);
   }
 
   private void applyCollidable(LivingEntity entity, Boolean collidable) {
@@ -3163,6 +4217,125 @@ public final class MobRegistry implements Listener {
       }
     }
     return selected;
+  }
+
+  private boolean consumeAiStepBudget() {
+    aiStepsThisTick++;
+    aiTotalSteps++;
+    if (aiMaxStepsPerTick > 0 && aiStepsThisTick > aiMaxStepsPerTick) {
+      aiGuardrailTrips++;
+      return false;
+    }
+    return true;
+  }
+
+  private boolean consumePathMutationBudget() {
+    aiPathMutationsThisTick++;
+    aiTotalPathMutations++;
+    if (aiMaxPathMutationsPerTick > 0 && aiPathMutationsThisTick > aiMaxPathMutationsPerTick) {
+      aiGuardrailTrips++;
+      return false;
+    }
+    return true;
+  }
+
+  private MobAiNavigationDriver navigationDriver(LivingEntity entity) {
+    if (aiPathfinderEnabled && aiUseMobGoalsApi && mobGoalsNavigationDriver.supports(entity)) {
+      return mobGoalsNavigationDriver;
+    }
+    return velocityNavigationDriver;
+  }
+
+  private boolean navigateToward(LivingEntity entity, org.bukkit.Location target, double speed, MobAiSpec ai) {
+    if (entity == null || target == null) {
+      return false;
+    }
+    if (!consumePathMutationBudget()) {
+      aiFallbackTicks++;
+      return false;
+    }
+    org.bukkit.Location next = target.clone();
+    if (ai != null && ai.preferGround()) {
+      next.setY(entity.getLocation().getY());
+    }
+    MobAiNavigationDriver driver = navigationDriver(entity);
+    if (driver.moveToward(entity, next, Math.max(0.0, speed))) {
+      return true;
+    }
+    return velocityNavigationDriver.moveToward(entity, next, Math.max(0.0, speed));
+  }
+
+  private boolean navigateAwayFrom(LivingEntity entity, LivingEntity target, double speed, MobAiSpec ai) {
+    if (entity == null || target == null) {
+      return false;
+    }
+    if (!consumePathMutationBudget()) {
+      aiFallbackTicks++;
+      return false;
+    }
+    MobAiNavigationDriver driver = navigationDriver(entity);
+    if (driver.moveAway(entity, target, Math.max(0.0, speed))) {
+      return true;
+    }
+    return velocityNavigationDriver.moveAway(entity, target, Math.max(0.0, speed));
+  }
+
+  private void stopNavigation(LivingEntity entity) {
+    navigationDriver(entity).stop(entity);
+  }
+
+  private boolean applyTerrainAvoidanceV2(LivingEntity entity, MobState state, MobAiSpec ai) {
+    if (state.home == null || entity == null || ai == null) {
+      return false;
+    }
+    Block standing = entity.getLocation().getBlock();
+    Material type = standing.getType();
+    if (ai.avoidLava() && type.name().contains("LAVA")) {
+      navigateToward(entity, state.home, ai.chaseSpeed(), ai);
+      return true;
+    }
+    if (ai.avoidWater() && type.name().contains("WATER")) {
+      navigateToward(entity, state.home, ai.chaseSpeed(), ai);
+      return true;
+    }
+    if (ai.avoidPowderSnow() && type == Material.POWDER_SNOW) {
+      navigateToward(entity, state.home, ai.chaseSpeed(), ai);
+      return true;
+    }
+    if (ai.avoidCactus() && type == Material.CACTUS) {
+      navigateToward(entity, state.home, ai.chaseSpeed(), ai);
+      return true;
+    }
+    if (ai.avoidSunlight()) {
+      long time = entity.getWorld().getTime();
+      boolean day = time >= 0 && time <= 12300;
+      if (day && entity.getLocation().getBlock().getLightFromSky() > 10) {
+        navigateToward(entity, state.home, ai.chaseSpeed(), ai);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void tryOpenDoorAhead(LivingEntity entity) {
+    if (!(entity instanceof Mob)) {
+      return;
+    }
+    org.bukkit.Location eye = entity.getEyeLocation();
+    Vector dir = eye.getDirection();
+    if (dir.lengthSquared() <= 1e-9) {
+      return;
+    }
+    org.bukkit.Location front = eye.clone().add(dir.normalize().multiply(1.2));
+    Block block = front.getBlock();
+    if (!(block.getBlockData() instanceof Openable openable)) {
+      return;
+    }
+    if (openable.isOpen()) {
+      return;
+    }
+    openable.setOpen(true);
+    block.setBlockData(openable, true);
   }
 
   private void moveToward(LivingEntity mob, org.bukkit.Location target, double speed) {

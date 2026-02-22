@@ -22,7 +22,6 @@ import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import dev.patric.dungeonsreborn.effects.integration.EffectsBindings;
 import dev.patric.dungeonsreborn.effects.items.ItemMarkers;
-import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.crafting.CraftingRecipeTemplate;
 import dev.patric.dungeonsreborn.crafting.CraftingDiscoveryService;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
@@ -38,6 +37,8 @@ import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.kits.KitService;
 import dev.patric.dungeonsreborn.kits.KitYamlRegistry;
 import dev.patric.dungeonsreborn.shops.ShopSessionManager;
+import dev.patric.dungeonsreborn.textures.TextureBuildResult;
+import dev.patric.dungeonsreborn.textures.TextureService;
 import dev.patric.dungeonsreborn.gui.GuiI18n;
 import dev.patric.dungeonsreborn.classes.ClassAbilityBindings;
 import dev.patric.dungeonsreborn.classes.ClassService;
@@ -80,7 +81,6 @@ public final class DungeonsRebornCommand {
       dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockStore trialSpawnerStore,
       dev.patric.dungeonsreborn.mobs.VaultBlockStore vaultStore,
       CraftingYamlRegistry crafting,
-      CraftingGuiSessionManager craftingSessions,
       CraftingDiscoveryService craftingDiscovery,
       AdvancementService advancements,
       UpgradeService upgrades,
@@ -110,11 +110,11 @@ public final class DungeonsRebornCommand {
             parties, quests, questGivers, shops, shopSessions, crafting, craftingDiscovery, dungeonRegistry,
             dungeonQueue, dungeonSessions, kits, locales)))
         .then(Commands.literal("crafting")
-            .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, false))
+            .executes(ctx -> openCrafting(ctx))
             .then(Commands.literal("open")
-                .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, false)))
+                .executes(ctx -> openCrafting(ctx)))
             .then(Commands.literal("all")
-                .executes(ctx -> openCrafting(ctx, crafting, craftingDiscovery, craftingSessions, true))))
+                .executes(ctx -> openCrafting(ctx))))
         .then(Commands.literal("settings").executes(ctx -> openUserSettings(ctx, engine, locales)))
         .then(Commands.literal("admin")
             .executes(ctx -> helpAdmin(ctx, root))
@@ -126,6 +126,16 @@ public final class DungeonsRebornCommand {
             .then(Commands.literal("reload").executes(ctx -> reloadAll(ctx, plugin, yaml, mobsYaml, mobsRegistry,
                 crafting, advancements, upgrades, shops, kits, classRegistry, dungeonRegistry, questRegistry,
                 questGivers, locales, spawnerStore)))
+            .then(Commands.literal("textures")
+                .executes(ctx -> texturesStats(ctx, plugin))
+                .then(Commands.literal("rebuild").executes(ctx -> texturesRebuild(ctx, plugin)))
+                .then(Commands.literal("stats").executes(ctx -> texturesStats(ctx, plugin)))
+                .then(Commands.literal("validate").executes(ctx -> texturesValidate(ctx, plugin)))
+                .then(Commands.literal("send")
+                    .then(Commands.literal("all").executes(ctx -> texturesSendAll(ctx, plugin)))
+                    .then(Commands.argument("player", StringArgumentType.word())
+                        .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                        .executes(ctx -> texturesSendPlayer(ctx, plugin, StringArgumentType.getString(ctx, "player"))))))
             .then(Commands.literal("locale")
                 .then(Commands.literal("reload").executes(ctx -> localeReload(ctx, locales)))
                 .then(Commands.literal("validate").executes(ctx -> localeValidate(ctx, locales))))
@@ -231,7 +241,8 @@ public final class DungeonsRebornCommand {
                                     StringArgumentType.getString(ctx, "player"),
                                     IntegerArgumentType.getInteger(ctx, "amount")))))))))
             .then(EffectsCommand.createCommand(engine, yaml, bindings, editor, minions))
-            .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore, trialSpawnerStore, vaultStore))
+            .then(MobsCommand.createCommand(mobsYaml, mobsRegistry, mobSpawns, spawnerStore, trialSpawnerStore, vaultStore,
+                mobDebugOverlay))
             .then(ShopsCommand.createCommand(shops, shopSessions))
             .then(KitsCommand.createAdminCommand(kits))
             .then(ClassesCommand.createAdminCommand(classRegistry, classService, classSkills, classAbilityBindings))
@@ -261,7 +272,7 @@ public final class DungeonsRebornCommand {
                     .then(Commands.argument("id", StringArgumentType.word())
                         .suggests((ctx, builder) -> suggestRecipes(crafting, builder))
                         .executes(ctx -> craftingInfo(ctx, crafting, StringArgumentType.getString(ctx, "id")))))
-                .then(Commands.literal("reload").executes(ctx -> craftingReload(ctx, crafting))))
+                .then(Commands.literal("reload").executes(ctx -> craftingReload(ctx, plugin, crafting))))
         .then(KitsCommand.createUserCommand(kits))
         .then(ClassesCommand.createUserCommand(classRegistry, classService, classSkills, classAbilityBindings))
         .then(DungeonCommand.createUserCommand(dungeonRegistry, dungeonQueue, dungeonSessions, parties))
@@ -300,6 +311,7 @@ public final class DungeonsRebornCommand {
     CommandMessages.send(sender, "messages.command.help.adminGive", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminEffects", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminMobs", placeholders);
+    CommandMessages.send(sender, "messages.command.help.adminTextures", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminShops", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminItemsGive", placeholders);
     CommandMessages.send(sender, "messages.command.help.adminKitsReload", placeholders);
@@ -389,32 +401,13 @@ public final class DungeonsRebornCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int openCrafting(CommandContext<CommandSourceStack> ctx,
-      CraftingYamlRegistry crafting,
-      CraftingDiscoveryService discovery,
-      CraftingGuiSessionManager craftingSessions,
-      boolean showAll) {
+  private static int openCrafting(CommandContext<CommandSourceStack> ctx) {
     var sender = ctx.getSource().getSender();
-    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+    if (!(ctx.getSource().getExecutor() instanceof Player)) {
       CommandMessages.send(sender, "messages.common.playersOnly");
       return Command.SINGLE_SUCCESS;
     }
-    if (crafting == null || discovery == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (craftingSessions == null) {
-      CommandMessages.send(sender, "messages.command.systemUnavailable",
-          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.crafting")));
-      return Command.SINGLE_SUCCESS;
-    }
-    if (showAll && !player.hasPermission("dungeonsreborn.crafting.preview")) {
-      CommandMessages.send(sender, "messages.command.missingPermission",
-          Locales.placeholders("permission", "dungeonsreborn.crafting.preview"));
-      return Command.SINGLE_SUCCESS;
-    }
-    dev.patric.dungeonsreborn.menus.CraftingGridMenu.open(player, crafting, discovery, craftingSessions, showAll);
+    CommandMessages.send(sender, "messages.command.crafting.vanillaOnly");
     return Command.SINGLE_SUCCESS;
   }
 
@@ -538,6 +531,7 @@ public final class DungeonsRebornCommand {
       plugin.reloadScoreboardConfig();
       plugin.reloadHeadRegistry();
     }
+    TextureBuildResult texturesResult = plugin == null ? null : plugin.reloadTextures();
 
     LocaleService.ReloadResult localeResult = locales == null ? null : locales.reload();
     if (locales != null) {
@@ -552,6 +546,9 @@ public final class DungeonsRebornCommand {
       spawnerStore.load();
     }
     CraftingYamlRegistry.ReloadResult craftingResult = crafting == null ? null : crafting.reload();
+    if (plugin != null) {
+      plugin.rebuildVanillaCrafting();
+    }
     UpgradeYamlRegistry.ReloadResult upgradesResult = upgrades == null ? null : upgrades.registry().reload();
     ShopYamlRegistry.ReloadResult shopsResult = shops == null ? null : shops.reload();
     KitYamlRegistry.ReloadResult kitsResult = kits == null ? null : kits.registry().reload();
@@ -565,6 +562,7 @@ public final class DungeonsRebornCommand {
 
     int errors = 0;
     errors += errors(localeResult);
+    errors += errors(texturesResult);
     errors += errors(effectsResult);
     errors += errors(mobsResult);
     errors += errors(craftingResult);
@@ -584,8 +582,166 @@ public final class DungeonsRebornCommand {
     return Command.SINGLE_SUCCESS;
   }
 
+  private static int texturesRebuild(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    TextureService textures = plugin == null ? null : plugin.textureService();
+    if (textures == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", "textures"));
+      return Command.SINGLE_SUCCESS;
+    }
+    TextureBuildResult result = textures.rebuild();
+    CommandMessages.send(sender, "messages.command.textures.rebuild.summary",
+        Locales.placeholders(
+            "textures", result.texturesDiscovered(),
+            "models", result.modelsWritten(),
+            "warnings", result.warningCount(),
+            "errors", result.errorCount()));
+    if (result.zipFile() != null) {
+      CommandMessages.send(sender, "messages.command.textures.rebuild.zip",
+          Locales.placeholders(
+              "path", result.zipFile().getPath(),
+              "sha1", result.zipSha1()));
+    }
+    String deliveryUrl = textures.deliveryUrl();
+    if (!deliveryUrl.isBlank()) {
+      CommandMessages.send(sender, "messages.command.textures.delivery",
+          Locales.placeholders("url", deliveryUrl));
+    }
+    if (result.errorCount() > 0 && result.errors() != null) {
+      int shown = Math.min(10, result.errors().size());
+      for (int i = 0; i < shown; i++) {
+        CommandMessages.send(sender, "messages.command.textures.entry",
+            Locales.placeholders("message", result.errors().get(i)));
+      }
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int texturesStats(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    TextureService textures = plugin == null ? null : plugin.textureService();
+    if (textures == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", "textures"));
+      return Command.SINGLE_SUCCESS;
+    }
+    TextureService.TextureStats stats = textures.stats();
+    CommandMessages.send(sender, "messages.command.textures.stats.header");
+    CommandMessages.send(sender, "messages.command.textures.stats.entry",
+        Locales.placeholders(
+            "enabled", stats.enabled(),
+            "textures", stats.discoveredTextures(),
+            "models", stats.modelMappings(),
+            "warnings", stats.warnings(),
+            "errors", stats.errors()));
+    if (!stats.zipPath().isBlank()) {
+      CommandMessages.send(sender, "messages.command.textures.rebuild.zip",
+          Locales.placeholders(
+              "path", stats.zipPath(),
+              "sha1", stats.zipSha1() == null ? "" : stats.zipSha1()));
+    }
+    if (!stats.deliveryUrl().isBlank()) {
+      CommandMessages.send(sender, "messages.command.textures.delivery",
+          Locales.placeholders("url", stats.deliveryUrl()));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int texturesValidate(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    TextureService textures = plugin == null ? null : plugin.textureService();
+    if (textures == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", "textures"));
+      return Command.SINGLE_SUCCESS;
+    }
+    List<String> entries = textures.validate();
+    if (entries.isEmpty()) {
+      CommandMessages.send(sender, "messages.command.textures.validate.ok");
+      return Command.SINGLE_SUCCESS;
+    }
+    CommandMessages.send(sender, "messages.command.textures.validate.summary",
+        Locales.placeholders("count", entries.size()));
+    int shown = Math.min(20, entries.size());
+    for (int i = 0; i < shown; i++) {
+      CommandMessages.send(sender, "messages.command.textures.entry",
+          Locales.placeholders("message", entries.get(i)));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int texturesSendAll(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    TextureService textures = plugin == null ? null : plugin.textureService();
+    if (textures == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", "textures"));
+      return Command.SINGLE_SUCCESS;
+    }
+    int sent = textures.sendConfiguredPackToAll();
+    CommandMessages.send(sender, "messages.command.textures.send.count",
+        Locales.placeholders("count", sent));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int texturesSendPlayer(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin, String playerName) {
+    var sender = ctx.getSource().getSender();
+    if (sender instanceof Player player && !player.hasPermission("dungeonsreborn.reload")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.reload"));
+      return 1;
+    }
+    TextureService textures = plugin == null ? null : plugin.textureService();
+    if (textures == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", "textures"));
+      return Command.SINGLE_SUCCESS;
+    }
+    Player player = Bukkit.getPlayerExact(playerName);
+    if (player == null) {
+      CommandMessages.send(sender, "messages.command.effects.playerNotFound");
+      return Command.SINGLE_SUCCESS;
+    }
+    boolean sent = textures.sendPack(player);
+    CommandMessages.send(sender, sent
+        ? "messages.command.textures.send.player"
+        : "messages.command.textures.send.failed",
+        Locales.placeholders("player", player.getName()));
+    return Command.SINGLE_SUCCESS;
+  }
+
   private static int errors(EffectsYamlAbilities.ReloadResult result) {
     return result == null || result.errors() == null ? 0 : result.errors().size();
+  }
+
+  private static int errors(TextureBuildResult result) {
+    return result == null ? 0 : result.errorCount();
   }
 
   private static int errors(MobYamlRegistry.ReloadResult result) {
@@ -899,7 +1055,9 @@ public final class DungeonsRebornCommand {
     return builder.buildFuture();
   }
 
-  private static int craftingReload(CommandContext<CommandSourceStack> ctx, CraftingYamlRegistry crafting) {
+  private static int craftingReload(CommandContext<CommandSourceStack> ctx,
+      dev.patric.dungeonsreborn.DungeonsRebornPlugin plugin,
+      CraftingYamlRegistry crafting) {
     var sender = ctx.getSource().getSender();
     if (crafting == null) {
       CommandMessages.send(sender, "messages.command.systemUnavailable",
@@ -912,6 +1070,9 @@ public final class DungeonsRebornCommand {
       return Command.SINGLE_SUCCESS;
     }
     var result = crafting.reload();
+    if (plugin != null) {
+      plugin.rebuildVanillaCrafting();
+    }
     CommandMessages.send(sender, "messages.command.reload.dir",
         Locales.placeholders("path", crafting.recipesDir().getPath()));
     CommandMessages.send(sender, "messages.command.reload.craftingSummary",

@@ -19,9 +19,9 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import dev.patric.dungeonsreborn.commands.DungeonsRebornCommand;
 import dev.patric.dungeonsreborn.effects.EffectsEngine;
-import dev.patric.dungeonsreborn.crafting.CraftingGuiSessionManager;
 import dev.patric.dungeonsreborn.crafting.CraftingYamlRegistry;
 import dev.patric.dungeonsreborn.crafting.CraftingDiscoveryService;
+import dev.patric.dungeonsreborn.crafting.vanilla.VanillaCraftingBridge;
 import dev.patric.dungeonsreborn.dungeons.DungeonProgressJdbcRepository;
 import dev.patric.dungeonsreborn.dungeons.DungeonProgressRepository;
 import dev.patric.dungeonsreborn.dungeons.DungeonQueueService;
@@ -33,6 +33,9 @@ import dev.patric.dungeonsreborn.effects.integration.ItemSyncListener;
 import dev.patric.dungeonsreborn.effects.items.HeadRegistry;
 import dev.patric.dungeonsreborn.effects.items.ItemHookListener;
 import dev.patric.dungeonsreborn.effects.items.ItemTemplateCompiler;
+import dev.patric.dungeonsreborn.textures.TextureBuildResult;
+import dev.patric.dungeonsreborn.textures.TextureDeliveryListener;
+import dev.patric.dungeonsreborn.textures.TextureService;
 import dev.patric.dungeonsreborn.effects.mana.ManaDropListener;
 import dev.patric.dungeonsreborn.effects.mana.ManaPickupListener;
 import dev.patric.dungeonsreborn.effects.mana.ManaSessionListener;
@@ -68,6 +71,9 @@ import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockListener;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore;
+import dev.patric.dungeonsreborn.mobs.model.MobModelBridge;
+import dev.patric.dungeonsreborn.mobs.model.NoopMobModelBridge;
+import dev.patric.dungeonsreborn.mobs.ai.MobAiEngineMode;
 import dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockListener;
 import dev.patric.dungeonsreborn.mobs.TrialSpawnerBlockStore;
 import dev.patric.dungeonsreborn.mobs.TrialSpawnerManager;
@@ -145,6 +151,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private EffectsEngine effectsEngine;
     private EffectsBindings effectsBindings;
     private EffectsYamlAbilities yamlAbilities;
+    private TextureService textureService;
     private HeadRegistry headRegistry;
     private EditorDraftStore editorDraftStore;
     private EditorLockManager editorLockManager;
@@ -167,8 +174,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private LocaleService localeService;
     private SharedTickScheduler sharedTicks;
     private CraftingYamlRegistry craftingRecipes;
-    private CraftingGuiSessionManager craftingSessions;
     private CraftingDiscoveryService craftingDiscovery;
+    private VanillaCraftingBridge vanillaCraftingBridge;
     private UpgradeYamlRegistry upgradeRegistry;
     private UpgradeService upgradeService;
     private ShopYamlRegistry shopRegistry;
@@ -210,6 +217,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private DungeonQueueService dungeonQueue;
     private DungeonProgressRepository dungeonProgress;
     private DungeonSessionManager dungeonSessions;
+    private TextureDeliveryListener textureDeliveryListener;
 
     private AdvancementService initAdvancements() {
         try {
@@ -299,6 +307,25 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         }
 
         effectsEngine = EffectsEngine.init(this, serviceLog.effects());
+        effectsEngine.configureCombat(
+            getConfig().getBoolean("effects.combat.enabled", true),
+            getConfig().getBoolean("effects.combat.debug", false),
+            getConfig().getBoolean("effects.combat.asyncPlanner.enabled", true),
+            getConfig().getInt("effects.combat.asyncPlanner.queueCapacity", 12_000),
+            getConfig().getLong("effects.combat.asyncPlanner.planTtlTicks", 1L),
+            getConfig().getInt("effects.combat.guardrails.maxEventDispatchPerTick", 2000),
+            getConfig().getInt("effects.combat.guardrails.maxDamagePacketsPerTick", 4000),
+            getConfig().getString("effects.combat.guardrails.degradePolicy", "DROP_LOW_PRIORITY"));
+        textureService = new TextureService(this);
+        ItemTemplateCompiler.setTextureService(textureService);
+        TextureBuildResult startupTextureBuild = textureService.rebuildIfAutoEnabled();
+        if (startupTextureBuild != null && startupTextureBuild.success() && startupTextureBuild.zipFile() != null) {
+            getLogger().info("[Textures] Built resource pack: " + startupTextureBuild.zipFile().getPath()
+                + " sha1=" + startupTextureBuild.zipSha1()
+                + " textures=" + startupTextureBuild.texturesDiscovered());
+        } else if (startupTextureBuild != null && startupTextureBuild.errorCount() > 0) {
+            getLogger().warning("[Textures] Build completed with errors: " + String.join("; ", startupTextureBuild.errors()));
+        }
         double baseMana = getConfig().getDouble("mana.base", 100.0);
         ResourceRuleSet manaRules = ResourceRuleSet.fromConfig(getConfig(), baseMana);
         manaSources = ManaSourcesConfig.fromConfig(getConfig());
@@ -331,9 +358,28 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ManaPickupListener(effectsEngine, manaSources.pickups()), this);
         Bukkit.getPluginManager().registerEvents(new DamageMechanicsListener(effectsEngine), this);
         mobRegistry = new MobRegistry(effectsEngine);
+        mobRegistry.setTextureService(textureService);
         mobRegistry.setCraftingDiscoveryService(craftingDiscovery);
         mobRegistry.setLogger(serviceLog.mobs());
+        configureMobModelBridge();
         mobRegistry.setMaxActivePerTick(getConfig().getInt("mobs.performance.maxTickMobs", 0));
+        mobRegistry.configureAi(
+            getConfig().getBoolean("mobs.ai.enabled", true),
+            parseMobAiEngineMode(getConfig().getString("mobs.ai.defaultEngine", "V3")),
+            getConfig().getBoolean("mobs.ai.pathfinder.enabled", true),
+            getConfig().getBoolean("mobs.ai.pathfinder.useMobGoalsApi", true),
+            getConfig().getInt("mobs.ai.guardrails.maxAiStepsPerTick", 3000),
+            getConfig().getInt("mobs.ai.guardrails.maxPathMutationsPerTick", 500),
+            getConfig().getLong("mobs.ai.guardrails.retargetMinIntervalTicks", 5L),
+            getConfig().getLong("mobs.ai.guardrails.pathRecalcMinIntervalTicks", 10L),
+            getConfig().getLong("mobs.ai.metrics.sampleWindowTicks", 200L),
+            getConfig().getBoolean("mobs.ai.async.enabled", true),
+            resolveAiWorkerThreads(
+                getConfig().getString("mobs.ai.async.workerThreads", "auto"),
+                getConfig().getInt("mobs.ai.async.maxWorkerThreads", 8)),
+            getConfig().getInt("mobs.ai.async.maxJobsPerTick", 2000),
+            getConfig().getInt("mobs.ai.async.queueCapacity", 10_000),
+            getConfig().getLong("mobs.ai.async.planTtlTicks", 1L));
         mobRegistry.setCustomXpService(customXpService);
         mobRegistry.configureXpGating(
             getConfig().getBoolean("mobs.xpGating.enabled", true),
@@ -445,6 +491,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         }
 
         mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, shopRegistry, mobRegistry, mobSpawnManager, serviceLog.mobs());
+        mobYamlRegistry.setTextureService(textureService);
         mobYamlRegistry.setUpgradeRegistry(upgradeRegistry);
         mobYamlRegistry.reload();
         if (minionManager != null) {
@@ -471,6 +518,8 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MobEggListener(effectsEngine, mobRegistry, mobYamlRegistry), this);
         Bukkit.getPluginManager().registerEvents(trialSpawnerManager, this);
         Bukkit.getPluginManager().registerEvents(vaultManager, this);
+        textureDeliveryListener = new TextureDeliveryListener(textureService);
+        Bukkit.getPluginManager().registerEvents(textureDeliveryListener, this);
         boolean spawnerOwnershipEnabled = getConfig().getBoolean("mobs.spawners.ownership.enabled", false);
         boolean spawnerAdminOnly = getConfig().getBoolean("mobs.spawners.ownership.adminOnly", false);
         String spawnerAdminPermission = getConfig().getString("mobs.spawners.ownership.adminPermission", "dungeonsreborn.spawner.admin");
@@ -607,8 +656,9 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         } else {
             Bukkit.getScheduler().runTaskTimer(this, craftingDiscovery::tick, 20L, 20L);
         }
-        craftingSessions = new CraftingGuiSessionManager();
-        Bukkit.getPluginManager().registerEvents(craftingSessions, this);
+        vanillaCraftingBridge = new VanillaCraftingBridge(this, craftingRecipes, craftingDiscovery);
+        vanillaCraftingBridge.rebuild();
+        Bukkit.getPluginManager().registerEvents(vanillaCraftingBridge, this);
 
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(
@@ -628,7 +678,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     trialSpawnerBlockStore,
                     vaultBlockStore,
                     craftingRecipes,
-                    craftingSessions,
                     craftingDiscovery,
                     advancementService,
                     upgradeService,
@@ -666,7 +715,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     trialSpawnerBlockStore,
                     vaultBlockStore,
                     craftingRecipes,
-                    craftingSessions,
                     craftingDiscovery,
                     advancementService,
                     upgradeService,
@@ -704,7 +752,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                     trialSpawnerBlockStore,
                     vaultBlockStore,
                     craftingRecipes,
-                    craftingSessions,
                     craftingDiscovery,
                     advancementService,
                     upgradeService,
@@ -726,6 +773,48 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 ).build()
             );
         });
+    }
+
+    private void configureMobModelBridge() {
+        if (mobRegistry == null) {
+            return;
+        }
+        // Mob custom model integration is intentionally disabled.
+        MobModelBridge bridge = new NoopMobModelBridge();
+        mobRegistry.configureModelBridge(
+            bridge,
+            false,
+            "disabled",
+            false,
+            5L,
+            "WARN_AND_FALLBACK");
+        getLogger().info("[Mobs] Custom model bridge disabled; using vanilla mob visuals.");
+    }
+
+    private MobAiEngineMode parseMobAiEngineMode(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return MobAiEngineMode.V3;
+        }
+        try {
+            return MobAiEngineMode.valueOf(raw.trim().toUpperCase(java.util.Locale.ROOT));
+        } catch (Exception ex) {
+            getLogger().warning("[Mobs] Invalid mobs.ai.defaultEngine='" + raw + "', using V3");
+            return MobAiEngineMode.V3;
+        }
+    }
+
+    private int resolveAiWorkerThreads(String rawValue, int maxWorkerThreads) {
+        int cores = Math.max(1, Runtime.getRuntime().availableProcessors());
+        int max = Math.max(1, maxWorkerThreads);
+        if (rawValue == null || rawValue.isBlank() || "auto".equalsIgnoreCase(rawValue.trim())) {
+            return Math.max(1, Math.min(max, cores - 1));
+        }
+        try {
+            return Math.max(1, Math.min(max, Integer.parseInt(rawValue.trim())));
+        } catch (Exception ex) {
+            getLogger().warning("[Mobs] Invalid mobs.ai.async.workerThreads='" + rawValue + "', using auto");
+            return Math.max(1, Math.min(max, cores - 1));
+        }
     }
 
     private ItemStack resolveCraftingItem(String id) {
@@ -868,6 +957,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             effectsEngine.shutdown();
             effectsEngine = null;
         }
+        if (textureService != null) {
+            textureService.shutdown();
+            textureService = null;
+        }
         if (mobPersistenceStore != null && mobRegistry != null && mobPersistenceEnabled) {
             mobPersistenceStore.save(mobRegistry.snapshots());
         }
@@ -878,6 +971,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         if (craftingDiscovery != null) {
             craftingDiscovery.save();
             craftingDiscovery = null;
+        }
+        if (vanillaCraftingBridge != null) {
+            vanillaCraftingBridge.shutdown();
+            vanillaCraftingBridge = null;
         }
         effectsBindings = null;
         yamlAbilities = null;
@@ -892,7 +989,6 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         mobPersistenceStore = null;
         minionManager = null;
         craftingRecipes = null;
-        craftingSessions = null;
         upgradeRegistry = null;
         upgradeService = null;
         shopRegistry = null;
@@ -1201,6 +1297,12 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public void reloadRuntimeConfig() {
         reloadWorldAllowlist();
+        if (textureService != null) {
+            textureService.reloadConfig();
+        }
+        if (mobRegistry != null) {
+            configureMobModelBridge();
+        }
         applyDebugFlags();
     }
 
@@ -1212,6 +1314,40 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
     public HeadRegistry headRegistry() {
         return headRegistry;
+    }
+
+    public TextureService textureService() {
+        return textureService;
+    }
+
+    public TextureBuildResult reloadTextures() {
+        if (textureService == null) {
+            return TextureBuildResult.disabled();
+        }
+        textureService.reloadConfig();
+        return textureService.rebuildIfAutoEnabled();
+    }
+
+    public EffectsEngine effectsEngine() {
+        return effectsEngine;
+    }
+
+    public QuestService questService() {
+        return questService;
+    }
+
+    public ClassService classService() {
+        return classService;
+    }
+
+    public ShopYamlRegistry shopRegistry() {
+        return shopRegistry;
+    }
+
+    public void rebuildVanillaCrafting() {
+        if (vanillaCraftingBridge != null) {
+            vanillaCraftingBridge.rebuild();
+        }
     }
 
     private void applyDebugFlags() {

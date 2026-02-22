@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.concurrent.CompletableFuture;
+import java.time.Instant;
 
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
@@ -24,6 +25,7 @@ import dev.patric.dungeonsreborn.mobs.VaultBlockStore;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.mobs.editor.MobDebugOverlayService;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 
@@ -33,12 +35,47 @@ public final class MobsCommand {
 
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(MobYamlRegistry yaml, MobRegistry registry,
       MobSpawnManager spawns, MobSpawnerBlockStore spawnerStore, TrialSpawnerBlockStore trialStore,
-      VaultBlockStore vaultStore) {
+      VaultBlockStore vaultStore, MobDebugOverlayService debugOverlay) {
     return Commands.literal("mobs")
         .executes(ctx -> help(ctx))
         .then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml)))
         .then(Commands.literal("list").executes(ctx -> list(ctx, registry)))
         .then(Commands.literal("spawners").executes(ctx -> spawners(ctx, spawns)))
+        .then(Commands.literal("ai")
+            .then(Commands.literal("status")
+                .executes(ctx -> aiStatus(ctx, registry)))
+            .then(Commands.literal("metrics")
+                .executes(ctx -> aiMetrics(ctx, registry)))
+            .then(Commands.literal("async")
+                .then(Commands.literal("status")
+                    .executes(ctx -> aiAsyncStatus(ctx, registry)))
+                .then(Commands.literal("tune")
+                    .then(Commands.argument("key", StringArgumentType.word())
+                        .then(Commands.argument("value", StringArgumentType.greedyString())
+                            .executes(ctx -> aiAsyncTune(
+                                ctx,
+                                registry,
+                                StringArgumentType.getString(ctx, "key"),
+                                StringArgumentType.getString(ctx, "value")))))))
+            .then(Commands.literal("degrade")
+                .then(Commands.literal("status")
+                    .executes(ctx -> aiDegradeStatus(ctx, registry))))
+            .then(Commands.literal("simulate")
+                .then(Commands.argument("mobId", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestMobs(registry, builder))
+                    .then(Commands.argument("ticks", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1))
+                        .executes(ctx -> aiSimulate(
+                            ctx,
+                            registry,
+                            StringArgumentType.getString(ctx, "mobId"),
+                            com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "ticks"))))))
+            .then(Commands.literal("debug")
+                .then(Commands.argument("mobId", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestMobs(registry, builder))
+                    .executes(ctx -> aiDebug(ctx, registry, debugOverlay, StringArgumentType.getString(ctx, "mobId"))))))
+        .then(Commands.literal("models")
+            .then(Commands.literal("status")
+                .executes(ctx -> modelsStatus(ctx, registry))))
         .then(Commands.literal("loot")
             .then(Commands.literal("list").executes(ctx -> lootList(ctx, yaml)))
             .then(Commands.literal("info")
@@ -127,6 +164,14 @@ public final class MobsCommand {
     CommandMessages.send(sender, "messages.command.mobs.help.editor");
     CommandMessages.send(sender, "messages.command.mobs.help.list");
     CommandMessages.send(sender, "messages.command.mobs.help.spawners");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiStatus");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiMetrics");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiAsyncStatus");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiAsyncTune");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiDegradeStatus");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiSimulate");
+    CommandMessages.send(sender, "messages.command.mobs.help.aiDebug");
+    CommandMessages.send(sender, "messages.command.mobs.help.modelsStatus");
     CommandMessages.send(sender, "messages.command.mobs.help.lootList");
     CommandMessages.send(sender, "messages.command.mobs.help.lootInfo");
     CommandMessages.send(sender, "messages.command.mobs.help.spawnerGive");
@@ -146,6 +191,179 @@ public final class MobsCommand {
     CommandMessages.send(sender, "messages.command.mobs.help.dump");
     CommandMessages.send(sender, "messages.command.mobs.help.spawn");
     CommandMessages.send(sender, "messages.command.mobs.help.egg");
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiStatus(CommandContext<CommandSourceStack> ctx, MobRegistry registry) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    MobRegistry.AiStatusSnapshot status = registry.aiStatus();
+    CommandMessages.send(sender, "messages.command.mobs.ai.status.header");
+    CommandMessages.send(sender, "messages.command.mobs.ai.status.entry",
+        Locales.placeholders(
+            "enabled", status.enabled(),
+            "engine", status.defaultEngine(),
+            "pathfinderEnabled", status.pathfinderEnabled(),
+            "useMobGoalsApi", status.useMobGoalsApi(),
+            "asyncEnabled", status.asyncEnabled(),
+            "asyncQueue", status.asyncQueueSize(),
+            "asyncWorkers", status.asyncWorkers(),
+            "active", status.activeMobs(),
+            "steps", status.aiStepsLastTick(),
+            "paths", status.pathMutationsLastTick(),
+            "guardrails", status.guardrailTrips(),
+            "fallbacks", status.fallbackTicks(),
+            "stalePlans", status.stalePlanDiscards(),
+            "degrade", status.degradeTier()));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiMetrics(CommandContext<CommandSourceStack> ctx, MobRegistry registry) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    var metrics = registry.aiMetrics();
+    CommandMessages.send(sender, "messages.command.mobs.ai.metrics.header");
+    CommandMessages.send(sender, "messages.command.mobs.ai.metrics.entry",
+        Locales.placeholders(
+            "stepsLastTick", metrics.stepsLastTick(),
+            "pathsLastTick", metrics.pathMutationsLastTick(),
+            "totalSteps", metrics.totalSteps(),
+            "totalPaths", metrics.totalPathMutations(),
+            "guardrails", metrics.guardrailTrips(),
+            "fallbacks", metrics.fallbackTicks(),
+            "window", metrics.sampleWindowTicks()));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiAsyncStatus(CommandContext<CommandSourceStack> ctx, MobRegistry registry) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    var status = registry.aiAsyncStatus();
+    CommandMessages.send(sender, "messages.command.mobs.ai.async.header");
+    CommandMessages.send(sender, "messages.command.mobs.ai.async.entry",
+        Locales.placeholders(
+            "enabled", status.enabled(),
+            "workers", status.workers(),
+            "queue", status.queueSize(),
+            "queueCapacity", status.queueCapacity(),
+            "maxJobsPerTick", status.maxJobsPerTick(),
+            "planTtlTicks", status.planTtlTicks(),
+            "submitted", status.submitted(),
+            "completed", status.completed(),
+            "staleDiscards", status.staleDiscards(),
+            "dropped", status.droppedBackpressure(),
+            "failed", status.failed()));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiAsyncTune(CommandContext<CommandSourceStack> ctx, MobRegistry registry, String key, String value) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!sender.hasPermission("dungeonsreborn.mobs.admin")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.admin"));
+      return Command.SINGLE_SUCCESS;
+    }
+    boolean ok = registry.tuneAiAsync(key, value);
+    CommandMessages.send(sender, ok ? "messages.command.mobs.ai.async.tuned" : "messages.command.mobs.ai.async.tuneFailed",
+        Locales.placeholders("key", key, "value", value));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiDegradeStatus(CommandContext<CommandSourceStack> ctx, MobRegistry registry) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    CommandMessages.send(sender, "messages.command.mobs.ai.degrade.status",
+        Locales.placeholders("tier", registry.aiDegradeStatus()));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiSimulate(CommandContext<CommandSourceStack> ctx, MobRegistry registry, String mobId, int ticks) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    String result = registry.simulateAi(mobId, ticks);
+    CommandMessages.send(sender, "messages.command.mobs.ai.simulate.result",
+        Locales.placeholders("id", mobId, "ticks", ticks, "result", result));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int aiDebug(CommandContext<CommandSourceStack> ctx, MobRegistry registry,
+      MobDebugOverlayService debugOverlay, String mobId) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (!(ctx.getSource().getExecutor() instanceof Player player)) {
+      CommandMessages.send(sender, "messages.common.playersOnly");
+      return Command.SINGLE_SUCCESS;
+    }
+    if (registry == null || debugOverlay == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    if (!player.hasPermission("dungeonsreborn.mobs.debug")) {
+      CommandMessages.send(sender, "messages.command.missingPermission",
+          Locales.placeholders("permission", "dungeonsreborn.mobs.debug"));
+      return Command.SINGLE_SUCCESS;
+    }
+    String normalized = Ids.normalize(mobId);
+    if (!registry.has(normalized)) {
+      CommandMessages.send(sender, "messages.command.mobs.unknownMob", Locales.placeholders("id", mobId));
+      CommandMessages.sendClosestMatch(sender, mobId, registry.ids());
+      return Command.SINGLE_SUCCESS;
+    }
+    boolean enabled = debugOverlay.toggle(player, normalized);
+    CommandMessages.send(sender, enabled ? "messages.command.mobs.ai.debug.enabled" : "messages.command.mobs.ai.debug.disabled",
+        Locales.placeholders("id", normalized));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int modelsStatus(CommandContext<CommandSourceStack> ctx, MobRegistry registry) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (registry == null) {
+      CommandMessages.send(sender, "messages.command.systemUnavailable",
+          Locales.placeholders("system", CommandMessages.text(sender, "labels.system.mobsRegistry")));
+      return Command.SINGLE_SUCCESS;
+    }
+    MobRegistry.ModelBridgeStatus status = registry.modelBridgeStatus();
+    String lastReload = status.lastReloadEpochMs() <= 0L
+        ? "never"
+        : Instant.ofEpochMilli(status.lastReloadEpochMs()).toString();
+    CommandMessages.send(sender, "messages.command.mobs.models.header");
+    CommandMessages.send(sender, "messages.command.mobs.models.entry",
+        Locales.placeholders(
+            "enabled", status.enabled(),
+            "provider", status.provider(),
+            "available", status.available(),
+            "active", status.activeModeledEntities(),
+            "activeModeled", status.activeModeledEntities(),
+            "fallbacks", status.fallbackCount(),
+            "lastReload", lastReload,
+            "sync", status.syncPeriodTicks(),
+            "policy", status.missingProviderPolicy(),
+            "debug", status.debug()));
     return Command.SINGLE_SUCCESS;
   }
 

@@ -14,7 +14,14 @@ from .items import (
     MetaSpec,
     _enum_or_str,
 )
-from .mobs import MobBuilder, MobLocomotionMode
+from .mobs import (
+    MobAiEngine,
+    MobAiVersion,
+    MobAiGoalType,
+    MobAiProfile,
+    MobBuilder,
+    MobLocomotionMode,
+)
 from .quests import (
     QuestDocument,
     QuestObjectiveGroup,
@@ -726,14 +733,45 @@ def _validate_mob_ai(builder: MobBuilder) -> List[ValidationIssue]:
     ai = builder._ai
     if ai is None:
         return issues
+    path = f"mob:{builder._id or '<missing>'}.ai"
     if ai.enabled is False and (builder._attacks or builder._passives):
         issues.append(
             ValidationIssue(
-                f"mob:{builder._id or '<missing>'}.ai",
+                path,
                 "ai.enabled=false with attacks/passives may prevent combat",
                 severity=Severity.WARN,
             )
         )
+    if ai.engine is not None:
+        engine = _enum_label(ai.engine).upper()
+        if engine not in {MobAiEngine.LEGACY.value, MobAiEngine.V2.value, MobAiEngine.V3.value}:
+            issues.append(
+                ValidationIssue(
+                    f"{path}.engine",
+                    f"unknown ai engine: {ai.engine}",
+                    severity=Severity.ERROR,
+                )
+            )
+    if getattr(ai, "version", None) is not None:
+        version = _enum_label(ai.version).upper()
+        if version not in {MobAiVersion.V2.value, MobAiVersion.V3.value}:
+            issues.append(
+                ValidationIssue(
+                    f"{path}.version",
+                    f"unknown ai version: {ai.version}",
+                    severity=Severity.ERROR,
+                )
+            )
+    if ai.profile is not None:
+        profile = _enum_label(ai.profile).upper()
+        if profile not in {e.value for e in MobAiProfile}:
+            issues.append(
+                ValidationIssue(
+                    f"{path}.profile",
+                    f"unknown ai profile: {ai.profile}",
+                    severity=Severity.ERROR,
+                )
+            )
     locomotion = ai.locomotion_mode
     if locomotion is not None and ai.prefer_ground:
         locomotion_value = _enum_label(locomotion)
@@ -750,6 +788,69 @@ def _validate_mob_ai(builder: MobBuilder) -> List[ValidationIssue]:
                     severity=Severity.WARN,
                 )
             )
+    for ratio_key, ratio_value in (
+        ("fleeHealthRatio", ai.flee_health_ratio),
+        ("rageHealthRatio", ai.rage_health_ratio),
+    ):
+        if ratio_value is not None and (ratio_value < 0.0 or ratio_value > 1.0):
+            issues.append(
+                ValidationIssue(
+                    f"{path}.{ratio_key}",
+                    f"{ratio_key} must be between 0 and 1",
+                    severity=Severity.ERROR,
+                )
+            )
+    if ai.state_transition_cooldown_ticks is not None and ai.state_transition_cooldown_ticks < 0:
+        issues.append(
+            ValidationIssue(
+                f"{path}.stateTransitionCooldownTicks",
+                "stateTransitionCooldownTicks must be >= 0",
+                severity=Severity.ERROR,
+            )
+        )
+    for index, goal in enumerate(ai.goals):
+        goal_path = f"{path}.goals[{index}]"
+        goal_type = _enum_label(goal.goal_type).upper()
+        if goal_type not in {e.value for e in MobAiGoalType}:
+            issues.append(
+                ValidationIssue(
+                    f"{goal_path}.type",
+                    f"unknown ai goal type: {goal.goal_type}",
+                    severity=Severity.ERROR,
+                )
+            )
+            continue
+        if goal.min_range < 0 or goal.max_range < 0:
+            issues.append(
+                ValidationIssue(
+                    goal_path,
+                    "minRange/maxRange must be >= 0",
+                    severity=Severity.ERROR,
+                )
+            )
+        if goal.max_range > 0 and goal.min_range > goal.max_range:
+            issues.append(
+                ValidationIssue(
+                    goal_path,
+                    "minRange cannot exceed maxRange",
+                    severity=Severity.ERROR,
+                )
+            )
+        if goal_type == MobAiGoalType.HOLD_RANGE.value and goal.max_range <= 0:
+            issues.append(
+                ValidationIssue(
+                    goal_path,
+                    "HOLD_RANGE should define max_range > 0",
+                    severity=Severity.WARN,
+                )
+            )
+    selectors = getattr(ai, "utility_selectors", []) or []
+    for index, selector in enumerate(selectors):
+        selector_path = f"{path}.utility.selectors[{index}]"
+        if not selector.selector_id:
+            issues.append(ValidationIssue(selector_path, "selector id is required", severity=Severity.ERROR))
+        if not selector.actions:
+            issues.append(ValidationIssue(selector_path, "selector should define at least one action", severity=Severity.WARN))
     return issues
 
 

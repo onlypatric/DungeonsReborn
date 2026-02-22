@@ -1,5 +1,9 @@
 """Template v2: user progression baseline + dynamic per-biome mob ranges."""
 
+# Texture note:
+# ItemBuilder.visual_texture("items/...png") / MobBuilder.visual(MobVisualSpec(...))
+# can be used by content templates that emit runtime YAMLs.
+
 from __future__ import annotations
 
 import argparse

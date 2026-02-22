@@ -126,7 +126,7 @@ public final class UserHubMenu extends Window {
     tiles.add(tile("ICON_SHOPS", "gui.userHub.shops.title", "gui.userHub.shops.desc",
         ctx -> ctx.window().openSubWindow(ctx.player(), new ShopIndexMenu(shops, shopSessions))));
     tiles.add(tile("ICON_CRAFTING", "gui.userHub.crafting.title", "gui.userHub.crafting.desc",
-        ctx -> ctx.window().openSubWindow(ctx.player(), new CraftingDiscoveryMenu(crafting, craftingDiscovery))));
+        ctx -> ctx.player().sendMessage(Locales.component(ctx.player(), "messages.command.crafting.vanillaOnly"))));
     tiles.add(tile("ICON_ITEMS", "gui.userHub.items.title", "gui.userHub.items.desc",
         ctx -> ctx.window().openSubWindow(ctx.player(), new ItemIndexMenu(items))));
     tiles.add(tile("ICON_UPGRADES", "gui.userHub.upgrades.title", "gui.userHub.upgrades.desc",

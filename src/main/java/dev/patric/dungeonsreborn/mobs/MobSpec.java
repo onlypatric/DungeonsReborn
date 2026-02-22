@@ -21,6 +21,7 @@ public final class MobSpec {
   private final EntityType entityType;
   private final String tier;
   private final MobModelSpec modelSpec;
+  private final MobVisualSpec visualSpec;
   private final MobStyleSpec style;
   private final Component displayName;
   private final boolean showName;
@@ -57,6 +58,7 @@ public final class MobSpec {
   private final boolean allowBlockDamage;
   private final Boolean invulnerable;
   private final Boolean collidable;
+  private final boolean silent;
   private final double scaleVariance;
   private final MobCompositeSpec composite;
   private final MobEventSpec events;
@@ -69,6 +71,7 @@ public final class MobSpec {
     this.entityType = Objects.requireNonNull(builder.entityType, "entityType");
     this.tier = builder.tier;
     this.modelSpec = builder.modelSpec;
+    this.visualSpec = builder.visualSpec;
     this.style = builder.style;
     this.displayName = builder.displayName;
     this.showName = builder.showName;
@@ -105,6 +108,7 @@ public final class MobSpec {
     this.allowBlockDamage = builder.allowBlockDamage;
     this.invulnerable = builder.invulnerable;
     this.collidable = builder.collidable;
+    this.silent = builder.silent;
     this.scaleVariance = builder.scaleVariance;
     this.composite = builder.composite;
     this.events = builder.events;
@@ -127,6 +131,10 @@ public final class MobSpec {
 
   public MobModelSpec modelSpec() {
     return modelSpec;
+  }
+
+  public MobVisualSpec visualSpec() {
+    return visualSpec;
   }
 
   public MobStyleSpec style() {
@@ -273,6 +281,10 @@ public final class MobSpec {
     return collidable;
   }
 
+  public boolean silent() {
+    return silent;
+  }
+
   public double scaleVariance() {
     return scaleVariance;
   }
@@ -306,6 +318,7 @@ public final class MobSpec {
     private final EntityType entityType;
     private String tier;
     private MobModelSpec modelSpec;
+    private MobVisualSpec visualSpec;
     private MobStyleSpec style;
     private Component displayName;
     private boolean showName;
@@ -342,6 +355,7 @@ public final class MobSpec {
     private boolean allowBlockDamage = true;
     private Boolean invulnerable;
     private Boolean collidable;
+    private boolean silent;
     private double scaleVariance;
     private MobCompositeSpec composite;
     private MobEventSpec events;
@@ -381,6 +395,11 @@ public final class MobSpec {
 
     public Builder modelSpec(MobModelSpec modelSpec) {
       this.modelSpec = modelSpec;
+      return this;
+    }
+
+    public Builder visualSpec(MobVisualSpec visualSpec) {
+      this.visualSpec = visualSpec;
       return this;
     }
 
@@ -556,6 +575,11 @@ public final class MobSpec {
 
     public Builder collidable(Boolean collidable) {
       this.collidable = collidable;
+      return this;
+    }
+
+    public Builder silent(boolean silent) {
+      this.silent = silent;
       return this;
     }
 

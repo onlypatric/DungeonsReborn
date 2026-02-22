@@ -2,6 +2,8 @@ package dev.patric.dungeonsreborn.effects.items;
 
 import dev.patric.dungeonsreborn.gui.GuiMini;
 import dev.patric.dungeonsreborn.locale.Locales;
+import dev.patric.dungeonsreborn.textures.TextureAssetRef;
+import dev.patric.dungeonsreborn.textures.TextureService;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -75,6 +77,7 @@ import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.DeathProtection;
+import net.kyori.adventure.key.Key;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,9 +106,14 @@ public final class ItemTemplateCompiler {
   }
 
   private static volatile HeadRegistry headRegistry;
+  private static volatile TextureService textureService;
 
   public static void setHeadRegistry(HeadRegistry registry) {
     headRegistry = registry;
+  }
+
+  public static void setTextureService(TextureService service) {
+    textureService = service;
   }
 
   public static CompiledTemplate compile(ConfigurationSection section, String path, List<String> errors) {
@@ -146,6 +154,12 @@ public final class ItemTemplateCompiler {
     if (metaSection != null) {
       validateSectionKeys(metaSection, META_KEYS, path + ".meta", errors);
     }
+    ConfigurationSection visualSection = section.getConfigurationSection("visual");
+    if (visualSection != null) {
+      validateSectionKeys(visualSection, VISUAL_KEYS, path + ".visual", errors);
+    }
+    VisualSpec visual = parseVisual(visualSection);
+
     applyMeta(item, meta, metaSection, path, errors, material, amount);
 
     if (display != null) {
@@ -169,6 +183,7 @@ public final class ItemTemplateCompiler {
       }
     }
     DurabilityRange range = parseDurabilityRange(metaSection, path, errors, material);
+    applyVisual(item, meta, visual, path, errors);
     return new CompiledTemplate(item, range);
   }
 
@@ -188,9 +203,56 @@ public final class ItemTemplateCompiler {
 
   private static void applyMetaWithComponents(ItemStack item, ItemMeta meta) {
     DeathProtection deathProtection = item.getData(DataComponentTypes.DEATH_PROTECTION);
+    Key itemModel = item.getData(DataComponentTypes.ITEM_MODEL);
     item.setItemMeta(meta);
     if (deathProtection != null) {
       item.setData(DataComponentTypes.DEATH_PROTECTION, deathProtection);
+    }
+    if (itemModel != null) {
+      item.setData(DataComponentTypes.ITEM_MODEL, itemModel);
+    }
+  }
+
+  private record VisualSpec(String texture, String modelKey, boolean apply) {
+  }
+
+  private static VisualSpec parseVisual(ConfigurationSection visual) {
+    if (visual == null) {
+      return null;
+    }
+    String texture = visual.getString("texture", null);
+    String modelKey = visual.getString("modelKey", visual.getString("model_key", null));
+    boolean apply = visual.getBoolean("apply", true);
+    if (texture == null || texture.isBlank() || !apply) {
+      return null;
+    }
+    return new VisualSpec(texture, modelKey, true);
+  }
+
+  private static void applyVisual(ItemStack item, ItemMeta meta, VisualSpec visual, String path, List<String> errors) {
+    if (visual == null || !visual.apply()) {
+      return;
+    }
+    TextureService service = textureService;
+    if (service == null) {
+      errors.add(path + ".visual: textures service unavailable");
+      return;
+    }
+    TextureAssetRef ref = service.resolveItemTexture(
+        visual.texture(),
+        visual.modelKey(),
+        path + ".visual.texture",
+        errors);
+    if (ref == null) {
+      return;
+    }
+    item.setData(DataComponentTypes.ITEM_MODEL, Key.key(ref.namespacedModelKey()));
+    if (service.config().compatWriteCustomModelData()) {
+      int cmd = service.assignCompatCustomModelData(ref.namespacedModelKey());
+      if (cmd > 0) {
+        setCustomModelData(meta, cmd);
+        applyMetaWithComponents(item, meta);
+      }
     }
   }
 
@@ -2001,8 +2063,15 @@ public final class ItemTemplateCompiler {
       "amount",
       "display",
       "meta",
+      "visual",
       "custom_model_data",
       "customModelData");
+
+  private static final java.util.Set<String> VISUAL_KEYS = java.util.Set.of(
+      "texture",
+      "modelKey",
+      "model_key",
+      "apply");
 
   private static final java.util.Set<String> DISPLAY_KEYS = java.util.Set.of(
       "name",

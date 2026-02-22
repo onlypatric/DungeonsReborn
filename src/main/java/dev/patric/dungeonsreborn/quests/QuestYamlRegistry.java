@@ -29,6 +29,7 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.shops.ShopAvailabilitySpec;
 import dev.patric.dungeonsreborn.shops.ShopTimeWindowSpec;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 
 public final class QuestYamlRegistry {
@@ -144,15 +145,11 @@ public final class QuestYamlRegistry {
 
   private void ensureFile() {
     File file = file();
-    if (file.exists()) {
-      File dir = questsDir();
-      if (!dir.exists()) {
-        dir.mkdirs();
-      }
-      copyBundledQuests(dir);
-      return;
-    }
-    plugin.saveResource("quests.yml", false);
+    PluginResources.ensureYamlFile(plugin, file, "quests.yml", cfg -> {
+      cfg.set("schemaVersion", CURRENT_SCHEMA_VERSION);
+      cfg.createSection("quests");
+      cfg.createSection("rotationPools");
+    }, logger, "Quests");
     File dir = questsDir();
     if (!dir.exists()) {
       dir.mkdirs();

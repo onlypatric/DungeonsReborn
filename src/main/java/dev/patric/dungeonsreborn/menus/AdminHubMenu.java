@@ -30,6 +30,7 @@ import dev.patric.dungeonsreborn.gui.style.GuiNav;
 import dev.patric.dungeonsreborn.kits.KitService;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
+import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.quests.QuestGiverYamlRegistry;
 import dev.patric.dungeonsreborn.quests.QuestService;
 import dev.patric.dungeonsreborn.shops.ShopSessionManager;
@@ -128,8 +129,7 @@ public final class AdminHubMenu extends Window {
         setFixedAt(1, 6, menuButton("ICON_QUESTS", "gui.adminHub.quests.title", "gui.adminHub.quests.desc",
                 ctx -> ctx.window().openSubWindow(ctx.player(), new QuestLogMenu(quests, questGivers))));
         setFixedAt(1, 7, menuButton("ICON_CRAFTING", "gui.adminHub.crafting.title", "gui.adminHub.crafting.desc",
-                ctx -> ctx.window().openSubWindow(ctx.player(),
-                        new CraftingDiscoveryMenu(crafting, craftingDiscovery, true, true))));
+                ctx -> ctx.player().sendMessage(Locales.component(ctx.player(), "messages.command.crafting.vanillaOnly"))));
 
         setFixedAt(2, 1, menuButton("ICON_QUESTS", "gui.adminHub.questGivers.title", "gui.adminHub.questGivers.desc",
                 ctx -> ctx.window().openSubWindow(ctx.player(), new QuestGiverIndexMenu(quests, questGivers))));

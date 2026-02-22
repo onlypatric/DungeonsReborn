@@ -486,6 +486,7 @@ abilities: {}
 #
 # Targeters (for for_each_target.targeter.type):
 # - self
+# - context_target
 # - look_ray
 # - sphere
 # - nearest

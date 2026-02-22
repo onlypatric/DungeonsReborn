@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.YamlValues;
 
 public final class QuestGiverYamlRegistry {
@@ -78,11 +79,8 @@ public final class QuestGiverYamlRegistry {
   }
 
   private void ensureFile() {
-    File file = file();
-    if (file.exists()) {
-      return;
-    }
-    plugin.saveResource("quest_givers.yml", false);
+    PluginResources.ensureYamlFile(plugin, file(), "quest_givers.yml", cfg -> cfg.createSection("givers"), logger,
+        "Quest Givers");
   }
 
   private Map<String, QuestGiverSpec> parseGivers(YamlConfiguration cfg, List<String> errors) {

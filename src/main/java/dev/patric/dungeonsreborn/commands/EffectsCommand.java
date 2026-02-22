@@ -28,6 +28,7 @@ import dev.patric.dungeonsreborn.effects.mana.ManaProvider;
 import dev.patric.dungeonsreborn.effects.minions.MinionManager;
 import dev.patric.dungeonsreborn.effects.minions.MinionScaling;
 import dev.patric.dungeonsreborn.effects.minions.MinionSpec;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventDispatcher;
 import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.effects.editor.EditorServices;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -88,7 +89,7 @@ public final class EffectsCommand {
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(EffectsEngine engine, EffectsYamlAbilities yaml, EffectsBindings bindings, EditorServices editor, MinionManager minions) {
     LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("effects")
         .executes(ctx -> help(ctx, engine, yaml))
-        .then(Commands.literal("reload").executes(ctx -> reload(ctx, yaml)))
+        .then(Commands.literal("reload").executes(ctx -> reload(ctx, engine, yaml)))
         .then(Commands.literal("logging")
             .then(Commands.literal("reload").executes(ctx -> loggingReload(ctx, engine))))
         .then(Commands.literal("stats").executes(ctx -> stats(ctx, engine)))
@@ -101,6 +102,28 @@ public final class EffectsCommand {
                 .then(Commands.literal("trace")
                     .then(Commands.literal("on").executes(ctx -> debugScriptTrace(ctx, yaml, true)))
                     .then(Commands.literal("off").executes(ctx -> debugScriptTrace(ctx, yaml, false))))))
+        .then(Commands.literal("combat")
+            .then(Commands.literal("status").executes(ctx -> combatStatus(ctx, engine)))
+            .then(Commands.literal("metrics").executes(ctx -> combatMetrics(ctx, engine)))
+            .then(Commands.literal("migrate").executes(ctx -> combatMigrate(ctx, yaml)))
+            .then(Commands.literal("debug")
+                .then(Commands.literal("on").executes(ctx -> combatDebug(ctx, engine, true)))
+                .then(Commands.literal("off").executes(ctx -> combatDebug(ctx, engine, false)))
+                .then(Commands.argument("player", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                    .executes(ctx -> combatTrace(ctx, engine, StringArgumentType.getString(ctx, "player")))))
+            .then(Commands.literal("trace")
+                .then(Commands.argument("player", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                    .executes(ctx -> combatTrace(ctx, engine, StringArgumentType.getString(ctx, "player")))))
+            .then(Commands.literal("simulate")
+                .then(Commands.argument("ability", StringArgumentType.word())
+                    .suggests((ctx, builder) -> suggestAbilities(engine, ctx, builder))
+                    .then(Commands.argument("target", StringArgumentType.word())
+                        .suggests((ctx, builder) -> suggestOnlinePlayers(ctx, builder))
+                        .executes(ctx -> combatSimulate(ctx, engine,
+                            StringArgumentType.getString(ctx, "ability"),
+                            StringArgumentType.getString(ctx, "target")))))))
         .then(Commands.literal("explain")
             .then(Commands.literal("right").executes(ctx -> explain(ctx, engine, bindings, InteractTrigger.RIGHT_CLICK)))
             .then(Commands.literal("left").executes(ctx -> explain(ctx, engine, bindings, InteractTrigger.LEFT_CLICK))))
@@ -426,7 +449,7 @@ public final class EffectsCommand {
     return Command.SINGLE_SUCCESS;
   }
 
-  private static int reload(CommandContext<CommandSourceStack> ctx, EffectsYamlAbilities yaml) {
+  private static int reload(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, EffectsYamlAbilities yaml) {
     var sender = ctx.getSource().getSender();
     if (yaml == null) {
       CommandMessages.send(sender, "messages.command.effects.yamlMissing");
@@ -436,6 +459,9 @@ public final class EffectsCommand {
       CommandMessages.send(sender, "messages.command.missingPermission",
           Locales.placeholders("permission", "dungeonsreborn.effects.reload"));
       return Command.SINGLE_SUCCESS;
+    }
+    if (engine.plugin() instanceof DungeonsRebornPlugin plugin) {
+      plugin.reloadTextures();
     }
     var result = yaml.reload();
     int updated = yaml.syncOnlineItems();
@@ -1433,6 +1459,92 @@ public final class EffectsCommand {
       }
     }
     return CompletableFuture.completedFuture(builder.build());
+  }
+
+  private static int combatStatus(CommandContext<CommandSourceStack> ctx, EffectsEngine engine) {
+    CommandSender sender = ctx.getSource().getSender();
+    CombatEventDispatcher dispatcher = engine.combatDispatcher();
+    sender.sendMessage(Component.text("[Combat] " + dispatcher.status(), NamedTextColor.YELLOW));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int combatMetrics(CommandContext<CommandSourceStack> ctx, EffectsEngine engine) {
+    CommandSender sender = ctx.getSource().getSender();
+    sender.sendMessage(Component.text("[Combat] " + engine.combatDispatcher().metrics().summary(), NamedTextColor.YELLOW));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int combatMigrate(CommandContext<CommandSourceStack> ctx, EffectsYamlAbilities yaml) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (yaml == null) {
+      CommandMessages.send(sender, "messages.command.effects.yamlMissing");
+      return 0;
+    }
+    var report = yaml.migrateCombatSchema(true);
+    sender.sendMessage(Component.text(
+        "[Combat] migrate scanned=" + report.filesScanned()
+            + " changedFiles=" + report.filesChanged()
+            + " changedNodes=" + report.nodesChanged()
+            + " unresolved=" + report.unresolvedNodes(),
+        report.unresolvedNodes() > 0 ? NamedTextColor.YELLOW : NamedTextColor.GREEN));
+    int limit = Math.min(20, report.details().size());
+    for (int i = 0; i < limit; i++) {
+      sender.sendMessage(Component.text(" - " + report.details().get(i), NamedTextColor.GRAY));
+    }
+    if (report.details().size() > limit) {
+      sender.sendMessage(Component.text(" ... +" + (report.details().size() - limit) + " more", NamedTextColor.DARK_GRAY));
+    }
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int combatDebug(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, boolean enabled) {
+    CommandSender sender = ctx.getSource().getSender();
+    var c = engine.plugin().getConfig();
+    boolean async = c.getBoolean("effects.combat.asyncPlanner.enabled", true);
+    int queue = c.getInt("effects.combat.asyncPlanner.queueCapacity", 12000);
+    long ttl = c.getLong("effects.combat.asyncPlanner.planTtlTicks", 1L);
+    int dispatchCap = c.getInt("effects.combat.guardrails.maxEventDispatchPerTick", 2000);
+    int packetCap = c.getInt("effects.combat.guardrails.maxDamagePacketsPerTick", 4000);
+    String degrade = c.getString("effects.combat.guardrails.degradePolicy", "DROP_LOW_PRIORITY");
+    engine.configureCombat(true, enabled, async, queue, ttl, dispatchCap, packetCap, degrade);
+    sender.sendMessage(Component.text("[Combat] Debug " + (enabled ? "enabled" : "disabled"), NamedTextColor.GREEN));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int combatTrace(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, String playerName) {
+    CommandSender sender = ctx.getSource().getSender();
+    Player player = Bukkit.getPlayerExact(playerName);
+    if (player == null) {
+      sender.sendMessage(Component.text("Player not found: " + playerName, NamedTextColor.RED));
+      return 0;
+    }
+    var record = engine.lastCastRecord(player.getUniqueId());
+    var failure = engine.lastCastFailure(player.getUniqueId());
+    sender.sendMessage(Component.text("[Combat] trace player=" + player.getName(), NamedTextColor.YELLOW));
+    sender.sendMessage(Component.text("  lastCast=" + (record == null ? "none" : (record.abilityId() + "@" + record.castId())), NamedTextColor.GRAY));
+    sender.sendMessage(Component.text("  lastFailure=" + (failure == null ? "none" : (failure.type() + ":" + failure.reason())), NamedTextColor.GRAY));
+    return Command.SINGLE_SUCCESS;
+  }
+
+  private static int combatSimulate(CommandContext<CommandSourceStack> ctx, EffectsEngine engine, String abilityId, String targetName) {
+    CommandSender sender = ctx.getSource().getSender();
+    if (!(sender instanceof Player caster)) {
+      sender.sendMessage(Component.text("Only players can run combat simulate.", NamedTextColor.RED));
+      return 0;
+    }
+    Player target = Bukkit.getPlayerExact(targetName);
+    if (target == null) {
+      sender.sendMessage(Component.text("Target not found: " + targetName, NamedTextColor.RED));
+      return 0;
+    }
+    if (!engine.hasAbility(abilityId)) {
+      sender.sendMessage(Component.text("Ability not found: " + abilityId, NamedTextColor.RED));
+      return 0;
+    }
+    engine.castWithContext(abilityId, caster, caster.getEyeLocation(), caster.getEyeLocation().getDirection(),
+        caster.getInventory().getItemInMainHand(), c -> c.state().put("yaml_last_entity", target));
+    sender.sendMessage(Component.text("[Combat] simulate cast sent: " + abilityId + " -> " + target.getName(), NamedTextColor.GREEN));
+    return Command.SINGLE_SUCCESS;
   }
 
   private static boolean requirePermission(CommandSender sender, String permission) {

@@ -19,6 +19,10 @@ import dev.patric.dungeonsreborn.effects.EffectsEngine;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.actions.ActionHandle;
 import dev.patric.dungeonsreborn.effects.actions.ActionWithHandle;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventContext;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventSource;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventType;
+import dev.patric.dungeonsreborn.effects.damage.DamageCause;
 
 public final class ProjectileAction extends ActionWithHandle {
   private final ProjectileSpec spec;
@@ -138,6 +142,22 @@ public final class ProjectileAction extends ActionWithHandle {
         ProjectileHit hit = new ProjectileHit(ctx, hitLocation, segDir, traveled[0], hitEntity, hitBlock);
         instance.update(hitLocation.clone(), segDir.clone(), traveled[0]);
         ctx.state().put(Vars.PROJECTILE_LAST_HIT, hit);
+        ctx.engine().combatDispatcher().dispatch(new CombatEventContext(
+            ctx.engine().tickNow(),
+            hitEntity != null ? CombatEventType.ON_PROJECTILE_HIT_ENTITY : CombatEventType.ON_PROJECTILE_HIT_BLOCK,
+            ctx.caster(),
+            hitEntity,
+            hitEntity,
+            chosenIsEntity ? chosen.getHitEntity() : null,
+            CombatEventSource.PROJECTILE,
+            0.0,
+            false,
+            false,
+            false,
+            null,
+            DamageCause.PROJECTILE,
+            null,
+            null));
         try {
           spec.onHit().accept(hit);
         } catch (Exception ex) {

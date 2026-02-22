@@ -53,6 +53,33 @@ Item builder examples live in `plugin_builder/templates/items/`:
 - `material_example.py`
 - `validate_items.py` (lintable example for CI checks)
 
+### Item Textures + Mob Models
+
+Item builder APIs support `visual` PNG textures, while mob full replacement is ModelEngine-only:
+
+```python
+from dungeonsreborn_builder import ItemBuilder, ItemVisualSpec, MobBuilder, Material, EntityType
+
+item = (
+    ItemBuilder("item_example_texture")
+    .material(Material.PAPER)
+    .visual_texture("items/custom/my_scroll.png")
+    .visual_model_key("dungeonsreborn:items/custom/my_scroll")
+)
+
+mob_full_model = (
+    MobBuilder("mob_example_full_model")
+    .mob_type(EntityType.ZOMBIE)
+    .model_full_replacement(
+        model_id="dr_zombie_frozen",
+        animations={
+            "walk": "dr_zombie_frozen_walk",
+            "attack": "dr_zombie_frozen_attack",
+        },
+    )
+)
+```
+
 ## Trial Spawners + Vaults
 
 `MobExporter.write_batch(...)` supports `trial_spawners` and `vaults` sections:
@@ -383,6 +410,89 @@ exporter.write_mob(mob)
 # Batch preset
 batch = undead_t1_pack()
 exporter.write_batch(batch, "undead_t1_pack.yml")
+```
+
+Mob AI V2 (simple stances + advanced goals + phase override):
+
+```python
+from dungeonsreborn_builder import (
+    EntityType,
+    Mob,
+    MobAiEngine,
+    MobAiGoalSpec,
+    MobAiGoalType,
+    MobAiHooksSpec,
+    MobAiPhaseMergeMode,
+    MobAiProfile,
+    MobAiSpec,
+    MobPhase,
+)
+
+v2 = (
+    Mob("mob_v2_guardian")
+    .mob_type(EntityType.ZOMBIE)
+    .name("<aqua>V2 Guardian</aqua>")
+    .stats(health=30, damage=6, armor=4, speed=0.27)
+    .ai_simple(
+        MobAiProfile.DEFENSIVE,
+        aggro_radius=14.0,
+        call_for_help_radius=10.0,
+        open_doors=True,
+        hooks=MobAiHooksSpec(on_enter_engage="ability_mob_guardian_engage"),
+        goals=[
+            MobAiGoalSpec(MobAiGoalType.GUARD, priority=20, radius=8, speed=0.24),
+            MobAiGoalSpec(MobAiGoalType.CHASE, priority=40, speed=0.30),
+        ],
+    )
+    .phase(MobPhase(phase_id="phase_2", health_below=0.5))
+    .phase_ai(
+        "phase_2",
+        MobAiSpec(
+            engine=MobAiEngine.V2,
+            profile=MobAiProfile.AGGRESSIVE,
+            rage_health_ratio=0.65,
+            goals=[MobAiGoalSpec(MobAiGoalType.CHASE, priority=10, speed=0.34)],
+        ),
+        merge_mode=MobAiPhaseMergeMode.PATCH,
+    )
+)
+```
+
+Mob AI V3 (module-based + utility selectors):
+
+```python
+from dungeonsreborn_builder import (
+    Mob,
+    EntityType,
+    MobAiProfile,
+    MobAiPerceptionSpec,
+    MobAiCombatSpec,
+    MobAiGroupSpec,
+    MobAiEnvironmentSpec,
+    MobAiSchedulerSpec,
+    MobAiGoalSpec,
+    MobAiGoalType,
+)
+
+mob = (
+    Mob("mob_v3_guard")
+    .mob_type(EntityType.ZOMBIE)
+    .name("<aqua>V3 Guard</aqua>")
+    .stats(health=32, damage=6, armor=4, speed=0.27)
+    .ai_profile_v3(
+        MobAiProfile.DEFENSIVE,
+        perception=MobAiPerceptionSpec(aggro_radius=14.0, retarget_cooldown_ticks=20),
+        combat=MobAiCombatSpec(flee_health_ratio=0.2, rage_health_ratio=0.65, chase_speed=0.30),
+        group=MobAiGroupSpec(assist_radius=12.0, call_for_help_radius=10.0, focus_fire=True),
+        environment=MobAiEnvironmentSpec(avoid_lava=True, avoid_powder_snow=True, open_doors=True),
+        scheduler=MobAiSchedulerSpec(state_transition_cooldown_ticks=10),
+    )
+    .ai_selector(
+        "engage_primary",
+        base_score=100,
+        actions=[MobAiGoalSpec(MobAiGoalType.CHASE, priority=20, speed=0.30)],
+    )
+)
 ```
 
 ## Example (Upgrades)

@@ -15,6 +15,7 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.editor.EditorItemLore;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.system.SystemStatusStore;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import dev.patric.dungeonsreborn.util.WorldAllowlist;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
@@ -92,11 +93,8 @@ public final class DungeonYamlRegistry {
   }
 
   private void ensureFile() {
-    File file = file();
-    if (file.exists()) {
-      return;
-    }
-    plugin.saveResource("dungeon.yml", false);
+    PluginResources.ensureYamlFile(plugin, file(), "dungeon.yml", cfg -> cfg.createSection("dungeon"),
+        plugin.getLogger(), "Dungeon");
   }
 
   private DungeonSpec parseDungeon(YamlConfiguration cfg, List<String> errors) {

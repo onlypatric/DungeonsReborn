@@ -48,6 +48,7 @@ import dev.patric.dungeonsreborn.shops.ShopTokenSpec;
 import dev.patric.dungeonsreborn.shops.ShopTokenTierSpec;
 import dev.patric.dungeonsreborn.shops.ShopYamlRegistry;
 import dev.patric.dungeonsreborn.logging.AdvancementAuditLog;
+import dev.patric.dungeonsreborn.util.PluginResources;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.inventory.ItemStack;
@@ -243,8 +244,17 @@ public final class AdvancementService {
 
   public void reloadConfig() {
     File file = configFile();
-    if (!file.exists()) {
-      plugin.saveResource("advancements.yml", false);
+    if (plugin instanceof org.bukkit.plugin.java.JavaPlugin javaPlugin) {
+      PluginResources.ensureYamlFile(javaPlugin, file, "advancements.yml", cfg -> cfg.createSection("advancements"),
+          plugin.getLogger(), "Advancements");
+    } else if (!file.exists()) {
+      YamlConfiguration yaml = new YamlConfiguration();
+      yaml.createSection("advancements");
+      try {
+        yaml.save(file);
+      } catch (Exception ex) {
+        plugin.getLogger().warning("[Advancements] Failed to create default advancements.yml: " + ex.getMessage());
+      }
     }
     rawConfig = YamlConfiguration.loadConfiguration(file);
     config = AdvancementConfig.from(rawConfig);

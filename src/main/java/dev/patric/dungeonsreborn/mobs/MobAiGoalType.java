@@ -5,5 +5,11 @@ public enum MobAiGoalType {
   GUARD,
   PATROL,
   RETURN,
-  WANDER
+  WANDER,
+  CHASE,
+  HOLD_RANGE,
+  FLEE,
+  ASSIST,
+  CALL_HELP,
+  HOLD_POSITION
 }

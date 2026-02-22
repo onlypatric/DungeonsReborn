@@ -5,11 +5,15 @@ from __future__ import annotations
 from .effects_ids import ACTION_TYPES, CONDITION_TYPES, COST_TYPES, REQUIREMENT_TYPES, TARGETER_TYPES
 from .items import ItemClick, ItemHookType, ItemConsumeMode
 from .mobs import (
+    MobAiEngine,
     MobAttackTrigger,
     MobTargetMode,
     MobLocomotionMode,
     MobBehaviorState,
+    MobAiVersion,
     MobAiGoalType,
+    MobAiProfile,
+    MobAiPhaseMergeMode,
     MobAttackAoEShape,
     MobTargetFilter,
     MobSpawnTetherAction,
@@ -45,6 +49,10 @@ def list_enum_domains() -> dict[str, list[str]]:
         "mobs.target_modes": [e.value for e in MobTargetMode],
         "mobs.locomotion_modes": [e.value for e in MobLocomotionMode],
         "mobs.behavior_states": [e.value for e in MobBehaviorState],
+        "mobs.ai_engines": [e.value for e in MobAiEngine],
+        "mobs.ai_versions": [e.value for e in MobAiVersion],
+        "mobs.ai_profiles": [e.value for e in MobAiProfile],
+        "mobs.ai_phase_merge_modes": [e.value for e in MobAiPhaseMergeMode],
         "mobs.ai_goal_types": [e.value for e in MobAiGoalType],
         "mobs.attack_aoe_shapes": [e.value for e in MobAttackAoEShape],
         "mobs.target_filters": [e.value for e in MobTargetFilter],

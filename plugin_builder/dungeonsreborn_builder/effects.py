@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from .base import BuilderBase, ExporterBase
+from .base import BuilderBase, ExporterBase, snake_case
 from .animation import AnimationBuilder, VFXPreset
 from .dsl import DslBuilder
 from .utils import apply_overrides
@@ -273,7 +273,7 @@ class EffectsExporter(ExporterBase):
 
 
 class AbilityBuilder(BuilderBase):
-    def __init__(self, ability_id: str) -> None:
+    def __init__(self, ability_id: Optional[str] = None) -> None:
         super().__init__(_id=ability_id)
         self._requirements: List[Requirement] = []
         self._costs: List[Cost] = []
@@ -400,6 +400,11 @@ def sequence(*actions: Action) -> Action:
     return Action("sequence", {"actions": [action.to_dict() for action in actions]})
 
 
+def auto_ability_id(prefix: str, *parts: str) -> str:
+    tokens = [prefix, *parts]
+    return snake_case("_".join(token for token in tokens if token))
+
+
 def requirement_sneaking(message: Optional[str] = None) -> Requirement:
     data: Dict[str, Any] = {}
     if message:
@@ -466,6 +471,10 @@ def targeter_raycast(range_blocks: float, size: float = 0.25, stop_on_block: boo
         "stopOnBlock": stop_on_block,
         "ignoreCaster": ignore_caster,
     }
+
+
+def targeter_context_target(key: str = "mob_target") -> Dict[str, Any]:
+    return {"type": "context_target", "key": key}
 
 
 def for_each_target(
@@ -588,6 +597,37 @@ def particles_ring(
     if up:
         payload["up"] = up
     return Action("particles_ring", payload)
+
+
+def particles_sphere_shell(
+    particle: EnumValue,
+    radius: float,
+    points: int,
+    count: int = 1,
+    offset: float = 0.0,
+    extra: float = 0.0,
+    at: Optional[str] = None,
+    forward: float = 0.0,
+    right: float = 0.0,
+    up: float = 0.0,
+) -> Action:
+    payload: Dict[str, Any] = {
+        "particle": _particle_value(particle),
+        "radius": radius,
+        "points": points,
+        "count": count,
+        "offset": offset,
+        "extra": extra,
+    }
+    if at:
+        payload["at"] = at
+    if forward:
+        payload["forward"] = forward
+    if right:
+        payload["right"] = right
+    if up:
+        payload["up"] = up
+    return Action("particles_sphere_shell", payload)
 
 
 def particles_points(
@@ -876,10 +916,10 @@ def delay(ticks: int, action: Action) -> Action:
     return Action("delay", {"delayTicks": ticks, "then": action.to_dict()})
 
 
-def sound(sound_id: str, volume: float = 1.0, pitch: float = 1.0) -> Action:
+def sound(sound_id: str | EnumValue, volume: float = 1.0, pitch: float = 1.0) -> Action:
     return Action(
         "sound",
-        {"sound": sound_id, "volume": volume, "pitch": pitch},
+        {"sound": _as_text(sound_id), "volume": volume, "pitch": pitch},
     )
 
 

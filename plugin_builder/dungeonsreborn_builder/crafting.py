@@ -338,6 +338,7 @@ class CraftingDiscoverySpec:
     requires: List[str] = field(default_factory=list)
     grants: List[str] = field(default_factory=list)
     unlock_on_craft: bool = False
+    show_in_book: bool = False
     research_seconds: int = 0
     unlock_quests: List[str] = field(default_factory=list)
     unlock_drop_item_ids: List[str] = field(default_factory=list)
@@ -353,6 +354,8 @@ class CraftingDiscoverySpec:
             data["grants"] = list(self.grants)
         if self.unlock_on_craft:
             data["unlockOnCraft"] = True
+        if self.show_in_book:
+            data["showInBook"] = True
         if self.research_seconds:
             data["researchSeconds"] = self.research_seconds
         unlock: Dict[str, Any] = {}

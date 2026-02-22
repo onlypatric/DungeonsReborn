@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +31,12 @@ import net.kyori.adventure.text.Component;
 
 import dev.patric.dungeonsreborn.effects.particles.ParticleEngine;
 import dev.patric.dungeonsreborn.effects.actions.EntityActions;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventContext;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventDispatcher;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventSource;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventType;
+import dev.patric.dungeonsreborn.effects.combat.DamagePacket;
+import dev.patric.dungeonsreborn.effects.combat.DamagePipeline;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.damage.DamageCause;
 import dev.patric.dungeonsreborn.effects.damage.DamageAmountMode;
@@ -275,6 +282,8 @@ public final class EffectsEngine {
   private final TypeRegistry<ActionType> actionTypes = new TypeRegistry<>("action");
   private final TypeRegistry<TargeterType<?>> targeterTypes = new TypeRegistry<>("targeter");
   private final TypeRegistry<ConditionType> conditionTypes = new TypeRegistry<>("condition");
+  private final CombatEventDispatcher combatDispatcher;
+  private final DamagePipeline damagePipeline = DamagePipeline.defaults();
   private volatile RelationProvider relationProvider = RelationProviders.scoreboardTeams();
   private volatile ManaProvider manaProvider;
   private volatile ManaUiConfig manaUiConfig = ManaUiConfig.defaults();
@@ -341,6 +350,8 @@ public final class EffectsEngine {
   private EffectsEngine(JavaPlugin plugin, ServiceLogger logger) {
     this.plugin = plugin;
     this.logger = logger;
+    int workers = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
+    this.combatDispatcher = new CombatEventDispatcher(this, workers, 12_000);
   }
 
   public void start() {
@@ -392,6 +403,7 @@ public final class EffectsEngine {
     reflectByEntity.clear();
     timelines.values().forEach(GlobalTimeline::cancel);
     timelines.clear();
+    combatDispatcher.shutdown();
   }
 
   private final class GlobalTimeline implements TimelineHandle {
@@ -659,6 +671,16 @@ public final class EffectsEngine {
 
   public long tickNow() {
     return tick;
+  }
+
+  public CombatEventDispatcher combatDispatcher() {
+    return combatDispatcher;
+  }
+
+  public void configureCombat(boolean enabled, boolean debug, boolean asyncPlannerEnabled, int queueCapacity,
+      long planTtlTicks, int maxEventDispatchPerTick, int maxDamagePacketsPerTick, String degradePolicy) {
+    combatDispatcher.configure(enabled, debug, asyncPlannerEnabled, queueCapacity, planTtlTicks,
+        maxEventDispatchPerTick, maxDamagePacketsPerTick, degradePolicy);
   }
 
   public long nanoTime() {
@@ -1040,6 +1062,9 @@ public final class EffectsEngine {
     Objects.requireNonNull(ctx, "ctx");
     Objects.requireNonNull(target, "target");
     Objects.requireNonNull(spec, "spec");
+    if (!combatDispatcher.onDamagePacketBudget()) {
+      return 0.0;
+    }
     if (!EntityActions.canAffect(ctx, target, spec.policy())) {
       return 0.0;
     }
@@ -1048,22 +1073,30 @@ public final class EffectsEngine {
       return 0.0;
     }
 
-    double amount = spec.amount();
-    if (spec.mode() == DamageAmountMode.PERCENT_MAX_HEALTH) {
-      double pct = amount > 1.0 ? amount / 100.0 : amount;
-      if (pct <= 0.0) {
-        return 0.0;
-      }
-      double max = EntityActions.resolveMaxHealth(target);
-      amount = max * pct;
-    }
+    DamagePacket packet = new DamagePacket(ctx.caster(), target, spec, spec.amount());
+    packet = damagePipeline.process(this, ctx, packet);
+    double amount = packet.amount();
     if (!(amount > 0.0)) {
       return 0.0;
     }
 
-    if (spec.mode() != DamageAmountMode.TRUE && spec.type() != null && !spec.ignoreResistance()) {
-      double multiplier = resistanceMultiplier(target.getUniqueId(), spec.type());
-      amount *= multiplier;
+    if (packet.critical()) {
+      combatDispatcher.dispatch(new CombatEventContext(
+          tickNow(),
+          CombatEventType.ON_ATTACK_CRIT,
+          ctx.caster(),
+          target,
+          target,
+          null,
+          CombatEventSource.MELEE,
+          packet.amount(),
+          true,
+          false,
+          false,
+          spec.type(),
+          spec.cause(),
+          spec.tags().stream().findFirst().orElse(null),
+          null));
     }
     amount *= profile.damageMultiplier();
     if (!(amount > 0.0)) {
@@ -1085,6 +1118,9 @@ public final class EffectsEngine {
     }
 
     amount = applyDamageCaps(target, amount, spec, profile);
+    if (spec.minDamageFloor() > 0.0) {
+      amount = Math.max(spec.minDamageFloor(), amount);
+    }
     if (!(amount > 0.0)) {
       return 0.0;
     }
@@ -1105,6 +1141,29 @@ public final class EffectsEngine {
       EntityActions.applyUpgradeStatusEffects(ctx, target);
     }
     logDamageEvent(ctx, target, amount, spec);
+    CombatEventType type = spec.cause() == DamageCause.DOT ? CombatEventType.ON_DOT_TICK : CombatEventType.ON_HIT_TAKEN;
+    CombatEventSource source = switch (spec.cause()) {
+      case PROJECTILE -> CombatEventSource.PROJECTILE;
+      case DOT -> CombatEventSource.DOT;
+      case ENVIRONMENT -> CombatEventSource.ENVIRONMENT;
+      default -> CombatEventSource.MELEE;
+    };
+    combatDispatcher.dispatch(new CombatEventContext(
+        tickNow(),
+        type,
+        ctx.caster(),
+        target,
+        target,
+        null,
+        source,
+        amount,
+        false,
+        false,
+        false,
+        spec.type(),
+        spec.cause(),
+        spec.tags().stream().findFirst().orElse(null),
+        null));
     return amount;
   }
 
@@ -1642,6 +1701,7 @@ public final class EffectsEngine {
   private void tick() {
     final long start = System.nanoTime();
     tick++;
+    combatDispatcher.tickStart();
     if (tasks.isEmpty() && realTimeTasks.isEmpty()) {
       tickManaRegen();
       tickManaTimedGrant();

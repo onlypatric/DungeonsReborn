@@ -667,13 +667,33 @@ public final class ShopYamlRegistry {
   private void ensureFile() {
     File file = file();
     if (!file.exists()) {
-      plugin.saveResource("shops.yml", false);
+      if (plugin.getResource("shops.yml") != null) {
+        plugin.saveResource("shops.yml", false);
+      } else {
+        writeDefaultShopsFile(file);
+      }
     }
     File dir = shopsDir();
     if (!dir.exists()) {
       dir.mkdirs();
     }
     copyBundledShops(dir);
+  }
+
+  private void writeDefaultShopsFile(File file) {
+    try {
+      File parent = file.getParentFile();
+      if (parent != null && !parent.exists()) {
+        parent.mkdirs();
+      }
+      YamlConfiguration yaml = new YamlConfiguration();
+      yaml.set("schemaVersion", 1);
+      yaml.set("shops", List.of());
+      yaml.save(file);
+      logger.info("[Shops] Created default shops.yml (bundled resource not present)");
+    } catch (Exception ex) {
+      logger.warn("[Shops] Failed to create default shops.yml: " + ex.getMessage());
+    }
   }
 
   private void copyBundledShops(File dir) {
