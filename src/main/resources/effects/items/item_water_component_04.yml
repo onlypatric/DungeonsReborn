@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <aqua><bold>Water Sigil</bold></aqua> <gray>IV</gray>
-    lore:
-      - <gold>Keystone</gold> <dark_gray>❯</dark_gray> <gray>Focuses crafted power.</gray>
-gui:
-  head: ICON_ITEMS

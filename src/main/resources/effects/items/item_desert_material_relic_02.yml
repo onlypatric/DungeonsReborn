@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <gold><bold>Sunworn Relic</bold></gold> <gray>II</gray>
-    lore:
-      - <dark_gray>✦</dark_gray> <gray>Harvested from the Desert wilds.</gray>
-gui:
-  head: ICON_ITEMS

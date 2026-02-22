@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: GOLDEN_HORSE_ARMOR
-  display:
-    name: <gold><bold>Lowlands Ominous Key</bold></gold>
-    lore:
-      - <gray>Unlocks ominous lowlands trial vaults.</gray>
-gui:
-  head: ICON_ITEMS

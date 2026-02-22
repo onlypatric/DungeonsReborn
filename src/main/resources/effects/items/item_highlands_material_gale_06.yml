@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <gray><bold>Galeshard</bold></gray> <gray>VI</gray>
-    lore:
-      - <dark_gray>✦</dark_gray> <gray>Harvested from the Highlands wilds.</gray>
-gui:
-  head: ICON_ITEMS

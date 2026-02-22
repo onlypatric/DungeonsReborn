@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: HEART_OF_THE_SEA
-  display:
-    name: <aqua><bold>Ominous Meadow Relic</bold></aqua>
-    lore:
-      - <gray>Rare relic recovered from ominous trials.</gray>
-gui:
-  head: ICON_ITEMS

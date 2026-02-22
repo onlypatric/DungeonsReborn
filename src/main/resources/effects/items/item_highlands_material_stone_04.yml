@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <gray><bold>Granite Core</bold></gray> <gray>IV</gray>
-    lore:
-      - <dark_gray>✦</dark_gray> <gray>Harvested from the Highlands wilds.</gray>
-gui:
-  head: ICON_ITEMS

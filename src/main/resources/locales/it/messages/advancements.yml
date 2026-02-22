@@ -1,5 +1,0 @@
-messages.advancements.bossKills: <green>Avanzamento sbloccato:</green> <yellow>{title} {count}x</yellow>
-messages.advancements.fallbackGranted: <green>Avanzamento completato:</green> <yellow>{title}</yellow>
-messages.advancements.reload.disabled: <yellow>Avanzamenti non disponibili.</yellow>
-messages.advancements.reload.ok: <green>Avanzamenti ricaricati.</green>
-messages.advancements.unlocked: <green>Avanzamento sbloccato:</green> <yellow>{title}</yellow>

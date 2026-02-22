@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <aqua><bold>Brineheart Pearl</bold></aqua> <gray>III</gray>
-    lore:
-      - <dark_gray>✦</dark_gray> <gray>Harvested from the Water wilds.</gray>
-gui:
-  head: ICON_ITEMS

@@ -1,9 +1,0 @@
-item:
-  type: material
-  material: PAPER
-  display:
-    name: <red><bold>Nether Sigil</bold></red> <gray>XI</gray>
-    lore:
-      - <gold>Keystone</gold> <dark_gray>❯</dark_gray> <gray>Focuses crafted power.</gray>
-gui:
-  head: ICON_ITEMS
