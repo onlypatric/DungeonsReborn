@@ -37,6 +37,27 @@ effects:
       degradePolicy: DROP_LOW_PRIORITY
     metrics:
       enabled: true
+    projectiles:
+      enabled: true
+      vanilla:
+        enabled: true
+      custom:
+        enabled: true
+      travelStep:
+        defaultEnabled: false
+        defaultIntervalTicks: 3
+      tracker:
+        maxActive: 10000
+        staleTicks: 600
+      guardrails:
+        maxProjectileEventsPerTick: 6000
+        maxTravelStepDispatchPerTick: 1200
+      listeners:
+        useProjectileCollideEvent: true
+  afflictions:
+    enabled: true
+    maxTrackedPerEntity: 24
+    cleanupIntervalTicks: 100
 
 # Locale settings.
 locales:
@@ -129,12 +150,28 @@ advancements:
 
 # Mob performance controls.
 mobs:
+  style:
+    # Legacy compatibility mode:
+    # when true and stylePreset is missing, tier is used as style preset fallback.
+    useTierAsPreset: false
   performance:
     # Optional cap on how many active mobs are processed per tick (0 = unlimited).
     maxTickMobs: 0
   ai:
     enabled: true
     defaultEngine: V3
+    v4:
+      naturalModel:
+        enabled: true
+        optInMode: PACK_PREFIX
+        packPrefixes:
+          - mob_p01_
+        defaultMovementPolicy: PATHFINDER_FIRST
+    fullOverride:
+      enabled: true
+      hardDisableVanilla: true
+      maxSelectorEvaluationsPerTick: 4000
+      maxOverrideCastsPerTick: 1000
     pathfinder:
       enabled: true
       useMobGoalsApi: true

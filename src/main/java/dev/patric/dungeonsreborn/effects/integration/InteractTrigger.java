@@ -6,7 +6,8 @@ import org.bukkit.inventory.EquipmentSlot;
 
 public enum InteractTrigger {
   RIGHT_CLICK,
-  LEFT_CLICK;
+  LEFT_CLICK,
+  SHOOT;
 
   public boolean matches(PlayerInteractEvent event) {
     // Ignore off-hand duplicates; allow null hand (some actions report null).
@@ -17,6 +18,7 @@ public enum InteractTrigger {
     return switch (this) {
       case RIGHT_CLICK -> action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
       case LEFT_CLICK -> action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+      case SHOOT -> false;
     };
   }
 }

@@ -7,6 +7,11 @@ import dev.patric.dungeonsreborn.mobs.ai.MobAiHooksSpec;
 import dev.patric.dungeonsreborn.mobs.ai.MobAiProfile;
 
 public final class MobAiSpec {
+  private final MobAiSchemaVersion schemaVersion;
+  private final MobAiControlMode controlMode;
+  private final MobAiCombatAuthority combatAuthority;
+  private final MobAiRuntimeModel runtimeModel;
+  private final MobAiMovementPolicy movementPolicy;
   private final MobAiEngineMode engineMode;
   private final MobAiProfile profile;
   private final boolean enabled;
@@ -44,8 +49,18 @@ public final class MobAiSpec {
   private final MobPartyRule partyRule;
   private final MobAiHooksSpec hooks;
   private final java.util.List<MobAiGoalSpec> goals;
+  private final java.util.List<MobAiSelectorSpec> selectors;
+  private final java.util.List<MobAiTargetSourceSpec> targetSources;
+  private final double movementStopDistance;
+  private final boolean movementGroundClamp;
+  private final long movementRepathTimeoutTicks;
 
   private MobAiSpec(Builder builder) {
+    this.schemaVersion = builder.schemaVersion;
+    this.controlMode = builder.controlMode;
+    this.combatAuthority = builder.combatAuthority;
+    this.runtimeModel = builder.runtimeModel;
+    this.movementPolicy = builder.movementPolicy;
     this.engineMode = builder.engineMode;
     this.profile = builder.profile;
     this.enabled = builder.enabled;
@@ -83,6 +98,35 @@ public final class MobAiSpec {
     this.partyRule = builder.partyRule;
     this.hooks = builder.hooks == null ? MobAiHooksSpec.empty() : builder.hooks;
     this.goals = java.util.List.copyOf(builder.goals);
+    this.selectors = java.util.List.copyOf(builder.selectors);
+    this.targetSources = java.util.List.copyOf(builder.targetSources);
+    this.movementStopDistance = builder.movementStopDistance;
+    this.movementGroundClamp = builder.movementGroundClamp;
+    this.movementRepathTimeoutTicks = builder.movementRepathTimeoutTicks;
+  }
+
+  public MobAiSchemaVersion schemaVersion() {
+    return schemaVersion;
+  }
+
+  public MobAiControlMode controlMode() {
+    return controlMode;
+  }
+
+  public MobAiCombatAuthority combatAuthority() {
+    return combatAuthority;
+  }
+
+  public MobAiRuntimeModel runtimeModel() {
+    return runtimeModel;
+  }
+
+  public MobAiMovementPolicy movementPolicy() {
+    return movementPolicy;
+  }
+
+  public boolean isFullOverride() {
+    return controlMode == MobAiControlMode.FULL_OVERRIDE;
   }
 
   public MobAiEngineMode engineMode() {
@@ -233,6 +277,26 @@ public final class MobAiSpec {
     return goals;
   }
 
+  public java.util.List<MobAiSelectorSpec> selectors() {
+    return selectors;
+  }
+
+  public java.util.List<MobAiTargetSourceSpec> targetSources() {
+    return targetSources;
+  }
+
+  public double movementStopDistance() {
+    return movementStopDistance;
+  }
+
+  public boolean movementGroundClamp() {
+    return movementGroundClamp;
+  }
+
+  public long movementRepathTimeoutTicks() {
+    return movementRepathTimeoutTicks;
+  }
+
   public static Builder builder() {
     return new Builder();
   }
@@ -242,6 +306,11 @@ public final class MobAiSpec {
   }
 
   public static final class Builder {
+    private MobAiSchemaVersion schemaVersion = MobAiSchemaVersion.LEGACY;
+    private MobAiControlMode controlMode = MobAiControlMode.DEFAULT;
+    private MobAiCombatAuthority combatAuthority = MobAiCombatAuthority.VANILLA;
+    private MobAiRuntimeModel runtimeModel = MobAiRuntimeModel.LEGACY_V4;
+    private MobAiMovementPolicy movementPolicy = MobAiMovementPolicy.PATHFINDER_FIRST;
     private MobAiEngineMode engineMode = MobAiEngineMode.LEGACY;
     private MobAiProfile profile = MobAiProfile.NEUTRAL;
     private boolean enabled = true;
@@ -279,11 +348,21 @@ public final class MobAiSpec {
     private MobPartyRule partyRule = MobPartyRule.NONE;
     private MobAiHooksSpec hooks = MobAiHooksSpec.empty();
     private final java.util.List<MobAiGoalSpec> goals = new java.util.ArrayList<>();
+    private final java.util.List<MobAiSelectorSpec> selectors = new java.util.ArrayList<>();
+    private final java.util.List<MobAiTargetSourceSpec> targetSources = new java.util.ArrayList<>();
+    private double movementStopDistance = 1.25;
+    private boolean movementGroundClamp = true;
+    private long movementRepathTimeoutTicks = 40L;
 
     private Builder() {
     }
 
     private Builder(MobAiSpec template) {
+      this.schemaVersion = template.schemaVersion;
+      this.controlMode = template.controlMode;
+      this.combatAuthority = template.combatAuthority;
+      this.runtimeModel = template.runtimeModel;
+      this.movementPolicy = template.movementPolicy;
       this.engineMode = template.engineMode;
       this.profile = template.profile;
       this.enabled = template.enabled;
@@ -321,6 +400,57 @@ public final class MobAiSpec {
       this.partyRule = template.partyRule;
       this.hooks = template.hooks;
       this.goals.addAll(template.goals);
+      this.selectors.addAll(template.selectors);
+      this.targetSources.addAll(template.targetSources);
+      this.movementStopDistance = template.movementStopDistance;
+      this.movementGroundClamp = template.movementGroundClamp;
+      this.movementRepathTimeoutTicks = template.movementRepathTimeoutTicks;
+    }
+
+    public Builder schemaVersion(MobAiSchemaVersion schemaVersion) {
+      this.schemaVersion = Objects.requireNonNull(schemaVersion, "schemaVersion");
+      return this;
+    }
+
+    public Builder controlMode(MobAiControlMode controlMode) {
+      this.controlMode = Objects.requireNonNull(controlMode, "controlMode");
+      return this;
+    }
+
+    public Builder combatAuthority(MobAiCombatAuthority combatAuthority) {
+      this.combatAuthority = Objects.requireNonNull(combatAuthority, "combatAuthority");
+      return this;
+    }
+
+    public Builder runtimeModel(MobAiRuntimeModel runtimeModel) {
+      this.runtimeModel = Objects.requireNonNull(runtimeModel, "runtimeModel");
+      return this;
+    }
+
+    public Builder movementPolicy(MobAiMovementPolicy movementPolicy) {
+      this.movementPolicy = Objects.requireNonNull(movementPolicy, "movementPolicy");
+      return this;
+    }
+
+    public Builder movementStopDistance(double movementStopDistance) {
+      if (!Double.isFinite(movementStopDistance) || movementStopDistance < 0.0) {
+        throw new IllegalArgumentException("movementStopDistance must be >= 0");
+      }
+      this.movementStopDistance = movementStopDistance;
+      return this;
+    }
+
+    public Builder movementGroundClamp(boolean movementGroundClamp) {
+      this.movementGroundClamp = movementGroundClamp;
+      return this;
+    }
+
+    public Builder movementRepathTimeoutTicks(long movementRepathTimeoutTicks) {
+      if (movementRepathTimeoutTicks < 0L) {
+        throw new IllegalArgumentException("movementRepathTimeoutTicks must be >= 0");
+      }
+      this.movementRepathTimeoutTicks = movementRepathTimeoutTicks;
+      return this;
     }
 
     public Builder engineMode(MobAiEngineMode engineMode) {
@@ -573,7 +703,34 @@ public final class MobAiSpec {
       return this;
     }
 
+    public Builder clearSelectors() {
+      this.selectors.clear();
+      return this;
+    }
+
+    public Builder addSelector(MobAiSelectorSpec selector) {
+      if (selector != null) {
+        this.selectors.add(selector);
+      }
+      return this;
+    }
+
+    public Builder clearTargetSources() {
+      this.targetSources.clear();
+      return this;
+    }
+
+    public Builder addTargetSource(MobAiTargetSourceSpec source) {
+      if (source != null) {
+        this.targetSources.add(source);
+      }
+      return this;
+    }
+
     public MobAiSpec build() {
+      if (controlMode == MobAiControlMode.FULL_OVERRIDE && schemaVersion != MobAiSchemaVersion.V4) {
+        throw new IllegalArgumentException("FULL_OVERRIDE requires ai.version V4");
+      }
       return new MobAiSpec(this);
     }
   }

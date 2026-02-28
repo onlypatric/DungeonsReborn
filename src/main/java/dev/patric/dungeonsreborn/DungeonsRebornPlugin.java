@@ -33,6 +33,9 @@ import dev.patric.dungeonsreborn.effects.integration.ItemSyncListener;
 import dev.patric.dungeonsreborn.effects.items.HeadRegistry;
 import dev.patric.dungeonsreborn.effects.items.ItemHookListener;
 import dev.patric.dungeonsreborn.effects.items.ItemTemplateCompiler;
+import dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetryStore;
+import dev.patric.dungeonsreborn.effects.projectile.ProjectileTravelTracker;
+import dev.patric.dungeonsreborn.effects.projectile.VanillaProjectileEventBridge;
 import dev.patric.dungeonsreborn.textures.TextureBuildResult;
 import dev.patric.dungeonsreborn.textures.TextureDeliveryListener;
 import dev.patric.dungeonsreborn.textures.TextureService;
@@ -69,6 +72,7 @@ import dev.patric.dungeonsreborn.locale.Locales;
 import dev.patric.dungeonsreborn.mobs.MobRegistry;
 import dev.patric.dungeonsreborn.mobs.MobSpawnManager;
 import dev.patric.dungeonsreborn.mobs.MobYamlRegistry;
+import dev.patric.dungeonsreborn.mobs.MobAiMovementPolicy;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockListener;
 import dev.patric.dungeonsreborn.mobs.MobSpawnerBlockStore;
 import dev.patric.dungeonsreborn.mobs.model.MobModelBridge;
@@ -176,6 +180,10 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     private CraftingYamlRegistry craftingRecipes;
     private CraftingDiscoveryService craftingDiscovery;
     private VanillaCraftingBridge vanillaCraftingBridge;
+    private ProjectileTelemetryStore projectileTelemetryStore;
+    private ProjectileTravelTracker projectileTravelTracker;
+    private VanillaProjectileEventBridge vanillaProjectileEventBridge;
+    private BukkitTask projectileTravelTask;
     private UpgradeYamlRegistry upgradeRegistry;
     private UpgradeService upgradeService;
     private ShopYamlRegistry shopRegistry;
@@ -316,6 +324,29 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
             getConfig().getInt("effects.combat.guardrails.maxEventDispatchPerTick", 2000),
             getConfig().getInt("effects.combat.guardrails.maxDamagePacketsPerTick", 4000),
             getConfig().getString("effects.combat.guardrails.degradePolicy", "DROP_LOW_PRIORITY"));
+        effectsEngine.configureAfflictions(
+            getConfig().getBoolean("effects.afflictions.enabled", true),
+            getConfig().getInt("effects.afflictions.maxTrackedPerEntity", 24),
+            getConfig().getLong("effects.afflictions.cleanupIntervalTicks", 100L));
+        effectsEngine.configureProjectileCombat(
+            getConfig().getInt("effects.combat.projectiles.guardrails.maxProjectileEventsPerTick", 6000),
+            getConfig().getInt("effects.combat.projectiles.guardrails.maxTravelStepDispatchPerTick", 1200));
+        projectileTelemetryStore = new ProjectileTelemetryStore();
+        projectileTelemetryStore.configure(
+            getConfig().getInt("effects.combat.projectiles.tracker.maxActive", 10_000),
+            getConfig().getLong("effects.combat.projectiles.tracker.staleTicks", 600L));
+        projectileTravelTracker = new ProjectileTravelTracker(effectsEngine, projectileTelemetryStore);
+        projectileTravelTracker.configure(
+            getConfig().getBoolean("effects.combat.projectiles.enabled", true),
+            getConfig().getBoolean("effects.combat.projectiles.travelStep.defaultEnabled", false),
+            getConfig().getInt("effects.combat.projectiles.travelStep.defaultIntervalTicks", 3));
+        vanillaProjectileEventBridge = new VanillaProjectileEventBridge(effectsEngine, projectileTelemetryStore, projectileTravelTracker);
+        vanillaProjectileEventBridge.configure(
+            getConfig().getBoolean("effects.combat.projectiles.enabled", true),
+            getConfig().getBoolean("effects.combat.projectiles.vanilla.enabled", true),
+            getConfig().getBoolean("effects.combat.projectiles.listeners.useProjectileCollideEvent", true));
+        Bukkit.getPluginManager().registerEvents(vanillaProjectileEventBridge, this);
+        projectileTravelTask = Bukkit.getScheduler().runTaskTimer(this, vanillaProjectileEventBridge::tick, 1L, 1L);
         textureService = new TextureService(this);
         ItemTemplateCompiler.setTextureService(textureService);
         TextureBuildResult startupTextureBuild = textureService.rebuildIfAutoEnabled();
@@ -379,7 +410,16 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
                 getConfig().getInt("mobs.ai.async.maxWorkerThreads", 8)),
             getConfig().getInt("mobs.ai.async.maxJobsPerTick", 2000),
             getConfig().getInt("mobs.ai.async.queueCapacity", 10_000),
-            getConfig().getLong("mobs.ai.async.planTtlTicks", 1L));
+            getConfig().getLong("mobs.ai.async.planTtlTicks", 1L),
+            getConfig().getBoolean("mobs.ai.fullOverride.enabled", true),
+            getConfig().getBoolean("mobs.ai.fullOverride.hardDisableVanilla", true),
+            getConfig().getInt("mobs.ai.fullOverride.maxSelectorEvaluationsPerTick", 4000),
+            getConfig().getInt("mobs.ai.fullOverride.maxOverrideCastsPerTick", 1000),
+            getConfig().getBoolean("mobs.ai.v4.naturalModel.enabled", true),
+            getConfig().getString("mobs.ai.v4.naturalModel.optInMode", "PACK_PREFIX"),
+            getConfig().getStringList("mobs.ai.v4.naturalModel.packPrefixes"),
+            parseMobAiMovementPolicy(
+                getConfig().getString("mobs.ai.v4.naturalModel.defaultMovementPolicy", "PATHFINDER_FIRST")));
         mobRegistry.setCustomXpService(customXpService);
         mobRegistry.configureXpGating(
             getConfig().getBoolean("mobs.xpGating.enabled", true),
@@ -492,6 +532,7 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
 
         mobYamlRegistry = new MobYamlRegistry(this, effectsEngine, yamlAbilities, shopRegistry, mobRegistry, mobSpawnManager, serviceLog.mobs());
         mobYamlRegistry.setTextureService(textureService);
+        mobYamlRegistry.setUseTierAsPreset(getConfig().getBoolean("mobs.style.useTierAsPreset", false));
         mobYamlRegistry.setUpgradeRegistry(upgradeRegistry);
         mobYamlRegistry.reload();
         if (minionManager != null) {
@@ -803,6 +844,19 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
         }
     }
 
+    private MobAiMovementPolicy parseMobAiMovementPolicy(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return MobAiMovementPolicy.PATHFINDER_FIRST;
+        }
+        try {
+            return MobAiMovementPolicy.valueOf(raw.trim().toUpperCase(java.util.Locale.ROOT));
+        } catch (Exception ex) {
+            getLogger().warning("[Mobs] Invalid mobs.ai.v4.naturalModel.defaultMovementPolicy='" + raw
+                + "', using PATHFINDER_FIRST");
+            return MobAiMovementPolicy.PATHFINDER_FIRST;
+        }
+    }
+
     private int resolveAiWorkerThreads(String rawValue, int maxWorkerThreads) {
         int cores = Math.max(1, Runtime.getRuntime().availableProcessors());
         int max = Math.max(1, maxWorkerThreads);
@@ -924,6 +978,13 @@ public final class DungeonsRebornPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("DungeonsReborn disabled");
+        if (projectileTravelTask != null) {
+            projectileTravelTask.cancel();
+            projectileTravelTask = null;
+        }
+        vanillaProjectileEventBridge = null;
+        projectileTravelTracker = null;
+        projectileTelemetryStore = null;
         if (sharedTicks != null) {
             sharedTicks.stop();
             sharedTicks = null;

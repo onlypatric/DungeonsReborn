@@ -2,6 +2,7 @@ package dev.patric.dungeonsreborn.mobs;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Openable;
+import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -125,12 +127,17 @@ public final class MobRegistry implements Listener {
       String defaultEngine,
       boolean pathfinderEnabled,
       boolean useMobGoalsApi,
+      boolean fullOverrideEnabled,
+      boolean fullOverrideHardDisableVanilla,
       boolean asyncEnabled,
       int asyncQueueSize,
       int asyncWorkers,
       int activeMobs,
+      int activeFullOverrideMobs,
       int aiStepsLastTick,
       int pathMutationsLastTick,
+      int selectorEvaluationsLastTick,
+      int overrideCastsLastTick,
       long guardrailTrips,
       long fallbackTicks,
       long stalePlanDiscards,
@@ -204,6 +211,14 @@ public final class MobRegistry implements Listener {
   private long aiRetargetMinIntervalTicks = 5L;
   private long aiPathRecalcMinIntervalTicks = 10L;
   private long aiSampleWindowTicks = 200L;
+  private boolean aiFullOverrideEnabled = true;
+  private boolean aiFullOverrideHardDisableVanilla = true;
+  private int aiMaxSelectorEvaluationsPerTick = 4000;
+  private int aiMaxOverrideCastsPerTick = 1000;
+  private boolean aiV4NaturalModelEnabled = true;
+  private String aiV4NaturalOptInMode = "PACK_PREFIX";
+  private final List<String> aiV4NaturalPackPrefixes = new ArrayList<>();
+  private MobAiMovementPolicy aiV4DefaultMovementPolicy = MobAiMovementPolicy.PATHFINDER_FIRST;
   private boolean aiAsyncEnabled = true;
   private int aiAsyncWorkerThreads = Math.max(1, Math.min(8, Runtime.getRuntime().availableProcessors() - 1));
   private int aiAsyncMaxJobsPerTick = 2000;
@@ -213,6 +228,12 @@ public final class MobRegistry implements Listener {
   private int aiPathMutationsThisTick;
   private int aiStepsLastTick;
   private int aiPathMutationsLastTick;
+  private int aiSelectorEvaluationsThisTick;
+  private int aiSelectorEvaluationsLastTick;
+  private int aiOverrideCastsThisTick;
+  private int aiOverrideCastsLastTick;
+  private int aiActiveFullOverrideThisTick;
+  private int aiActiveFullOverrideLastTick;
   private long aiTotalSteps;
   private long aiTotalPathMutations;
   private long aiGuardrailTrips;
@@ -223,6 +244,7 @@ public final class MobRegistry implements Listener {
   private MobAiPlannerService aiPlannerService;
   private final MobAiNavigationDriver mobGoalsNavigationDriver = new MobGoalsNavigationDriver();
   private final MobAiNavigationDriver velocityNavigationDriver = new VelocityNavigationDriver();
+  private final Set<String> aiLegacyOverrideWarned = new HashSet<>();
 
   private static final class MobState {
     private UUID lastAttacker;
@@ -240,6 +262,7 @@ public final class MobRegistry implements Listener {
     private UUID currentTarget;
     private long lastTargetSwitchTick;
     private long nextWanderTick;
+    private org.bukkit.Location wanderTarget;
     private String variantId;
     private String traitId;
     private String phaseId;
@@ -259,6 +282,15 @@ public final class MobRegistry implements Listener {
     private long nextCallHelpTick;
     private long nextRetargetTick;
     private long nextPathRecalcTick;
+    private final Map<String, Long> nextSelectorCastTick = new java.util.HashMap<>();
+    private String lastSelectorId;
+    private MobAiIntentType lastIntentType = MobAiIntentType.HOLD_POSITION;
+    private final Map<MobAiTargetSourceType, UUID> targetSourceMemory = new EnumMap<>(MobAiTargetSourceType.class);
+    private final Map<MobAiTargetSourceType, Long> targetSourceMemoryExpiry = new EnumMap<>(MobAiTargetSourceType.class);
+    private final Map<MobAiTargetSourceType, Long> targetSourceCooldownExpiry = new EnumMap<>(MobAiTargetSourceType.class);
+    private MobAiTargetSourceType lastResolvedTargetSource;
+    private String lastNavigationDriver;
+    private long movementSuppressedUntilTick;
   }
 
   private record ManaKillStreak(long lastKillTick, int streak) {
@@ -332,7 +364,15 @@ public final class MobRegistry implements Listener {
       int asyncWorkerThreads,
       int asyncMaxJobsPerTick,
       int asyncQueueCapacity,
-      long asyncPlanTtlTicks) {
+      long asyncPlanTtlTicks,
+      boolean fullOverrideEnabled,
+      boolean fullOverrideHardDisableVanilla,
+      int maxSelectorEvaluationsPerTick,
+      int maxOverrideCastsPerTick,
+      boolean naturalModelEnabled,
+      String naturalOptInMode,
+      List<String> naturalPackPrefixes,
+      MobAiMovementPolicy defaultMovementPolicy) {
     this.aiEnabled = enabled;
     this.aiDefaultEngine = defaultEngine == null ? MobAiEngineMode.LEGACY : defaultEngine;
     this.aiPathfinderEnabled = pathfinderEnabled;
@@ -347,6 +387,26 @@ public final class MobRegistry implements Listener {
     this.aiAsyncMaxJobsPerTick = Math.max(1, asyncMaxJobsPerTick);
     this.aiAsyncQueueCapacity = Math.max(128, asyncQueueCapacity);
     this.aiAsyncPlanTtlTicks = Math.max(1L, asyncPlanTtlTicks);
+    this.aiFullOverrideEnabled = fullOverrideEnabled;
+    this.aiFullOverrideHardDisableVanilla = fullOverrideHardDisableVanilla;
+    this.aiMaxSelectorEvaluationsPerTick = Math.max(1, maxSelectorEvaluationsPerTick);
+    this.aiMaxOverrideCastsPerTick = Math.max(1, maxOverrideCastsPerTick);
+    this.aiV4NaturalModelEnabled = naturalModelEnabled;
+    this.aiV4NaturalOptInMode = naturalOptInMode == null || naturalOptInMode.isBlank()
+        ? "PACK_PREFIX"
+        : naturalOptInMode.trim().toUpperCase(Locale.ROOT);
+    this.aiV4NaturalPackPrefixes.clear();
+    if (naturalPackPrefixes != null) {
+      for (String prefix : naturalPackPrefixes) {
+        if (prefix == null || prefix.isBlank()) {
+          continue;
+        }
+        this.aiV4NaturalPackPrefixes.add(prefix.trim().toLowerCase(Locale.ROOT));
+      }
+    }
+    this.aiV4DefaultMovementPolicy = defaultMovementPolicy == null
+        ? MobAiMovementPolicy.PATHFINDER_FIRST
+        : defaultMovementPolicy;
     if (aiPlannerService != null) {
       aiPlannerService.shutdown();
     }
@@ -359,12 +419,17 @@ public final class MobRegistry implements Listener {
         aiDefaultEngine.name(),
         aiPathfinderEnabled,
         aiUseMobGoalsApi,
+        aiFullOverrideEnabled,
+        aiFullOverrideHardDisableVanilla,
         aiAsyncEnabled,
         aiPlannerService == null ? 0 : aiPlannerService.queueSize(),
         aiAsyncWorkerThreads,
         active.size(),
+        aiActiveFullOverrideLastTick,
         aiStepsLastTick,
         aiPathMutationsLastTick,
+        aiSelectorEvaluationsLastTick,
+        aiOverrideCastsLastTick,
         aiGuardrailTrips,
         aiFallbackTicks,
         aiStalePlanDiscards,
@@ -448,8 +513,101 @@ public final class MobRegistry implements Listener {
       return "missing";
     }
     MobAiSpec ai = spec.aiSpec();
-    MobAiV3Spec resolved = MobAiV3Resolver.resolve(ai);
-    return "profile=" + resolved.profile().name() + ", goals=" + resolved.goals().size() + ", ticks=" + ticks;
+    if (ai == null || !ai.enabled()) {
+      return "mode=DISABLED";
+    }
+    MobAiEngineMode engine = ai.engineMode() == null ? aiDefaultEngine : ai.engineMode();
+    if (!ai.isFullOverride()) {
+      MobAiV3Spec resolved = MobAiV3Resolver.resolve(ai);
+      return "mode=DEFAULT, schema=" + ai.schemaVersion().name()
+          + ", engine=" + engine.name()
+          + ", profile=" + resolved.profile().name()
+          + ", goals=" + resolved.goals().size()
+          + ", ticks=" + ticks;
+    }
+    List<MobAiSelectorSpec> selectors = new ArrayList<>(ai.selectors());
+    selectors.sort(java.util.Comparator.comparingInt(MobAiSelectorSpec::priority));
+    int castSelectors = 0;
+    long estimatedCasts = 0L;
+    List<String> top = new ArrayList<>();
+    for (MobAiSelectorSpec selector : selectors) {
+      if (selector == null || selector.intent() == null) {
+        continue;
+      }
+      MobAiIntentSpec intent = selector.intent();
+      if (top.size() < 3) {
+        top.add(selector.id() + ":" + intent.type().name());
+      }
+      if (intent.hasCastAbility()) {
+        castSelectors++;
+        long cooldown = Math.max(1L, intent.castCooldownTicks());
+        estimatedCasts += Math.max(1L, ticks / cooldown);
+      }
+    }
+    String firstNoTarget = selectSimulatedSelector(selectors, false);
+    String firstWithTarget = selectSimulatedSelector(selectors, true);
+    MobAiRuntimeModel runtimeModel = resolveRuntimeModel(spec, ai);
+    MobAiMovementPolicy movementPolicy = resolveMovementPolicy(spec, ai, runtimeModel);
+    int sources = ai.targetSources() == null ? 0 : ai.targetSources().size();
+    return "mode=FULL_OVERRIDE, schema=" + ai.schemaVersion().name()
+        + ", engine=" + engine.name()
+        + ", runtimeModel=" + runtimeModel.name()
+        + ", movementPolicy=" + movementPolicy.name()
+        + ", authority=" + ai.combatAuthority().name()
+        + ", targetSources=" + sources
+        + ", selectors=" + selectors.size()
+        + ", castSelectors=" + castSelectors
+        + ", estCasts@" + ticks + "t=" + estimatedCasts
+        + ", first(noTarget)=" + firstNoTarget
+        + ", first(withTarget)=" + firstWithTarget
+        + ", top=" + (top.isEmpty() ? "-" : String.join("|", top));
+  }
+
+  private String selectSimulatedSelector(List<MobAiSelectorSpec> selectors, boolean hasTarget) {
+    for (MobAiSelectorSpec selector : selectors) {
+      if (selector == null || selector.intent() == null) {
+        continue;
+      }
+      if (evaluateSimulatedCondition(selector.condition(), hasTarget)) {
+        return selector.id() + ":" + selector.intent().type().name();
+      }
+    }
+    return "none";
+  }
+
+  private boolean evaluateSimulatedCondition(MobAiConditionSpec condition, boolean hasTarget) {
+    if (condition == null) {
+      return true;
+    }
+    return switch (condition.kind()) {
+      case ALWAYS -> true;
+      case ALL -> {
+        boolean ok = true;
+        for (MobAiConditionSpec child : condition.children()) {
+          if (!evaluateSimulatedCondition(child, hasTarget)) {
+            ok = false;
+            break;
+          }
+        }
+        yield ok;
+      }
+      case ANY -> {
+        boolean ok = false;
+        for (MobAiConditionSpec child : condition.children()) {
+          if (evaluateSimulatedCondition(child, hasTarget)) {
+            ok = true;
+            break;
+          }
+        }
+        yield ok;
+      }
+      case NOT -> condition.children().isEmpty() || !evaluateSimulatedCondition(condition.children().get(0), hasTarget);
+      case HAS_TARGET -> {
+        boolean expected = condition.booleanValue() == null || condition.booleanValue();
+        yield expected == hasTarget;
+      }
+      case HEALTH_RATIO_LTE, HEALTH_RATIO_GTE, TARGET_DISTANCE_LTE, TARGET_DISTANCE_GTE, BEHAVIOR_STATE, RANDOM_CHANCE -> true;
+    };
   }
 
   public void markModelRegistryReload() {
@@ -659,8 +817,11 @@ public final class MobRegistry implements Listener {
       }
     }
     long now = engine.tickNow();
+    MobSpec spec = specs.get(mobId);
+    MobPhaseSpec phaseSpec = currentPhase(state, spec);
+    MobAiSpec ai = resolveEffectiveAi(spec, phaseSpec);
     String cooldownSummary = state == null ? null : formatCooldowns(state, now);
-    String pathInfo = state == null ? null : formatPathInfo(state, entity);
+    String pathInfo = state == null ? null : formatPathInfo(state, entity, ai, now);
     long ageTicks = state == null ? 0L : Math.max(0L, now - state.lastStateChangeTick);
     return new MobDebugSnapshot(mobId, phase, behavior, targetName, cooldownSummary, pathInfo, ageTicks);
   }
@@ -1153,7 +1314,7 @@ public final class MobRegistry implements Listener {
     return String.join(",", entries);
   }
 
-  private String formatPathInfo(MobState state, LivingEntity entity) {
+  private String formatPathInfo(MobState state, LivingEntity entity, MobAiSpec ai, long now) {
     if (state == null || entity == null) {
       return null;
     }
@@ -1166,10 +1327,49 @@ public final class MobRegistry implements Listener {
       base = base + " asyncQ=" + (aiPlannerService == null ? 0 : aiPlannerService.queueSize())
           + " tier=" + aiCurrentDegradeTier.name();
     }
+    String mode = ai != null && ai.isFullOverride() ? "FULL_OVERRIDE" : "DEFAULT";
+    String authority = ai == null ? "VANILLA" : ai.combatAuthority().name();
+    String runtimeModel = ai == null ? "LEGACY_V4" : ai.runtimeModel().name();
+    String selector = state.lastSelectorId == null ? "-" : state.lastSelectorId;
+    String intent = state.lastIntentType == null ? "-" : state.lastIntentType.name();
+    String source = state.lastResolvedTargetSource == null ? "-" : state.lastResolvedTargetSource.name();
+    String driver = state.lastNavigationDriver == null ? "-" : state.lastNavigationDriver;
+    String castCooldown = formatSelectorCooldowns(state, now);
+    base = base + " mode=" + mode
+        + " auth=" + authority
+        + " model=" + runtimeModel
+        + " sel=" + selector
+        + " intent=" + intent
+        + " src=" + source
+        + " nav=" + driver;
+    if (castCooldown != null) {
+      base = base + " castCd=" + castCooldown;
+    }
     if (state.patrolIndex > 0) {
       return base + " patrol=" + state.patrolIndex;
     }
     return base;
+  }
+
+  private String formatSelectorCooldowns(MobState state, long now) {
+    if (state == null || state.nextSelectorCastTick.isEmpty()) {
+      return null;
+    }
+    List<String> entries = new ArrayList<>();
+    for (Map.Entry<String, Long> entry : state.nextSelectorCastTick.entrySet()) {
+      long remaining = entry.getValue() - now;
+      if (remaining <= 0L) {
+        continue;
+      }
+      entries.add(entry.getKey() + ":" + remaining);
+      if (entries.size() >= 2) {
+        break;
+      }
+    }
+    if (entries.isEmpty()) {
+      return null;
+    }
+    return String.join(",", entries);
   }
 
   @EventHandler
@@ -1193,15 +1393,27 @@ public final class MobRegistry implements Listener {
         return;
       }
     }
+    MobSpec spec = specs.get(id);
     MobState state = states.get(entity.getUniqueId());
     if (state != null) {
       state.lastAttacker = attacker.getUniqueId();
+      state.targetSourceMemory.put(MobAiTargetSourceType.LAST_ATTACKER, attacker.getUniqueId());
+      state.targetSourceMemoryExpiry.put(MobAiTargetSourceType.LAST_ATTACKER, engine.tickNow() + 80L);
+      state.movementSuppressedUntilTick = Math.max(state.movementSuppressedUntilTick, engine.tickNow() + 6L);
       if (event.getFinalDamage() > 0.0) {
         state.threat.merge(attacker.getUniqueId(), event.getFinalDamage(),
             (left, right) -> (left == null ? 0.0 : left) + (right == null ? 0.0 : right));
       }
+      if (spec != null) {
+        MobAiSpec ai = spec.aiSpec();
+        if (ai != null
+            && ai.isFullOverride()
+            && isValidTarget((LivingEntity) entity, attacker, ai.aggroRadius())
+            && !isFriendlyTarget((LivingEntity) entity, attacker)) {
+          setTargetTracked((LivingEntity) entity, state, attacker, engine.tickNow());
+        }
+      }
     }
-    MobSpec spec = specs.get(id);
     if (spec != null && spec.events() != null) {
       triggerEventAbility(spec, (LivingEntity) entity, state, MobMarkers.getOwner(entity),
           spec.events().onHurt(), attacker);
@@ -1456,6 +1668,9 @@ public final class MobRegistry implements Listener {
   private void tick() {
     aiStepsThisTick = 0;
     aiPathMutationsThisTick = 0;
+    aiSelectorEvaluationsThisTick = 0;
+    aiOverrideCastsThisTick = 0;
+    aiActiveFullOverrideThisTick = 0;
     double overloadRatio = 1.0;
     if (aiPlannerService != null && aiAsyncQueueCapacity > 0) {
       overloadRatio = Math.max(1.0, (double) aiPlannerService.queueSize() / (double) aiAsyncQueueCapacity);
@@ -1464,6 +1679,9 @@ public final class MobRegistry implements Listener {
     if (active.isEmpty()) {
       aiStepsLastTick = 0;
       aiPathMutationsLastTick = 0;
+      aiSelectorEvaluationsLastTick = 0;
+      aiOverrideCastsLastTick = 0;
+      aiActiveFullOverrideLastTick = 0;
       return;
     }
     long now = engine.tickNow();
@@ -1511,7 +1729,9 @@ public final class MobRegistry implements Listener {
       tickPassives(spec, phase, living, state, inst.ownerId(), now);
       MobAttackSpec mainAttack = phase != null && phase.mainAttack() != null ? phase.mainAttack() : spec.mainAttack();
       MobAttackSpec secondaryAttack = phase != null && phase.secondaryAttack() != null ? phase.secondaryAttack() : spec.secondaryAttack();
-      tickAttacks(spec, inst, mainAttack, secondaryAttack, living, state, now);
+      MobAiSpec effectiveAi = resolveEffectiveAi(spec, phase);
+      boolean syncVanillaAttackTarget = !(effectiveAi != null && effectiveAi.isFullOverride() && aiFullOverrideEnabled);
+      tickAttacks(spec, inst, mainAttack, secondaryAttack, living, state, now, syncVanillaAttackTarget);
       tickModelAnimations(living, state, now);
     }
     if (toRemove != null) {
@@ -1525,6 +1745,9 @@ public final class MobRegistry implements Listener {
     }
     aiStepsLastTick = aiStepsThisTick;
     aiPathMutationsLastTick = aiPathMutationsThisTick;
+    aiSelectorEvaluationsLastTick = aiSelectorEvaluationsThisTick;
+    aiOverrideCastsLastTick = aiOverrideCastsThisTick;
+    aiActiveFullOverrideLastTick = aiActiveFullOverrideThisTick;
   }
 
   private void tickModelAnimations(LivingEntity entity, MobState state, long now) {
@@ -1570,16 +1793,56 @@ public final class MobRegistry implements Listener {
 
   private void tickAi(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, UUID ownerId, long now) {
     if (minionManager != null && minionManager.disableBaseAi(entity.getUniqueId())) {
+      if (aiFullOverrideHardDisableVanilla) {
+        setVanillaAiState(entity, true);
+      }
       return;
     }
     if (!aiEnabled) {
+      if (aiFullOverrideHardDisableVanilla) {
+        setVanillaAiState(entity, true);
+      }
       return;
     }
     MobAiSpec ai = resolveEffectiveAi(spec, phase);
     if (ai == null || !ai.enabled()) {
+      if (aiFullOverrideHardDisableVanilla) {
+        setVanillaAiState(entity, true);
+      }
       return;
     }
     MobAiEngineMode mode = ai.engineMode() == null ? aiDefaultEngine : ai.engineMode();
+    boolean hardDisableVanilla = shouldHardDisableVanillaAi(spec, ai);
+    if (ai.isFullOverride()) {
+      if (!aiFullOverrideEnabled) {
+        if (aiFullOverrideHardDisableVanilla) {
+          setVanillaAiState(entity, true);
+        }
+      } else {
+        aiActiveFullOverrideThisTick++;
+        if (hardDisableVanilla) {
+          setVanillaAiState(entity, false);
+        } else {
+          setVanillaAiState(entity, true);
+        }
+        if (mode == MobAiEngineMode.V3) {
+          tickAiFullOverride(spec, phase, entity, state, ai, ownerId, now, true);
+          return;
+        }
+        if (mode == MobAiEngineMode.V2) {
+          tickAiFullOverride(spec, phase, entity, state, ai, ownerId, now, false);
+          return;
+        }
+        if (spec != null && aiLegacyOverrideWarned.add(spec.id())) {
+          if (logger != null) {
+            logger.warn("[Mobs] FULL_OVERRIDE requested with LEGACY engine for mob " + spec.id()
+                + "; falling back to legacy AI.");
+          }
+        }
+      }
+    } else if (aiFullOverrideHardDisableVanilla) {
+      setVanillaAiState(entity, true);
+    }
     if (mode == MobAiEngineMode.V3) {
       tickAiV3(spec, phase, entity, state, ai, ownerId, now);
       return;
@@ -1591,11 +1854,467 @@ public final class MobRegistry implements Listener {
     tickAiLegacy(spec, phase, entity, state, ai, ownerId, now);
   }
 
+  private boolean shouldHardDisableVanillaAi(MobSpec spec, MobAiSpec ai) {
+    if (!aiFullOverrideHardDisableVanilla || ai == null || !ai.isFullOverride()) {
+      return false;
+    }
+    MobAiRuntimeModel runtimeModel = resolveRuntimeModel(spec, ai);
+    // Passive fauna in natural model relies on vanilla awareness for stable idle/flee movement.
+    if (runtimeModel == MobAiRuntimeModel.NATURAL_V1 && ai.profile() == MobAiProfile.PASSIVE) {
+      return false;
+    }
+    return true;
+  }
+
   private MobAiSpec resolveEffectiveAi(MobSpec spec, MobPhaseSpec phase) {
     if (phase != null && phase.aiSpec() != null) {
       return phase.aiSpec();
     }
     return spec == null ? null : spec.aiSpec();
+  }
+
+  private void tickAiFullOverride(
+      MobSpec spec,
+      MobPhaseSpec phase,
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      UUID ownerId,
+      long now,
+      boolean asyncCapable) {
+    if (!consumeAiStepBudget()) {
+      aiFallbackTicks++;
+      return;
+    }
+    if (state.home == null) {
+      state.home = entity.getLocation().clone();
+    }
+    applyLocomotion(entity, ai);
+    if (applyTerrainAvoidanceV2(entity, state, ai)) {
+      return;
+    }
+    if (ai.openDoors()) {
+      tryOpenDoorAhead(entity);
+    }
+    if (!applyLeash(state, entity, ai, false)) {
+      clearTargetTracked(entity, state);
+      updateBehaviorStateWithHooks(spec, entity, state, ai, null, ownerId, now);
+      return;
+    }
+    MobAiRuntimeModel runtimeModel = resolveRuntimeModel(spec, ai);
+
+    LivingEntity target = resolveTarget(state.currentTarget);
+    if (target != null && !isValidTarget(entity, target, ai.aggroRadius())) {
+      clearTargetTracked(entity, state);
+      target = null;
+    }
+    LivingEntity desired = runtimeModel == MobAiRuntimeModel.NATURAL_V1
+        ? selectAggroTargetNatural(spec, entity, state, ai, now)
+        : selectAggroTargetV2(entity, state, ai);
+    if (desired != null && (target == null || !desired.getUniqueId().equals(target.getUniqueId()))) {
+      long switchCooldown = Math.max(ai.targetSwitchCooldownTicks(), aiRetargetMinIntervalTicks);
+      if (now >= state.nextRetargetTick && (switchCooldown <= 0L || now - state.lastTargetSwitchTick >= switchCooldown)) {
+        setTargetTracked(entity, state, desired, now);
+        state.nextRetargetTick = now + Math.max(1L, aiRetargetMinIntervalTicks);
+        target = desired;
+      }
+    }
+    if (runtimeModel != MobAiRuntimeModel.NATURAL_V1 && target == null && ai.profile() == MobAiProfile.PASSIVE) {
+      clearTargetTracked(entity, state);
+    }
+
+    target = resolveTarget(state.currentTarget);
+    ensureAerialAggroState(entity, target);
+    updateBehaviorStateWithHooks(spec, entity, state, ai, target, ownerId, now);
+
+    if (aiCurrentDegradeTier == MobAiGuardrailController.DegradeTier.LIGHTWEIGHT_FALLBACK) {
+      if (target != null) {
+        if (runtimeModel == MobAiRuntimeModel.NATURAL_V1) {
+          navigateTowardNatural(spec, entity, target.getLocation(), Math.max(0.1, ai.chaseSpeed()), ai, state);
+        } else {
+          navigateToward(entity, target.getLocation(), Math.max(0.1, ai.chaseSpeed()), ai);
+        }
+        state.lastIntentType = MobAiIntentType.CHASE;
+      } else {
+        stopNavigation(entity);
+        state.lastIntentType = MobAiIntentType.HOLD_POSITION;
+      }
+      state.lastSelectorId = "degrade_lightweight";
+      return;
+    }
+    if (aiCurrentDegradeTier == MobAiGuardrailController.DegradeTier.SLOW_RECALC) {
+      if (now < state.nextPathRecalcTick) {
+        return;
+      }
+      state.nextPathRecalcTick = now + 2L;
+    }
+
+    MobAiSelectorSpec selector = selectOverrideSelector(ai, entity, state, target, now);
+    if (selector != null) {
+      state.lastSelectorId = selector.id();
+      state.lastIntentType = selector.intent().type();
+      executeOverrideIntent(spec, phase, entity, state, ai, ownerId, now, target, selector, runtimeModel);
+      if (ai.controller() != null) {
+        ai.controller().tick(new ContextImpl(spec, entity, state, ownerId, now));
+      }
+      return;
+    }
+
+    if (asyncCapable && aiAsyncEnabled && aiPlannerService != null) {
+      MobAiV3Spec resolved = MobAiV3Resolver.resolve(ai);
+      MobAiSnapshot snapshot = snapshotForV3(spec, phase, entity, state, ownerId, now, resolved);
+      if (aiPlannerService.queueSize() < aiAsyncMaxJobsPerTick) {
+        aiPlannerService.submit(snapshot);
+      } else {
+        aiFallbackTicks++;
+      }
+      MobAiPlan plan = aiPlannerService.poll(entity.getUniqueId());
+      if (plan != null && now - plan.tick() <= aiAsyncPlanTtlTicks && plan.tick() == now) {
+        applyV3Plan(spec, phase, entity, state, ai, ownerId, now, plan);
+        state.lastSelectorId = "async:" + (plan.debugSelector() == null ? "plan" : plan.debugSelector());
+        state.lastIntentType = mapPlanIntent(plan.intent());
+        return;
+      }
+      if (plan != null) {
+        aiStalePlanDiscards++;
+      }
+    }
+
+    if (target != null) {
+      state.wanderTarget = null;
+      if (runtimeModel == MobAiRuntimeModel.NATURAL_V1) {
+        navigateTowardNatural(spec, entity, target.getLocation(), Math.max(0.1, ai.chaseSpeed()), ai, state);
+      } else {
+        navigateToward(entity, target.getLocation(), Math.max(0.1, ai.chaseSpeed()), ai);
+      }
+      state.lastSelectorId = null;
+      state.lastIntentType = MobAiIntentType.CHASE;
+    } else if (ai.idleWanderRadius() > 0.0 && now >= state.nextWanderTick) {
+      state.nextWanderTick = now + Math.max(1L, ai.idleWanderIntervalTicks());
+      state.wanderTarget = randomHomeOffset(state.home, ai.idleWanderRadius());
+      if (runtimeModel == MobAiRuntimeModel.NATURAL_V1) {
+        navigateTowardNatural(spec, entity, state.wanderTarget, Math.max(0.08, ai.chaseSpeed() * 0.5), ai, state);
+      } else {
+        navigateToward(entity, state.wanderTarget, Math.max(0.08, ai.chaseSpeed() * 0.5), ai);
+      }
+      state.lastSelectorId = null;
+      state.lastIntentType = MobAiIntentType.WANDER;
+    } else if (state.wanderTarget != null) {
+      if (runtimeModel == MobAiRuntimeModel.NATURAL_V1) {
+        navigateTowardNatural(spec, entity, state.wanderTarget, Math.max(0.08, ai.chaseSpeed() * 0.5), ai, state);
+      } else {
+        navigateToward(entity, state.wanderTarget, Math.max(0.08, ai.chaseSpeed() * 0.5), ai);
+      }
+    } else {
+      stopNavigation(entity);
+      state.lastSelectorId = null;
+      state.lastIntentType = MobAiIntentType.HOLD_POSITION;
+    }
+  }
+
+  private MobAiSelectorSpec selectOverrideSelector(
+      MobAiSpec ai,
+      LivingEntity entity,
+      MobState state,
+      LivingEntity target,
+      long now) {
+    List<MobAiSelectorSpec> selectors = ai == null ? List.of() : ai.selectors();
+    if (selectors.isEmpty()) {
+      return null;
+    }
+    List<MobAiSelectorSpec> ordered = new ArrayList<>(selectors);
+    ordered.sort(java.util.Comparator.comparingInt(MobAiSelectorSpec::priority));
+    for (MobAiSelectorSpec selector : ordered) {
+      if (!consumeSelectorEvaluationBudget()) {
+        return null;
+      }
+      if (aiCurrentDegradeTier == MobAiGuardrailController.DegradeTier.DROP_LOW_PRIORITY && selector.priority() > 100) {
+        continue;
+      }
+      if (aiCurrentDegradeTier == MobAiGuardrailController.DegradeTier.DISABLE_SOCIAL_ECONOMY
+          && (selector.intent().type() == MobAiIntentType.ASSIST || selector.intent().type() == MobAiIntentType.CALL_HELP)) {
+        continue;
+      }
+      if (evaluateOverrideCondition(selector.condition(), entity, state, target, now)) {
+        return selector;
+      }
+    }
+    return null;
+  }
+
+  private boolean evaluateOverrideCondition(
+      MobAiConditionSpec condition,
+      LivingEntity entity,
+      MobState state,
+      LivingEntity target,
+      long now) {
+    MobAiConditionSpec effective = condition == null ? MobAiConditionSpec.always() : condition;
+    return switch (effective.kind()) {
+      case ALWAYS -> true;
+      case ALL -> {
+        boolean ok = true;
+        for (MobAiConditionSpec child : effective.children()) {
+          if (!evaluateOverrideCondition(child, entity, state, target, now)) {
+            ok = false;
+            break;
+          }
+        }
+        yield ok;
+      }
+      case ANY -> {
+        boolean ok = false;
+        for (MobAiConditionSpec child : effective.children()) {
+          if (evaluateOverrideCondition(child, entity, state, target, now)) {
+            ok = true;
+            break;
+          }
+        }
+        yield ok;
+      }
+      case NOT -> effective.children().isEmpty() || !evaluateOverrideCondition(effective.children().get(0), entity, state, target, now);
+      case HAS_TARGET -> {
+        boolean expected = effective.booleanValue() == null || effective.booleanValue();
+        yield expected == (target != null && target.isValid() && !target.isDead());
+      }
+      case HEALTH_RATIO_LTE -> {
+        double max = maxHealth(entity);
+        double ratio = max <= 0.0 ? 0.0 : (entity.getHealth() / max);
+        double limit = effective.numberValue() == null ? 1.0 : effective.numberValue();
+        yield ratio <= limit;
+      }
+      case HEALTH_RATIO_GTE -> {
+        double max = maxHealth(entity);
+        double ratio = max <= 0.0 ? 0.0 : (entity.getHealth() / max);
+        double limit = effective.numberValue() == null ? 0.0 : effective.numberValue();
+        yield ratio >= limit;
+      }
+      case TARGET_DISTANCE_LTE -> {
+        if (target == null) {
+          yield false;
+        }
+        double limit = effective.numberValue() == null ? 0.0 : effective.numberValue();
+        yield entity.getLocation().distanceSquared(target.getLocation()) <= limit * limit;
+      }
+      case TARGET_DISTANCE_GTE -> {
+        if (target == null) {
+          yield false;
+        }
+        double limit = effective.numberValue() == null ? 0.0 : effective.numberValue();
+        yield entity.getLocation().distanceSquared(target.getLocation()) >= limit * limit;
+      }
+      case BEHAVIOR_STATE -> effective.behaviorState() == null || effective.behaviorState() == state.behaviorState;
+      case RANDOM_CHANCE -> {
+        double chance = effective.numberValue() == null ? 1.0 : effective.numberValue();
+        yield chance >= 1.0 || rng.nextDouble() <= chance;
+      }
+    };
+  }
+
+  private void executeOverrideIntent(
+      MobSpec spec,
+      MobPhaseSpec phase,
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      UUID ownerId,
+      long now,
+      LivingEntity target,
+      MobAiSelectorSpec selector,
+      MobAiRuntimeModel runtimeModel) {
+    MobAiIntentSpec intent = selector.intent();
+    boolean natural = runtimeModel == MobAiRuntimeModel.NATURAL_V1;
+    boolean suppressMovement = natural && now < state.movementSuppressedUntilTick;
+    switch (intent.type()) {
+      case CHASE -> {
+        if (!suppressMovement && target != null) {
+          state.wanderTarget = null;
+          if (natural) {
+            navigateTowardNatural(spec, entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+          } else {
+            navigateToward(entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+      }
+      case FLEE -> {
+        if (!suppressMovement && target != null) {
+          state.wanderTarget = null;
+          if (natural) {
+            navigateAwayFromNatural(spec, entity, target, intent.speed() > 0.0 ? intent.speed() : ai.fleeSpeed(), ai, state);
+          } else {
+            navigateAwayFrom(entity, target, intent.speed() > 0.0 ? intent.speed() : ai.fleeSpeed(), ai);
+          }
+        }
+      }
+      case HOLD_RANGE -> {
+        if (suppressMovement || target == null) {
+          return;
+        }
+        double min = intent.minRange() > 0.0 ? intent.minRange() : ai.kiteMinRange();
+        double max = intent.maxRange() > 0.0 ? intent.maxRange() : Math.max(min + 2.0, intent.radius());
+        double distSq = entity.getLocation().distanceSquared(target.getLocation());
+        if (min > 0.0 && distSq < min * min) {
+          if (natural) {
+            navigateAwayFromNatural(spec, entity, target, intent.speed() > 0.0 ? intent.speed() : ai.kiteSpeed(), ai, state);
+          } else {
+            navigateAwayFrom(entity, target, intent.speed() > 0.0 ? intent.speed() : ai.kiteSpeed(), ai);
+          }
+        } else if (max > 0.0 && distSq > max * max) {
+          if (natural) {
+            navigateTowardNatural(spec, entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+          } else {
+            navigateToward(entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+          }
+        } else {
+          stopNavigation(entity);
+        }
+      }
+      case HOLD_POSITION -> stopNavigation(entity);
+      case WANDER -> {
+        if (suppressMovement) {
+          return;
+        }
+        long interval = intent.intervalTicks() > 0 ? intent.intervalTicks() : ai.idleWanderIntervalTicks();
+        double radius = intent.radius() > 0.0 ? intent.radius() : ai.idleWanderRadius();
+        if (radius <= 0.0) {
+          return;
+        }
+        double stopDistance = Math.max(0.1, ai.movementStopDistance());
+        double stopDistanceSq = stopDistance * stopDistance;
+        if (state.wanderTarget == null
+            || now >= state.nextWanderTick
+            || entity.getLocation().distanceSquared(state.wanderTarget) <= stopDistanceSq) {
+          state.nextWanderTick = now + Math.max(1L, interval);
+          state.wanderTarget = randomHomeOffset(state.home, radius);
+        }
+        if (natural) {
+          navigateTowardNatural(spec, entity, state.wanderTarget, intent.speed() > 0.0 ? intent.speed() : 0.18, ai, state);
+        } else {
+          navigateToward(entity, state.wanderTarget, intent.speed() > 0.0 ? intent.speed() : 0.18, ai);
+        }
+      }
+      case RETURN -> {
+        if (!suppressMovement && state.home != null) {
+          if (natural) {
+            navigateTowardNatural(spec, entity, state.home, intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+          } else {
+            navigateToward(entity, state.home, intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+      }
+      case GUARD, PATROL -> {
+        org.bukkit.Location guard = resolveGuardPoint(ai, entity, state);
+        if (guard == null) {
+          guard = state.home;
+        }
+        if (guard != null) {
+          double guardRadius = intent.radius() > 0.0 ? intent.radius() : 2.0;
+          if (entity.getLocation().distanceSquared(guard) > guardRadius * guardRadius) {
+            if (!suppressMovement) {
+              if (natural) {
+                navigateTowardNatural(spec, entity, guard, intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+              } else {
+                navigateToward(entity, guard, intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+              }
+            }
+          } else {
+            stopNavigation(entity);
+          }
+        }
+      }
+      case ASSIST -> {
+        LivingEntity assistTarget = resolveAssistTarget(entity, state, intent.radius());
+        if (assistTarget != null) {
+          setTargetTracked(entity, state, assistTarget, now);
+          if (!suppressMovement) {
+            if (natural) {
+              navigateTowardNatural(spec, entity, assistTarget.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+            } else {
+              navigateToward(entity, assistTarget.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+            }
+          }
+        }
+      }
+      case CALL_HELP -> {
+        if (target != null) {
+          applyCallForHelp(spec, entity, state, target, ai, now, !ai.isFullOverride());
+        }
+      }
+      case CAST_ONLY -> trySelectorCast(spec, entity, state, ownerId, target, selector.id(), intent, now);
+      case CHASE_AND_CAST -> {
+        if (!suppressMovement && target != null) {
+          if (natural) {
+            navigateTowardNatural(spec, entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai, state);
+          } else {
+            navigateToward(entity, target.getLocation(), intent.speed() > 0.0 ? intent.speed() : ai.chaseSpeed(), ai);
+          }
+        }
+        trySelectorCast(spec, entity, state, ownerId, target, selector.id(), intent, now);
+      }
+    }
+  }
+
+  private boolean trySelectorCast(
+      MobSpec spec,
+      LivingEntity entity,
+      MobState state,
+      UUID ownerId,
+      LivingEntity target,
+      String selectorId,
+      MobAiIntentSpec intent,
+      long now) {
+    if (intent == null || !intent.hasCastAbility()) {
+      return false;
+    }
+    if (intent.requireTarget() && (target == null || !target.isValid() || target.isDead())) {
+      return false;
+    }
+    if (!consumeOverrideCastBudget()) {
+      return false;
+    }
+    String key = (selectorId == null ? "selector" : selectorId) + ":" + intent.abilityId();
+    long next = state.nextSelectorCastTick.getOrDefault(key, 0L);
+    if (now < next) {
+      return false;
+    }
+    long cooldown = Math.max(1L, intent.castCooldownTicks());
+    state.nextSelectorCastTick.put(key, now + cooldown);
+    tryCast(entity, intent.abilityId(), spec, null, target, ownerId);
+    return true;
+  }
+
+  private MobAiIntentType mapPlanIntent(MobAiPlan.Intent intent) {
+    if (intent == null) {
+      return MobAiIntentType.HOLD_POSITION;
+    }
+    return switch (intent) {
+      case CHASE -> MobAiIntentType.CHASE;
+      case FLEE -> MobAiIntentType.FLEE;
+      case HOLD_RANGE -> MobAiIntentType.HOLD_RANGE;
+      case HOLD_POSITION, NONE -> MobAiIntentType.HOLD_POSITION;
+      case WANDER -> MobAiIntentType.WANDER;
+      case CALL_HELP -> MobAiIntentType.CALL_HELP;
+      case ASSIST -> MobAiIntentType.ASSIST;
+    };
+  }
+
+  private boolean consumeSelectorEvaluationBudget() {
+    aiSelectorEvaluationsThisTick++;
+    if (aiMaxSelectorEvaluationsPerTick > 0 && aiSelectorEvaluationsThisTick > aiMaxSelectorEvaluationsPerTick) {
+      aiGuardrailTrips++;
+      aiFallbackTicks++;
+      return false;
+    }
+    return true;
+  }
+
+  private boolean consumeOverrideCastBudget() {
+    if (aiMaxOverrideCastsPerTick > 0 && aiOverrideCastsThisTick >= aiMaxOverrideCastsPerTick) {
+      aiGuardrailTrips++;
+      aiFallbackTicks++;
+      return false;
+    }
+    aiOverrideCastsThisTick++;
+    return true;
   }
 
   private void tickAiLegacy(MobSpec spec, MobPhaseSpec phase, LivingEntity entity, MobState state, MobAiSpec ai, UUID ownerId, long now) {
@@ -1703,6 +2422,7 @@ public final class MobRegistry implements Listener {
       updateBehaviorState(entity, state, ai, null, now);
       return;
     }
+    ensureAerialAggroState(entity, target);
 
     updateBehaviorState(entity, state, ai, target, now);
 
@@ -1790,6 +2510,7 @@ public final class MobRegistry implements Listener {
       updateBehaviorStateWithHooks(spec, entity, state, ai, null, ownerId, now);
       return;
     }
+    ensureAerialAggroState(entity, target);
 
     updateBehaviorStateWithHooks(spec, entity, state, ai, target, ownerId, now);
     if (ai.callForHelpRadius() > 0.0) {
@@ -1904,6 +2625,7 @@ public final class MobRegistry implements Listener {
         target = livingTarget;
       }
     }
+    ensureAerialAggroState(entity, target);
     if (plan.desiredState() != null) {
       updateBehaviorStateWithHooks(spec, entity, state, ai, target, ownerId, now);
     }
@@ -1930,7 +2652,7 @@ public final class MobRegistry implements Listener {
       }
       case CALL_HELP -> {
         if (target != null) {
-          applyCallForHelp(spec, entity, state, target, ai, now);
+          applyCallForHelp(spec, entity, state, target, ai, now, false);
         }
       }
       case HOLD_POSITION, NONE -> stopNavigation(entity);
@@ -1939,6 +2661,126 @@ public final class MobRegistry implements Listener {
         navigateToward(entity, wander, Math.max(0.1, plan.speed()), ai);
       }
     }
+  }
+
+  private MobAiRuntimeModel resolveRuntimeModel(MobSpec spec, MobAiSpec ai) {
+    if (ai == null) {
+      return MobAiRuntimeModel.LEGACY_V4;
+    }
+    if (ai.runtimeModel() == MobAiRuntimeModel.NATURAL_V1) {
+      return MobAiRuntimeModel.NATURAL_V1;
+    }
+    if (!aiV4NaturalModelEnabled || ai.schemaVersion() != MobAiSchemaVersion.V4) {
+      return ai.runtimeModel();
+    }
+    if ("ALL".equals(aiV4NaturalOptInMode)) {
+      return MobAiRuntimeModel.NATURAL_V1;
+    }
+    if ("PACK_PREFIX".equals(aiV4NaturalOptInMode)) {
+      String id = spec == null ? null : spec.id();
+      if (id == null || id.isBlank()) {
+        return ai.runtimeModel();
+      }
+      String normalized = id.toLowerCase(Locale.ROOT);
+      for (String prefix : aiV4NaturalPackPrefixes) {
+        if (prefix != null && !prefix.isBlank() && normalized.startsWith(prefix)) {
+          return MobAiRuntimeModel.NATURAL_V1;
+        }
+      }
+    }
+    return ai.runtimeModel();
+  }
+
+  private MobAiMovementPolicy resolveMovementPolicy(MobSpec spec, MobAiSpec ai, MobAiRuntimeModel runtimeModel) {
+    if (runtimeModel == MobAiRuntimeModel.NATURAL_V1) {
+      return ai == null ? aiV4DefaultMovementPolicy : (ai.movementPolicy() == null ? aiV4DefaultMovementPolicy : ai.movementPolicy());
+    }
+    return ai == null ? MobAiMovementPolicy.PATHFINDER_FIRST : ai.movementPolicy();
+  }
+
+  private List<MobAiTargetSourceSpec> naturalDefaultTargetSources(MobAiSpec ai) {
+    double radius = ai == null ? 10.0 : Math.max(0.0, ai.aggroRadius());
+    List<MobAiTargetSourceSpec> defaults = new ArrayList<>();
+    defaults.add(new MobAiTargetSourceSpec(MobAiTargetSourceType.LAST_ATTACKER, radius, 80L, 0L, 10));
+    defaults.add(new MobAiTargetSourceSpec(MobAiTargetSourceType.PROXIMITY_PLAYER, radius, 40L, 0L, 20));
+    defaults.add(new MobAiTargetSourceSpec(MobAiTargetSourceType.CURRENT_TARGET, radius, 20L, 0L, 50));
+    return defaults;
+  }
+
+  private LivingEntity selectAggroTargetNatural(
+      MobSpec spec,
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      long now) {
+    List<MobAiTargetSourceSpec> sources = ai == null ? List.of() : ai.targetSources();
+    List<MobAiTargetSourceSpec> ordered = new ArrayList<>(sources.isEmpty() ? naturalDefaultTargetSources(ai) : sources);
+    ordered.sort(java.util.Comparator.comparingInt(MobAiTargetSourceSpec::priority));
+    for (MobAiTargetSourceSpec source : ordered) {
+      if (source == null || source.type() == null) {
+        continue;
+      }
+      long blockedUntil = state.targetSourceCooldownExpiry.getOrDefault(source.type(), 0L);
+      if (blockedUntil > now) {
+        continue;
+      }
+      LivingEntity candidate = resolveTargetFromSource(entity, state, ai, source);
+      if (candidate != null) {
+        if (source.memoryTicks() > 0L) {
+          state.targetSourceMemory.put(source.type(), candidate.getUniqueId());
+          state.targetSourceMemoryExpiry.put(source.type(), now + source.memoryTicks());
+        }
+        if (source.cooldownTicks() > 0L) {
+          state.targetSourceCooldownExpiry.put(source.type(), now + source.cooldownTicks());
+        }
+        state.lastResolvedTargetSource = source.type();
+        return candidate;
+      }
+      UUID remembered = state.targetSourceMemory.get(source.type());
+      long memoryExpiry = state.targetSourceMemoryExpiry.getOrDefault(source.type(), 0L);
+      if (remembered != null && memoryExpiry > now) {
+        LivingEntity rememberedTarget = resolveTarget(remembered);
+        if (isValidSourceTarget(entity, rememberedTarget, source, ai) && !isFriendlyTarget(entity, rememberedTarget)) {
+          state.lastResolvedTargetSource = source.type();
+          return rememberedTarget;
+        }
+      }
+    }
+    state.lastResolvedTargetSource = null;
+    return null;
+  }
+
+  private LivingEntity resolveTargetFromSource(
+      LivingEntity entity,
+      MobState state,
+      MobAiSpec ai,
+      MobAiTargetSourceSpec source) {
+    double radius = source.radius() > 0.0 ? source.radius() : (ai == null ? 12.0 : ai.aggroRadius());
+    LivingEntity candidate = switch (source.type()) {
+      case LAST_ATTACKER -> resolveTarget(state.lastAttacker);
+      case PROXIMITY_PLAYER -> MobTargeting.nearestPlayer(entity, radius);
+      case PROXIMITY_HOSTILE -> MobTargeting.nearestHostile(entity, radius);
+      case CURRENT_TARGET -> resolveTarget(state.currentTarget);
+    };
+    if (!isValidSourceTarget(entity, candidate, source, ai)) {
+      return null;
+    }
+    if (isFriendlyTarget(entity, candidate)) {
+      return null;
+    }
+    return candidate;
+  }
+
+  private boolean isValidSourceTarget(
+      LivingEntity entity,
+      LivingEntity candidate,
+      MobAiTargetSourceSpec source,
+      MobAiSpec ai) {
+    if (candidate == null || !candidate.isValid() || candidate.isDead()) {
+      return false;
+    }
+    double radius = source.radius() > 0.0 ? source.radius() : (ai == null ? 12.0 : ai.aggroRadius());
+    return isValidTarget(entity, candidate, radius);
   }
 
   private LivingEntity selectAggroTargetV2(LivingEntity entity, MobState state, MobAiSpec ai) {
@@ -1962,6 +2804,10 @@ public final class MobRegistry implements Listener {
   }
 
   private boolean applyLeash(MobState state, LivingEntity entity, MobAiSpec ai) {
+    return applyLeash(state, entity, ai, true);
+  }
+
+  private boolean applyLeash(MobState state, LivingEntity entity, MobAiSpec ai, boolean syncVanillaTarget) {
     if (state == null || state.home == null) {
       return true;
     }
@@ -1974,7 +2820,11 @@ public final class MobRegistry implements Listener {
     if (distHome <= leash) {
       return true;
     }
-    clearTarget(entity, state);
+    if (syncVanillaTarget) {
+      clearTarget(entity, state);
+    } else {
+      clearTargetTracked(entity, state);
+    }
     if (ai.leashTeleportRadius() > 0.0 && distHome > ai.leashTeleportRadius() * ai.leashTeleportRadius()) {
       entity.teleport(state.home);
     } else {
@@ -2168,6 +3018,17 @@ public final class MobRegistry implements Listener {
   }
 
   private void applyCallForHelp(MobSpec spec, LivingEntity entity, MobState state, LivingEntity target, MobAiSpec ai, long now) {
+    applyCallForHelp(spec, entity, state, target, ai, now, true);
+  }
+
+  private void applyCallForHelp(
+      MobSpec spec,
+      LivingEntity entity,
+      MobState state,
+      LivingEntity target,
+      MobAiSpec ai,
+      long now,
+      boolean syncVanillaTarget) {
     if (target == null || entity.getWorld() == null || ai.callForHelpRadius() <= 0.0 || now < state.nextCallHelpTick) {
       return;
     }
@@ -2188,7 +3049,11 @@ public final class MobRegistry implements Listener {
       }
       nearbyState.threat.merge(target.getUniqueId(), 1.0, Double::sum);
       if (nearby.getLocation().distanceSquared(target.getLocation()) <= assistRadiusSq) {
-        setTarget(nearby, nearbyState, target, now);
+        if (syncVanillaTarget) {
+          setTarget(nearby, nearbyState, target, now);
+        } else {
+          setTargetTracked(nearby, nearbyState, target, now);
+        }
       }
     }
   }
@@ -2352,11 +3217,38 @@ public final class MobRegistry implements Listener {
   }
 
   private void applyLocomotion(LivingEntity entity, MobAiSpec ai) {
-    if (ai.locomotionMode() == MobLocomotionMode.FLY) {
+    if (usesAirNavigation(entity, ai)) {
       entity.setGravity(false);
       return;
     }
     entity.setGravity(true);
+  }
+
+  private void setVanillaAiState(LivingEntity entity, boolean enabled) {
+    if (!(entity instanceof Mob mob)) {
+      return;
+    }
+    if (enabled) {
+      try {
+        mob.setAI(true);
+      } catch (Throwable ignored) {
+      }
+      try {
+        mob.getClass().getMethod("setAware", boolean.class).invoke(mob, true);
+      } catch (Throwable ignored) {
+      }
+      return;
+    }
+    // Keep AI flag enabled to preserve physics/knockback/velocity response on passive mobs.
+    // setAware(false) is enough to suppress vanilla behavior while custom override drives motion.
+    try {
+      mob.setAI(true);
+    } catch (Throwable ignored) {
+    }
+    try {
+      mob.getClass().getMethod("setAware", boolean.class).invoke(mob, false);
+    } catch (Throwable ignored) {
+    }
   }
 
   private boolean applyTerrainAvoidance(LivingEntity entity, MobState state, MobAiSpec ai) {
@@ -2377,7 +3269,7 @@ public final class MobRegistry implements Listener {
   }
 
   private void tickAttack(MobSpec spec, MobInstance inst, MobAttackSpec attack, LivingEntity entity, MobState state, long now, boolean main,
-      List<LivingEntity> targets) {
+      List<LivingEntity> targets, boolean syncVanillaTarget) {
     if (attack == null) {
       return;
     }
@@ -2402,7 +3294,7 @@ public final class MobRegistry implements Listener {
       scheduleNext(state, attack, now, main);
       return;
     }
-    if (entity instanceof Mob mob) {
+    if (syncVanillaTarget && entity instanceof Mob mob) {
       LivingEntity target = effective.isEmpty() ? null : effective.get(0);
       if (target != null) {
         mob.setTarget(target);
@@ -2432,7 +3324,7 @@ public final class MobRegistry implements Listener {
   }
 
   private void tickAttacks(MobSpec spec, MobInstance inst, MobAttackSpec mainAttack, MobAttackSpec secondaryAttack,
-      LivingEntity entity, MobState state, long now) {
+      LivingEntity entity, MobState state, long now, boolean syncVanillaTarget) {
     if (isMinion(entity) && minionManager != null && minionManager.disableBaseAttacks(entity.getUniqueId())) {
       return;
     }
@@ -2450,11 +3342,11 @@ public final class MobRegistry implements Listener {
     }
     if (choices.size() == 1) {
       AttackChoice choice = choices.get(0);
-      tickAttack(spec, inst, choice.attack, entity, state, now, choice.main, choice.targets);
+      tickAttack(spec, inst, choice.attack, entity, state, now, choice.main, choice.targets, syncVanillaTarget);
       return;
     }
     AttackChoice choice = pickWeightedAttack(choices);
-    tickAttack(spec, inst, choice.attack, entity, state, now, choice.main, choice.targets);
+    tickAttack(spec, inst, choice.attack, entity, state, now, choice.main, choice.targets, syncVanillaTarget);
   }
 
   private AttackChoice buildAttackChoice(LivingEntity entity, MobState state, MobAttackSpec attack, long now, boolean main) {
@@ -4125,11 +5017,23 @@ public final class MobRegistry implements Listener {
   }
 
   private void setTarget(LivingEntity mob, MobState state, LivingEntity target, long now) {
+    setTargetInternal(mob, state, target, now, true);
+  }
+
+  private void setTargetTracked(LivingEntity mob, MobState state, LivingEntity target, long now) {
+    setTargetInternal(mob, state, target, now, false);
+  }
+
+  private void setTargetInternal(LivingEntity mob, MobState state, LivingEntity target, long now, boolean syncVanillaTarget) {
+    if (state == null || target == null) {
+      return;
+    }
     state.currentTarget = target.getUniqueId();
     state.lastTargetSwitchTick = now;
-    if (mob instanceof Mob bukkitMob) {
+    if (syncVanillaTarget && mob instanceof Mob bukkitMob) {
       bukkitMob.setTarget(target);
     }
+    ensureAerialAggroState(mob, target);
     MobSpec spec = resolveSpecFromEntity(mob);
     if (spec != null && spec.events() != null) {
       triggerEventAbility(spec, mob, state, MobMarkers.getOwner(mob), spec.events().onTarget(), target);
@@ -4137,8 +5041,19 @@ public final class MobRegistry implements Listener {
   }
 
   private void clearTarget(LivingEntity mob, MobState state) {
+    clearTargetInternal(mob, state, true);
+  }
+
+  private void clearTargetTracked(LivingEntity mob, MobState state) {
+    clearTargetInternal(mob, state, false);
+  }
+
+  private void clearTargetInternal(LivingEntity mob, MobState state, boolean syncVanillaTarget) {
+    if (state == null) {
+      return;
+    }
     state.currentTarget = null;
-    if (mob instanceof Mob bukkitMob) {
+    if (syncVanillaTarget && mob instanceof Mob bukkitMob) {
       bukkitMob.setTarget(null);
     }
   }
@@ -4239,11 +5154,26 @@ public final class MobRegistry implements Listener {
     return true;
   }
 
-  private MobAiNavigationDriver navigationDriver(LivingEntity entity) {
+  private MobAiNavigationDriver navigationDriver(LivingEntity entity, MobAiSpec ai) {
+    if (usesAirNavigation(entity, ai)) {
+      return velocityNavigationDriver;
+    }
+    // In FULL_OVERRIDE with hard vanilla AI disable, Bukkit pathfinder moves can become no-op.
+    // Force velocity driver so override intents (WANDER/FLEE/CHASE) stay effective.
+    if (ai != null
+        && ai.isFullOverride()
+        && aiFullOverrideHardDisableVanilla
+        && ai.runtimeModel() != MobAiRuntimeModel.NATURAL_V1) {
+      return velocityNavigationDriver;
+    }
     if (aiPathfinderEnabled && aiUseMobGoalsApi && mobGoalsNavigationDriver.supports(entity)) {
       return mobGoalsNavigationDriver;
     }
     return velocityNavigationDriver;
+  }
+
+  private MobAiNavigationDriver navigationDriver(LivingEntity entity) {
+    return navigationDriver(entity, null);
   }
 
   private boolean navigateToward(LivingEntity entity, org.bukkit.Location target, double speed, MobAiSpec ai) {
@@ -4255,14 +5185,46 @@ public final class MobRegistry implements Listener {
       return false;
     }
     org.bukkit.Location next = target.clone();
-    if (ai != null && ai.preferGround()) {
+    if (ai != null && ai.preferGround() && !usesAirNavigation(entity, ai)) {
       next.setY(entity.getLocation().getY());
     }
-    MobAiNavigationDriver driver = navigationDriver(entity);
+    MobAiNavigationDriver driver = navigationDriver(entity, ai);
     if (driver.moveToward(entity, next, Math.max(0.0, speed))) {
       return true;
     }
     return velocityNavigationDriver.moveToward(entity, next, Math.max(0.0, speed));
+  }
+
+  private boolean navigateTowardNatural(
+      MobSpec spec,
+      LivingEntity entity,
+      org.bukkit.Location target,
+      double speed,
+      MobAiSpec ai,
+      MobState state) {
+    if (entity == null || target == null || ai == null) {
+      return false;
+    }
+    if (!consumePathMutationBudget()) {
+      aiFallbackTicks++;
+      return false;
+    }
+    MobAiMovementPolicy policy = resolveMovementPolicy(spec, ai, MobAiRuntimeModel.NATURAL_V1);
+    org.bukkit.Location next = target.clone();
+    if (ai.movementGroundClamp() && !usesAirNavigation(entity, ai)) {
+      next.setY(entity.getLocation().getY());
+    }
+    if (policy != MobAiMovementPolicy.VELOCITY_ONLY
+        && aiPathfinderEnabled
+        && aiUseMobGoalsApi
+        && mobGoalsNavigationDriver.supports(entity)
+        && mobGoalsNavigationDriver.moveToward(entity, next, Math.max(0.0, speed))) {
+      state.lastNavigationDriver = "pathfinder";
+      return true;
+    }
+    boolean moved = velocityMoveTowardGroundAware(entity, next, Math.max(0.0, speed), ai);
+    state.lastNavigationDriver = moved ? "velocity-fallback" : "none";
+    return moved;
   }
 
   private boolean navigateAwayFrom(LivingEntity entity, LivingEntity target, double speed, MobAiSpec ai) {
@@ -4273,15 +5235,98 @@ public final class MobRegistry implements Listener {
       aiFallbackTicks++;
       return false;
     }
-    MobAiNavigationDriver driver = navigationDriver(entity);
+    MobAiNavigationDriver driver = navigationDriver(entity, ai);
     if (driver.moveAway(entity, target, Math.max(0.0, speed))) {
       return true;
     }
     return velocityNavigationDriver.moveAway(entity, target, Math.max(0.0, speed));
   }
 
+  private boolean navigateAwayFromNatural(
+      MobSpec spec,
+      LivingEntity entity,
+      LivingEntity target,
+      double speed,
+      MobAiSpec ai,
+      MobState state) {
+    if (entity == null || target == null || ai == null) {
+      return false;
+    }
+    if (!consumePathMutationBudget()) {
+      aiFallbackTicks++;
+      return false;
+    }
+    MobAiMovementPolicy policy = resolveMovementPolicy(spec, ai, MobAiRuntimeModel.NATURAL_V1);
+    if (policy != MobAiMovementPolicy.VELOCITY_ONLY
+        && aiPathfinderEnabled
+        && aiUseMobGoalsApi
+        && mobGoalsNavigationDriver.supports(entity)
+        && mobGoalsNavigationDriver.moveAway(entity, target, Math.max(0.0, speed))) {
+      state.lastNavigationDriver = "pathfinder";
+      return true;
+    }
+    boolean moved = velocityMoveAwayGroundAware(entity, target, Math.max(0.0, speed), ai);
+    state.lastNavigationDriver = moved ? "velocity-fallback" : "none";
+    return moved;
+  }
+
   private void stopNavigation(LivingEntity entity) {
-    navigationDriver(entity).stop(entity);
+    navigationDriver(entity, null).stop(entity);
+  }
+
+  private boolean usesAirNavigation(LivingEntity entity, MobAiSpec ai) {
+    return entity instanceof Bat || (ai != null && ai.locomotionMode() == MobLocomotionMode.FLY);
+  }
+
+  private boolean velocityMoveTowardGroundAware(LivingEntity entity, Location target, double speed, MobAiSpec ai) {
+    if (entity == null || target == null || !entity.isValid()) {
+      return false;
+    }
+    Vector dir = target.toVector().subtract(entity.getLocation().toVector());
+    if (dir.lengthSquared() <= 1e-9) {
+      return false;
+    }
+    Vector current = entity.getVelocity();
+    if (!usesAirNavigation(entity, ai)) {
+      dir.setY(0.0);
+      if (dir.lengthSquared() <= 1e-9) {
+        return false;
+      }
+      entity.setVelocity(dir.normalize().multiply(speed).setY(current.getY()));
+      return true;
+    }
+    entity.setVelocity(dir.normalize().multiply(speed));
+    return true;
+  }
+
+  private boolean velocityMoveAwayGroundAware(LivingEntity entity, LivingEntity target, double speed, MobAiSpec ai) {
+    if (entity == null || target == null || !entity.isValid() || !target.isValid()) {
+      return false;
+    }
+    Vector dir = entity.getLocation().toVector().subtract(target.getLocation().toVector());
+    if (dir.lengthSquared() <= 1e-9) {
+      return false;
+    }
+    Vector current = entity.getVelocity();
+    if (!usesAirNavigation(entity, ai)) {
+      dir.setY(0.0);
+      if (dir.lengthSquared() <= 1e-9) {
+        return false;
+      }
+      entity.setVelocity(dir.normalize().multiply(speed).setY(current.getY()));
+      return true;
+    }
+    entity.setVelocity(dir.normalize().multiply(speed));
+    return true;
+  }
+
+  private void ensureAerialAggroState(LivingEntity entity, LivingEntity target) {
+    if (!(entity instanceof Bat bat) || target == null || !target.isValid() || target.isDead()) {
+      return;
+    }
+    if (!bat.isAwake()) {
+      bat.setAwake(true);
+    }
   }
 
   private boolean applyTerrainAvoidanceV2(LivingEntity entity, MobState state, MobAiSpec ai) {

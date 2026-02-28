@@ -304,6 +304,107 @@ Target modes:
 - `NEAREST_HOSTILE`
 - `LAST_ATTACKER`
 
+### 9.1 Full Override (V4 schema)
+
+Use V4 only when you want deterministic selector-driven AI and ability-driven combat.
+
+```yaml
+ai:
+  version: V4
+  engine: V3
+  control:
+    mode: FULL_OVERRIDE
+  combat:
+    authority: ABILITY_DRIVEN
+  targeting:
+    aggroRadius: 24
+  navigation:
+    locomotion: AIR
+    chaseSpeed: 0.52
+    idleWanderRadius: 10
+    idleWanderIntervalTicks: 30
+  selectors:
+    - id: bite_close
+      priority: 5
+      when:
+        all:
+          - hasTarget: true
+          - targetDistanceLte: 2.4
+      intent:
+        type: CAST_ONLY
+        ability: ability_mob_full_override_bat_bite
+        castCooldownTicks: 10
+        requireTarget: true
+    - id: chase_target
+      priority: 10
+      when:
+        hasTarget: true
+      intent:
+        type: CHASE
+        speed: 0.56
+    - id: air_wander
+      priority: 100
+      when:
+        not:
+          hasTarget: true
+      intent:
+        type: WANDER
+        intervalTicks: 14
+        radius: 8
+        speed: 0.36
+```
+
+Rules:
+- `FULL_OVERRIDE` requires `ai.version: V4`.
+- In override mode, vanilla AI is hard-disabled (configurable by `mobs.ai.fullOverride.hardDisableVanilla`).
+- Supported condition keys: `all`, `any`, `not`, `hasTarget`, `healthRatioLte`, `healthRatioGte`, `targetDistanceLte`, `targetDistanceGte`, `behaviorState`, `randomChance`.
+- Supported intent types: `CHASE`, `FLEE`, `HOLD_RANGE`, `HOLD_POSITION`, `WANDER`, `RETURN`, `GUARD`, `PATROL`, `ASSIST`, `CALL_HELP`, `CHASE_AND_CAST`, `CAST_ONLY`.
+- `/dr mobs ai status` now includes override selector/cast throughput.
+- `/dr mobs ai simulate <mobId> <ticks>` returns selector+intent summary for override mobs.
+
+### 9.2 Natural Movement Model (V4 opt-in)
+
+Use `runtimeModel: NATURAL_V1` + `movementPolicy: PATHFINDER_FIRST` for natural terrestrial motion.
+
+```yaml
+aiTemplates:
+  passive_fauna_natural:
+    version: V4
+    engine: V3
+    runtimeModel: NATURAL_V1
+    movementPolicy: PATHFINDER_FIRST
+    control:
+      mode: FULL_OVERRIDE
+    combat:
+      authority: ABILITY_DRIVEN
+    targeting:
+      sources:
+        - type: LAST_ATTACKER
+          memoryTicks: 80
+          priority: 10
+        - type: PROXIMITY_PLAYER
+          radius: 10.0
+          memoryTicks: 30
+          priority: 20
+    selectors:
+      - id: passive_flee
+        priority: 10
+        when: { hasTarget: true }
+        intent: { type: FLEE, speed: 0.35 }
+      - id: passive_wander
+        priority: 100
+        when: true
+        intent: { type: WANDER, speed: 0.22, radius: 8.0, intervalTicks: 25 }
+
+mobs:
+  mob_p01_asino_trasporto:
+    aiTemplate: passive_fauna_natural
+```
+
+Notes:
+- `tier` is gameplay classification; `stylePreset` is visual style preset.
+- Legacy `tier -> stylePreset` fallback is available only with `mobs.style.useTierAsPreset: true`.
+
 --------------------------------------------------------------------------------
 ## Chapter 10 - Attacks and Passives
 

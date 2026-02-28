@@ -1505,8 +1505,11 @@ public final class EffectsCommand {
     long ttl = c.getLong("effects.combat.asyncPlanner.planTtlTicks", 1L);
     int dispatchCap = c.getInt("effects.combat.guardrails.maxEventDispatchPerTick", 2000);
     int packetCap = c.getInt("effects.combat.guardrails.maxDamagePacketsPerTick", 4000);
+    int projectileCap = c.getInt("effects.combat.projectiles.guardrails.maxProjectileEventsPerTick", 6000);
+    int travelStepCap = c.getInt("effects.combat.projectiles.guardrails.maxTravelStepDispatchPerTick", 1200);
     String degrade = c.getString("effects.combat.guardrails.degradePolicy", "DROP_LOW_PRIORITY");
     engine.configureCombat(true, enabled, async, queue, ttl, dispatchCap, packetCap, degrade);
+    engine.configureProjectileCombat(projectileCap, travelStepCap);
     sender.sendMessage(Component.text("[Combat] Debug " + (enabled ? "enabled" : "disabled"), NamedTextColor.GREEN));
     return Command.SINGLE_SUCCESS;
   }

@@ -57,7 +57,6 @@ import dev.patric.dungeonsreborn.menus.UserHubMenu;
 import dev.patric.dungeonsreborn.menus.UserSettingsMenu;
 import dev.patric.dungeonsreborn.menus.UpgradeApplyMenu;
 import dev.patric.dungeonsreborn.menus.AdminHubMenu;
-import dev.patric.dungeonsreborn.menus.CraftingDiscoveryMenu;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 

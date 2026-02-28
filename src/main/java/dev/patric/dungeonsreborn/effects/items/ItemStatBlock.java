@@ -1,5 +1,7 @@
 package dev.patric.dungeonsreborn.effects.items;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,6 +61,21 @@ public final class ItemStatBlock {
   public static ItemStatBlock parse(Object raw, String path, List<String> errors) {
     if (raw == null) {
       return new ItemStatBlock(Map.of());
+    }
+    if (raw instanceof ConfigurationSection section) {
+      Map<String, Double> out = new LinkedHashMap<>();
+      for (String key : section.getKeys(false)) {
+        if (key == null || key.isBlank()) {
+          continue;
+        }
+        Double parsed = parseNumber(section.get(key));
+        if (parsed == null) {
+          errors.add(path + "." + key + ": expected number");
+          continue;
+        }
+        out.put(key, parsed);
+      }
+      return new ItemStatBlock(out);
     }
     if (!(raw instanceof Map<?, ?> map)) {
       errors.add(path + ": expected map of stat -> number");

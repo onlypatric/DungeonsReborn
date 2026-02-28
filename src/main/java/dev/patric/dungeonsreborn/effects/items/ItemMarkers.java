@@ -12,7 +12,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.DeathProtection;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.UseCooldown;
+import io.papermc.paper.datacomponent.item.UseRemainder;
+import net.kyori.adventure.key.Key;
 
 import dev.patric.dungeonsreborn.effects.Ids;
 
@@ -62,9 +67,29 @@ public final class ItemMarkers {
 
   private static void applyMeta(ItemStack item, ItemMeta meta) {
     DeathProtection deathProtection = item.getData(DataComponentTypes.DEATH_PROTECTION);
+    Key itemModel = item.getData(DataComponentTypes.ITEM_MODEL);
+    FoodProperties food = item.getData(DataComponentTypes.FOOD);
+    Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
+    UseCooldown useCooldown = item.getData(DataComponentTypes.USE_COOLDOWN);
+    UseRemainder useRemainder = item.getData(DataComponentTypes.USE_REMAINDER);
     item.setItemMeta(meta);
     if (deathProtection != null) {
       item.setData(DataComponentTypes.DEATH_PROTECTION, deathProtection);
+    }
+    if (itemModel != null) {
+      item.setData(DataComponentTypes.ITEM_MODEL, itemModel);
+    }
+    if (food != null) {
+      item.setData(DataComponentTypes.FOOD, food);
+    }
+    if (consumable != null) {
+      item.setData(DataComponentTypes.CONSUMABLE, consumable);
+    }
+    if (useCooldown != null) {
+      item.setData(DataComponentTypes.USE_COOLDOWN, useCooldown);
+    }
+    if (useRemainder != null) {
+      item.setData(DataComponentTypes.USE_REMAINDER, useRemainder);
     }
   }
 

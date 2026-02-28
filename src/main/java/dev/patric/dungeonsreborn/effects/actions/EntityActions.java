@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.AbstractArrow;
@@ -32,6 +33,7 @@ import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.heal.HealSpec;
 import dev.patric.dungeonsreborn.effects.heal.HealType;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileHit;
+import dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry;
 import dev.patric.dungeonsreborn.effects.relations.Relation;
 import dev.patric.dungeonsreborn.effects.targeting.TargetAction;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeStatusEffectSpec;
@@ -207,10 +209,15 @@ public final class EntityActions {
       }
       if (headshotMultiplier > 1.0) {
         Object hitObj = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
+        Location impact = null;
         if (hitObj instanceof ProjectileHit hit && target.equals(hit.hitEntity())) {
-          double hitY = hit.location().getY();
+          impact = hit.location();
+        } else if (hitObj instanceof ProjectileTelemetry telemetry && target.equals(telemetry.victim())) {
+          impact = telemetry.impactLocation();
+        }
+        if (impact != null) {
           double eyeY = target.getEyeLocation().getY();
-          if (hitY >= (eyeY - headshotThreshold)) {
+          if (impact.getY() >= (eyeY - headshotThreshold)) {
             multiplier *= headshotMultiplier;
             headshot = true;
           }

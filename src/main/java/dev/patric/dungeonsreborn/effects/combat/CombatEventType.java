@@ -13,8 +13,20 @@ public enum CombatEventType {
   ON_BLOCK,
   ON_PARRY,
   ON_DODGE,
+  ON_PROJECTILE_LAUNCH_PRE,
+  ON_PROJECTILE_LAUNCH,
+  ON_PROJECTILE_TRAVEL_STEP,
+  ON_PROJECTILE_COLLIDE_ENTITY_PRE,
+  ON_PROJECTILE_COLLIDE_BLOCK_PRE,
   ON_PROJECTILE_HIT_ENTITY,
   ON_PROJECTILE_HIT_BLOCK,
+  ON_PROJECTILE_PIERCE,
+  ON_PROJECTILE_BOUNCE,
+  ON_PROJECTILE_STUCK,
+  ON_PROJECTILE_EXPIRE,
+  ON_PROJECTILE_DEFLECT,
+  ON_PROJECTILE_BLOCKED_SHIELD,
+  ON_PROJECTILE_CANCELLED,
   ON_DOT_APPLY,
   ON_DOT_TICK,
   ON_DOT_EXPIRE,
@@ -48,5 +60,15 @@ public enum CombatEventType {
       case ON_SPRINT -> ON_SPRINT;
     };
   }
-}
 
+  public boolean isPreEvent() {
+    return switch (this) {
+      case ON_PROJECTILE_LAUNCH_PRE, ON_PROJECTILE_COLLIDE_ENTITY_PRE, ON_PROJECTILE_COLLIDE_BLOCK_PRE -> true;
+      default -> false;
+    };
+  }
+
+  public boolean isProjectileEvent() {
+    return name().startsWith("ON_PROJECTILE_");
+  }
+}

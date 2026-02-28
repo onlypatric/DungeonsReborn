@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +42,7 @@ import dev.patric.dungeonsreborn.effects.damage.DamageAmountMode;
 import dev.patric.dungeonsreborn.effects.damage.DamageSpec;
 import dev.patric.dungeonsreborn.effects.heal.HealAmountMode;
 import dev.patric.dungeonsreborn.effects.heal.HealSpec;
+import dev.patric.dungeonsreborn.effects.afflict.AfflictionManager;
 import dev.patric.dungeonsreborn.effects.actions.ActionHandle;
 import dev.patric.dungeonsreborn.effects.registry.ActionType;
 import dev.patric.dungeonsreborn.effects.registry.ConditionType;
@@ -271,6 +271,7 @@ public final class EffectsEngine {
   private final Map<UUID, DamageAttribution> lastDamageAttributionByVictim = new ConcurrentHashMap<>();
   private final Map<UUID, java.util.EnumMap<DamageType, ResistanceEntry>> resistancesByEntity = new ConcurrentHashMap<>();
   private final Map<UUID, ReflectEntry> reflectByEntity = new ConcurrentHashMap<>();
+  private final AfflictionManager afflictions = new AfflictionManager(this);
   private final List<DamageHook> damageHooks = new CopyOnWriteArrayList<>();
   private final List<HealHook> healHooks = new CopyOnWriteArrayList<>();
   private final Map<UUID, ShieldEntry> shieldsByEntity = new ConcurrentHashMap<>();
@@ -401,6 +402,7 @@ public final class EffectsEngine {
     cooldownUntilTickByPlayer.clear();
     resistancesByEntity.clear();
     reflectByEntity.clear();
+    afflictions.clearAll();
     timelines.values().forEach(GlobalTimeline::cancel);
     timelines.clear();
     combatDispatcher.shutdown();
@@ -669,6 +671,14 @@ public final class EffectsEngine {
     return logger;
   }
 
+  public AfflictionManager afflictions() {
+    return afflictions;
+  }
+
+  public void configureAfflictions(boolean enabled, int maxTrackedPerEntity, long cleanupIntervalTicks) {
+    afflictions.configure(enabled, maxTrackedPerEntity, cleanupIntervalTicks);
+  }
+
   public long tickNow() {
     return tick;
   }
@@ -681,6 +691,10 @@ public final class EffectsEngine {
       long planTtlTicks, int maxEventDispatchPerTick, int maxDamagePacketsPerTick, String degradePolicy) {
     combatDispatcher.configure(enabled, debug, asyncPlannerEnabled, queueCapacity, planTtlTicks,
         maxEventDispatchPerTick, maxDamagePacketsPerTick, degradePolicy);
+  }
+
+  public void configureProjectileCombat(int maxProjectileEventsPerTick, int maxTravelStepDispatchPerTick) {
+    combatDispatcher.configureProjectiles(maxProjectileEventsPerTick, maxTravelStepDispatchPerTick);
   }
 
   public long nanoTime() {
@@ -1703,6 +1717,7 @@ public final class EffectsEngine {
     tick++;
     combatDispatcher.tickStart();
     if (tasks.isEmpty() && realTimeTasks.isEmpty()) {
+      afflictions.tick(tickNow());
       tickManaRegen();
       tickManaTimedGrant();
       cleanupOldCastRecords(20L * 60L * 5L);
@@ -1777,6 +1792,7 @@ public final class EffectsEngine {
       }
     }
 
+    afflictions.tick(tickNow());
     tickManaRegen();
     tickManaTimedGrant();
     cleanupOldCastRecords(20L * 60L * 5L);

@@ -15,10 +15,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -32,6 +35,7 @@ import dev.patric.dungeonsreborn.effects.Ids;
 import dev.patric.dungeonsreborn.effects.actions.Action;
 import dev.patric.dungeonsreborn.effects.config.EffectsYamlAbilities;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
+import dev.patric.dungeonsreborn.effects.items.HeadRegistry;
 import dev.patric.dungeonsreborn.effects.upgrades.UpgradeYamlRegistry;
 import dev.patric.dungeonsreborn.logging.ServiceLogger;
 import dev.patric.dungeonsreborn.mobs.ai.MobAiEngineMode;
@@ -44,8 +48,10 @@ import dev.patric.dungeonsreborn.textures.TextureBuildResult;
 import dev.patric.dungeonsreborn.textures.TextureService;
 import dev.patric.dungeonsreborn.util.YamlValues;
 import net.kyori.adventure.text.Component;
+import com.destroystokyo.paper.profile.PlayerProfile;
 
 import net.kyori.adventure.bossbar.BossBar;
+import java.util.UUID;
 
 public final class MobYamlRegistry {
   private static final String DEFAULT_BOSS_BROADCAST =
@@ -113,6 +119,7 @@ public final class MobYamlRegistry {
   private final Map<String, MobLootSpec> lootPools = new HashMap<>();
   private final Map<String, MobStyleSpec> stylePresets = new HashMap<>();
   private List<String> lastErrors = List.of();
+  private boolean useTierAsPreset;
   private boolean warnedLegacyModelTextureFields;
   private boolean warnedLegacyVisualBlocks;
 
@@ -134,6 +141,10 @@ public final class MobYamlRegistry {
 
   public void setTextureService(TextureService textureService) {
     this.textureService = textureService;
+  }
+
+  public void setUseTierAsPreset(boolean useTierAsPreset) {
+    this.useTierAsPreset = useTierAsPreset;
   }
 
   public File file() {
@@ -362,9 +373,14 @@ public final class MobYamlRegistry {
     stylePresets.clear();
     stylePresets.putAll(nextStylePresets);
 
+    Map<String, Map<String, Object>> aiTemplates = new HashMap<>();
+    for (YamlSource source : sources) {
+      parseAiTemplates(source.cfg(), aiTemplates, errors, source.source());
+    }
+
     Map<String, MobSpec> specs = new HashMap<>();
     for (YamlSource source : sources) {
-      parseMobs(source.cfg(), specs, errors, source.source());
+      parseMobs(source.cfg(), specs, errors, source.source(), aiTemplates);
     }
     Map<String, TrialSpawnerSpec> nextTrialSpawners = new HashMap<>();
     Map<String, VaultSpec> nextVaults = new HashMap<>();
@@ -1223,7 +1239,12 @@ public final class MobYamlRegistry {
         enabled);
   }
 
-  private MobSpec parseMobSpec(String id, ConfigurationSection node, List<String> errors, String base) {
+  private MobSpec parseMobSpec(
+      String id,
+      ConfigurationSection node,
+      List<String> errors,
+      String base,
+      Map<String, Map<String, Object>> aiTemplates) {
     String typeRaw = YamlValues.requireString(node, "type", base + ".type");
     EntityType type;
     try {
@@ -1510,8 +1531,19 @@ public final class MobYamlRegistry {
 
     ConfigurationSection ai = node.getConfigurationSection("ai");
     MobAiSpec baseAiSpec = null;
+    String aiTemplateIdRaw = YamlValues.string(node, "aiTemplate", null);
+    if (aiTemplateIdRaw != null && !aiTemplateIdRaw.isBlank()) {
+      String templateId = Ids.normalize(aiTemplateIdRaw);
+      Map<String, Object> templateRaw = aiTemplates == null ? null : aiTemplates.get(templateId);
+      if (templateRaw == null) {
+        throw new IllegalArgumentException(base + ".aiTemplate: unknown ai template id: " + aiTemplateIdRaw);
+      }
+      baseAiSpec = parseAiSpec(templateRaw, base + ".aiTemplate(" + aiTemplateIdRaw + ")", null);
+    }
     if (ai != null) {
-      baseAiSpec = parseAiSpec(ai, base + ".ai", null);
+      baseAiSpec = parseAiSpec(ai, base + ".ai", baseAiSpec);
+    }
+    if (baseAiSpec != null) {
       builder.aiSpec(baseAiSpec);
     }
 
@@ -2193,7 +2225,12 @@ public final class MobYamlRegistry {
     return out;
   }
 
-  private void parseMobs(YamlConfiguration cfg, Map<String, MobSpec> specs, List<String> errors, String source) {
+  private void parseMobs(
+      YamlConfiguration cfg,
+      Map<String, MobSpec> specs,
+      List<String> errors,
+      String source,
+      Map<String, Map<String, Object>> aiTemplates) {
     ConfigurationSection mobsSec = cfg.getConfigurationSection("mobs");
     if (mobsSec == null) {
       return;
@@ -2211,8 +2248,37 @@ public final class MobYamlRegistry {
           errors.add(base + ": must be an object");
           continue;
         }
-        MobSpec spec = parseMobSpec(id, node, errors, base);
+        MobSpec spec = parseMobSpec(id, node, errors, base, aiTemplates);
         specs.put(id, spec);
+      } catch (Exception ex) {
+        errors.add(base + ": " + ex.getMessage());
+      }
+    }
+  }
+
+  private void parseAiTemplates(
+      YamlConfiguration cfg,
+      Map<String, Map<String, Object>> templates,
+      List<String> errors,
+      String source) {
+    ConfigurationSection section = cfg.getConfigurationSection("aiTemplates");
+    if (section == null) {
+      return;
+    }
+    for (String rawId : section.getKeys(false)) {
+      String base = prefix(source) + "aiTemplates." + rawId;
+      try {
+        String id = Ids.normalize(rawId);
+        if (templates.containsKey(id)) {
+          errors.add(base + ": duplicate ai template id");
+          continue;
+        }
+        ConfigurationSection node = section.getConfigurationSection(rawId);
+        if (node == null) {
+          errors.add(base + ": must be an object");
+          continue;
+        }
+        templates.put(id, materializeMap(node, base));
       } catch (Exception ex) {
         errors.add(base + ": " + ex.getMessage());
       }
@@ -2546,6 +2612,10 @@ public final class MobYamlRegistry {
     if (raw == null) {
       return null;
     }
+    if (raw instanceof ConfigurationSection section) {
+      ItemStack item = itemFromMap(section.getValues(false), path);
+      return item == null || item.getType() == Material.AIR ? null : item;
+    }
     if (raw instanceof ItemStack stack) {
       return stack.getType() == Material.AIR ? null : stack.clone();
     }
@@ -2596,18 +2666,30 @@ public final class MobYamlRegistry {
   private ItemStack itemFromMap(Map<?, ?> map, String path) {
     Object raw = map.get("item");
     if (raw instanceof ItemStack stack) {
-      return stack.clone();
+      ItemStack resolved = stack.clone();
+      applyMetaMap(resolved, map, path + ".meta");
+      return resolved;
+    }
+    if (raw instanceof ConfigurationSection sectionItem) {
+      ItemStack resolved = ItemStack.deserialize(castMap(sectionItem.getValues(false)));
+      applyMetaMap(resolved, map, path + ".meta");
+      return resolved;
     }
     if (raw instanceof Map<?, ?> mapItem) {
-      return ItemStack.deserialize(castMap(mapItem));
+      ItemStack resolved = ItemStack.deserialize(castMap(mapItem));
+      applyMetaMap(resolved, map, path + ".meta");
+      return resolved;
     }
     if (raw instanceof String rawItem) {
       ItemStack template = yamlAbilities.itemTemplate(rawItem);
       if (template != null) {
+        applyMetaMap(template, map, path + ".meta");
         return template;
       }
       Material material = parseMaterial(rawItem, path + ".item");
-      return new ItemStack(material);
+      ItemStack resolved = new ItemStack(material);
+      applyMetaMap(resolved, map, path + ".meta");
+      return resolved;
     }
     String itemId = YamlValues.string(map, "itemId", YamlValues.string(map, "id", null));
     if (itemId != null && !itemId.isBlank()) {
@@ -2615,6 +2697,7 @@ public final class MobYamlRegistry {
       if (template == null || template.getType() == Material.AIR) {
         throw new IllegalArgumentException(path + ".itemId: unknown item id " + itemId);
       }
+      applyMetaMap(template, map, path + ".meta");
       return template;
     }
     String upgradeId = YamlValues.string(map, "upgradeId", YamlValues.string(map, "upgrade", null));
@@ -2626,6 +2709,7 @@ public final class MobYamlRegistry {
       if (upgradeItem == null || upgradeItem.getType() == Material.AIR) {
         throw new IllegalArgumentException(path + ".upgradeId: unknown upgrade id " + upgradeId);
       }
+      applyMetaMap(upgradeItem, map, path + ".meta");
       return upgradeItem;
     }
     String tokenId = YamlValues.string(map, "token", YamlValues.string(map, "tokenTier", null));
@@ -2637,6 +2721,7 @@ public final class MobYamlRegistry {
       if (token == null || token.getType() == Material.AIR) {
         throw new IllegalArgumentException(path + ".token: unknown token tier " + tokenId);
       }
+      applyMetaMap(token, map, path + ".meta");
       return token;
     }
     Object materialRaw = map.get("material");
@@ -2645,9 +2730,91 @@ public final class MobYamlRegistry {
     }
     if (materialRaw != null) {
       Material material = parseMaterial(String.valueOf(materialRaw), path + ".material");
-      return new ItemStack(material);
+      ItemStack stack = new ItemStack(material);
+      applyMetaMap(stack, map, path + ".meta");
+      return stack;
     }
     return null;
+  }
+
+  private void applyMetaMap(ItemStack stack, Map<?, ?> rootMap, String path) {
+    if (stack == null || stack.getType() == Material.AIR || rootMap == null) {
+      return;
+    }
+    Object rawMeta = rootMap.get("meta");
+    if (rawMeta == null) {
+      return;
+    }
+    Map<String, Object> metaMap = asStringMap(rawMeta);
+    if (metaMap.isEmpty()) {
+      return;
+    }
+    Object rawSkull = metaMap.get("skull");
+    if (rawSkull == null) {
+      return;
+    }
+    Map<String, Object> skullMap = asStringMap(rawSkull);
+    if (skullMap.isEmpty()) {
+      return;
+    }
+    ItemMeta itemMeta = stack.getItemMeta();
+    if (!(itemMeta instanceof SkullMeta skullMeta)) {
+      throw new IllegalArgumentException(path + ".skull: meta is not SkullMeta");
+    }
+    List<String> parseErrors = new ArrayList<>();
+
+    String texture = YamlValues.string(skullMap, "texture", null);
+    if (texture != null && !texture.isBlank()) {
+      if (!HeadRegistry.applyTexture(skullMeta, null, null, texture, parseErrors)) {
+        parseErrors.add("texture: failed to set skull texture");
+      }
+    }
+
+    String owner = YamlValues.string(skullMap, "owner", null);
+    if (owner != null && !owner.isBlank()) {
+      skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+    }
+
+    Object rawProfile = skullMap.get("profile");
+    if (rawProfile != null) {
+      Map<String, Object> profileMap = asStringMap(rawProfile);
+      if (!profileMap.isEmpty()) {
+      String name = YamlValues.string(profileMap, "name", null);
+      String uuidRaw = YamlValues.string(profileMap, "uuid", null);
+      UUID uuid = null;
+      if (uuidRaw != null && !uuidRaw.isBlank()) {
+        try {
+          uuid = UUID.fromString(uuidRaw.trim());
+        } catch (IllegalArgumentException ex) {
+          parseErrors.add("profile.uuid: invalid uuid=" + uuidRaw);
+        }
+      }
+      String profileTexture = YamlValues.string(profileMap, "texture", null);
+      if (profileTexture != null && !profileTexture.isBlank()) {
+        if (!HeadRegistry.applyTexture(skullMeta, uuid, name, profileTexture, parseErrors)) {
+          parseErrors.add("profile.texture: failed to set skull texture");
+        }
+      } else if (name != null || uuid != null) {
+        PlayerProfile profile = uuid == null ? Bukkit.createProfile(name) : Bukkit.createProfile(uuid, name);
+        skullMeta.setPlayerProfile(profile);
+      }
+      }
+    }
+
+    if (!parseErrors.isEmpty()) {
+      throw new IllegalArgumentException(path + ".skull: " + String.join(", ", parseErrors));
+    }
+    stack.setItemMeta(skullMeta);
+  }
+
+  private static Map<String, Object> asStringMap(Object raw) {
+    if (raw instanceof ConfigurationSection section) {
+      return castMap(section.getValues(false));
+    }
+    if (raw instanceof Map<?, ?> map) {
+      return castMap(map);
+    }
+    return java.util.Map.of();
   }
 
   private MobLootSpec parseLootSpec(ConfigurationSection loot, String base) {
@@ -2715,16 +2882,18 @@ public final class MobYamlRegistry {
       return null;
     }
     String presetId = YamlValues.string(node, "stylePreset", null);
-    if (presetId == null && tier != null) {
+    if (presetId == null && useTierAsPreset && tier != null) {
       presetId = tier;
     }
     MobStyleSpec preset = null;
     if (presetId != null) {
       MobStyleSpec resolved = stylePresets.get(Ids.normalize(presetId));
       if (resolved == null) {
-        throw new IllegalArgumentException(base + ".stylePreset: unknown preset " + presetId);
+        logger.warn("[Mobs] YAML: " + base + ".stylePreset: unknown preset " + presetId
+            + " (ignoring preset and continuing)");
+      } else {
+        preset = resolved;
       }
-      preset = resolved;
     }
     ConfigurationSection styleSection = node.getConfigurationSection("style");
     MobStyleSpec local = styleSection == null ? null : parseStyleSpec(styleSection, base + ".style");
@@ -2745,16 +2914,18 @@ public final class MobYamlRegistry {
       return null;
     }
     String presetId = YamlValues.string(raw, "stylePreset", null);
-    if (presetId == null && tier != null) {
+    if (presetId == null && useTierAsPreset && tier != null) {
       presetId = tier;
     }
     MobStyleSpec preset = null;
     if (presetId != null) {
       MobStyleSpec resolved = stylePresets.get(Ids.normalize(presetId));
       if (resolved == null) {
-        throw new IllegalArgumentException(base + ".stylePreset: unknown preset " + presetId);
+        logger.warn("[Mobs] YAML: " + base + ".stylePreset: unknown preset " + presetId
+            + " (ignoring preset and continuing)");
+      } else {
+        preset = resolved;
       }
-      preset = resolved;
     }
     MobStyleSpec local = null;
     Object styleRaw = raw.get("style");
@@ -3297,14 +3468,141 @@ public final class MobYamlRegistry {
   private MobAiSpec parseAiSpec(Map<?, ?> raw, String path, MobAiSpec base) {
     MobAiSpec.Builder builder = base == null ? MobAiSpec.builder() : MobAiSpec.builder(base);
     Map<String, Object> map = castMap(raw);
+    boolean schemaV4 = base != null && base.schemaVersion() == MobAiSchemaVersion.V4;
+    boolean fullOverrideRequested = base != null && base.isFullOverride();
     if (map.containsKey("version")) {
       String version = YamlValues.string(map, "version", "V2");
       String normalizedVersion = version == null ? "V2" : version.trim().toUpperCase(Locale.ROOT);
-      if (!normalizedVersion.equals("V2") && !normalizedVersion.equals("V3") && !normalizedVersion.equals("LEGACY")) {
-        throw new IllegalArgumentException(path + ".version: invalid ai version=" + version);
+      switch (normalizedVersion) {
+        case "V4" -> {
+          schemaV4 = true;
+          builder.schemaVersion(MobAiSchemaVersion.V4);
+          if (!map.containsKey("engine")) {
+            builder.engineMode(MobAiEngineMode.V3);
+          }
+        }
+        case "V3" -> {
+          schemaV4 = false;
+          builder.schemaVersion(MobAiSchemaVersion.LEGACY);
+          if (!map.containsKey("engine")) {
+            builder.engineMode(MobAiEngineMode.V3);
+          }
+        }
+        case "V2", "LEGACY" -> {
+          schemaV4 = false;
+          builder.schemaVersion(MobAiSchemaVersion.LEGACY);
+        }
+        default -> throw new IllegalArgumentException(path + ".version: invalid ai version=" + version);
       }
-      if (normalizedVersion.equals("V3") && !map.containsKey("engine")) {
-        builder.engineMode(MobAiEngineMode.V3);
+    }
+    if (map.containsKey("control")) {
+      Map<String, Object> control = materializeMap(map.get("control"), path + ".control");
+      if (control.containsKey("mode")) {
+        MobAiControlMode mode = parseAiControlMode(
+            YamlValues.string(control, "mode", "DEFAULT"),
+            path + ".control.mode");
+        fullOverrideRequested = mode == MobAiControlMode.FULL_OVERRIDE;
+        builder.controlMode(mode);
+      }
+    }
+    if (map.containsKey("targeting")) {
+      Map<String, Object> targeting = materializeMap(map.get("targeting"), path + ".targeting");
+      if (targeting.containsKey("aggroRadius")) {
+        builder.aggroRadius(YamlValues.doubleValueStrict(targeting, "aggroRadius", 12.0));
+      }
+      if (targeting.containsKey("mode")) {
+        builder.aggroTargetMode(parseTargetMode(
+            YamlValues.string(targeting, "mode", "NEAREST_PLAYER"),
+            path + ".targeting.mode"));
+      }
+      if (targeting.containsKey("preferLastAttacker")) {
+        builder.preferLastAttacker(YamlValues.bool(targeting, "preferLastAttacker", true));
+      }
+      if (targeting.containsKey("targetSwitchCooldownTicks")) {
+        builder.targetSwitchCooldownTicks(YamlValues.longValueStrict(targeting, "targetSwitchCooldownTicks", 40L));
+      }
+      if (targeting.containsKey("sources")) {
+        Object sourcesRaw = targeting.get("sources");
+        if (!(sourcesRaw instanceof List<?> list)) {
+          throw new IllegalArgumentException(path + ".targeting.sources: expected list");
+        }
+        builder.clearTargetSources();
+        for (int i = 0; i < list.size(); i++) {
+          builder.addTargetSource(parseAiTargetSource(list.get(i), path + ".targeting.sources[" + i + "]"));
+        }
+      }
+    }
+    if (map.containsKey("navigation")) {
+      Map<String, Object> navigation = materializeMap(map.get("navigation"), path + ".navigation");
+      if (navigation.containsKey("chaseSpeed")) {
+        builder.chaseSpeed(YamlValues.doubleValueStrict(navigation, "chaseSpeed", 0.25));
+      }
+      if (navigation.containsKey("fleeSpeed")) {
+        builder.fleeSpeed(YamlValues.doubleValueStrict(navigation, "fleeSpeed", 0.35));
+      }
+      if (navigation.containsKey("kiteSpeed")) {
+        builder.kiteSpeed(YamlValues.doubleValueStrict(navigation, "kiteSpeed", 0.0));
+      }
+      if (navigation.containsKey("kiteMinRange")) {
+        builder.kiteMinRange(YamlValues.doubleValueStrict(navigation, "kiteMinRange", 0.0));
+      }
+      if (navigation.containsKey("locomotion")) {
+        builder.locomotionMode(parseLocomotionMode(
+            YamlValues.string(navigation, "locomotion", "GROUND"),
+            path + ".navigation.locomotion"));
+      }
+      if (navigation.containsKey("preferGround")) {
+        builder.preferGround(YamlValues.bool(navigation, "preferGround", true));
+      }
+      if (navigation.containsKey("leashRadius")) {
+        builder.leashRadius(YamlValues.doubleValueStrict(navigation, "leashRadius", 24.0));
+      }
+      if (navigation.containsKey("leashTeleportRadius")) {
+        builder.leashTeleportRadius(YamlValues.doubleValueStrict(navigation, "leashTeleportRadius", 36.0));
+      }
+      if (navigation.containsKey("idleWanderRadius")) {
+        builder.idleWanderRadius(YamlValues.doubleValueStrict(navigation, "idleWanderRadius", 6.0));
+      }
+      if (navigation.containsKey("idleWanderIntervalTicks")) {
+        builder.idleWanderIntervalTicks(YamlValues.longValueStrict(navigation, "idleWanderIntervalTicks", 80L));
+      }
+      if (navigation.containsKey("roamRadius")) {
+        builder.roamRadius(YamlValues.doubleValueStrict(navigation, "roamRadius", 0.0));
+      }
+      if (navigation.containsKey("avoid")) {
+        Map<String, Object> avoid = materializeMap(navigation.get("avoid"), path + ".navigation.avoid");
+        if (avoid.containsKey("water")) {
+          builder.avoidWater(YamlValues.bool(avoid, "water", false));
+        }
+        if (avoid.containsKey("lava")) {
+          builder.avoidLava(YamlValues.bool(avoid, "lava", false));
+        }
+        if (avoid.containsKey("powderSnow")) {
+          builder.avoidPowderSnow(YamlValues.bool(avoid, "powderSnow", true));
+        }
+        if (avoid.containsKey("cactus")) {
+          builder.avoidCactus(YamlValues.bool(avoid, "cactus", true));
+        }
+        if (avoid.containsKey("sunlight")) {
+          builder.avoidSunlight(YamlValues.bool(avoid, "sunlight", false));
+        }
+      }
+      if (navigation.containsKey("interactions")) {
+        Map<String, Object> interactions = materializeMap(navigation.get("interactions"), path + ".navigation.interactions");
+        if (interactions.containsKey("openDoors")) {
+          builder.openDoors(YamlValues.bool(interactions, "openDoors", false));
+        }
+        if (interactions.containsKey("breakDoors")) {
+          builder.breakDoors(YamlValues.bool(interactions, "breakDoors", false));
+        }
+      }
+    }
+    if (map.containsKey("selectors")) {
+      builder.clearSelectors();
+      List<Map<?, ?>> selectors = castMapList(map.get("selectors"));
+      for (int i = 0; i < selectors.size(); i++) {
+        String selectorPath = path + ".selectors[" + i + "]";
+        builder.addSelector(parseAiSelector(selectors.get(i), selectorPath));
       }
     }
     // V3 module-style schema (mapped into runtime fields for backwards compatibility)
@@ -3332,6 +3630,11 @@ public final class MobYamlRegistry {
     }
     if (map.containsKey("combat")) {
       Map<String, Object> combat = materializeMap(map.get("combat"), path + ".combat");
+      if (combat.containsKey("authority")) {
+        builder.combatAuthority(parseAiCombatAuthority(
+            YamlValues.string(combat, "authority", "VANILLA"),
+            path + ".combat.authority"));
+      }
       if (combat.containsKey("preferredRange")) {
         Map<String, Object> range = materializeMap(combat.get("preferredRange"), path + ".combat.preferredRange");
         if (range.containsKey("min")) {
@@ -3452,6 +3755,24 @@ public final class MobYamlRegistry {
     if (map.containsKey("engine")) {
       builder.engineMode(parseAiEngineMode(YamlValues.string(map, "engine", "LEGACY"), path + ".engine"));
     }
+    if (map.containsKey("runtimeModel")) {
+      builder.runtimeModel(parseAiRuntimeModel(YamlValues.string(map, "runtimeModel", "LEGACY_V4"), path + ".runtimeModel"));
+    }
+    if (map.containsKey("movementPolicy")) {
+      builder.movementPolicy(parseAiMovementPolicy(
+          YamlValues.string(map, "movementPolicy", "PATHFINDER_FIRST"),
+          path + ".movementPolicy"));
+    }
+    if (map.containsKey("combatAuthority")) {
+      builder.combatAuthority(parseAiCombatAuthority(
+          YamlValues.string(map, "combatAuthority", "VANILLA"),
+          path + ".combatAuthority"));
+    }
+    if (map.containsKey("mode")) {
+      MobAiControlMode mode = parseAiControlMode(YamlValues.string(map, "mode", "DEFAULT"), path + ".mode");
+      fullOverrideRequested = mode == MobAiControlMode.FULL_OVERRIDE;
+      builder.controlMode(mode);
+    }
     if (map.containsKey("profile")) {
       builder.profile(parseAiProfile(YamlValues.string(map, "profile", "NEUTRAL"), path + ".profile"));
     }
@@ -3547,8 +3868,39 @@ public final class MobYamlRegistry {
     if (map.containsKey("preferGround")) {
       builder.preferGround(YamlValues.bool(map, "preferGround", true));
     }
+    if (map.containsKey("targetSources")) {
+      Object sourcesRaw = map.get("targetSources");
+      if (!(sourcesRaw instanceof List<?> list)) {
+        throw new IllegalArgumentException(path + ".targetSources: expected list");
+      }
+      builder.clearTargetSources();
+      for (int i = 0; i < list.size(); i++) {
+        builder.addTargetSource(parseAiTargetSource(list.get(i), path + ".targetSources[" + i + "]"));
+      }
+    }
+    if (map.containsKey("movement")) {
+      Map<String, Object> movement = materializeMap(map.get("movement"), path + ".movement");
+      if (movement.containsKey("stopDistance")) {
+        builder.movementStopDistance(YamlValues.doubleValueStrict(movement, "stopDistance", 1.25));
+      }
+      if (movement.containsKey("groundClamp")) {
+        builder.movementGroundClamp(YamlValues.bool(movement, "groundClamp", true));
+      }
+      if (movement.containsKey("repathTimeoutTicks")) {
+        builder.movementRepathTimeoutTicks(YamlValues.longValueStrict(movement, "repathTimeoutTicks", 40L));
+      }
+    }
     if (map.containsKey("partyRule")) {
       builder.partyRule(parsePartyRule(YamlValues.string(map, "partyRule", "NONE"), path + ".partyRule"));
+    }
+    if (map.containsKey("movementStopDistance")) {
+      builder.movementStopDistance(YamlValues.doubleValueStrict(map, "movementStopDistance", 1.25));
+    }
+    if (map.containsKey("movementGroundClamp")) {
+      builder.movementGroundClamp(YamlValues.bool(map, "movementGroundClamp", true));
+    }
+    if (map.containsKey("movementRepathTimeoutTicks")) {
+      builder.movementRepathTimeoutTicks(YamlValues.longValueStrict(map, "movementRepathTimeoutTicks", 40L));
     }
     if (map.containsKey("guardPoints")) {
       builder.clearGuardPoints();
@@ -3574,7 +3926,183 @@ public final class MobYamlRegistry {
       Map<String, Object> hooksRaw = materializeMap(map.get("hooks"), path + ".hooks");
       builder.hooks(parseAiHooks(hooksRaw, path + ".hooks", base == null ? null : base.hooks()));
     }
+    if (fullOverrideRequested && !schemaV4) {
+      throw new IllegalArgumentException(path + ".control.mode: FULL_OVERRIDE requires ai.version: V4");
+    }
     return builder.build();
+  }
+
+  private static MobAiControlMode parseAiControlMode(String raw, String path) {
+    try {
+      String key = raw == null ? "DEFAULT" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiControlMode.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai control mode=" + raw);
+    }
+  }
+
+  private static MobAiCombatAuthority parseAiCombatAuthority(String raw, String path) {
+    try {
+      String key = raw == null ? "VANILLA" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiCombatAuthority.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai combat authority=" + raw);
+    }
+  }
+
+  private static MobAiRuntimeModel parseAiRuntimeModel(String raw, String path) {
+    try {
+      String key = raw == null ? "LEGACY_V4" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiRuntimeModel.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai runtimeModel=" + raw);
+    }
+  }
+
+  private static MobAiMovementPolicy parseAiMovementPolicy(String raw, String path) {
+    try {
+      String key = raw == null ? "PATHFINDER_FIRST" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiMovementPolicy.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai movementPolicy=" + raw);
+    }
+  }
+
+  private static MobAiTargetSourceType parseAiTargetSourceType(String raw, String path) {
+    try {
+      String key = raw == null ? "CURRENT_TARGET" : raw.trim().toUpperCase(Locale.ROOT);
+      return MobAiTargetSourceType.valueOf(key);
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ": invalid ai target source type=" + raw);
+    }
+  }
+
+  private static MobAiTargetSourceSpec parseAiTargetSource(Object raw, String path) {
+    Map<String, Object> map = materializeMap(raw, path);
+    String typeRaw = YamlValues.string(map, "type", null);
+    if (typeRaw == null || typeRaw.isBlank()) {
+      throw new IllegalArgumentException(path + ".type: missing source type");
+    }
+    MobAiTargetSourceType type = parseAiTargetSourceType(typeRaw, path + ".type");
+    double radius = YamlValues.doubleValueStrict(map, "radius", 0.0);
+    long memoryTicks = YamlValues.longValueStrict(map, "memoryTicks", 0L);
+    long cooldownTicks = YamlValues.longValueStrict(map, "cooldownTicks", 0L);
+    int priority = YamlValues.intValueStrict(map, "priority", 100);
+    return new MobAiTargetSourceSpec(type, radius, memoryTicks, cooldownTicks, priority);
+  }
+
+  private static MobAiSelectorSpec parseAiSelector(Map<?, ?> raw, String path) {
+    Map<String, Object> map = materializeMap(raw, path);
+    String id = YamlValues.string(map, "id", "selector");
+    int priority = YamlValues.intValueStrict(map, "priority", 100);
+    Object whenRaw = map.containsKey("when") ? map.get("when") : map.get("condition");
+    MobAiConditionSpec condition = parseAiCondition(whenRaw, path + ".when");
+    Object intentRaw = map.get("intent");
+    if (intentRaw == null) {
+      throw new IllegalArgumentException(path + ".intent: missing intent");
+    }
+    MobAiIntentSpec intent = parseAiIntent(intentRaw, path + ".intent");
+    return new MobAiSelectorSpec(id, priority, condition, intent);
+  }
+
+  private static MobAiConditionSpec parseAiCondition(Object raw, String path) {
+    if (raw == null) {
+      return MobAiConditionSpec.always();
+    }
+    if (raw instanceof Boolean bool) {
+      return bool ? MobAiConditionSpec.always() : MobAiConditionSpec.not(MobAiConditionSpec.always());
+    }
+    if (raw instanceof List<?> list) {
+      List<MobAiConditionSpec> children = new ArrayList<>();
+      for (int i = 0; i < list.size(); i++) {
+        children.add(parseAiCondition(list.get(i), path + "[" + i + "]"));
+      }
+      return MobAiConditionSpec.all(children);
+    }
+    Map<String, Object> map = materializeMap(raw, path);
+    if (map.containsKey("all")) {
+      Object allRaw = map.get("all");
+      if (!(allRaw instanceof List<?> list)) {
+        throw new IllegalArgumentException(path + ".all: expected list");
+      }
+      List<MobAiConditionSpec> children = new ArrayList<>();
+      for (int i = 0; i < list.size(); i++) {
+        children.add(parseAiCondition(list.get(i), path + ".all[" + i + "]"));
+      }
+      return MobAiConditionSpec.all(children);
+    }
+    if (map.containsKey("any")) {
+      Object anyRaw = map.get("any");
+      if (!(anyRaw instanceof List<?> list)) {
+        throw new IllegalArgumentException(path + ".any: expected list");
+      }
+      List<MobAiConditionSpec> children = new ArrayList<>();
+      for (int i = 0; i < list.size(); i++) {
+        children.add(parseAiCondition(list.get(i), path + ".any[" + i + "]"));
+      }
+      return MobAiConditionSpec.any(children);
+    }
+    if (map.containsKey("not")) {
+      return MobAiConditionSpec.not(parseAiCondition(map.get("not"), path + ".not"));
+    }
+    if (map.containsKey("hasTarget")) {
+      return MobAiConditionSpec.hasTarget(YamlValues.bool(map, "hasTarget", true));
+    }
+    if (map.containsKey("healthRatioLte")) {
+      return MobAiConditionSpec.healthRatioLte(YamlValues.doubleValueStrict(map, "healthRatioLte", 1.0));
+    }
+    if (map.containsKey("healthRatioGte")) {
+      return MobAiConditionSpec.healthRatioGte(YamlValues.doubleValueStrict(map, "healthRatioGte", 0.0));
+    }
+    if (map.containsKey("targetDistanceLte")) {
+      return MobAiConditionSpec.targetDistanceLte(YamlValues.doubleValueStrict(map, "targetDistanceLte", 0.0));
+    }
+    if (map.containsKey("targetDistanceGte")) {
+      return MobAiConditionSpec.targetDistanceGte(YamlValues.doubleValueStrict(map, "targetDistanceGte", 0.0));
+    }
+    if (map.containsKey("behaviorState")) {
+      String rawState = YamlValues.string(map, "behaviorState", "IDLE");
+      try {
+        return MobAiConditionSpec.behaviorState(MobBehaviorState.valueOf(rawState.trim().toUpperCase(Locale.ROOT)));
+      } catch (Exception ex) {
+        throw new IllegalArgumentException(path + ".behaviorState: invalid behavior state=" + rawState);
+      }
+    }
+    if (map.containsKey("randomChance")) {
+      return MobAiConditionSpec.randomChance(
+          normalizeChance(YamlValues.doubleValueStrict(map, "randomChance", 1.0), path + ".randomChance"));
+    }
+    throw new IllegalArgumentException(path + ": invalid condition, expected all/any/not or supported leaf predicates");
+  }
+
+  private static MobAiIntentSpec parseAiIntent(Object raw, String path) {
+    Map<String, Object> map = materializeMap(raw, path);
+    String typeRaw = YamlValues.string(map, "type", null);
+    if (typeRaw == null || typeRaw.isBlank()) {
+      throw new IllegalArgumentException(path + ".type: missing intent type");
+    }
+    MobAiIntentType type;
+    try {
+      type = MobAiIntentType.valueOf(typeRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (Exception ex) {
+      throw new IllegalArgumentException(path + ".type: invalid intent type=" + typeRaw);
+    }
+    double speed = YamlValues.doubleValueStrict(map, "speed", 0.0);
+    double radius = YamlValues.doubleValueStrict(map, "radius", 0.0);
+    double minRange = YamlValues.doubleValueStrict(map, "minRange", 0.0);
+    double maxRange = YamlValues.doubleValueStrict(map, "maxRange", 0.0);
+    long intervalTicks = YamlValues.longValueStrict(map, "intervalTicks", 0L);
+    String abilityId = YamlValues.string(map, "ability", null);
+    long castCooldownTicks = map.containsKey("castCooldownTicks")
+        ? YamlValues.longValueStrict(map, "castCooldownTicks", 0L)
+        : YamlValues.longValueStrict(map, "cooldownTicks", 0L);
+    boolean requireTarget = YamlValues.bool(map, "requireTarget", true);
+    if ((type == MobAiIntentType.CAST_ONLY || type == MobAiIntentType.CHASE_AND_CAST)
+        && (abilityId == null || abilityId.isBlank())) {
+      throw new IllegalArgumentException(path + ".ability: intent " + type.name() + " requires ability");
+    }
+    return new MobAiIntentSpec(type, speed, radius, minRange, maxRange, intervalTicks, abilityId, castCooldownTicks,
+        requireTarget);
   }
 
   private static MobAiHooksSpec parseAiHooks(Map<?, ?> map, String path, MobAiHooksSpec base) {

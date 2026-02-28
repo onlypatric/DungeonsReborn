@@ -54,6 +54,11 @@ import org.bukkit.util.Vector;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.UseCooldown;
+import io.papermc.paper.datacomponent.item.UseRemainder;
+import net.kyori.adventure.key.Key;
 
 import dev.patric.dungeonsreborn.DungeonsRebornPlugin;
 import dev.patric.dungeonsreborn.effects.AbilitySpec;
@@ -74,14 +79,20 @@ import dev.patric.dungeonsreborn.effects.damage.DamageCause;
 import dev.patric.dungeonsreborn.effects.damage.DamageSpec;
 import dev.patric.dungeonsreborn.effects.damage.DamageType;
 import dev.patric.dungeonsreborn.effects.heal.HealType;
+import dev.patric.dungeonsreborn.effects.afflict.AfflictionAudience;
+import dev.patric.dungeonsreborn.effects.afflict.AfflictionManager;
+import dev.patric.dungeonsreborn.effects.afflict.AfflictionRefreshPolicy;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileSpec;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.combat.CombatCooldownScope;
 import dev.patric.dungeonsreborn.effects.combat.CombatEventBinding;
 import dev.patric.dungeonsreborn.effects.combat.CombatEventFilters;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventOriginBind;
+import dev.patric.dungeonsreborn.effects.combat.CombatEventPhase;
 import dev.patric.dungeonsreborn.effects.combat.CombatEventSource;
 import dev.patric.dungeonsreborn.effects.combat.CombatEventTargetBind;
 import dev.patric.dungeonsreborn.effects.combat.CombatEventType;
+import dev.patric.dungeonsreborn.effects.combat.ProjectileFamily;
 import dev.patric.dungeonsreborn.effects.config.actions.ActionParserContext;
 import dev.patric.dungeonsreborn.effects.config.actions.ActionParsers;
 import dev.patric.dungeonsreborn.effects.targeting.Targeters;
@@ -183,6 +194,7 @@ public final class EffectsYamlAbilities {
   private final java.util.Map<String, AbilitySpec> overriddenCodeAbilities = new java.util.HashMap<>();
   private java.util.Map<String, java.util.Map<String, Object>> macros = java.util.Collections.emptyMap();
   private java.util.Map<String, ShapeTemplate> shapeTemplates = java.util.Collections.emptyMap();
+  private Set<String> declaredAbilityIds = Set.of();
   private final Map<UUID, Map<String, Object>> playerVars = new ConcurrentHashMap<>();
   private final Map<UUID, Map<String, Object>> entityVars = new ConcurrentHashMap<>();
   private final Map<String, Map<String, Object>> abilityVars = new ConcurrentHashMap<>();
@@ -868,6 +880,7 @@ public final class EffectsYamlAbilities {
     warmScriptCache(errors);
     int loaded = 0;
     int loadedItemBindings = 0;
+    declaredAbilityIds = Set.copyOf(all.keySet());
     for (AbilityEntry entry : all.values()) {
       try {
         AbilitySpec spec = compileAbility(entry.normalizedId(), entry.basePath(), entry.section());
@@ -894,6 +907,7 @@ public final class EffectsYamlAbilities {
         errors.add(entry.basePath() + ": " + ex.getMessage());
       }
     }
+    declaredAbilityIds = Set.of();
 
     File itemsDir = itemsDir();
     if (!itemsDir.exists()) {
@@ -1211,7 +1225,27 @@ public final class EffectsYamlAbilities {
     ItemMeta existing = current.getItemMeta();
     if (meta instanceof Damageable dmgNew && existing instanceof Damageable dmgOld) {
       dmgNew.setDamage(dmgOld.getDamage());
+      Key itemModel = updated.getData(DataComponentTypes.ITEM_MODEL);
+      FoodProperties food = updated.getData(DataComponentTypes.FOOD);
+      Consumable consumable = updated.getData(DataComponentTypes.CONSUMABLE);
+      UseCooldown useCooldown = updated.getData(DataComponentTypes.USE_COOLDOWN);
+      UseRemainder useRemainder = updated.getData(DataComponentTypes.USE_REMAINDER);
       updated.setItemMeta(meta);
+      if (itemModel != null) {
+        updated.setData(DataComponentTypes.ITEM_MODEL, itemModel);
+      }
+      if (food != null) {
+        updated.setData(DataComponentTypes.FOOD, food);
+      }
+      if (consumable != null) {
+        updated.setData(DataComponentTypes.CONSUMABLE, consumable);
+      }
+      if (useCooldown != null) {
+        updated.setData(DataComponentTypes.USE_COOLDOWN, useCooldown);
+      }
+      if (useRemainder != null) {
+        updated.setData(DataComponentTypes.USE_REMAINDER, useRemainder);
+      }
     }
     java.util.Map<String, Double> existingStats = ItemMarkers.getItemStats(current);
     if (!existingStats.isEmpty()) {
@@ -1925,6 +1959,30 @@ public final class EffectsYamlAbilities {
             }
             builder.require(Conditions.hasItemTag(key), message);
           }
+          case "health_gte", "health-gte" -> {
+            double value = requireDouble(req, "value", base + ".requirements[" + i + "].value");
+            builder.require(ctx -> ctx.caster().getHealth() >= value, message);
+          }
+          case "health_lte", "health-lte" -> {
+            double value = requireDouble(req, "value", base + ".requirements[" + i + "].value");
+            builder.require(ctx -> ctx.caster().getHealth() <= value, message);
+          }
+          case "health_pct_gte", "health-pct-gte" -> {
+            double value = requireDouble(req, "value", base + ".requirements[" + i + "].value");
+            builder.require(ctx -> {
+              AttributeInstance attr = ctx.caster().getAttribute(Attribute.MAX_HEALTH);
+              double max = attr != null ? attr.getValue() : 20.0;
+              return max > 0.0 && (ctx.caster().getHealth() / max) >= value;
+            }, message);
+          }
+          case "health_pct_lte", "health-pct-lte" -> {
+            double value = requireDouble(req, "value", base + ".requirements[" + i + "].value");
+            builder.require(ctx -> {
+              AttributeInstance attr = ctx.caster().getAttribute(Attribute.MAX_HEALTH);
+              double max = attr != null ? attr.getValue() : 20.0;
+              return max > 0.0 && (ctx.caster().getHealth() / max) <= value;
+            }, message);
+          }
           default -> throw new IllegalArgumentException(base + ".requirements[" + i + "].type: unknown type: " + type);
         }
       }
@@ -2119,9 +2177,33 @@ public final class EffectsYamlAbilities {
               + " is not allowed when " + mode + " (run /dr effects combat migrate)");
         }
         CombatEventType eventType = CombatEventType.parse(eventRaw);
-        String abilityId = requireString(trig, "ability", base + ".triggers[" + i + "].ability");
-        if (!engine.hasAbility(abilityId)) {
-          throw new IllegalArgumentException(base + ".triggers[" + i + "].ability: ability not registered: " + abilityId);
+        CombatEventPhase phase = CombatEventPhase.parse(string(trig, "phase", eventType.isPreEvent() ? "PRE" : "POST"),
+            eventType.isPreEvent() ? CombatEventPhase.PRE : CombatEventPhase.POST);
+        if (eventType.isPreEvent() && phase != CombatEventPhase.PRE) {
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].phase: PRE event requires phase=PRE");
+        }
+        if (!eventType.isPreEvent() && phase == CombatEventPhase.PRE) {
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].phase: non-PRE event cannot use phase=PRE");
+        }
+        boolean cancelEvent = bool(trig, "cancelEvent", false);
+        if (cancelEvent && !eventType.isPreEvent()) {
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].cancelEvent: only supported for *_PRE events");
+        }
+        String abilityId = string(trig, "ability", null);
+        if ((abilityId == null || abilityId.isBlank()) && !cancelEvent) {
+          throw new IllegalArgumentException(base + ".triggers[" + i + "].ability: missing ability (required unless cancelEvent=true)");
+        }
+        if (abilityId != null && !abilityId.isBlank()) {
+          String normalizedAbilityId;
+          try {
+            normalizedAbilityId = dev.patric.dungeonsreborn.effects.Ids.normalize(abilityId);
+          } catch (Exception ex) {
+            throw new IllegalArgumentException(base + ".triggers[" + i + "].ability: invalid id (" + ex.getMessage() + ")");
+          }
+          if (!engine.hasAbility(normalizedAbilityId) && !declaredAbilityIds.contains(normalizedAbilityId)) {
+            throw new IllegalArgumentException(base + ".triggers[" + i + "].ability: ability not registered: " + normalizedAbilityId);
+          }
+          abilityId = normalizedAbilityId;
         }
         String bindingId = trig.containsKey("id") ? String.valueOf(trig.get("id")) : null;
         if (bindingId == null || bindingId.isBlank()) {
@@ -2146,10 +2228,12 @@ public final class EffectsYamlAbilities {
         }
 
         CombatEventTargetBind targetBind = CombatEventTargetBind.EVENT_PRIMARY;
+        CombatEventOriginBind originBind = CombatEventOriginBind.IMPACT;
         Object targetRaw = trig.get("target");
         if (targetRaw instanceof Map<?, ?> || targetRaw instanceof ConfigurationSection) {
           Map<String, Object> targetNode = castMap(targetRaw, base + ".triggers[" + i + "].target");
           targetBind = CombatEventTargetBind.parse(string(targetNode, "bind", "event_primary"), CombatEventTargetBind.EVENT_PRIMARY);
+          originBind = CombatEventOriginBind.parse(string(targetNode, "originBind", "impact"), CombatEventOriginBind.IMPACT);
         }
 
         CombatEventFilters filters = CombatEventFilters.none();
@@ -2166,21 +2250,70 @@ public final class EffectsYamlAbilities {
           boolean blockedOnly = bool(filtersNode, "blockedOnly", false);
           Set<String> ccTypes = stringSet(filtersNode.get("ccType"));
           Set<String> dotTags = stringSet(filtersNode.get("dotTag"));
+          Set<String> projectileTypes = upperStringSet(filtersNode.get("projectileType"));
+          Set<ProjectileFamily> projectileFamilies =
+              parseEnumSet(filtersNode.get("projectileFamily"), ProjectileFamily.class, base + ".triggers[" + i + "].filters.projectileFamily");
+          Set<String> projectileKinds = stringSet(filtersNode.get("projectileKind"));
+          double distanceMin = doubleValue(filtersNode, "distanceMin", 0.0);
+          double distanceMax = doubleValue(filtersNode, "distanceMax", 0.0);
+          double speedMin = doubleValue(filtersNode, "speedMin", 0.0);
+          double speedMax = doubleValue(filtersNode, "speedMax", 0.0);
+          double drawForceMin = doubleValue(filtersNode, "drawForceMin", 0.0);
+          double drawForceMax = doubleValue(filtersNode, "drawForceMax", 0.0);
+          int inGroundTicksMin = intValue(filtersNode, "inGroundTicksMin", 0);
+          int inGroundTicksMax = intValue(filtersNode, "inGroundTicksMax", 0);
+          Boolean projectileCritical = boolOptional(filtersNode.get("isCritical"));
+          Boolean projectileCharged = boolOptional(filtersNode.get("isCharged"));
+          Boolean projectilePiercing = boolOptional(filtersNode.get("isPiercing"));
+          Boolean shotFromCrossbow = boolOptional(filtersNode.get("shotFromCrossbow"));
+          Boolean shooterIsPlayer = boolOptional(filtersNode.get("shooterIsPlayer"));
+          Set<String> hitBlockMaterials = upperStringSet(filtersNode.get("hitBlockMaterial"));
+          Set<String> hitBlockTags = stringSet(filtersNode.get("hitBlockTag"));
           String weaponTag = string(filtersNode, "weaponTag", null);
-          filters = new CombatEventFilters(weaponTag, damageTypes, sources, relations, minDamage, critOnly, blockedOnly, ccTypes, dotTags);
+          filters = new CombatEventFilters(
+              weaponTag,
+              damageTypes,
+              sources,
+              relations,
+              minDamage,
+              critOnly,
+              blockedOnly,
+              ccTypes,
+              dotTags,
+              projectileTypes,
+              projectileFamilies,
+              projectileKinds,
+              distanceMin,
+              distanceMax,
+              speedMin,
+              speedMax,
+              drawForceMin,
+              drawForceMax,
+              inGroundTicksMin,
+              inGroundTicksMax,
+              projectileCritical,
+              projectileCharged,
+              projectilePiercing,
+              shotFromCrossbow,
+              shooterIsPlayer,
+              hitBlockMaterials,
+              hitBlockTags);
         }
 
         CombatEventBinding binding = new CombatEventBinding(
             bindingId,
             abilityId,
             eventType,
+            phase,
+            cancelEvent,
             chance,
             cooldownTicks,
             cooldownScope,
             requireSneaking,
             requiredPermission,
             filters,
-            targetBind);
+            targetBind,
+            originBind);
         if (bindings != null) {
           bindings.registerCombatEvent(binding);
           loadedBindingIds.add(bindingId);
@@ -2368,7 +2501,8 @@ public final class EffectsYamlAbilities {
       case "none", "off", "false" -> ItemConsumeMode.NONE;
       case "stack", "item", "item_stack", "itemstack" -> ItemConsumeMode.STACK;
       case "durability", "damage", "durable" -> ItemConsumeMode.DURABILITY;
-      default -> throw new IllegalArgumentException(path + ": invalid consumable mode=" + raw + " (use stack|durability)");
+      default -> throw new IllegalArgumentException(path + ": invalid consumable mode=" + raw
+          + " (use stack|durability for cast-cost consume; for edible behavior use item.meta.components.consumable or item.edible)");
     };
   }
 
@@ -2396,6 +2530,41 @@ public final class EffectsYamlAbilities {
       return Set.copyOf(out);
     }
     return Set.of(String.valueOf(raw));
+  }
+
+  private static Set<String> upperStringSet(Object raw) {
+    Set<String> values = stringSet(raw);
+    if (values.isEmpty()) {
+      return values;
+    }
+    HashSet<String> out = new HashSet<>();
+    for (String value : values) {
+      out.add(value.toUpperCase(Locale.ROOT));
+    }
+    return Set.copyOf(out);
+  }
+
+  private static Boolean boolOptional(Object raw) {
+    if (raw == null) {
+      return null;
+    }
+    if (raw instanceof Boolean b) {
+      return b;
+    }
+    if (raw instanceof Number n) {
+      return n.intValue() != 0;
+    }
+    String s = String.valueOf(raw).trim().toLowerCase(Locale.ROOT);
+    if (s.isEmpty()) {
+      return null;
+    }
+    if (s.equals("true") || s.equals("yes") || s.equals("on") || s.equals("1")) {
+      return Boolean.TRUE;
+    }
+    if (s.equals("false") || s.equals("no") || s.equals("off") || s.equals("0")) {
+      return Boolean.FALSE;
+    }
+    throw new IllegalArgumentException("invalid boolean value: " + raw);
   }
 
   private static <E extends Enum<E>> Set<E> parseEnumSet(Object raw, Class<E> type, String path) {
@@ -2565,7 +2734,8 @@ public final class EffectsYamlAbilities {
     return switch (s) {
       case "right", "right_click", "rightclick" -> InteractTrigger.RIGHT_CLICK;
       case "left", "left_click", "leftclick" -> InteractTrigger.LEFT_CLICK;
-      default -> throw new IllegalArgumentException(path + ": invalid click=" + raw + " (use RIGHT_CLICK or LEFT_CLICK)");
+      case "shoot", "bow_shoot", "crossbow_shoot", "release", "bow_release", "crossbow_release" -> InteractTrigger.SHOOT;
+      default -> throw new IllegalArgumentException(path + ": invalid click=" + raw + " (use RIGHT_CLICK, LEFT_CLICK, or SHOOT)");
     };
   }
 
@@ -2917,6 +3087,49 @@ public final class EffectsYamlAbilities {
         VarScope scope = parseVarScope(string(node, "scope", null), path + ".scope", VarScope.CAST);
         NumValue threshold = requireNumValue(node, "value", path + ".value");
         yield ctx -> numericVar(vars(ctx, scope).get(key), 0.0) < evalDouble(threshold, ctx);
+      }
+      case "afflict_present", "afflict-present" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          return ctx.engine().afflictions().present(target, afflictionId);
+        };
+      }
+      case "afflict_stacks_gte", "afflict-stacks-gte" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        NumValue stacks = requireNumValue(node, "stacks", path + ".stacks");
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          return ctx.engine().afflictions().stacks(target, afflictionId) >= Math.max(0, evalInt(stacks, ctx));
+        };
+      }
+      case "afflict_stacks_lte", "afflict-stacks-lte" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        NumValue stacks = requireNumValue(node, "stacks", path + ".stacks");
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          return ctx.engine().afflictions().stacks(target, afflictionId) <= Math.max(0, evalInt(stacks, ctx));
+        };
+      }
+      case "afflict_remaining_lte", "afflict-remaining-lte" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        NumValue remaining = requireNumValue(node, "remainingTicks", path + ".remainingTicks");
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          return ctx.engine().afflictions().remainingTicks(target, afflictionId) <= Math.max(0L, evalLong(remaining, ctx));
+        };
       }
       case "not" -> {
         var inner = compileCondition(require(node, "condition", path + ".condition"), path + ".condition");
@@ -6475,7 +6688,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6540,7 +6753,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6650,7 +6863,7 @@ public final class EffectsYamlAbilities {
         NumValue durationTicks = numValue(node, "durationTicks", 0.0, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6691,7 +6904,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6715,7 +6928,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6741,7 +6954,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6771,7 +6984,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6805,7 +7018,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6831,7 +7044,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6880,7 +7093,7 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6953,9 +7166,9 @@ public final class EffectsYamlAbilities {
       case "heal" -> {
         NumValue amount = requireNumValue(node, "amount", path + ".amount");
         HealType healType = healTypeValue(node, path + ".healType", HealType.DIRECT);
-        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        String policy = string(node, "policy", "any").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -6969,6 +7182,9 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
           if (target != null) {
             double heal = evalDouble(amount, ctx);
             if (heal <= 0.0) {
@@ -6990,9 +7206,9 @@ public final class EffectsYamlAbilities {
       case "heal_percent" -> {
         NumValue percent = numValue(node, "percent", 0.15, path);
         HealType healType = healTypeValue(node, path + ".healType", HealType.DIRECT);
-        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        String policy = string(node, "policy", "any").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -7006,6 +7222,9 @@ public final class EffectsYamlAbilities {
         java.util.Set<String> tags = damageTagSet(node, path);
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
           if (target != null) {
             double pct = evalDouble(percent, ctx);
             if (pct <= 0.0) {
@@ -7029,9 +7248,9 @@ public final class EffectsYamlAbilities {
         NumValue periodTicks = numValue(node, "periodTicks", 10.0, path);
         NumValue times = numValue(node, "times", 5.0, path);
         HealType healType = healTypeValue(node, path + ".healType", HealType.HOT);
-        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        String policy = string(node, "policy", "any").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -7050,6 +7269,9 @@ public final class EffectsYamlAbilities {
         final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
           if (target != null) {
             double heal = evalDouble(amount, ctx);
             long period = evalLong(periodTicks, ctx);
@@ -7086,9 +7308,9 @@ public final class EffectsYamlAbilities {
         NumValue cap = numValue(node, "cap", 0.0, path);
         NumValue decayTicks = numValue(node, "decayTicks", 0.0, path);
         HealType healType = "absorb".equals(type) ? HealType.ABSORB : HealType.SHIELD;
-        String policy = string(node, "policy", "hostile_default").toLowerCase(Locale.ROOT);
+        String policy = string(node, "policy", "any").toLowerCase(Locale.ROOT);
         EntityActions.DamagePolicy p = switch (policy) {
-          case "any" -> EntityActions.DamagePolicy.any();
+          case "any", "always" -> EntityActions.DamagePolicy.any();
           case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
           case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
           case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -7096,6 +7318,9 @@ public final class EffectsYamlAbilities {
         };
         yield ctx -> {
           LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
           if (target != null) {
             double shield = evalDouble(amount, ctx);
             if (shield <= 0.0) {
@@ -7160,11 +7385,124 @@ public final class EffectsYamlAbilities {
           }
         };
       }
+      case "afflict_apply" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        NumValue stacks = numValue(node, "stacks", 1.0, path);
+        NumValue maxStacks = numValue(node, "maxStacks", 5.0, path);
+        NumValue durationTicks = numValue(node, "durationTicks", 100.0, path);
+        NumValue tickEveryTicks = numValue(node, "tickEveryTicks", 0.0, path);
+        AfflictionRefreshPolicy refreshPolicy = afflictionRefreshPolicyValue(node, path + ".refreshPolicy",
+            AfflictionRefreshPolicy.RESET_DURATION);
+        AfflictionAudience audience = afflictionAudienceValue(node, path + ".audience", AfflictionAudience.PVE_ONLY);
+
+        dev.patric.dungeonsreborn.effects.actions.Action onTickAction = null;
+        if (node.containsKey("onTick")) {
+          onTickAction = compileAction(castMap(node.get("onTick"), path + ".onTick"), path + ".onTick", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onApplyAction = null;
+        if (node.containsKey("onApply")) {
+          onApplyAction = compileAction(castMap(node.get("onApply"), path + ".onApply"), path + ".onApply", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onStackAction = null;
+        if (node.containsKey("onStack")) {
+          onStackAction = compileAction(castMap(node.get("onStack"), path + ".onStack"), path + ".onStack", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onExpireAction = null;
+        if (node.containsKey("onExpire")) {
+          onExpireAction = compileAction(castMap(node.get("onExpire"), path + ".onExpire"), path + ".onExpire", includeStack);
+        }
+
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnTick = onTickAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnApply = onApplyAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnStack = onStackAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnExpire = onExpireAction;
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          if (target == null) {
+            return;
+          }
+          AfflictionManager.ApplySpec spec = new AfflictionManager.ApplySpec(
+              afflictionId,
+              Math.max(1, evalInt(stacks, ctx)),
+              Math.max(1, evalInt(maxStacks, ctx)),
+              Math.max(1L, evalLong(durationTicks, ctx)),
+              refreshPolicy,
+              audience,
+              Math.max(0L, evalLong(tickEveryTicks, ctx)),
+              finalOnTick,
+              finalOnApply,
+              finalOnStack,
+              finalOnExpire);
+          ctx.engine().afflictions().apply(ctx, target, spec);
+        };
+      }
+      case "afflict_clear" -> {
+        String afflictionId = string(node, "id", null);
+        final String normalized = afflictionId == null ? null : afflictionId.trim().toLowerCase(Locale.ROOT);
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          if (target == null) {
+            return;
+          }
+          ctx.engine().afflictions().clear(ctx, target, normalized);
+        };
+      }
+      case "afflict_consume" -> {
+        String afflictionId = requireString(node, "id", path + ".id").trim().toLowerCase(Locale.ROOT);
+        NumValue stacks = numValue(node, "stacks", 1.0, path);
+        NumValue requireAtLeast = numValue(node, "requireAtLeast", 1.0, path);
+        dev.patric.dungeonsreborn.effects.actions.Action onSuccessAction = Actions.noop();
+        if (node.containsKey("onSuccess")) {
+          onSuccessAction = compileAction(castMap(node.get("onSuccess"), path + ".onSuccess"), path + ".onSuccess", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onFailureAction = Actions.noop();
+        if (node.containsKey("onFailure")) {
+          onFailureAction = compileAction(castMap(node.get("onFailure"), path + ".onFailure"), path + ".onFailure", includeStack);
+        }
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnSuccess = onSuccessAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnFailure = onFailureAction;
+        yield ctx -> {
+          LivingEntity target = lastEntity(ctx);
+          if (target == null) {
+            target = ctx.caster();
+          }
+          if (target == null) {
+            finalOnFailure.execute(ctx);
+            return;
+          }
+          boolean success = ctx.engine().afflictions().consume(
+              ctx,
+              target,
+              afflictionId,
+              Math.max(1, evalInt(stacks, ctx)),
+              Math.max(1, evalInt(requireAtLeast, ctx)));
+          if (success) {
+            finalOnSuccess.execute(ctx);
+          } else {
+            finalOnFailure.execute(ctx);
+          }
+        };
+      }
       case "projectile" -> {
+        String kind = string(node, "kind", "");
         NumValue speedPerTick = numValue(node, "speedPerTick", 1.3, path);
         NumValue maxDistance = numValue(node, "maxDistance", 24.0, path);
         NumValue hitRadius = numValue(node, "hitRadius", 0.25, path);
         boolean ignoreCaster = bool(node, "ignoreCaster", true);
+        int maxPierces = Math.max(0, intValue(node, "maxPierces", 0));
+        boolean travelStepEnabled = bool(node, "travelStepEnabled", false);
+        int travelStepIntervalTicks = Math.max(1, intValue(node, "travelStepIntervalTicks", 3));
+        if (node.containsKey("travelStep")) {
+          Map<String, Object> travelStep = castMap(node.get("travelStep"), path + ".travelStep");
+          travelStepEnabled = bool(travelStep, "enabled", travelStepEnabled);
+          travelStepIntervalTicks = Math.max(1, intValue(travelStep, "intervalTicks", travelStepIntervalTicks));
+        }
         String bc = string(node, "blockCollision", "stop").toUpperCase(Locale.ROOT);
         boolean bounce = "BOUNCE".equals(bc);
         boolean passThrough = "PASS_THROUGH".equals(bc) || "PASS-THROUGH".equals(bc) || "PASS".equals(bc);
@@ -7190,6 +7528,31 @@ public final class EffectsYamlAbilities {
           Map<String, Object> onHit = castMap(node.get("onHit"), path + ".onHit");
           onHitAction = compileAction(onHit, path + ".onHit", includeStack);
         }
+        dev.patric.dungeonsreborn.effects.actions.Action onLaunchAction = Actions.noop();
+        if (node.containsKey("onLaunch")) {
+          Map<String, Object> onLaunch = castMap(node.get("onLaunch"), path + ".onLaunch");
+          onLaunchAction = compileAction(onLaunch, path + ".onLaunch", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onStepAction = Actions.noop();
+        if (node.containsKey("onStep")) {
+          Map<String, Object> onStep = castMap(node.get("onStep"), path + ".onStep");
+          onStepAction = compileAction(onStep, path + ".onStep", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onExpireAction = Actions.noop();
+        if (node.containsKey("onExpire")) {
+          Map<String, Object> onExpire = castMap(node.get("onExpire"), path + ".onExpire");
+          onExpireAction = compileAction(onExpire, path + ".onExpire", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onBounceAction = Actions.noop();
+        if (node.containsKey("onBounce")) {
+          Map<String, Object> onBounce = castMap(node.get("onBounce"), path + ".onBounce");
+          onBounceAction = compileAction(onBounce, path + ".onBounce", includeStack);
+        }
+        dev.patric.dungeonsreborn.effects.actions.Action onPierceAction = Actions.noop();
+        if (node.containsKey("onPierce")) {
+          Map<String, Object> onPierce = castMap(node.get("onPierce"), path + ".onPierce");
+          onPierceAction = compileAction(onPierce, path + ".onPierce", includeStack);
+        }
         DamageSpecTemplate damageTemplate = null;
         if (node.containsKey("damage")) {
           Map<String, Object> damageNode = castMap(node.get("damage"), path + ".damage");
@@ -7197,7 +7560,14 @@ public final class EffectsYamlAbilities {
         }
 
         final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnLaunch = onLaunchAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnStep = onStepAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnExpire = onExpireAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnBounce = onBounceAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnPierce = onPierceAction;
         final DamageSpecTemplate finalDamageTemplate = damageTemplate;
+        final boolean finalTravelStepEnabled = travelStepEnabled;
+        final int finalTravelStepIntervalTicks = travelStepIntervalTicks;
         yield ctx -> {
           double speed = evalDouble(speedPerTick, ctx);
           double max = evalDouble(maxDistance, ctx);
@@ -7206,9 +7576,11 @@ public final class EffectsYamlAbilities {
             return;
           }
           ProjectileSpec.Builder b = ProjectileSpec.builder()
+              .kind(kind)
               .speedPerTick(speed)
               .maxDistance(max)
               .hitRadius(radius)
+              .maxPierces(maxPierces)
               .ignoreCaster(ignoreCaster);
           if (passThrough) {
             b.stopOnBlock(false);
@@ -7226,27 +7598,114 @@ public final class EffectsYamlAbilities {
             double extra = trailExtra == null ? 0.0 : evalDouble(trailExtra, ctx);
             b.trail(trailParticle, count, offset, extra);
           }
+          b.travelStep(finalTravelStepEnabled, finalTravelStepIntervalTicks);
+          b.onLaunch(instance -> finalOnLaunch.execute(ctx));
+          b.onStep(instance -> finalOnStep.execute(ctx));
+          b.onExpire(instance -> finalOnExpire.execute(ctx));
+          b.onBounce(hit -> {
+            CastContext cast = hit.cast();
+            cast.state().put(Vars.PROJECTILE_LAST_HIT, hit);
+            finalOnBounce.execute(cast);
+          });
+          b.onPierce(hit -> {
+            CastContext cast = hit.cast();
+            cast.state().put(Vars.PROJECTILE_LAST_HIT, hit);
+            finalOnPierce.execute(cast);
+          });
 
           b.onHit(hit -> {
             CastContext cast = hit.cast();
             LivingEntity target = hit.hitEntity();
-            if (target != null) {
-              cast.state().put(YAML_LAST_ENTITY, target);
-              if (finalDamageTemplate != null) {
-                DamageSpec spec = finalDamageTemplate.toSpec(cast);
-                if (spec != null) {
-                  cast.engine().applyDamage(cast, target, spec);
-                }
+            cast.state().put(YAML_LAST_ENTITY, target);
+            if (target != null && finalDamageTemplate != null) {
+              DamageSpec spec = finalDamageTemplate.toSpec(cast);
+              if (spec != null) {
+                cast.engine().applyDamage(cast, target, spec);
               }
-              finalOnHit.execute(cast);
-              Object hook = cast.state().get(DSL_ON_HIT);
-              if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
-                hookAction.execute(cast);
-              }
+            }
+            finalOnHit.execute(cast);
+            Object hook = cast.state().get(DSL_ON_HIT);
+            if (hook instanceof dev.patric.dungeonsreborn.effects.actions.Action hookAction) {
+              hookAction.execute(cast);
             }
           });
 
           Actions.projectile(b.build()).execute(ctx);
+        };
+      }
+      case "projectile_auto_aim_nearest", "projectile_autoaim_nearest", "projectile_homing_nearest" -> {
+        NumValue radius = numValue(node, "radius", 24.0, path);
+        NumValue speed = numValue(node, "speed", 0.0, path);
+        NumValue yOffset = numValue(node, "yOffset", 0.0, path);
+        boolean includePlayers = bool(node, "includePlayers", true);
+        boolean includeMobs = bool(node, "includeMobs", true);
+        boolean requireLineOfSight = bool(node, "requireLineOfSight", false);
+        boolean ignoreCaster = bool(node, "ignoreCaster", true);
+        yield ctx -> {
+          Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
+          if (!(hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry telemetry)) {
+            return;
+          }
+          java.util.UUID projectileId = telemetry.projectileId();
+          if (projectileId == null) {
+            return;
+          }
+          org.bukkit.entity.Entity rawProjectile = Bukkit.getEntity(projectileId);
+          if (!(rawProjectile instanceof org.bukkit.entity.Projectile projectile) || !projectile.isValid() || projectile.isDead()) {
+            return;
+          }
+          LivingEntity shooter = telemetry.shooter();
+          if (shooter == null) {
+            shooter = ctx.caster();
+          }
+          Location origin = projectile.getLocation();
+          if (origin.getWorld() == null) {
+            return;
+          }
+          double maxRadius = Math.max(0.5, evalDouble(radius, ctx));
+          boolean allowPlayers = includePlayers;
+          boolean allowMobs = includeMobs;
+          LivingEntity best = null;
+          double bestDistSq = Double.MAX_VALUE;
+          for (org.bukkit.entity.Entity nearby : origin.getWorld().getNearbyEntities(origin, maxRadius, maxRadius, maxRadius)) {
+            if (!(nearby instanceof LivingEntity living) || !living.isValid() || living.isDead()) {
+              continue;
+            }
+            if (ignoreCaster && shooter != null && living.getUniqueId().equals(shooter.getUniqueId())) {
+              continue;
+            }
+            if (!allowPlayers && living instanceof Player) {
+              continue;
+            }
+            if (!allowMobs && !(living instanceof Player)) {
+              continue;
+            }
+            if (requireLineOfSight && shooter != null && !shooter.hasLineOfSight(living)) {
+              continue;
+            }
+            double distSq = living.getEyeLocation().distanceSquared(origin);
+            if (distSq < bestDistSq) {
+              bestDistSq = distSq;
+              best = living;
+            }
+          }
+          if (best == null) {
+            return;
+          }
+          Location aim = best.getEyeLocation().add(0.0, evalDouble(yOffset, ctx), 0.0);
+          Vector dir = aim.toVector().subtract(origin.toVector());
+          if (dir.lengthSquared() <= 1.0E-6) {
+            return;
+          }
+          dir.normalize();
+          double velocity = evalDouble(speed, ctx);
+          if (!(velocity > 0.0)) {
+            velocity = projectile.getVelocity().length();
+            if (!(velocity > 0.0)) {
+              velocity = 1.5;
+            }
+          }
+          projectile.setVelocity(dir.multiply(velocity));
         };
       }
       case "minion_summon", "summon_minion", "minions" -> {
@@ -9731,10 +10190,14 @@ public final class EffectsYamlAbilities {
 
       if ("projectile".equalsIgnoreCase(name)) {
         Map<String, Value> attrs = parseAttributes();
+        String kind = stringAttr(attrs, "kind", "", stmtToken);
         NumValue speedPerTick = numAttr(attrs, "speedPerTick", 1.3, stmtToken);
         NumValue maxDistance = numAttr(attrs, "maxDistance", 24.0, stmtToken);
         NumValue hitRadius = numAttr(attrs, "hitRadius", 0.25, stmtToken);
         boolean ignoreCaster = boolAttr(attrs, "ignoreCaster", true, stmtToken);
+        NumValue maxPierces = numAttr(attrs, "maxPierces", 0.0, stmtToken);
+        boolean travelStepEnabled = boolAttr(attrs, "travelStepEnabled", false, stmtToken);
+        NumValue travelStepIntervalTicks = numAttr(attrs, "travelStepIntervalTicks", 3.0, stmtToken);
         String bc = stringAttr(attrs, "blockCollision", "stop", stmtToken).toUpperCase(Locale.ROOT);
         boolean bounce = "BOUNCE".equals(bc);
         boolean passThrough = "PASS_THROUGH".equals(bc) || "PASS-THROUGH".equals(bc) || "PASS".equals(bc);
@@ -9760,18 +10223,49 @@ public final class EffectsYamlAbilities {
         NumValue trailExtra = hasTrail ? numAttr(attrs, "trailExtra", 0.0, stmtToken) : null;
 
         dev.patric.dungeonsreborn.effects.actions.Action onHitAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onLaunchAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onStepAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onExpireAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onBounceAction = Actions.noop();
+        dev.patric.dungeonsreborn.effects.actions.Action onPierceAction = Actions.noop();
         if (lookahead.type == TokenType.LBRACE) {
           consume(TokenType.LBRACE);
           while (lookahead.type != TokenType.RBRACE && lookahead.type != TokenType.EOF) {
             String inner = requireIdent("projectile hook");
-            if (!"on_hit".equalsIgnoreCase(inner) && !"onhit".equalsIgnoreCase(inner)) {
-              throw error(stmtToken, "projectile only supports on_hit block");
+            if ("on_hit".equalsIgnoreCase(inner) || "onhit".equalsIgnoreCase(inner)) {
+              onHitAction = parseBlock();
+              continue;
             }
-            onHitAction = parseBlock();
+            if ("on_launch".equalsIgnoreCase(inner) || "onlaunch".equalsIgnoreCase(inner)) {
+              onLaunchAction = parseBlock();
+              continue;
+            }
+            if ("on_step".equalsIgnoreCase(inner) || "onstep".equalsIgnoreCase(inner)) {
+              onStepAction = parseBlock();
+              continue;
+            }
+            if ("on_expire".equalsIgnoreCase(inner) || "onexpire".equalsIgnoreCase(inner)) {
+              onExpireAction = parseBlock();
+              continue;
+            }
+            if ("on_bounce".equalsIgnoreCase(inner) || "onbounce".equalsIgnoreCase(inner)) {
+              onBounceAction = parseBlock();
+              continue;
+            }
+            if ("on_pierce".equalsIgnoreCase(inner) || "onpierce".equalsIgnoreCase(inner)) {
+              onPierceAction = parseBlock();
+              continue;
+            }
+            throw error(stmtToken, "projectile hook must be one of on_hit|on_launch|on_step|on_expire|on_bounce|on_pierce");
           }
           consume(TokenType.RBRACE);
         }
         final dev.patric.dungeonsreborn.effects.actions.Action finalOnHit = onHitAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnLaunch = onLaunchAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnStep = onStepAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnExpire = onExpireAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnBounce = onBounceAction;
+        final dev.patric.dungeonsreborn.effects.actions.Action finalOnPierce = onPierceAction;
         return ctx -> {
           double speed = evalDouble(speedPerTick, ctx);
           double max = evalDouble(maxDistance, ctx);
@@ -9790,9 +10284,11 @@ public final class EffectsYamlAbilities {
             }
           }
           ProjectileSpec.Builder b = ProjectileSpec.builder()
+              .kind(kind)
               .speedPerTick(speed)
               .maxDistance(max)
               .hitRadius(radius)
+              .maxPierces(Math.max(0, evalInt(maxPierces, ctx)))
               .ignoreCaster(ignoreCaster);
           if (passThrough) {
             b.stopOnBlock(false);
@@ -9809,7 +10305,21 @@ public final class EffectsYamlAbilities {
             double extra = trailExtra == null ? 0.0 : evalDouble(trailExtra, ctx);
             b.trail(trailParticle, count, offset, extra);
           }
+          b.travelStep(travelStepEnabled, Math.max(1, evalInt(travelStepIntervalTicks, ctx)));
           b.frameOut(frame -> ctx.state().put(Vars.PROJECTILE_FRAME, frame));
+          b.onLaunch(instance -> finalOnLaunch.execute(ctx));
+          b.onStep(instance -> finalOnStep.execute(ctx));
+          b.onExpire(instance -> finalOnExpire.execute(ctx));
+          b.onBounce(hit -> {
+            CastContext cast = hit.cast();
+            cast.state().put(Vars.PROJECTILE_LAST_HIT, hit);
+            finalOnBounce.execute(cast);
+          });
+          b.onPierce(hit -> {
+            CastContext cast = hit.cast();
+            cast.state().put(Vars.PROJECTILE_LAST_HIT, hit);
+            finalOnPierce.execute(cast);
+          });
           b.onHit(hit -> {
             CastContext cast = hit.cast();
             cast.state().put(YAML_LAST_ENTITY, hit.hitEntity());
@@ -12802,7 +13312,7 @@ public final class EffectsYamlAbilities {
       }
       String policy = raw.trim().toLowerCase(Locale.ROOT);
       return switch (policy) {
-        case "any" -> EntityActions.DamagePolicy.any();
+        case "any", "always" -> EntityActions.DamagePolicy.any();
         case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
         case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
         case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -15195,8 +15705,9 @@ public final class EffectsYamlAbilities {
       }
       case LAST_HIT -> {
         Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
-        if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
-          yield ph.location();
+        Location impact = projectileImpactLocation(hit);
+        if (impact != null) {
+          yield impact;
         }
         yield ctx.origin();
       }
@@ -15219,8 +15730,9 @@ public final class EffectsYamlAbilities {
           }
           case LAST_HIT -> {
             Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
-            if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
-              yield hitAnchorLocation(ph, point);
+            Location impact = hitAnchorLocation(hit, point);
+            if (impact != null) {
+              yield impact;
             }
             yield ctx.origin().clone();
           }
@@ -15251,8 +15763,9 @@ public final class EffectsYamlAbilities {
           }
           case LAST_HIT -> {
             Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
-            if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
-              yield safeDirection(ph.direction(), ctx.direction());
+            Vector direction = projectileImpactDirection(hit, null);
+            if (direction != null) {
+              yield safeDirection(direction, ctx.direction());
             }
             yield ctx.direction().clone();
           }
@@ -15312,13 +15825,55 @@ public final class EffectsYamlAbilities {
     return out;
   }
 
-  private static Location hitAnchorLocation(dev.patric.dungeonsreborn.effects.projectile.ProjectileHit hit, AnchorPoint point) {
-    if (point == AnchorPoint.BLOCK_FACE && hit.hitBlock() != null) {
-      Location center = hit.hitBlock().getLocation().add(0.5, 0.5, 0.5);
-      Vector dir = safeDirection(hit.direction(), new Vector(0, 0, 1));
-      return center.add(dir.multiply(0.5));
+  private static Location hitAnchorLocation(Object hit, AnchorPoint point) {
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+      if (point == AnchorPoint.BLOCK_FACE && ph.hitBlock() != null) {
+        Location center = ph.hitBlock().getLocation().add(0.5, 0.5, 0.5);
+        Vector dir = safeDirection(ph.direction(), new Vector(0, 0, 1));
+        return center.add(dir.multiply(0.5));
+      }
+      return ph.location().clone();
     }
-    return hit.location().clone();
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry telemetry) {
+      if (telemetry.impactLocation() != null) {
+        return telemetry.impactLocation().clone();
+      }
+      if (telemetry.victim() != null) {
+        return telemetry.victim().getLocation();
+      }
+      return null;
+    }
+    return null;
+  }
+
+  private static Location projectileImpactLocation(Object hit) {
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+      return ph.location();
+    }
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry telemetry) {
+      return telemetry.impactLocation();
+    }
+    return null;
+  }
+
+  private static Vector projectileImpactDirection(Object hit, Vector fallback) {
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+      return ph.direction();
+    }
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry telemetry) {
+      return telemetry.impactDirection();
+    }
+    return fallback;
+  }
+
+  private static LivingEntity projectileVictim(Object hit) {
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph) {
+      return ph.hitEntity();
+    }
+    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry telemetry) {
+      return telemetry.victim();
+    }
+    return null;
   }
 
   private static Vector safeDirection(Vector dir, Vector fallback) {
@@ -15368,8 +15923,9 @@ public final class EffectsYamlAbilities {
       return living;
     }
     Object hit = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
-    if (hit instanceof dev.patric.dungeonsreborn.effects.projectile.ProjectileHit ph && ph.hitEntity() != null) {
-      return ph.hitEntity();
+    LivingEntity victim = projectileVictim(hit);
+    if (victim != null) {
+      return victim;
     }
     return null;
   }
@@ -16282,6 +16838,103 @@ public final class EffectsYamlAbilities {
     }
   }
 
+  private static AfflictionRefreshPolicy afflictionRefreshPolicyValue(
+      Map<String, Object> node,
+      String path,
+      AfflictionRefreshPolicy def) {
+    if (!node.containsKey("refreshPolicy") && !node.containsKey("refresh_policy") && !node.containsKey("refresh")) {
+      return def;
+    }
+    Object raw = null;
+    String key = null;
+    if (node.containsKey("refreshPolicy")) {
+      key = "refreshPolicy";
+      raw = node.get(key);
+    } else if (node.containsKey("refresh_policy")) {
+      key = "refresh_policy";
+      raw = node.get(key);
+    } else if (node.containsKey("refresh")) {
+      key = "refresh";
+      raw = node.get(key);
+    }
+    if (raw == null) {
+      return def;
+    }
+    String value = String.valueOf(raw).trim().toUpperCase(Locale.ROOT);
+    if (value.isEmpty()) {
+      return def;
+    }
+    switch (value) {
+      case "RESET", "RESET_DURATION" -> {
+        return AfflictionRefreshPolicy.RESET_DURATION;
+      }
+      case "EXTEND", "EXTEND_DURATION" -> {
+        return AfflictionRefreshPolicy.EXTEND_DURATION;
+      }
+      case "KEEP", "KEEP_DURATION" -> {
+        return AfflictionRefreshPolicy.KEEP_DURATION;
+      }
+      case "MAX", "MAX_DURATION" -> {
+        return AfflictionRefreshPolicy.MAX_DURATION;
+      }
+      default -> {
+        String suggestion = suggestEnumValue(value, AfflictionRefreshPolicy.class);
+        String msg = path + ": invalid " + key + "=" + value;
+        if (suggestion != null) {
+          msg += " (did you mean " + suggestion + "?)";
+        }
+        throw new IllegalArgumentException(msg);
+      }
+    }
+  }
+
+  private static AfflictionAudience afflictionAudienceValue(
+      Map<String, Object> node,
+      String path,
+      AfflictionAudience def) {
+    if (!node.containsKey("audience") && !node.containsKey("targetPolicy") && !node.containsKey("target_policy")) {
+      return def;
+    }
+    Object raw = null;
+    String key = null;
+    if (node.containsKey("audience")) {
+      key = "audience";
+      raw = node.get(key);
+    } else if (node.containsKey("targetPolicy")) {
+      key = "targetPolicy";
+      raw = node.get(key);
+    } else if (node.containsKey("target_policy")) {
+      key = "target_policy";
+      raw = node.get(key);
+    }
+    if (raw == null) {
+      return def;
+    }
+    String value = String.valueOf(raw).trim().toUpperCase(Locale.ROOT);
+    if (value.isEmpty()) {
+      return def;
+    }
+    switch (value) {
+      case "ANY" -> {
+        return AfflictionAudience.ANY;
+      }
+      case "PVE", "PVE_ONLY" -> {
+        return AfflictionAudience.PVE_ONLY;
+      }
+      case "PVP", "PVP_ONLY" -> {
+        return AfflictionAudience.PVP_ONLY;
+      }
+      default -> {
+        String suggestion = suggestEnumValue(value, AfflictionAudience.class);
+        String msg = path + ": invalid " + key + "=" + value;
+        if (suggestion != null) {
+          msg += " (did you mean " + suggestion + "?)";
+        }
+        throw new IllegalArgumentException(msg);
+      }
+    }
+  }
+
   private static DamageAmountMode damageModeValue(String raw, String path, DamageAmountMode def) {
     if (raw == null) {
       return def;
@@ -16299,7 +16952,7 @@ public final class EffectsYamlAbilities {
   private static EntityActions.DamagePolicy damagePolicyValue(String raw, String path) {
     String policy = raw == null ? "hostile_default" : raw.trim().toLowerCase(Locale.ROOT);
     return switch (policy) {
-      case "any" -> EntityActions.DamagePolicy.any();
+      case "any", "always" -> EntityActions.DamagePolicy.any();
       case "pve_only" -> EntityActions.DamagePolicy.pveOnly();
       case "pvp_only" -> EntityActions.DamagePolicy.pvpOnly();
       case "hostile_default" -> EntityActions.DamagePolicy.hostileDefault();
@@ -16323,23 +16976,44 @@ public final class EffectsYamlAbilities {
   private static Sound soundValue(Map<String, Object> node, String key, String path) {
     String raw = requireString(node, key, path);
     String s = raw.trim();
-
-    NamespacedKey ns;
-    if (s.contains(":")) {
-      ns = NamespacedKey.fromString(s);
-    } else {
-      // Accept legacy-ish enum-like values (e.g. ENTITY_BLAZE_SHOOT) by converting to a minecraft key.
-      String k = s.toLowerCase(Locale.ROOT).replace('_', '.');
-      ns = NamespacedKey.fromString("minecraft:" + k);
-    }
-    if (ns == null) {
+    if (s.isEmpty()) {
       throw new IllegalArgumentException(path + ": invalid sound key: " + raw);
     }
-    Sound sound = Registry.SOUNDS.get(ns);
-    if (sound == null) {
-      throw new IllegalArgumentException(path + ": unknown sound: " + raw);
+
+    // Prefer direct enum resolution for builder-emitted values (e.g. ENTITY_ARROW_SHOOT).
+    String enumToken = s.toUpperCase(Locale.ROOT).replace('-', '_');
+    for (Sound candidate : Registry.SOUNDS) {
+      NamespacedKey soundKey = Registry.SOUNDS.getKey(candidate);
+      if (soundKey == null) {
+        continue;
+      }
+      String registryToken = soundKey.getKey().toUpperCase(Locale.ROOT).replace('.', '_');
+      if (registryToken.equals(enumToken)) {
+        return candidate;
+      }
     }
-    return sound;
+
+    List<NamespacedKey> candidates = new ArrayList<>();
+    if (s.contains(":")) {
+      candidates.add(NamespacedKey.fromString(s));
+    } else {
+      String lowered = s.toLowerCase(Locale.ROOT);
+      // Accept raw minecraft key-like tokens (supports underscores and dots).
+      candidates.add(NamespacedKey.fromString("minecraft:" + lowered));
+      // Legacy enum-ish fallback where underscores were used as segment separators.
+      candidates.add(NamespacedKey.fromString("minecraft:" + lowered.replace('_', '.')));
+    }
+
+    for (NamespacedKey ns : candidates) {
+      if (ns == null) {
+        continue;
+      }
+      Sound sound = Registry.SOUNDS.get(ns);
+      if (sound != null) {
+        return sound;
+      }
+    }
+    throw new IllegalArgumentException(path + ": unknown sound: " + raw);
   }
 
   private static boolean isBindingError(String message) {

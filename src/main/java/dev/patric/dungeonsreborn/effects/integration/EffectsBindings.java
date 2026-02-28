@@ -20,7 +20,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -120,8 +122,11 @@ public final class EffectsBindings implements Listener {
     out.add("Item: " + item.getType().name());
     out.add("Trigger: " + trigger.name());
 
-    var markerKey = trigger == InteractTrigger.RIGHT_CLICK ? ItemMarkers.RIGHT_CLICK_ABILITIES : ItemMarkers.LEFT_CLICK_ABILITIES;
-    var markerIds = ItemMarkers.getStringList(item, markerKey);
+    List<String> markerIds = switch (trigger) {
+      case RIGHT_CLICK -> ItemMarkers.getStringList(item, ItemMarkers.RIGHT_CLICK_ABILITIES);
+      case LEFT_CLICK -> ItemMarkers.getStringList(item, ItemMarkers.LEFT_CLICK_ABILITIES);
+      case SHOOT -> java.util.List.of();
+    };
     if (markerIds.isEmpty()) {
       out.add("Item marker bindings: (none)");
     } else {
@@ -403,7 +408,7 @@ public final class EffectsBindings implements Listener {
     if (!(attacker instanceof Player player)) {
       return false;
     }
-    return player.getFallDistance() > 0.0f && !player.isOnGround() && !player.isInWater() && !player.isInsideVehicle();
+    return player.getFallDistance() > 0.0f && !player.isInWater() && !player.isInsideVehicle();
   }
 
   private void tickItemPassives() {
@@ -668,8 +673,9 @@ public final class EffectsBindings implements Listener {
     var action = event.getAction();
     boolean rightClick = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK;
     boolean leftClick = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK;
+    boolean deferConsumeRightClick = rightClick && isConsumeTriggeredItem(item);
 
-    if (rightClick && item != null && isItemOnCooldown(player, item)) {
+    if (rightClick && item != null && isItemOnCooldown(player, item) && ItemMarkers.getItemId(item) == null) {
       event.setCancelled(true);
       return;
     }
@@ -716,50 +722,54 @@ public final class EffectsBindings implements Listener {
           ids = filtered;
         }
         if (!upgradeBindings.isEmpty()) {
-          if (rightClick) {
+          if (rightClick && !deferConsumeRightClick) {
             boundRightClick = true;
           }
-          event.setCancelled(true);
-          for (UpgradeSpellBindingSpec binding : upgradeBindings) {
-            if (!matchesUpgradeConditions(player, binding)) {
-              continue;
-            }
-            if (!tryStartUpgradeCooldown(player, item, binding)) {
-              continue;
-            }
-            if (!engine.hasAbility(binding.abilityId())) {
-              continue;
-            }
-            try {
-              castWithItem(player, binding.abilityId(), item, true, binding);
-              castAny = true;
-              if ((binding.durabilityCost() != null && binding.durabilityCost() > 0)
-                  || (binding.consumeAmount() != null && binding.consumeAmount() > 0)) {
-                customConsumes.add(binding);
-              } else {
-                useDefaultConsume = true;
+          if (!deferConsumeRightClick) {
+            event.setCancelled(true);
+            for (UpgradeSpellBindingSpec binding : upgradeBindings) {
+              if (!matchesUpgradeConditions(player, binding)) {
+                continue;
               }
-            } catch (IllegalArgumentException ex) {
+              if (!tryStartUpgradeCooldown(player, item, binding)) {
+                continue;
+              }
+              if (!engine.hasAbility(binding.abilityId())) {
+                continue;
+              }
+              try {
+                castWithItem(player, binding.abilityId(), item, true, binding);
+                castAny = true;
+                if ((binding.durabilityCost() != null && binding.durabilityCost() > 0)
+                    || (binding.consumeAmount() != null && binding.consumeAmount() > 0)) {
+                  customConsumes.add(binding);
+                } else {
+                  useDefaultConsume = true;
+                }
+              } catch (IllegalArgumentException ex) {
+              }
             }
           }
         }
         if (!ids.isEmpty()) {
-          if (rightClick) {
+          if (rightClick && !deferConsumeRightClick) {
             boundRightClick = true;
           }
-          event.setCancelled(true);
-          for (String abilityId : ids) {
-            try {
-              if (!engine.hasAbility(abilityId)) {
-                continue;
+          if (!deferConsumeRightClick) {
+            event.setCancelled(true);
+            for (String abilityId : ids) {
+              try {
+                if (!engine.hasAbility(abilityId)) {
+                  continue;
+                }
+                if (engine.cooldownRemainingTicks(player.getUniqueId(), abilityId) > 0L) {
+                  continue;
+                }
+                castWithItem(player, abilityId, item, true);
+                castAny = true;
+                useDefaultConsume = true;
+              } catch (IllegalArgumentException ex) {
               }
-              if (engine.cooldownRemainingTicks(player.getUniqueId(), abilityId) > 0L) {
-                continue;
-              }
-              castWithItem(player, abilityId, item, true);
-              castAny = true;
-              useDefaultConsume = true;
-            } catch (IllegalArgumentException ex) {
             }
           }
         }
@@ -767,10 +777,15 @@ public final class EffectsBindings implements Listener {
     }
 
     for (InteractBinding binding : interactBindings) {
-      if (binding.trigger() == InteractTrigger.RIGHT_CLICK && item != null && binding.itemMatcher().matches(player, item)) {
+      boolean isRightClickBinding = binding.trigger() == InteractTrigger.RIGHT_CLICK;
+      boolean itemMatches = item != null && binding.itemMatcher().matches(player, item);
+      if (isRightClickBinding && itemMatches && !deferConsumeRightClick) {
         boundRightClick = true;
       }
       if (!binding.trigger().matches(event)) {
+        continue;
+      }
+      if (deferConsumeRightClick && isRightClickBinding) {
         continue;
       }
       if (binding.requireSneaking() && !player.isSneaking()) {
@@ -802,7 +817,12 @@ public final class EffectsBindings implements Listener {
       event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
     }
     if (castAny && item != null) {
-      applyItemCooldown(player, item);
+      // Custom DR items are governed by ability cooldown keys.
+      // Material cooldown is per-Material and can incorrectly couple distinct items
+      // (e.g. heavy/quick variants that share the same base material).
+      if (ItemMarkers.getItemId(item) == null) {
+        applyItemCooldown(player, item);
+      }
       if (useDefaultConsume) {
         consumeItem(player, event.getHand(), item);
       }
@@ -812,6 +832,142 @@ public final class EffectsBindings implements Listener {
           applyUpgradeConsume(player, slot, item, binding);
         }
       }
+    }
+  }
+
+  @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+  public void onItemConsume(PlayerItemConsumeEvent event) {
+    Player player = event.getPlayer();
+    ItemStack item = event.getItem();
+    if (!isConsumeTriggeredItem(item)) {
+      return;
+    }
+
+    boolean sneaking = player.isSneaking();
+    NamespacedKey key = sneaking ? ItemMarkers.SHIFT_RIGHT_CLICK_ABILITIES : ItemMarkers.RIGHT_CLICK_ABILITIES;
+    List<String> ids = ItemMarkers.getStringList(item, key);
+    List<UpgradeSpellBindingSpec> upgradeBindings = upgradeBindingsFor(
+        item, sneaking ? UpgradeActivator.SHIFT_RIGHT_CLICK : UpgradeActivator.RIGHT_CLICK);
+    if (ids.isEmpty() && sneaking) {
+      ids = ItemMarkers.getStringList(item, ItemMarkers.RIGHT_CLICK_ABILITIES);
+      if (upgradeBindings.isEmpty()) {
+        upgradeBindings = upgradeBindingsFor(item, UpgradeActivator.RIGHT_CLICK);
+      }
+    }
+
+    HashSet<String> upgradeAbilityIds = collectUpgradeAbilityIds(upgradeBindings);
+    if (!upgradeAbilityIds.isEmpty() && !ids.isEmpty()) {
+      ArrayList<String> filtered = new ArrayList<>(ids);
+      filtered.removeIf(upgradeAbilityIds::contains);
+      ids = filtered;
+    }
+
+    HashSet<String> casted = new HashSet<>();
+
+    for (UpgradeSpellBindingSpec binding : upgradeBindings) {
+      if (!matchesUpgradeConditions(player, binding)) {
+        continue;
+      }
+      if (!tryStartUpgradeCooldown(player, item, binding)) {
+        continue;
+      }
+      if (!engine.hasAbility(binding.abilityId())) {
+        continue;
+      }
+      if (!casted.add(binding.abilityId())) {
+        continue;
+      }
+      try {
+        castWithItem(player, binding.abilityId(), item, true, binding);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+
+    for (String abilityId : ids) {
+      try {
+        if (!engine.hasAbility(abilityId)) {
+          continue;
+        }
+        if (!casted.add(abilityId)) {
+          continue;
+        }
+        if (engine.cooldownRemainingTicks(player.getUniqueId(), abilityId) > 0L) {
+          continue;
+        }
+        castWithItem(player, abilityId, item, true);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+
+    for (InteractBinding binding : interactBindings) {
+      if (binding.trigger() != InteractTrigger.RIGHT_CLICK) {
+        continue;
+      }
+      if (binding.requireSneaking() && !player.isSneaking()) {
+        continue;
+      }
+      if (binding.requiredPermission() != null && !player.hasPermission(binding.requiredPermission())) {
+        continue;
+      }
+      if (!binding.itemMatcher().matches(player, item)) {
+        continue;
+      }
+      String abilityId = binding.abilityId();
+      if (!casted.add(abilityId)) {
+        continue;
+      }
+      if (!engine.hasAbility(abilityId)) {
+        continue;
+      }
+      if (engine.cooldownRemainingTicks(player.getUniqueId(), abilityId) > 0L) {
+        continue;
+      }
+      try {
+        castWithItem(player, abilityId, item, true);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+  }
+
+  @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+  public void onShoot(EntityShootBowEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
+    }
+    ItemStack weapon = event.getBow();
+    if (weapon == null || weapon.getType().isAir()) {
+      return;
+    }
+
+    boolean castAny = false;
+    boolean shouldCancel = false;
+    for (InteractBinding binding : interactBindings) {
+      if (binding.trigger() != InteractTrigger.SHOOT) {
+        continue;
+      }
+      if (binding.requireSneaking() && !player.isSneaking()) {
+        continue;
+      }
+      if (binding.requiredPermission() != null && !player.hasPermission(binding.requiredPermission())) {
+        continue;
+      }
+      if (!binding.itemMatcher().matches(player, weapon)) {
+        continue;
+      }
+      if (binding.cancelEvent()) {
+        shouldCancel = true;
+      }
+      if (engine.cooldownRemainingTicks(player.getUniqueId(), binding.abilityId()) > 0L) {
+        continue;
+      }
+      try {
+        castWithItem(player, binding.abilityId(), weapon, true);
+        castAny = true;
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+    if (castAny && shouldCancel) {
+      event.setCancelled(true);
     }
   }
 
@@ -865,6 +1021,23 @@ public final class EffectsBindings implements Listener {
       return 0L;
     }
     return Math.max(1L, Math.round(seconds * 20.0));
+  }
+
+  private static boolean isConsumeTriggeredItem(ItemStack item) {
+    if (item == null || item.getType().isAir()) {
+      return false;
+    }
+    try {
+      if (item.getData(io.papermc.paper.datacomponent.DataComponentTypes.CONSUMABLE) != null) {
+        return true;
+      }
+      if (item.getData(io.papermc.paper.datacomponent.DataComponentTypes.FOOD) != null) {
+        return true;
+      }
+    } catch (Throwable ignored) {
+      // Fallback for API mismatch: rely on plugin consume markers only.
+    }
+    return ItemMarkers.getConsumeMode(item) != ItemConsumeMode.NONE;
   }
 
   private static void consumeStack(Player player, EquipmentSlot hand, ItemStack item, int amount) {

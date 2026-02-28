@@ -485,6 +485,33 @@ consumable:
   amount: 1 # item count or durability damage per cast
 ```
 
+True edible behavior (vanilla eat/drink flow) uses item components:
+
+```yaml
+item:
+  type: material
+  material: POTION
+  meta:
+    components:
+      food:
+        nutrition: 1
+        saturation: 0.2
+        canAlwaysEat: true
+      consumable:
+        consumeSeconds: 1.0
+        animation: DRINK
+        sound: ENTITY_GENERIC_DRINK
+        hasConsumeParticles: true
+      use_cooldown:
+        seconds: 2.0
+        group: dungeonsreborn:tonic
+      use_remainder:
+        material: GLASS_BOTTLE
+        amount: 1
+```
+
+`item.edible` is a friendly alias; runtime compiles it into `item.meta.components.*`.
+
 --------------------------------------------------------------------------------
 ## Chapter 11 - Minions (Summon Helpers)
 

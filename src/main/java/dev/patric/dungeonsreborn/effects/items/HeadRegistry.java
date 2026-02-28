@@ -11,6 +11,12 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,8 +25,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class HeadRegistry {
+  private static final Pattern TEXTURE_URL_PATTERN = Pattern.compile("\"url\"\s*:\s*\"([^\"]+)\"");
+
   public record HeadSpec(String id, String displayName, String owner, UUID uuid, String profileName, String texture) {
   }
 
@@ -151,10 +161,30 @@ public final class HeadRegistry {
     if (texture == null || texture.isBlank()) {
       return false;
     }
-    PlayerProfile profile = uuid == null ? Bukkit.createProfile(name) : Bukkit.createProfile(uuid, name);
+    UUID resolvedUuid = uuid;
+    String resolvedName = name;
+    if (resolvedUuid == null && (resolvedName == null || resolvedName.isBlank())) {
+      resolvedUuid = UUID.nameUUIDFromBytes(texture.getBytes(StandardCharsets.UTF_8));
+      resolvedName = "dr_head";
+    }
+    PlayerProfile profile = resolvedUuid == null
+        ? Bukkit.createProfile(resolvedName)
+        : Bukkit.createProfile(resolvedUuid, resolvedName);
+    boolean applied = false;
+    URL textureUrl = extractTextureUrl(texture);
+    if (textureUrl != null) {
+      try {
+        profile.getTextures().setSkin(textureUrl);
+        applied = true;
+      } catch (Throwable ignored) {
+      }
+    }
     try {
       profile.setProperty(new ProfileProperty("textures", texture));
-    } catch (Throwable ex) {
+      applied = true;
+    } catch (Throwable ignored) {
+    }
+    if (!applied) {
       if (errors != null) {
         errors.add("skull.texture: failed to set texture");
       }
@@ -162,5 +192,51 @@ public final class HeadRegistry {
     }
     skull.setPlayerProfile(profile);
     return true;
+  }
+
+  private static URL extractTextureUrl(String rawTexture) {
+    if (rawTexture == null) {
+      return null;
+    }
+    String texture = rawTexture.trim();
+    if (texture.isEmpty()) {
+      return null;
+    }
+    URL direct = toTextureUrl(texture);
+    if (direct != null) {
+      return direct;
+    }
+    try {
+      String decoded = new String(Base64.getDecoder().decode(texture), StandardCharsets.UTF_8);
+      Matcher matcher = TEXTURE_URL_PATTERN.matcher(decoded);
+      if (!matcher.find()) {
+        return null;
+      }
+      String url = matcher.group(1).replace("\\/", "/");
+      return toTextureUrl(url);
+    } catch (IllegalArgumentException ignored) {
+      return null;
+    }
+  }
+
+  private static URL toTextureUrl(String value) {
+    try {
+      URI uri = new URI(value);
+      if (!uri.isAbsolute()) {
+        return null;
+      }
+      URL url = uri.toURL();
+      String host = url.getHost();
+      if (host == null || !host.equalsIgnoreCase("textures.minecraft.net")) {
+        return null;
+      }
+      return url;
+    } catch (IllegalArgumentException ex) {
+      return null;
+    } catch (MalformedURLException ex) {
+      return null;
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 }

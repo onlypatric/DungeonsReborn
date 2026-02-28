@@ -337,6 +337,13 @@ public final class ParticleEngine {
         try {
           if (r.data() == null) {
             player.spawnParticle(r.particle(), r.location(), sendCount, r.offsetX(), r.offsetY(), r.offsetZ(), r.extra());
+          } else if (r.particle() == Particle.DUST && r.data() instanceof Particle.DustOptions dustOptions) {
+            // Use the typed overload for dust to keep custom color/size deterministic.
+            player.spawnParticle(Particle.DUST, r.location(), sendCount, dustOptions);
+          } else if (r.particle() == Particle.DUST_COLOR_TRANSITION
+              && r.data() instanceof Particle.DustTransition dustTransition) {
+            // Same as DUST: prefer typed overload to avoid client/default fallback color.
+            player.spawnParticle(Particle.DUST_COLOR_TRANSITION, r.location(), sendCount, dustTransition);
           } else {
             player.spawnParticle(r.particle(), r.location(), sendCount, r.offsetX(), r.offsetY(), r.offsetZ(), r.extra(), r.data());
           }

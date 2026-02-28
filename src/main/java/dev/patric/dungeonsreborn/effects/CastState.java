@@ -23,11 +23,11 @@ public final class CastState {
   private final ArrayList<Runnable> cancelHooks = new ArrayList<>();
   private boolean cancelled;
 
-  CastState(UUID castId) {
+  public CastState(UUID castId) {
     this(castId, null);
   }
 
-  CastState(UUID castId, Long deterministicSeed) {
+  public CastState(UUID castId, Long deterministicSeed) {
     this.castId = Objects.requireNonNull(castId, "castId");
     if (deterministicSeed != null) {
       this.rng = new Random(deterministicSeed);

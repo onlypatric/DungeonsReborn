@@ -24,6 +24,7 @@ import dev.patric.dungeonsreborn.effects.math.Geometry;
 import dev.patric.dungeonsreborn.effects.raycast.Raycasts;
 import dev.patric.dungeonsreborn.effects.Vars;
 import dev.patric.dungeonsreborn.effects.projectile.ProjectileHit;
+import dev.patric.dungeonsreborn.effects.projectile.ProjectileTelemetry;
 
 public final class Targeters {
   private Targeters() {
@@ -458,13 +459,19 @@ public final class Targeters {
   public static Targeter<LivingEntity> projectileHit() {
     return ctx -> {
       Object v = ctx.state().get(Vars.PROJECTILE_LAST_HIT);
-      if (!(v instanceof ProjectileHit hit)) {
-        return List.of();
+      if (v instanceof ProjectileHit hit) {
+        if (hit.hitEntity() == null) {
+          return List.of();
+        }
+        return List.of(hit.hitEntity());
       }
-      if (hit.hitEntity() == null) {
-        return List.of();
+      if (v instanceof ProjectileTelemetry telemetry) {
+        if (telemetry.victim() == null) {
+          return List.of();
+        }
+        return List.of(telemetry.victim());
       }
-      return List.of(hit.hitEntity());
+      return List.of();
     };
   }
 

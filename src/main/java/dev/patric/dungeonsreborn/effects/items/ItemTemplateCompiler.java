@@ -18,6 +18,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.EntityType;
@@ -71,12 +72,17 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.components.EquippableComponent;
-import org.bukkit.inventory.meta.components.FoodComponent;
 import org.bukkit.inventory.meta.components.JukeboxPlayableComponent;
 import org.bukkit.inventory.meta.components.ToolComponent;
-import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
 import io.papermc.paper.datacomponent.item.DeathProtection;
+import io.papermc.paper.datacomponent.item.FoodProperties;
+import io.papermc.paper.datacomponent.item.UseCooldown;
+import io.papermc.paper.datacomponent.item.UseRemainder;
+import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
+import io.papermc.paper.registry.set.RegistrySet;
 import net.kyori.adventure.key.Key;
 
 import java.util.ArrayList;
@@ -154,13 +160,14 @@ public final class ItemTemplateCompiler {
     if (metaSection != null) {
       validateSectionKeys(metaSection, META_KEYS, path + ".meta", errors);
     }
+    ConfigurationSection effectiveComponents = buildEffectiveComponents(section, metaSection, path, errors);
     ConfigurationSection visualSection = section.getConfigurationSection("visual");
     if (visualSection != null) {
       validateSectionKeys(visualSection, VISUAL_KEYS, path + ".visual", errors);
     }
     VisualSpec visual = parseVisual(visualSection);
 
-    applyMeta(item, meta, metaSection, path, errors, material, amount);
+    applyMeta(item, meta, metaSection, effectiveComponents, path, errors, material, amount);
 
     if (display != null) {
       Integer cmd = intFrom(display, "custom_model_data", "customModelData");
@@ -175,13 +182,6 @@ public final class ItemTemplateCompiler {
     }
 
     applyMetaWithComponents(item, meta);
-    if (metaSection != null) {
-      ConfigurationSection components = metaSection.getConfigurationSection("components");
-      if (components != null) {
-        applyComponents(item, meta, components, path + ".meta.components", errors);
-        applyMetaWithComponents(item, meta);
-      }
-    }
     DurabilityRange range = parseDurabilityRange(metaSection, path, errors, material);
     applyVisual(item, meta, visual, path, errors);
     return new CompiledTemplate(item, range);
@@ -204,12 +204,28 @@ public final class ItemTemplateCompiler {
   private static void applyMetaWithComponents(ItemStack item, ItemMeta meta) {
     DeathProtection deathProtection = item.getData(DataComponentTypes.DEATH_PROTECTION);
     Key itemModel = item.getData(DataComponentTypes.ITEM_MODEL);
+    FoodProperties food = item.getData(DataComponentTypes.FOOD);
+    Consumable consumable = item.getData(DataComponentTypes.CONSUMABLE);
+    UseCooldown useCooldown = item.getData(DataComponentTypes.USE_COOLDOWN);
+    UseRemainder useRemainder = item.getData(DataComponentTypes.USE_REMAINDER);
     item.setItemMeta(meta);
     if (deathProtection != null) {
       item.setData(DataComponentTypes.DEATH_PROTECTION, deathProtection);
     }
     if (itemModel != null) {
       item.setData(DataComponentTypes.ITEM_MODEL, itemModel);
+    }
+    if (food != null) {
+      item.setData(DataComponentTypes.FOOD, food);
+    }
+    if (consumable != null) {
+      item.setData(DataComponentTypes.CONSUMABLE, consumable);
+    }
+    if (useCooldown != null) {
+      item.setData(DataComponentTypes.USE_COOLDOWN, useCooldown);
+    }
+    if (useRemainder != null) {
+      item.setData(DataComponentTypes.USE_REMAINDER, useRemainder);
     }
   }
 
@@ -290,7 +306,7 @@ public final class ItemTemplateCompiler {
     }
   }
 
-  private static void applyMeta(ItemStack item, ItemMeta meta, ConfigurationSection metaSection, String path, List<String> errors,
+  private static void applyMeta(ItemStack item, ItemMeta meta, ConfigurationSection metaSection, ConfigurationSection effectiveComponents, String path, List<String> errors,
       Material material, int amount) {
     if (metaSection == null) {
       return;
@@ -422,9 +438,8 @@ public final class ItemTemplateCompiler {
     applyBlockDataMeta(meta, metaSection.getConfigurationSection("block_data"), path + ".meta.block_data", errors);
     applyBlockStateMeta(meta, metaSection.getConfigurationSection("block_state"), path + ".meta.block_state", errors);
 
-    ConfigurationSection components = metaSection.getConfigurationSection("components");
-    if (components != null) {
-      applyComponents(item, meta, components, path + ".meta.components", errors);
+    if (effectiveComponents != null) {
+      applyComponents(item, meta, effectiveComponents, path + ".meta.components", errors);
     }
   }
 
@@ -460,6 +475,54 @@ public final class ItemTemplateCompiler {
       max = swap;
     }
     return new DurabilityRange(min, max);
+  }
+
+  private static ConfigurationSection buildEffectiveComponents(
+      ConfigurationSection itemSection,
+      ConfigurationSection metaSection,
+      String path,
+      List<String> errors) {
+    ConfigurationSection canonical = metaSection == null ? null : metaSection.getConfigurationSection("components");
+    ConfigurationSection edible = itemSection == null ? null : itemSection.getConfigurationSection("edible");
+    if (canonical == null && edible == null) {
+      return null;
+    }
+    if (edible != null) {
+      validateSectionKeys(edible, EDIBLE_KEYS, path + ".edible", errors);
+    }
+    MemoryConfiguration merged = new MemoryConfiguration();
+    if (canonical != null) {
+      for (Map.Entry<String, Object> entry : canonical.getValues(true).entrySet()) {
+        merged.set(entry.getKey(), entry.getValue());
+      }
+    }
+    if (edible != null) {
+      setIfAbsent(merged, "food.nutrition", edible.get("nutrition"));
+      setIfAbsent(merged, "food.saturation", edible.get("saturation"));
+      setIfAbsent(merged, "food.canAlwaysEat", edible.get("canAlwaysEat"));
+      setIfAbsent(merged, "consumable.consumeSeconds", edible.get("consumeSeconds"));
+      setIfAbsent(merged, "consumable.animation", edible.get("animation"));
+      setIfAbsent(merged, "consumable.sound", edible.get("sound"));
+      setIfAbsent(merged, "consumable.hasConsumeParticles", edible.get("hasConsumeParticles"));
+      setIfAbsent(merged, "consumable.effects", edible.get("effects"));
+      setIfAbsent(merged, "use_cooldown.seconds", edible.get("cooldownSeconds"));
+      setIfAbsent(merged, "use_cooldown.group", edible.get("cooldownGroup"));
+      setIfAbsent(merged, "use_remainder", edible.get("remainder"));
+    }
+    if (merged.contains("food") && !merged.contains("consumable")) {
+      merged.set("consumable.consumeSeconds", 1.6D);
+      merged.set("consumable.animation", "EAT");
+      merged.set("consumable.sound", "minecraft:entity.generic.eat");
+      merged.set("consumable.hasConsumeParticles", true);
+    }
+    return merged;
+  }
+
+  private static void setIfAbsent(ConfigurationSection section, String key, Object value) {
+    if (value == null || section.contains(key)) {
+      return;
+    }
+    section.set(key, value);
   }
 
   private static Integer intFrom(ConfigurationSection section, String... keys) {
@@ -1466,6 +1529,7 @@ public final class ItemTemplateCompiler {
   }
 
   private static void applyComponents(ItemStack item, ItemMeta meta, ConfigurationSection section, String path, List<String> errors) {
+    validateSectionKeys(section, COMPONENT_KEYS, path, errors);
     ConfigurationSection cmdSection = section.getConfigurationSection("custom_model_data");
     if (cmdSection == null) {
       cmdSection = section.getConfigurationSection("customModelData");
@@ -1493,26 +1557,28 @@ public final class ItemTemplateCompiler {
     }
     ConfigurationSection foodSection = section.getConfigurationSection("food");
     if (foodSection != null) {
-      FoodComponent food = meta.getFood();
-      food.setNutrition(foodSection.getInt("nutrition", food.getNutrition()));
-      food.setSaturation((float) foodSection.getDouble("saturation", food.getSaturation()));
-      if (foodSection.contains("canAlwaysEat")) {
-        food.setCanAlwaysEat(foodSection.getBoolean("canAlwaysEat"));
-      }
-      meta.setFood(food);
+      validateSectionKeys(foodSection, FOOD_COMPONENT_KEYS, path + ".food", errors);
+      applyFoodComponent(item, foodSection, path + ".food", errors);
+    }
+    ConfigurationSection consumableSection = section.getConfigurationSection("consumable");
+    if (consumableSection == null) {
+      consumableSection = section.getConfigurationSection("consume");
+    }
+    if (consumableSection != null) {
+      validateSectionKeys(consumableSection, CONSUMABLE_COMPONENT_KEYS, path + ".consumable", errors);
+      applyConsumableComponent(item, consumableSection, path + ".consumable", errors);
     }
     ConfigurationSection cooldownSection = section.getConfigurationSection("use_cooldown");
     if (cooldownSection != null) {
-      UseCooldownComponent cooldown = meta.getUseCooldown();
-      if (cooldownSection.contains("seconds")) {
-        cooldown.setCooldownSeconds((float) cooldownSection.getDouble("seconds"));
-      }
-      String group = cooldownSection.getString("group");
-      if (group != null) {
-        NamespacedKey key = NamespacedKey.fromString(group);
-        cooldown.setCooldownGroup(key);
-      }
-      meta.setUseCooldown(cooldown);
+      validateSectionKeys(cooldownSection, USE_COOLDOWN_KEYS, path + ".use_cooldown", errors);
+      applyUseCooldownComponent(item, cooldownSection, path + ".use_cooldown", errors);
+    }
+    Object remainderRaw = section.get("use_remainder");
+    if (remainderRaw == null) {
+      remainderRaw = section.get("useRemainder");
+    }
+    if (remainderRaw != null) {
+      applyUseRemainderComponent(item, remainderRaw, path + ".use_remainder", errors);
     }
     ConfigurationSection toolSection = section.getConfigurationSection("tool");
     if (toolSection != null) {
@@ -1605,6 +1671,302 @@ public final class ItemTemplateCompiler {
       }
       if (enabled) {
         item.setData(DataComponentTypes.DEATH_PROTECTION, DeathProtection.deathProtection(List.of()));
+      }
+    }
+  }
+
+  private static void applyFoodComponent(ItemStack item, ConfigurationSection section, String path, List<String> errors) {
+    FoodProperties existing = item.getData(DataComponentTypes.FOOD);
+    int nutrition = existing == null ? 0 : existing.nutrition();
+    float saturation = existing == null ? 0.0f : existing.saturation();
+    boolean canAlwaysEat = existing != null && existing.canAlwaysEat();
+    if (section.contains("nutrition")) {
+      int parsed = section.getInt("nutrition");
+      if (parsed < 0) {
+        errors.add(path + ".nutrition: must be >= 0");
+      } else {
+        nutrition = parsed;
+      }
+    }
+    if (section.contains("saturation")) {
+      float parsed = (float) section.getDouble("saturation");
+      if (parsed < 0.0f) {
+        errors.add(path + ".saturation: must be >= 0");
+      } else {
+        saturation = parsed;
+      }
+    }
+    if (section.contains("canAlwaysEat")) {
+      canAlwaysEat = section.getBoolean("canAlwaysEat");
+    }
+    item.setData(
+        DataComponentTypes.FOOD,
+        FoodProperties.food()
+            .nutrition(nutrition)
+            .saturation(saturation)
+            .canAlwaysEat(canAlwaysEat)
+            .build());
+  }
+
+  private static void applyConsumableComponent(ItemStack item, ConfigurationSection section, String path, List<String> errors) {
+    Consumable existing = item.getData(DataComponentTypes.CONSUMABLE);
+    float consumeSeconds = existing == null ? 1.6f : existing.consumeSeconds();
+    ItemUseAnimation animation = existing == null ? ItemUseAnimation.EAT : existing.animation();
+    Key sound = existing == null ? Key.key("minecraft:entity.generic.eat") : existing.sound();
+    boolean hasConsumeParticles = existing == null || existing.hasConsumeParticles();
+    List<ConsumeEffect> effects = existing == null ? List.of() : List.copyOf(existing.consumeEffects());
+    if (section.contains("consumeSeconds")) {
+      float parsed = (float) section.getDouble("consumeSeconds");
+      if (parsed < 0.0f) {
+        errors.add(path + ".consumeSeconds: must be >= 0");
+      } else {
+        consumeSeconds = parsed;
+      }
+    }
+    if (section.contains("animation")) {
+      String raw = section.getString("animation");
+      if (raw != null) {
+        try {
+          animation = ItemUseAnimation.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+          errors.add(path + ".animation: invalid animation=" + raw
+              + " (use NONE|EAT|DRINK|BLOCK|BOW|SPEAR|CROSSBOW|SPYGLASS|TOOT_HORN|BRUSH|BUNDLE)");
+        }
+      }
+    }
+    if (section.contains("sound")) {
+      Key parsed = parseSoundKey(section.getString("sound"));
+      if (parsed == null) {
+        errors.add(path + ".sound: invalid sound=" + section.getString("sound"));
+      } else {
+        sound = parsed;
+      }
+    }
+    if (section.contains("hasConsumeParticles")) {
+      hasConsumeParticles = section.getBoolean("hasConsumeParticles");
+    }
+    if (section.contains("effects")) {
+      effects = parseConsumeEffects(section.get("effects"), path + ".effects", errors);
+    }
+    item.setData(
+        DataComponentTypes.CONSUMABLE,
+        Consumable.consumable()
+            .consumeSeconds(consumeSeconds)
+            .animation(animation)
+            .sound(sound)
+            .hasConsumeParticles(hasConsumeParticles)
+            .effects(effects)
+            .build());
+  }
+
+  private static void applyUseCooldownComponent(ItemStack item, ConfigurationSection section, String path, List<String> errors) {
+    UseCooldown existing = item.getData(DataComponentTypes.USE_COOLDOWN);
+    float seconds = existing == null ? 0.0f : existing.seconds();
+    Key group = existing == null ? null : existing.cooldownGroup();
+    if (section.contains("seconds")) {
+      float parsed = (float) section.getDouble("seconds");
+      if (parsed <= 0.0f) {
+        errors.add(path + ".seconds: must be > 0");
+      } else {
+        seconds = parsed;
+      }
+    }
+    if (section.contains("group")) {
+      String rawGroup = section.getString("group");
+      NamespacedKey namespaced = parseNamespacedKey(rawGroup);
+      if (namespaced == null) {
+        errors.add(path + ".group: invalid namespaced key=" + rawGroup);
+      } else {
+        group = Key.key(namespaced.toString());
+      }
+    }
+    if (seconds <= 0.0f) {
+      return;
+    }
+    UseCooldown.Builder builder = UseCooldown.useCooldown(seconds);
+    if (group != null) {
+      builder.cooldownGroup(group);
+    }
+    item.setData(DataComponentTypes.USE_COOLDOWN, builder.build());
+  }
+
+  private static void applyUseRemainderComponent(ItemStack item, Object raw, String path, List<String> errors) {
+    if (raw instanceof ConfigurationSection section) {
+      validateSectionKeys(section, USE_REMAINDER_KEYS, path, errors);
+    } else if (raw instanceof Map<?, ?> map) {
+      validateMapKeys(map, USE_REMAINDER_KEYS, path, errors);
+    }
+    ItemStack remainder = parseItemStackEntry(raw, path, errors);
+    if (remainder == null || remainder.getType().isAir()) {
+      errors.add(path + ": invalid item");
+      return;
+    }
+    item.setData(DataComponentTypes.USE_REMAINDER, UseRemainder.useRemainder(remainder));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static List<ConsumeEffect> parseConsumeEffects(Object raw, String path, List<String> errors) {
+    if (!(raw instanceof List<?> list)) {
+      errors.add(path + ": expected list");
+      return List.of();
+    }
+    List<ConsumeEffect> out = new ArrayList<>();
+    int index = 0;
+    for (Object entry : list) {
+      String entryPath = path + "[" + index + "]";
+      Map<String, Object> map = null;
+      if (entry instanceof ConfigurationSection section) {
+        map = section.getValues(false);
+      } else if (entry instanceof Map<?, ?> rawMap) {
+        map = new HashMap<>();
+        for (Map.Entry<?, ?> mapEntry : rawMap.entrySet()) {
+          if (mapEntry.getKey() != null) {
+            map.put(String.valueOf(mapEntry.getKey()), mapEntry.getValue());
+          }
+        }
+      }
+      if (map == null) {
+        errors.add(entryPath + ": expected object");
+        index++;
+        continue;
+      }
+      Object typeRaw = map.get("type");
+      if (typeRaw == null) {
+        errors.add(entryPath + ".type: missing effect type");
+        index++;
+        continue;
+      }
+      String type = String.valueOf(typeRaw).trim().toUpperCase(Locale.ROOT).replace('-', '_');
+      switch (type) {
+        case "PLAY_SOUND" -> {
+          validateMapKeys(map, CONSUME_EFFECT_PLAY_SOUND_KEYS, entryPath, errors);
+          String soundRaw = map.get("sound") == null ? null : String.valueOf(map.get("sound"));
+          Key sound = parseSoundKey(soundRaw);
+          if (sound == null) {
+            errors.add(entryPath + ".sound: invalid sound=" + soundRaw);
+          } else {
+            out.add(ConsumeEffect.playSoundConsumeEffect(sound));
+          }
+        }
+        case "TELEPORT_RANDOMLY" -> {
+          validateMapKeys(map, CONSUME_EFFECT_TELEPORT_KEYS, entryPath, errors);
+          float diameter = 16.0f;
+          if (map.containsKey("diameter")) {
+            diameter = ((Number) coerceNumber(map.get("diameter"), entryPath + ".diameter", errors)).floatValue();
+          }
+          if (diameter < 0.0f) {
+            errors.add(entryPath + ".diameter: must be >= 0");
+          } else {
+            out.add(ConsumeEffect.teleportRandomlyEffect(diameter));
+          }
+        }
+        case "REMOVE_STATUS_EFFECTS" -> {
+          validateMapKeys(map, CONSUME_EFFECT_REMOVE_EFFECTS_KEYS, entryPath, errors);
+          List<PotionEffectType> remove = new ArrayList<>();
+          for (String token : readStringList(map.get("effects"))) {
+            PotionEffectType effectType = parsePotionEffectType(token);
+            if (effectType == null) {
+              errors.add(entryPath + ".effects: unknown effect=" + token);
+            } else {
+              remove.add(effectType);
+            }
+          }
+          if (remove.isEmpty()) {
+            errors.add(entryPath + ".effects: expected at least one effect");
+          } else {
+            out.add(ConsumeEffect.removeEffects(RegistrySet.keySetFromValues(RegistryKey.MOB_EFFECT, remove)));
+          }
+        }
+        case "CLEAR_ALL_STATUS_EFFECTS" -> {
+          validateMapKeys(map, CONSUME_EFFECT_CLEAR_ALL_KEYS, entryPath, errors);
+          out.add(ConsumeEffect.clearAllStatusEffects());
+        }
+        case "APPLY_STATUS_EFFECTS" -> {
+          validateMapKeys(map, CONSUME_EFFECT_APPLY_EFFECTS_KEYS, entryPath, errors);
+          float probability = 1.0f;
+          if (map.containsKey("probability")) {
+            probability = ((Number) coerceNumber(map.get("probability"), entryPath + ".probability", errors)).floatValue();
+          }
+          if (probability < 0.0f || probability > 1.0f) {
+            errors.add(entryPath + ".probability: must be between 0 and 1");
+            probability = Math.max(0.0f, Math.min(1.0f, probability));
+          }
+          List<PotionEffect> effects = parseConsumePotionEffects(map.get("effects"), entryPath + ".effects", errors);
+          if (effects.isEmpty()) {
+            errors.add(entryPath + ".effects: expected at least one effect entry");
+          } else {
+            out.add(ConsumeEffect.applyStatusEffects(effects, probability));
+          }
+        }
+        default -> errors.add(entryPath + ".type: unknown effect type=" + typeRaw);
+      }
+      index++;
+    }
+    return out;
+  }
+
+  private static List<PotionEffect> parseConsumePotionEffects(Object raw, String path, List<String> errors) {
+    if (!(raw instanceof List<?> list)) {
+      errors.add(path + ": expected list");
+      return List.of();
+    }
+    List<PotionEffect> out = new ArrayList<>();
+    int index = 0;
+    for (Object entry : list) {
+      String entryPath = path + "[" + index + "]";
+      Map<?, ?> map = null;
+      if (entry instanceof ConfigurationSection section) {
+        map = section.getValues(false);
+      } else if (entry instanceof Map<?, ?> rawMap) {
+        map = rawMap;
+      }
+      if (map == null) {
+        errors.add(entryPath + ": expected object");
+        index++;
+        continue;
+      }
+      validateMapKeys(map, CONSUME_EFFECT_APPLY_ENTRY_KEYS, entryPath, errors);
+      Object effectRaw = map.containsKey("effect") ? map.get("effect") : map.get("type");
+      if (effectRaw == null) {
+        errors.add(entryPath + ".effect: missing effect");
+        index++;
+        continue;
+      }
+      PotionEffectType type = parsePotionEffectType(String.valueOf(effectRaw));
+      if (type == null) {
+        errors.add(entryPath + ".effect: unknown effect=" + effectRaw);
+        index++;
+        continue;
+      }
+      int durationTicks = 100;
+      if (map.containsKey("durationTicks")) {
+        durationTicks = ((Number) coerceNumber(map.get("durationTicks"), entryPath + ".durationTicks", errors)).intValue();
+      } else if (map.containsKey("duration")) {
+        durationTicks = ((Number) coerceNumber(map.get("duration"), entryPath + ".duration", errors)).intValue();
+      }
+      int amplifier = map.containsKey("amplifier")
+          ? ((Number) coerceNumber(map.get("amplifier"), entryPath + ".amplifier", errors)).intValue()
+          : 0;
+      boolean ambient = map.containsKey("ambient") && Boolean.parseBoolean(String.valueOf(map.get("ambient")));
+      boolean particles = !map.containsKey("particles") || Boolean.parseBoolean(String.valueOf(map.get("particles")));
+      boolean icon = !map.containsKey("icon") || Boolean.parseBoolean(String.valueOf(map.get("icon")));
+      out.add(new PotionEffect(type, Math.max(1, durationTicks), Math.max(0, amplifier), ambient, particles, icon));
+      index++;
+    }
+    return out;
+  }
+
+  private static void validateMapKeys(Map<?, ?> section, java.util.Set<String> allowed, String path, List<String> errors) {
+    if (section == null || allowed == null || allowed.isEmpty()) {
+      return;
+    }
+    for (Object rawKey : section.keySet()) {
+      if (rawKey == null) {
+        continue;
+      }
+      String key = String.valueOf(rawKey);
+      if (!allowed.contains(key)) {
+        errors.add(path + ": unknown key=" + key);
       }
     }
   }
@@ -1712,15 +2074,54 @@ public final class ItemTemplateCompiler {
   }
 
   private static org.bukkit.Sound parseSound(String raw) {
+    Key key = parseSoundKey(raw);
+    if (key == null) {
+      return null;
+    }
+    NamespacedKey namespaced = NamespacedKey.fromString(key.asString());
+    if (namespaced == null) {
+      return null;
+    }
+    var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT);
+    return registry == null ? null : registry.get(namespaced);
+  }
+
+  @SuppressWarnings("removal")
+  private static Key parseSoundKey(String raw) {
     if (raw == null || raw.isBlank()) {
       return null;
     }
-    NamespacedKey key = NamespacedKey.fromString(raw.contains(":") ? raw : "minecraft:" + raw.toLowerCase(Locale.ROOT));
+    String value = raw.trim();
+    try {
+      org.bukkit.Sound sound = org.bukkit.Sound.valueOf(value.toUpperCase(Locale.ROOT));
+      return Key.key(sound.getKey().toString());
+    } catch (IllegalArgumentException ignored) {
+      // Fall through to namespaced lookup.
+    }
+    NamespacedKey key = parseNamespacedKey(value);
     if (key == null) {
       return null;
     }
     var registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT);
-    return registry == null ? null : registry.get(key);
+    if (registry == null || registry.get(key) == null) {
+      return null;
+    }
+    return Key.key(key.toString());
+  }
+
+  private static NamespacedKey parseNamespacedKey(String raw) {
+    if (raw == null || raw.isBlank()) {
+      return null;
+    }
+    String trimmed = raw.trim();
+    if (trimmed.contains(":")) {
+      return NamespacedKey.fromString(trimmed);
+    }
+    NamespacedKey asMinecraft = NamespacedKey.fromString("minecraft:" + trimmed.toLowerCase(Locale.ROOT));
+    if (asMinecraft != null) {
+      return asMinecraft;
+    }
+    return NamespacedKey.fromString(trimmed.toLowerCase(Locale.ROOT));
   }
 
   private static FireworkEffect parseFireworkEffect(Map<?, ?> entry, String path, List<String> errors) {
@@ -1793,6 +2194,30 @@ public final class ItemTemplateCompiler {
       return null;
     }
     return RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).get(key);
+  }
+
+  private static List<String> readStringList(Object raw) {
+    if (raw == null) {
+      return List.of();
+    }
+    if (raw instanceof String token) {
+      String value = token.trim();
+      return value.isEmpty() ? List.of() : List.of(value);
+    }
+    if (!(raw instanceof List<?> list)) {
+      return List.of();
+    }
+    List<String> out = new ArrayList<>();
+    for (Object entry : list) {
+      if (entry == null) {
+        continue;
+      }
+      String value = String.valueOf(entry).trim();
+      if (!value.isEmpty()) {
+        out.add(value);
+      }
+    }
+    return out;
   }
 
   private static ItemStack parseItemStackEntry(Object entry, String path, List<String> errors) {
@@ -2063,9 +2488,23 @@ public final class ItemTemplateCompiler {
       "amount",
       "display",
       "meta",
+      "edible",
       "visual",
       "custom_model_data",
       "customModelData");
+
+  private static final java.util.Set<String> EDIBLE_KEYS = java.util.Set.of(
+      "nutrition",
+      "saturation",
+      "canAlwaysEat",
+      "consumeSeconds",
+      "animation",
+      "sound",
+      "hasConsumeParticles",
+      "effects",
+      "cooldownSeconds",
+      "cooldownGroup",
+      "remainder");
 
   private static final java.util.Set<String> VISUAL_KEYS = java.util.Set.of(
       "texture",
@@ -2154,4 +2593,70 @@ public final class ItemTemplateCompiler {
       "block_data",
       "components",
       "tags");
+
+  private static final java.util.Set<String> COMPONENT_KEYS = java.util.Set.of(
+      "custom_model_data",
+      "customModelData",
+      "food",
+      "consumable",
+      "consume",
+      "use_cooldown",
+      "useRemainder",
+      "use_remainder",
+      "tool",
+      "equippable",
+      "jukebox",
+      "death_protection",
+      "deathProtection");
+
+  private static final java.util.Set<String> FOOD_COMPONENT_KEYS = java.util.Set.of(
+      "nutrition",
+      "saturation",
+      "canAlwaysEat");
+
+  private static final java.util.Set<String> CONSUMABLE_COMPONENT_KEYS = java.util.Set.of(
+      "consumeSeconds",
+      "animation",
+      "sound",
+      "hasConsumeParticles",
+      "effects");
+
+  private static final java.util.Set<String> USE_COOLDOWN_KEYS = java.util.Set.of(
+      "seconds",
+      "group");
+
+  private static final java.util.Set<String> USE_REMAINDER_KEYS = java.util.Set.of(
+      "material",
+      "type",
+      "amount");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_PLAY_SOUND_KEYS = java.util.Set.of(
+      "type",
+      "sound");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_TELEPORT_KEYS = java.util.Set.of(
+      "type",
+      "diameter");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_REMOVE_EFFECTS_KEYS = java.util.Set.of(
+      "type",
+      "effects");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_CLEAR_ALL_KEYS = java.util.Set.of(
+      "type");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_APPLY_EFFECTS_KEYS = java.util.Set.of(
+      "type",
+      "probability",
+      "effects");
+
+  private static final java.util.Set<String> CONSUME_EFFECT_APPLY_ENTRY_KEYS = java.util.Set.of(
+      "effect",
+      "type",
+      "durationTicks",
+      "duration",
+      "amplifier",
+      "ambient",
+      "particles",
+      "icon");
 }
